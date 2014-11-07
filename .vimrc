@@ -44,7 +44,7 @@ NeoBundle 'mhinz/vim-startify'		" nice startup screen
 NeoBundle 'bling/vim-airline'		" nicer statusbar/tabs
 NeoBundle 'scrooloose/syntastic.git'	" real time error checking
 NeoBundle 'sjl/gundo.vim'		" undo tree
-NeoBundle 'joequery/Stupid-EasyMotion'	" single-line easymotion
+NeoBundle 'Lokaltog/vim-easymotion'	" motion made easier
 
 " toggleable panels (togglable?)
 NeoBundle 'majutsushi/tagbar'		" View tags easily
@@ -234,6 +234,9 @@ nnoremap <leader>p :CtrlPBuffer<CR>
 " Airline
 " enable tabs.. duh
 let g:airline#extensions#tabline#enabled = 1
+
+" Gundo shortcut
+nnoremap <leader>z :GundoToggle<CR>
 
 " Drag visuals keys
 " lets you literally drag visual selections
