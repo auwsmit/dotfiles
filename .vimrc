@@ -47,6 +47,8 @@ NeoBundle 'sjl/gundo.vim'               " undo tree
 NeoBundle 'scrooloose/nerdtree'         " nice file tree
 NeoBundle 'Lokaltog/vim-easymotion'     " motion made easier
 NeoBundle 'tpope/vim-surround'          " surroundings manipulation
+NeoBundle 'xolox/vim-session'           " more extensive sessions
+NeoBundle 'xolox/vim-misc'              " ^session requirement
 
 " unsure/experimental
 
@@ -131,7 +133,11 @@ endif
 
 " gvim specific
 if has('gui_running')
-  set guifont=liberation_mono:h11
+  if has('unix')
+    set guifont=Liberation\ Mono\ 11
+  else
+    set guifont=liberation_mono:h11
+  endif
 endif
 
 
@@ -155,7 +161,7 @@ vnoremap    v   <c-v>
 vnoremap <c-v>     v
 
 " switch to last buffer, like alt+tab
-nnoremap <leader>e :b#<cr>
+nnoremap <leader><Tab> :b#<cr>
 
 " open vimrc
 if has('unix')
@@ -170,8 +176,8 @@ endif
 nnoremap <silent><leader>n :set rnu! rnu? <cr>
 
 " leader+[ / ] to switch tabs
-nnoremap <leader>[ :tabprev<CR>
-nnoremap <leader>] :tabnext<CR>
+nnoremap <silent><leader>[ :tabprev<CR>
+nnoremap <silent><leader>] :tabnext<CR>
 
 " makes j and k go down by row instead of line,
 " disabled for relativenumber navigation
@@ -260,6 +266,16 @@ nnoremap <leader>z :GundoToggle<CR>
 " Airline
 " enable tabs.. duh
 let g:airline#extensions#tabline#enabled = 1
+
+" Sessions
+let g:session_directory = "~/.vim/session"
+let g:session_autoload = "no"
+let g:session_autosave = "no"
+let g:session_command_aliases = 1
+nnoremap <leader>so :OpenSession
+nnoremap <leader>ss :SaveSession
+nnoremap <leader>sd :DeleteSession<CR>
+nnoremap <leader>sc :CloseSession<CR>
 
 " Startify
 " custom header
