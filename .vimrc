@@ -1,13 +1,13 @@
 " Maintainer:	Austin Smith <AssailantLF@gmail.com>
-" Last touched on Nov. 8, 2014
+" Last touched on Nov. 9, 2014
 
-" 	** INDEX ** search: /sectionName
+" 	** INDEX **
 "
-"	0 NEOBUNDLE
-"	1 GENERAL
-"	2 APPEARANCE/THEMIMG
-"	3 KEYS/MAPS/ALIASES
-"	4 VIM PLUGINS
+"   0 NEOBUNDLE
+"	  1 GENERAL
+"	  2 APPEARANCE/THEMIMG
+"	  3 KEYS/MAPS/ALIASES
+"	  4 VIM PLUGINS
 "
 "	Settings are reasonably grouped between
 "	between white spaces for easy navigation
@@ -17,7 +17,7 @@
 " This must be first, because it changes other options as a side effect.
 set nocompatible
 
-"	** NEOBUNDLE **
+"   ** NEOBUNDLE **
 
 " required
 if has('vim_starting')
@@ -34,58 +34,58 @@ else
 endif
 
 " core plugins
-NeoBundleFetch 'Shougo/neobundle.vim'	" The one.
+NeoBundleFetch 'Shougo/neobundle.vim'	  " The one.
 
 " main plugins
-NeoBundle 'flazz/vim-colorschemes'	" all the colorschemes
-NeoBundle 'kien/ctrlp.vim'		" fuzzy file search
-NeoBundle 'tpope/vim-fugitive'		" git integration
-NeoBundle 'mhinz/vim-startify'		" startup screen
-NeoBundle 'bling/vim-airline'		" nicer statusbar/tabs
-NeoBundle 'scrooloose/syntastic.git'	" real time error checking
-NeoBundle 'sjl/gundo.vim'		" undo tree
-NeoBundle 'scrooloose/nerdtree'		" nice file tree
-NeoBundle 'Lokaltog/vim-easymotion'	" motion made easier
-NeoBundle 'tpope/vim-surround'		" better 'surround' control
+NeoBundle 'flazz/vim-colorschemes'      " all the colorschemes
+NeoBundle 'kien/ctrlp.vim'              " fuzzy file search
+NeoBundle 'tpope/vim-fugitive'          " git integration
+NeoBundle 'mhinz/vim-startify'          " startup screen
+NeoBundle 'bling/vim-airline'           " nicer statusbar/tabs
+NeoBundle 'scrooloose/syntastic.git'    " real time error checking
+NeoBundle 'sjl/gundo.vim'               " undo tree
+NeoBundle 'scrooloose/nerdtree'         " nice file tree
+NeoBundle 'Lokaltog/vim-easymotion'     " motion made easier
+NeoBundle 'tpope/vim-surround'          " surroundings manipulation
 
 " unsure/experimental
-"NeoBundle 'joequery/Stupid-EasyMotion'	" single-line easymotion
 
 " toggleable panels (togglable?)
-NeoBundle 'majutsushi/tagbar'		" View tags easily
-NeoBundle 'tpope/vim-vinegar'		" Improved file manager
+NeoBundle 'majutsushi/tagbar'		        " view tags easily
+NeoBundle 'tpope/vim-vinegar'		        " improved file manager
 
-" Revision example:
+" revision example:
 "	NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
 
 " required
 call neobundle#end()
 filetype plugin indent on
 
-" If there are uninstalled bundles found on startup,
-" this will conveniently prompt you to install them.
+" prompt to auto install plugins at startup
 NeoBundleCheck
 
-" End NeoBundle Scripts-------------------------
+" End of NeoBundle Config
 
 
 
-"	** GENERAL **
+"   ** GENERAL **
 
-set backspace=2		" Backspace like most programs in insert mode
-set nobackup 		" I hate *~ and *.swp files and idgaf
+set backspace=2		    " Backspace like most programs in insert mode
+set nobackup 		      " I hate *~ and *.swp files and idgaf
 set nowritebackup
 set noswapfile
-set history=100		" keep x lines of command line history
-set showcmd		" display incomplete commands
-set wildmenu		" better command-line completion
-set incsearch		" do incremental searching
-set autoindent		" always set autoindenting on
-set cpoptions+=$	" use $ as an end marker for change
+set history=100		    " keep x lines of command line history
+set showcmd		        " display incomplete commands
+set wildmenu		      " better command-line completion
+set incsearch		      " do incremental searching
+set autoindent		    " always set autoindenting on
 set browsedir=buffer	" open file tree in current buffer directory
-set autoread		" auto load changed file if unedited in vim
-set hidden		" allow multiple modified buffers
-set nrformats=		" uses decimal instead of octal for math
+set autoread		      " autoload changed files
+set hidden		        " allow multiple modified buffers
+set vb t_vb=		      " plz stop the beeping
+
+" uses decimal instead of octal with ctrl+a and ctrl+x
+set nrformats=
 
 " Enable mouse because why not
 if has('mouse')
@@ -94,55 +94,54 @@ endif
 
 
 
-"	** APPEARANCE/THEMING **
+"   ** APPEARANCE/THEMING **
 
 " Vim Colorscheme
+" favs: grb256, wombat256mod, candyman
 colorscheme wombat256mod
 
-" window size
-set lines=37 columns=74
+syntax on	    	      " syntax highlighting on
+"set cursorline		    " highlight current line
+set ruler		          " show the cursor position all the time
+set number		        " show line numbers
+set numberwidth=5	    " length of ints in the line numbers
+set laststatus=2	    " always show status bar
+set guioptions-=T	    " no toolbar.
+set hlsearch		      " highlight last search pattern
+set cpoptions+=$	    " $ as end marker for the change operator
 
-set cursorline		" highlight current line
-set ruler		" show the cursor position all the time
-set number		" show line numbers
-" set relativenumber	" numbers relative to current line
-set numberwidth=5	" length of ints in the line numbers
-set laststatus=2	" always show status bar
-set guioptions-=T	" no toolbar.
-set hlsearch		" highlight last search pattern
-syntax on		" syntax highlighting on
-set vb t_vb=
+" Use spaces for tabs and make them 2 chars long
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set expandtab
 
 " Make it obvious where 80 characters is
 " Highlight 81st column if reached
 highlight ColorColumn ctermbg=magenta
 call matchadd('ColorColumn', '\%81v', 100)
 
-" Make trailing whitespace, and non-breaking spaces visible,
-" disabled for being annoying
-" exec "set listchars=trail:\uB7,nbsp:~"
-" set list
-
 " 256 color terminal, helps with terminal colorschemes
 if has('unix')
   set t_Co=256
 endif
 
-" gVim specific
-if has("gui_running")
-  "my gui text is smaller, so the window needs to be bigger
-  set lines=45 columns=86
-  set guifont=Liberation_Mono:h11:cANSI
+" window size
+"set lines=37 columns=74
+
+" gvim specific
+if has('gui_running')
+  set guifont=liberation_mono:h11
 endif
 
 
 
-"	** KEYS/MAPS/ALIASES **
+"   ** KEYS/MAPS/ALIASES **
 "
-"	Plugin related shortcuts are located
-"	under their respective Vim Plugins section
+" plugin related shortcuts are located
+" under their respective vim plugins section
 
-" Leader
+" leader the easiest key to reach
 let mapleader = " "
 
 " swap ; and : for pinky's sake
@@ -150,13 +149,13 @@ nnoremap ; :
 nnoremap : ;
 
 " swap v and ctrl+v because block mode is better
-nnoremap    v   <C-V>
-nnoremap <C-V>     v
-vnoremap    v   <C-V>
-vnoremap <C-V>     v
+nnoremap    v   <c-v>
+nnoremap <c-v>     v
+vnoremap    v   <c-v>
+vnoremap <c-v>     v
 
-" switch to last buffer
-nnoremap <leader>e :b#<CR>
+" switch to last buffer, like alt+tab
+nnoremap <leader>e :b#<cr>
 
 " open vimrc
 if has('unix')
@@ -167,7 +166,7 @@ else
   nnoremap <leader>V :tabnew ~/_vimrc<CR>
 endif
 
-" toggle relativenumbers
+" toggle relativenumber
 nnoremap <silent><leader>n :set rnu! rnu? <cr>
 
 " leader+[ / ] to switch tabs
@@ -231,7 +230,8 @@ cabbrev tl tablastg
 
 
 
-"	** VIM PLUGINS **
+"   ** VIM PLUGINS **
+"
 "	if you don't have these plugins
 "	installed, you should probably
 "	remove any corresponding settings
@@ -240,8 +240,13 @@ cabbrev tl tablastg
 let g:syntastic_check_on_open=1
 let g:syntastic_enable_signs=1
 
+" EasyMotion
+" search whole screen instead of below the cursor
+nmap <leader>w H<Plug>(easymotion-w)
+nmap <leader>W H<Plug>(easymotion-W)
+
 " NERD Tree shortcut
-nnoremap <leader>f :NERDTreeToggle<CR>
+nnoremap <leader>f :NERDTreeToggle 
 
 " Tagbar shortcut
 nnoremap <leader>t :TagbarToggle<CR>
