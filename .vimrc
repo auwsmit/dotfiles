@@ -1,17 +1,17 @@
-" Maintainer:	Austin Smith <AssailantLF@gmail.com>
+" Maintainer:  Austin Smith <AssailantLF@gmail.com>
 " Last touched on Nov. 9, 2014
 
-" 	** INDEX **
+"   ** INDEX **
 "
 "   0 NEOBUNDLE
-"	  1 GENERAL
-"	  2 APPEARANCE/THEMIMG
-"	  3 KEYS/MAPS/ALIASES
-"	  4 VIM PLUGINS
+"   1 GENERAL
+"   2 APPEARANCE/THEMIMG
+"   3 KEYS/MAPS/ALIASES
+"   4 VIM PLUGINS
 "
-"	Settings are reasonably grouped between
-"	between white spaces for easy navigation
-"	(tip: use { and })
+"  Settings are reasonably grouped between
+"  between white spaces for easy navigation
+"  (tip: use { and })
 
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
@@ -59,7 +59,7 @@ NeoBundle 'majutsushi/tagbar'         " view tags easily
 NeoBundle 'tpope/vim-vinegar'         " improved file manager
 
 " revision example:
-"	  NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
+"    NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
 
 " required
 call neobundle#end()
@@ -104,15 +104,15 @@ endif
 " favs: grb256, wombat256mod, badwolf
 colorscheme badwolf
 
-syntax on	    	      " syntax highlighting on
-"set cursorline		    " highlight current line
-set ruler		          " show the cursor position all the time
-set number		        " show line numbers
-set numberwidth=5	    " length of ints in the line numbers
-set laststatus=2	    " always show status bar
-set guioptions-=T	    " no toolbar.
-set hlsearch		      " highlight last search pattern
-set cpoptions+=$	    " $ as end marker for the change operator
+syntax on         " syntax highlighting on
+" set cursorline  " highlight current line
+set ruler         " show the cursor position all the time
+set number        " show line numbers
+set numberwidth=5 " length of ints in the line numbers
+set laststatus=2  " always show status bar
+set guioptions-=T " no toolbar.
+set hlsearch      " highlight last search pattern
+set cpoptions+=$  " $ as end marker for the change operator
 
 " Use spaces for tabs and make them 2 chars long
 set tabstop=2
@@ -256,7 +256,7 @@ cabbrev tc tabclose
 
 "   ** VIM PLUGINS **
 "
-"	If you don't have a certain plugin installed,
+"  If you don't have a certain plugin installed,
 " you should remove any corresponding settings
 
 " Syntastic
