@@ -17,9 +17,12 @@
 " must be first, because it changes other options as a side effect
 set nocompatible
 
+" ======================================================================
 "   ** NEOBUNDLE **
+" ======================================================================
 
-" required
+" my way of dealing with swapping
+" between Linux and Windows for now
 if has('vim_starting')
   if has('unix')
     set runtimepath+=~/.vim/bundle/neobundle.vim/
@@ -48,15 +51,33 @@ NeoBundle 'tpope/vim-surround'        " surroundings manipulation
 NeoBundle 'xolox/vim-session'         " extension of default sessions
 NeoBundle 'xolox/vim-misc'            " ^session requirement
 NeoBundle 'godlygeek/tabular'         " text alignment extension
+NeoBundle 'jiangmiao/auto-pairs'      " auto pair complete/delete
+NeoBundle 'scrooloose/nerdcommenter'  " intensely orgasmic commenting
 
 " *new/experimental*
-NeoBundle 'jiangmiao/auto-pairs'      " auto pair complete/delete
+NeoBundle 'Shougo/neocomplete.vim'    " auto completion thingy
 
 " *toggleable panels*
 NeoBundle 'sjl/gundo.vim'             " undo tree
 NeoBundle 'scrooloose/nerdtree'       " nice file tree
 NeoBundle 'majutsushi/tagbar'         " view tags easily
 NeoBundle 'tpope/vim-vinegar'         " improved file manager
+
+" TODO: Read manuals for:
+" CtrlP
+" Fugittive
+" Airline
+" Syntastic
+" EasyMotion
+" Surround
+" Session
+" Tabular
+" NERD Commenter
+" NERDTree
+" Gundo
+" Tagbar
+" NeoBundle
+" YouCompleteMe
 
 " revision example:
 "    NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
@@ -72,21 +93,24 @@ NeoBundleCheck
 
 
 
+" ==================================================
 "   ** GENERAL **
+" ==================================================
 
-set backspace=2             " backspace like most programs in insert mode
-set nobackup                " i hate *~ and *.swp files and idgaf
+set backspace=2       " backspace like most programs in insert mode
+set nobackup          " i hate *~ and *.swp files and idgaf
 set nowritebackup
 set noswapfile
-set history=100             " keep x lines of command line history
-set showcmd                 " display incomplete commands
-set wildmenu                " better command-line completion
-set incsearch               " do incremental searching
-set autoindent              " always set autoindenting on
-set browsedir=buffer        " open file tree in current buffer directory
-set autoread                " autoload changed files
-set hidden                  " allow multiple modified buffers
-set vb t_vb=                " plz stop the beeping
+set history=100       " keep x lines of command line history
+set showcmd           " display incomplete commands
+set wildmenu          " better command-line completion
+set incsearch         " do incremental searching
+set autoindent        " always set autoindenting on
+set browsedir=buffer  " open file tree in current buffer directory
+set autoread          " autoload changed files
+set hidden            " allow multiple modified buffers
+set vb t_vb=          " plz stop the beeping
+set clipboard=unnamed " Yank to the system clipboard by default
 
 " use decimal instead of octal with ctrl+a and ctrl+x
 set nrformats=
@@ -98,7 +122,9 @@ endif
 
 
 
+" ==================================================
 "   ** APPEARANCE/THEMING **
+" ==================================================
 
 " 256 color terminal, helps with terminal colorschemes
 if has('unix')
@@ -109,17 +135,17 @@ endif
 " favs: badwolf, grb256, wombat256mod
 colorscheme badwolf
 
-syntax on                   " syntax highlighting
-set ruler                   " show the cursor position all the time
-set number                  " show line numbers
-set numberwidth=5           " length of ints in the line numbers
-set laststatus=2            " always show status bar
-set guioptions-=T           " no toolbar.
-set hlsearch                " highlight last search pattern
-set cpoptions+=$            " $ as end marker for the change operator
+syntax on         " syntax highlighting
+set ruler         " show the cursor position all the time
+set number        " show line numbers
+set laststatus=2  " always show status bar
+set guioptions-=T " no toolbar.
+set hlsearch      " highlight last search pattern
+set cpoptions+=$  " $ as end marker for the change operator
+set scrolloff=5   " keep 5 lines above & below for scope
 
 " show tabs and eols
-set listchars=tab:▶\ ,eol:˥
+set listchars=tab:▶\ ,eol:¬,trail:·
 "set list
 
 " make it obvious where 80 characters is
@@ -136,9 +162,9 @@ if has("autocmd")
   autocmd FileType make setlocal ts=8 sts=8 sw=8 noexpandtab
 
   " customisations based on house-style (arbitrary)
-  autocmd FileType vim setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType html setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType css setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType vim        setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType html       setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType css        setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType javascript setlocal ts=4 sts=4 sw=4
 
   " treat .rss files as XML
@@ -159,9 +185,11 @@ endif
 
 
 
+" ==================================================
 "   ** KEYS/MAPS/ALIASES **
+" ==================================================
 "
-" plugin related shortcuts are located
+" things related to plugins are located
 " under their respective vim plugins section
 
 " leader the easiest key to reach
@@ -191,9 +219,6 @@ endif
 
 " toggle relativenumber
 nnoremap <leader>n :set rnu! rnu?<CR>
-
-" toggle visible tabs and eols
-nnoremap <leader>l :set list! list?<CR>
 
 " make enter break and do newlines
 nnoremap <CR> o<Esc>
@@ -248,13 +273,18 @@ noremap <silent> ,ck :wincmd k<CR>:close<CR>
 noremap <silent> ,ch :wincmd h<CR>:close<CR>
 noremap <silent> ,cl :wincmd l<CR>:close<CR>
 
-" make tabs more convenient
+" make tabs slightly more convenient
 cabbrev te tabnew
 cabbrev tc tabclose
 
+" clear white spaces
+cabbrev clearwhites %s/\s\+$//e
 
 
+
+" ==================================================
 "   ** VIM PLUGINS **
+" ==================================================
 "
 " If you don't have a certain plugin installed,
 " you should remove any corresponding settings
@@ -270,6 +300,7 @@ nmap <leader>w H<Plug>(easymotion-w)
 nmap <leader>W H<Plug>(easymotion-W)
 
 " NERDTree
+nnoremap <Tab> :NERDTreeToggle<CR>
 nnoremap <leader>f :NERDTreeToggle 
 
 " Tagbar
