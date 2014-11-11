@@ -1,5 +1,5 @@
 " Maintainer:  Austin Smith <AssailantLF@gmail.com>
-" Last touched on Nov. 9, 2014
+" Last touched on Nov. 10, 2014
 
 "   ** INDEX **
 "
@@ -13,8 +13,8 @@
 "  between white spaces for easy navigation
 "  (tip: use { and })
 
-" Use Vim settings, rather than Vi settings (much better!).
-" This must be first, because it changes other options as a side effect.
+" vim settings over vi settings
+" must be first, because it changes other options as a side effect
 set nocompatible
 
 "   ** NEOBUNDLE **
@@ -22,13 +22,13 @@ set nocompatible
 " required
 if has('vim_starting')
   if has('unix')
-    set runtimepath+=/home/austin/.vim/bundle/neobundle.vim/
+    set runtimepath+=~/.vim/bundle/neobundle.vim/
   else
     set runtimepath+=$VIM/vimfiles/bundle/neobundle.vim/
   endif
 endif
 if has('unix')
-  call neobundle#begin(expand('/home/austin/.vim/bundle'))
+  call neobundle#begin(expand('~/.vim/bundle'))
 else
   call neobundle#begin(expand('$VIM/vimfiles/bundle'))
 endif
@@ -74,24 +74,24 @@ NeoBundleCheck
 
 "   ** GENERAL **
 
-set backspace=2      " Backspace like most programs in insert mode
-set nobackup         " I hate *~ and *.swp files and idgaf
+set backspace=2             " backspace like most programs in insert mode
+set nobackup                " i hate *~ and *.swp files and idgaf
 set nowritebackup
 set noswapfile
-set history=100      " keep x lines of command line history
-set showcmd          " display incomplete commands
-set wildmenu         " better command-line completion
-set incsearch        " do incremental searching
-set autoindent       " always set autoindenting on
-set browsedir=buffer " open file tree in current buffer directory
-set autoread         " autoload changed files
-set hidden           " allow multiple modified buffers
-set vb t_vb=         " plz stop the beeping
+set history=100             " keep x lines of command line history
+set showcmd                 " display incomplete commands
+set wildmenu                " better command-line completion
+set incsearch               " do incremental searching
+set autoindent              " always set autoindenting on
+set browsedir=buffer        " open file tree in current buffer directory
+set autoread                " autoload changed files
+set hidden                  " allow multiple modified buffers
+set vb t_vb=                " plz stop the beeping
 
-" uses decimal instead of octal with ctrl+a and ctrl+x
+" use decimal instead of octal with ctrl+a and ctrl+x
 set nrformats=
 
-" Enable mouse because why not
+" enable mouse because why not
 if has('mouse')
   set mouse=a
 endif
@@ -100,34 +100,49 @@ endif
 
 "   ** APPEARANCE/THEMING **
 
-" Vim Colorscheme
-" favs: grb256, wombat256mod, badwolf
-colorscheme badwolf
-
-syntax on         " syntax highlighting on
-" set cursorline  " highlight current line
-set ruler         " show the cursor position all the time
-set number        " show line numbers
-set numberwidth=5 " length of ints in the line numbers
-set laststatus=2  " always show status bar
-set guioptions-=T " no toolbar.
-set hlsearch      " highlight last search pattern
-set cpoptions+=$  " $ as end marker for the change operator
-
-" Use spaces for tabs and make them 2 chars long
-set tabstop=2
-set shiftwidth=2
-set softtabstop=2
-set expandtab
-
-" Make it obvious where 80 characters is
-" Highlight 81st column if reached
-highlight ColorColumn ctermbg=magenta
-call matchadd('ColorColumn', '\%81v', 100)
-
 " 256 color terminal, helps with terminal colorschemes
 if has('unix')
   set t_Co=256
+endif
+
+" vim colorscheme
+" favs: badwolf, grb256, wombat256mod
+colorscheme badwolf
+
+syntax on                   " syntax highlighting
+set ruler                   " show the cursor position all the time
+set number                  " show line numbers
+set numberwidth=5           " length of ints in the line numbers
+set laststatus=2            " always show status bar
+set guioptions-=T           " no toolbar.
+set hlsearch                " highlight last search pattern
+set cpoptions+=$            " $ as end marker for the change operator
+
+" show tabs and eols
+set listchars=tab:▶\ ,eol:˥
+"set list
+
+" make it obvious where 80 characters is
+" highlight 81st column if reached
+highlight ColorColumn ctermbg=magenta
+call matchadd('ColorColumn', '\%81v', 100)
+
+" file specific tab spacing
+if has("autocmd")
+  " enable file type detection
+  filetype on
+
+  " syntax of these languages is fussy over tabs vs spaces
+  autocmd FileType make setlocal ts=8 sts=8 sw=8 noexpandtab
+
+  " customisations based on house-style (arbitrary)
+  autocmd FileType vim setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType html setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType css setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType javascript setlocal ts=4 sts=4 sw=4
+
+  " treat .rss files as XML
+  autocmd BufNewFile,BufRead *.rss setfiletype xml
 endif
 
 " window size
@@ -153,10 +168,8 @@ endif
 let mapleader = " "
 
 " swap ; and : for pinky's sake
-nnoremap ; :
-nnoremap : ;
-vnoremap ; :
-vnoremap : ;
+noremap ; :
+noremap : ;
 
 " swap v and ctrl+v because block mode is better
 nnoremap    v   <c-v>
@@ -177,11 +190,10 @@ else
 endif
 
 " toggle relativenumber
-nnoremap <silent><leader>n :set rnu! rnu? <cr>
+nnoremap <leader>n :set rnu! rnu?<CR>
 
-" leader+[ / ] to switch tabs
-nnoremap <silent><leader>[ :tabprev<CR>
-nnoremap <silent><leader>] :tabnext<CR>
+" toggle visible tabs and eols
+nnoremap <leader>l :set list! list?<CR>
 
 " make enter break and do newlines
 nnoremap <CR> o<Esc>
@@ -200,55 +212,43 @@ nnoremap <C-l> :nohl <CR> <C-l>
 " <Ctrl-c> as alternative ESC
 noremap <C-c> <esc>
 
-" Get off my lawn
-nnoremap <Left>  : echoe "Use h"<CR>
-nnoremap <Right> : echoe "Use l"<CR>
-nnoremap <Up>    : echoe "Use k"<CR>
-nnoremap <Down>  : echoe "Use j"<CR>
+" get off my lawn
+nnoremap <Left>  :echoe "Use h"<CR>
+nnoremap <Right> :echoe "Use l"<CR>
+nnoremap <Up>    :echoe "Use k"<CR>
+nnoremap <Down>  :echoe "Use j"<CR>
 
-" Maps to make handling windows a bit easier
+" maps to make handling windows a bit easier
 "
-" Creating windows
+" creating windows
 noremap <silent> ,s :wincmd s<CR>
 noremap <silent> ,v :wincmd v<CR>
-" Navigating between windows
+" navigating between windows
 noremap <silent> ,h :wincmd h<CR>
 noremap <silent> ,j :wincmd j<CR>
 noremap <silent> ,k :wincmd k<CR>
 noremap <silent> ,l :wincmd l<CR>
 noremap <silent> ,p :wincmd p<CR>
-" Moving windows around
+" moving windows around
 noremap <silent> ,ml <C-W>L
 noremap <silent> ,mk <C-W>K
 noremap <silent> ,mh <C-W>H
 noremap <silent> ,mj <C-W>J
-" Resizing windows
+" resizing windows
 noremap <silent> ,o :wincmd o<CR>
 noremap <silent> ,= :wincmd =<CR>
-noremap <silent> <C-Left> :vertical resize -10<CR>
-noremap <silent> <C-Up> :resize +10<CR>
-noremap <silent> <C-Down> :resize -10<CR>
+noremap <silent> <C-Left>  :vertical resize -10<CR>
+noremap <silent> <C-Up>    :resize +10<CR>
+noremap <silent> <C-Down>  :resize -10<CR>
 noremap <silent> <C-Right> :vertical resize +10<CR>
-" Closing windows
+" closing windows
 noremap <silent> ,cc :close<CR>
 noremap <silent> ,cj :wincmd j<CR>:close<CR>
 noremap <silent> ,ck :wincmd k<CR>:close<CR>
 noremap <silent> ,ch :wincmd h<CR>:close<CR>
 noremap <silent> ,cl :wincmd l<CR>:close<CR>
 
-" stay centered more often
-nnoremap { {zz
-nnoremap } }zz
-nnoremap * *zz
-nnoremap # #zz
-nnoremap n nzz
-nnoremap N Nzz
-
-" make tabs easier to use
-cabbrev tp tabprev
-cabbrev tn tabnext
-cabbrev tf tabfirst
-cabbrev tl tablastg
+" make tabs more convenient
 cabbrev te tabnew
 cabbrev tc tabclose
 
@@ -256,7 +256,7 @@ cabbrev tc tabclose
 
 "   ** VIM PLUGINS **
 "
-"  If you don't have a certain plugin installed,
+" If you don't have a certain plugin installed,
 " you should remove any corresponding settings
 
 " Syntastic
@@ -269,19 +269,19 @@ let g:syntastic_enable_signs=1
 nmap <leader>w H<Plug>(easymotion-w)
 nmap <leader>W H<Plug>(easymotion-W)
 
-" NERD Tree map
+" NERDTree
 nnoremap <leader>f :NERDTreeToggle 
 
-" Tagbar map
+" Tagbar
 nnoremap <leader>t :TagbarToggle<CR>
 
 " CtrlP buffer map
 nnoremap <leader>p :CtrlPBuffer<CR>
 
-" Gundo map
+" Gundo
 nnoremap <leader>z :GundoToggle<CR>
 
-" Tabular map
+" Tabular
 noremap <leader>= :Tabularize/
 
 " Airline
