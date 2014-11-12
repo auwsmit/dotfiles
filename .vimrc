@@ -1,28 +1,23 @@
 " Maintainer:  Austin Smith <AssailantLF@gmail.com>
-" Last touched on Nov. 10, 2014
+" Last touched on Nov. 11, 2014
 
-"   ** INDEX **
+" ** INDEX ** (kinda pointless with folds)                {{{1
+" ============================================================
 "
-"   0 NEOBUNDLE
-"   1 GENERAL
-"   2 APPEARANCE/THEMIMG
-"   3 KEYS/MAPS/ALIASES
-"   4 VIM PLUGINS
+" NEOBUNDLE
+" GENERAL
+" APPEARANCE/VISUAL
+" KEYS/MAPS/ALIASES
+" VIM PLUGINS
 "
-"  Settings are reasonably grouped between
-"  between white spaces for easy navigation
-"  (tip: use { and })
+" settings are reasonably grouped between
+" between white spaces for easy navigation
+" (tip: use { and })
 
-" vim settings over vi settings
-" must be first, because it changes other options as a side effect
-set nocompatible
+" ** NEOBUNDLE ** (less stable, more featured Vundle)     {{{1
+" ============================================================
 
-" ======================================================================
-"   ** NEOBUNDLE **
-" ======================================================================
-
-" my way of dealing with swapping
-" between Linux and Windows for now
+" required begin {{{2
 if has('vim_starting')
   if has('unix')
     set runtimepath+=~/.vim/bundle/neobundle.vim/
@@ -36,39 +31,42 @@ else
   call neobundle#begin(expand('$VIM/vimfiles/bundle'))
 endif
 
-" *core plugins*
+" *CORE PLUGINS*
 NeoBundleFetch 'Shougo/neobundle.vim' " The one.
 
-" *main plugins*
+" *MAIN PLUGINS* {{{2
 NeoBundle 'flazz/vim-colorschemes'    " all the colorschemes
-NeoBundle 'kien/ctrlp.vim'            " fuzzy file search
-NeoBundle 'tpope/vim-fugitive'        " git integration
-NeoBundle 'mhinz/vim-startify'        " startup screen
-NeoBundle 'bling/vim-airline'         " nicer statusbar/tabs
-NeoBundle 'scrooloose/syntastic.git'  " real time error checking
-NeoBundle 'Lokaltog/vim-easymotion'   " motion made easier
-NeoBundle 'tpope/vim-surround'        " surroundings manipulation
-NeoBundle 'xolox/vim-session'         " extension of default sessions
+NeoBundle 'scrooloose/NERDCommenter'  " intensely pleasant commenting
+NeoBundle 'tpope/vim-Fugitive'        " git integration
+NeoBundle 'tpope/vim-Surround'        " surroundings manipulation
+NeoBundle 'tpope/vim-Vinegar'         " improved file manager
+NeoBundle 'scrooloose/Syntastic.git'  " real time error checking
+NeoBundle 'kien/CtrlP.vim'            " fuzzy file search
+NeoBundle 'Lokaltog/vim-EasyMotion'   " motion made easier
+NeoBundle 'godlygeek/Tabular'         " text alignment extension
+NeoBundle 'terryma/vim-expand-region' " convenient visual selection
+NeoBundle 'xolox/vim-Session'         " extension of default sessions
 NeoBundle 'xolox/vim-misc'            " ^session requirement
-NeoBundle 'godlygeek/tabular'         " text alignment extension
-NeoBundle 'jiangmiao/auto-pairs'      " auto pair complete/delete
-NeoBundle 'scrooloose/nerdcommenter'  " intensely orgasmic commenting
+NeoBundle 'bling/vim-Airline'         " better aesthetics for UI
+NeoBundle 'mhinz/vim-Startify'        " startup screen
 
-" *new/experimental*
-NeoBundle 'Shougo/neocomplete.vim'    " auto completion thingy
+" *NEW/EXPERIMENTAL*
 
-" *toggleable panels*
-NeoBundle 'sjl/gundo.vim'             " undo tree
-NeoBundle 'scrooloose/nerdtree'       " nice file tree
-NeoBundle 'majutsushi/tagbar'         " view tags easily
-NeoBundle 'tpope/vim-vinegar'         " improved file manager
+" *TOGGLEABLE PANELS*
+if has('python')
+  NeoBundle 'sjl/Gundo.vim'           " undo tree
+endif
+NeoBundle 'scrooloose/NERDtree'       " nice file tree
+NeoBundle 'majutsushi/Tagbar'         " view tags easily
 
-" TODO: Read manuals for:
+" revision example:
+"    NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
+
+" TODO: Read manuals for... {{{2
 " CtrlP
-" Fugittive
+" Fugitive
 " Airline
 " Syntastic
-" EasyMotion
 " Surround
 " Session
 " Tabular
@@ -77,40 +75,31 @@ NeoBundle 'tpope/vim-vinegar'         " improved file manager
 " Gundo
 " Tagbar
 " NeoBundle
-" YouCompleteMe
 
-" revision example:
-"    NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
-
-" required
+" required end {{{2
 call neobundle#end()
 filetype plugin indent on
 
 " prompt to auto install plugins at startup
 NeoBundleCheck
 
-" End of NeoBundle Config
 
 
+" ** GENERAL **                                           {{{1
+" ============================================================
 
-" ==================================================
-"   ** GENERAL **
-" ==================================================
-
-set backspace=2       " backspace like most programs in insert mode
-set nobackup          " i hate *~ and *.swp files and idgaf
+set backspace=2        " backspace like most programs in insert mode
+set nobackup           " I hate backup files and idgaf
 set nowritebackup
 set noswapfile
-set history=100       " keep x lines of command line history
-set showcmd           " display incomplete commands
-set wildmenu          " better command-line completion
-set incsearch         " do incremental searching
-set autoindent        " always set autoindenting on
-set browsedir=buffer  " open file tree in current buffer directory
-set autoread          " autoload changed files
-set hidden            " allow multiple modified buffers
-set vb t_vb=          " plz stop the beeping
-set clipboard=unnamed " Yank to the system clipboard by default
+set history=100        " keep x lines of command line history
+set incsearch          " do incremental searching
+set autoindent         " always set autoindenting on
+set browsedir=buffer   " open file tree in current buffer directory
+set autoread           " autoload changed files
+set hidden             " allow multiple modified buffers
+set vb t_vb=           " plz stop the beeping
+set clipboard=unnamed  " Yank to the system clipboard by default
 
 " use decimal instead of octal with ctrl+a and ctrl+x
 set nrformats=
@@ -122,9 +111,8 @@ endif
 
 
 
-" ==================================================
-"   ** APPEARANCE/THEMING **
-" ==================================================
+" ** APPEARANCE/VISUAL **                                 {{{1
+" ============================================================
 
 " 256 color terminal, helps with terminal colorschemes
 if has('unix')
@@ -132,17 +120,21 @@ if has('unix')
 endif
 
 " vim colorscheme
-" favs: badwolf, grb256, wombat256mod
+" favs: badwolf, xoria256, grb256, wombat256mod
 colorscheme badwolf
 
-syntax on         " syntax highlighting
-set ruler         " show the cursor position all the time
-set number        " show line numbers
-set laststatus=2  " always show status bar
-set guioptions-=T " no toolbar.
-set hlsearch      " highlight last search pattern
-set cpoptions+=$  " $ as end marker for the change operator
-set scrolloff=5   " keep 5 lines above & below for scope
+syntax on             " syntax highlighting
+set ruler             " show the cursor position all the time
+set number            " show line numbers
+set laststatus=2      " always show status bar
+set guioptions-=T     " no toolbar.
+set hlsearch          " highlight last search pattern
+set showcmd           " display incomplete commands
+set wildmenu          " better command-line completion
+set cpoptions+=$      " $ as end marker for the change operator
+set scrolloff=8       " keep some lines above & below for scope
+set lazyredraw        " redraw only when we need to
+set foldmethod=marker " default fold method
 
 " show tabs and eols
 set listchars=tab:▶\ ,eol:¬,trail:·
@@ -153,22 +145,20 @@ set listchars=tab:▶\ ,eol:¬,trail:·
 highlight ColorColumn ctermbg=magenta
 call matchadd('ColorColumn', '\%81v', 100)
 
-" file specific tab spacing
+" file type specific
 if has("autocmd")
   " enable file type detection
   filetype on
 
-  " syntax of these languages is fussy over tabs vs spaces
-  autocmd FileType make setlocal ts=8 sts=8 sw=8 noexpandtab
-
-  " customisations based on house-style (arbitrary)
+  " tabs vs spaces
+  autocmd FileType make       setlocal ts=8 sts=8 sw=8 noexpandtab
   autocmd FileType vim        setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType html       setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType css        setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType javascript setlocal ts=4 sts=4 sw=4
 
-  " treat .rss files as XML
-  autocmd BufNewFile,BufRead *.rss setfiletype xml
+  " fold settings
+  autocmd FileType c setlocal foldmethod=syntax foldnestmax=5
 endif
 
 " window size
@@ -176,6 +166,7 @@ endif
 
 " gvim specific
 if has('gui_running')
+  " dem fonts
   if has('unix')
     set guifont=Liberation\ Mono\ 11
   else
@@ -185,25 +176,46 @@ endif
 
 
 
-" ==================================================
-"   ** KEYS/MAPS/ALIASES **
-" ==================================================
+" ** KEYS/MAPS/ALIASES **                                 {{{1
+" ============================================================
 "
-" things related to plugins are located
-" under their respective vim plugins section
+" anything related to plugins is located
+" under its respective vim plugins section
 
-" leader the easiest key to reach
-let mapleader = " "
+" * REMAPS OF DEFAULTS *      {{{2
 
 " swap ; and : for pinky's sake
 noremap ; :
 noremap : ;
+
+" quick insert-mode escape
+inoremap jk <Esc>
 
 " swap v and ctrl+v because block mode is better
 nnoremap    v   <c-v>
 nnoremap <c-v>     v
 vnoremap    v   <c-v>
 vnoremap <c-v>     v
+
+" <CR> to EOF, #<CR> to line #
+nnoremap <CR> G
+
+" backspace to BOF
+nnoremap <BS> gg
+
+" jump to the end of pasted text
+" useful for pasting multi-lines of text
+vnoremap <silent> y y`]
+vnoremap <silent> p p`]
+nnoremap <silent> p p`]
+
+" <Ctrl-l> removes any search highlighting, redraws screen
+nnoremap <C-l> :nohl <CR> <C-l>
+
+" * LEADER MAPS *             {{{2
+
+" leader the easiest key to reach
+let mapleader = " "
 
 " switch to last buffer
 nnoremap <leader><Tab> :b#<cr>
@@ -220,28 +232,14 @@ endif
 " toggle relativenumber
 nnoremap <leader>n :set rnu! rnu?<CR>
 
-" make enter break and do newlines
-nnoremap <CR> o<Esc>
+" copy and paste from system clipboard
+vmap <Leader>y "+y
+nmap <Leader>p "+p
+nmap <Leader>P "+P
+vmap <Leader>p "+p
+vmap <Leader>P "+P
 
-" backspace in normal mode
-nnoremap <BS> i<BS><Esc>l
-
-" make j and k go down by row instead of line,
-" disabled for relativenumber navigation
-"nmap j gj
-"nmap k gk
-
-" <Ctrl-l> removes any search highlighting, redraws screen
-nnoremap <C-l> :nohl <CR> <C-l>
-
-" <Ctrl-c> as alternative ESC
-noremap <C-c> <esc>
-
-" get off my lawn
-nnoremap <Left>  :echoe "Use h"<CR>
-nnoremap <Right> :echoe "Use l"<CR>
-nnoremap <Up>    :echoe "Use k"<CR>
-nnoremap <Down>  :echoe "Use j"<CR>
+" * SHORTCUTS/ALIASES *       {{{2
 
 " maps to make handling windows a bit easier
 "
@@ -260,8 +258,10 @@ noremap <silent> ,mk <C-W>K
 noremap <silent> ,mh <C-W>H
 noremap <silent> ,mj <C-W>J
 " resizing windows
-noremap <silent> ,o :wincmd o<CR>
-noremap <silent> ,= :wincmd =<CR>
+noremap <silent> ,o     :wincmd o<CR>
+noremap <silent> ,=     :wincmd =<CR>
+noremap <silent> ,_     :wincmd _<CR>
+noremap <silent> ,<BAR> :wincmd <BAR><CR>
 noremap <silent> <C-Left>  :vertical resize -10<CR>
 noremap <silent> <C-Up>    :resize +10<CR>
 noremap <silent> <C-Down>  :resize -10<CR>
@@ -277,59 +277,48 @@ noremap <silent> ,cl :wincmd l<CR>:close<CR>
 cabbrev te tabnew
 cabbrev tc tabclose
 
-" clear white spaces
+" clear trailing white spaces
 cabbrev clearwhites %s/\s\+$//e
 
 
 
-" ==================================================
-"   ** VIM PLUGINS **
-" ==================================================
+" ** VIM PLUGINS ** (plugin related settings)             {{{1
+" ============================================================
 "
 " If you don't have a certain plugin installed,
 " you should remove any corresponding settings
 
-" Syntastic
+" Syntastic {{{2
 let g:syntastic_check_on_open=1
 let g:syntastic_enable_signs=1
 
-" EasyMotion
-" search whole screen instead of below the cursor
-" ..I'm pretty lazy
-nmap <leader>w H<Plug>(easymotion-w)
-nmap <leader>W H<Plug>(easymotion-W)
+" CtrlP {{{2
+" buffer search
+nnoremap <leader>pb :CtrlPBuffer<CR>
 
-" NERDTree
-nnoremap <Tab> :NERDTreeToggle<CR>
-nnoremap <leader>f :NERDTreeToggle 
-
-" Tagbar
-nnoremap <leader>t :TagbarToggle<CR>
-
-" CtrlP buffer map
-nnoremap <leader>p :CtrlPBuffer<CR>
-
-" Gundo
-nnoremap <leader>z :GundoToggle<CR>
-
-" Tabular
+" Tabular {{{2
 noremap <leader>= :Tabularize/
 
-" Airline
-" enable tabs, duh
-let g:airline#extensions#tabline#enabled = 1
+" vim-expand-region {{{2
+" v / ctrl+v to expand/shrink selection
+vmap v <Plug>(expand_region_expand)
+vmap <C-v> <Plug>(expand_region_shrink)
 
-" Sessions
+" Sessions {{{2
 let g:session_directory       = "~/.vim/session"
 let g:session_autoload        = "no"
 let g:session_autosave        = "no"
 let g:session_command_aliases = 1
-nnoremap <leader>so :OpenSession 
-nnoremap <leader>ss :SaveSession 
-nnoremap <leader>sd :DeleteSession<CR>
-nnoremap <leader>sc :CloseSession<CR>
+cabbrev SO :OpenSession 
+cabbrev SS :SaveSession 
+cabbrev SD :DeleteSession
+cabbrev SC :CloseSession
 
-" Startify
+" Airline {{{2
+" enable tabs, duh
+let g:airline#extensions#tabline#enabled = 1
+
+" Startify {{{2
 " custom header, ironically at the bottom
 let g:startify_custom_header = [
       \ '                                 ________  __ __        ',
@@ -342,3 +331,14 @@ let g:startify_custom_header = [
       \ '',
       \ '',
       \ ]
+
+" Gundo {{{2
+nnoremap <leader>u :GundoToggle<CR>
+
+" NERDTree {{{2
+nnoremap <Tab> :NERDTreeToggle<CR>
+nnoremap <leader>f :NERDTreeToggle 
+
+" Tagbar {{{2
+nnoremap <leader>t :TagbarToggle<CR>
+
