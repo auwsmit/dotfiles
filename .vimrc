@@ -1,13 +1,21 @@
 " Maintainer:  Austin Smith <AssailantLF@gmail.com>
-" Last touched on Nov. 11, 2014
+" Last touched on Nov. 12, 2014
 
 " ** INDEX ** (kinda pointless with folds)                {{{1
 " ============================================================
 "
 " NEOBUNDLE
+" - required begin
+" - MAIN PLUGINS
+"   - NEW/EXPERIMENTAL
+"   - TOGGLEABLE PANELS
+" - required end
 " GENERAL
 " APPEARANCE/VISUAL
 " KEYS/MAPS/ALIASES
+" - REMAPS OF DEFAULTS
+" - SHORTCUTS/ALIASES
+" - LEADER MAPS
 " VIM PLUGINS
 "
 " settings are reasonably grouped between
@@ -40,12 +48,13 @@ NeoBundle 'scrooloose/NERDCommenter'  " intensely pleasant commenting
 NeoBundle 'tpope/vim-Fugitive'        " git integration
 NeoBundle 'tpope/vim-Surround'        " surroundings manipulation
 NeoBundle 'tpope/vim-Vinegar'         " improved file manager
+NeoBundle 'tpope/vim-unimpaired'      " pairs of handy bracket mappings
 NeoBundle 'scrooloose/Syntastic.git'  " real time error checking
 NeoBundle 'kien/CtrlP.vim'            " fuzzy file search
 NeoBundle 'Lokaltog/vim-EasyMotion'   " motion made easier
 NeoBundle 'godlygeek/Tabular'         " text alignment extension
 NeoBundle 'terryma/vim-expand-region' " convenient visual selection
-NeoBundle 'xolox/vim-Session'         " extension of default sessions
+NeoBundle 'xolox/vim-session'         " extension of default sessions
 NeoBundle 'xolox/vim-misc'            " ^session requirement
 NeoBundle 'bling/vim-Airline'         " better aesthetics for UI
 NeoBundle 'mhinz/vim-Startify'        " startup screen
@@ -56,11 +65,7 @@ NeoBundle 'mhinz/vim-Startify'        " startup screen
 if has('python')
   NeoBundle 'sjl/Gundo.vim'           " undo tree
 endif
-NeoBundle 'scrooloose/NERDtree'       " nice file tree
 NeoBundle 'majutsushi/Tagbar'         " view tags easily
-
-" revision example:
-"    NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
 
 " TODO: Read manuals for... {{{2
 " CtrlP
@@ -99,7 +104,7 @@ set browsedir=buffer   " open file tree in current buffer directory
 set autoread           " autoload changed files
 set hidden             " allow multiple modified buffers
 set vb t_vb=           " plz stop the beeping
-set clipboard=unnamed  " Yank to the system clipboard by default
+set clipboard=unnamed  " yank to the system clipboard by default
 
 " use decimal instead of octal with ctrl+a and ctrl+x
 set nrformats=
@@ -127,7 +132,7 @@ syntax on             " syntax highlighting
 set ruler             " show the cursor position all the time
 set number            " show line numbers
 set laststatus=2      " always show status bar
-set guioptions-=T     " no toolbar.
+set guioptions-=T     " no toolbar, it's ugly
 set hlsearch          " highlight last search pattern
 set showcmd           " display incomplete commands
 set wildmenu          " better command-line completion
@@ -135,6 +140,10 @@ set cpoptions+=$      " $ as end marker for the change operator
 set scrolloff=8       " keep some lines above & below for scope
 set lazyredraw        " redraw only when we need to
 set foldmethod=marker " default fold method
+set foldlevel=420     " open all folds at startup
+
+" default tab settings
+set tabstop=4 softtabstop=4 shiftwidth=4
 
 " show tabs and eols
 set listchars=tab:▶\ ,eol:¬,trail:·
@@ -158,8 +167,11 @@ if has("autocmd")
   autocmd FileType javascript setlocal ts=4 sts=4 sw=4
 
   " fold settings
-  autocmd FileType c setlocal foldmethod=syntax foldnestmax=5
+  autocmd FileType c setlocal foldmethod=syntax
 endif
+
+" netwr
+
 
 " window size
 "set lines=37 columns=74
@@ -188,9 +200,6 @@ endif
 noremap ; :
 noremap : ;
 
-" quick insert-mode escape
-inoremap jk <Esc>
-
 " swap v and ctrl+v because block mode is better
 nnoremap    v   <c-v>
 nnoremap <c-v>     v
@@ -212,36 +221,13 @@ nnoremap <silent> p p`]
 " <Ctrl-l> removes any search highlighting, redraws screen
 nnoremap <C-l> :nohl <CR> <C-l>
 
-" * LEADER MAPS *             {{{2
-
-" leader the easiest key to reach
-let mapleader = " "
-
-" switch to last buffer
-nnoremap <leader><Tab> :b#<cr>
-
-" open vimrc
-if has('unix')
-  nnoremap <leader>v :e ~/.vimrc<CR>
-  nnoremap <leader>V :tabnew ~/.vimrc<CR>
-else
-  nnoremap <leader>v :e ~/_vimrc<CR>
-  nnoremap <leader>V :tabnew ~/_vimrc<CR>
-endif
-
-" toggle relativenumber
-nnoremap <leader>n :set rnu! rnu?<CR>
-
-" copy and paste from system clipboard
-vmap <Leader>y "+y
-nmap <Leader>p "+p
-nmap <Leader>P "+P
-vmap <Leader>p "+p
-vmap <Leader>P "+P
-
 " * SHORTCUTS/ALIASES *       {{{2
 
+" quick insert-mode escape
+inoremap jk <Esc>
+
 " maps to make handling windows a bit easier
+" might as well make these a plugin called 'comma-windows'
 "
 " creating windows
 noremap <silent> ,s :wincmd s<CR>
@@ -282,6 +268,44 @@ cabbrev clearwhites %s/\s\+$//e
 
 
 
+" * LEADER MAPS *             {{{2
+
+" leader the easiest key to reach
+let mapleader = " "
+
+" switch to last buffer
+nnoremap <Leader><Tab> :b#<cr>
+
+" open vimrc
+if has('unix')
+  nnoremap <Leader>v :e ~/.vimrc<CR>
+  nnoremap <Leader>V :tabnew ~/.vimrc<CR>
+else
+  nnoremap <Leader>v :e ~/_vimrc<CR>
+  nnoremap <Leader>V :tabnew ~/_vimrc<CR>
+endif
+
+" toggle relativenumber
+nnoremap <Leader>n :set rnu! rnu?<CR>
+
+" toggle showing tabs, eols, & trailing spaces
+nnoremap <Leader>l :set list! list?<CR>
+
+" copy and paste from system clipboard
+vmap <Leader>y "+y
+nmap <Leader>p "+p
+nmap <Leader>P "+P
+vmap <Leader>p "+p
+vmap <Leader>P "+P
+
+" edit files in the same directory as
+" the current file
+cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<cr>
+map <Leader>e  :e %%
+map <Leader>es :sp %%
+map <Leader>ev :vsp %%
+map <Leader>et :tabe %%
+
 " ** VIM PLUGINS ** (plugin related settings)             {{{1
 " ============================================================
 "
@@ -294,32 +318,33 @@ let g:syntastic_enable_signs=1
 
 " CtrlP {{{2
 " buffer search
-nnoremap <leader>pb :CtrlPBuffer<CR>
+nnoremap <Leader>f :CtrlP 
+nnoremap <Leader>b :CtrlPBuffer<CR>
 
 " Tabular {{{2
-noremap <leader>= :Tabularize/
+noremap <Leader>= :Tabularize/
 
 " vim-expand-region {{{2
 " v / ctrl+v to expand/shrink selection
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
 
-" Sessions {{{2
+" vim-sessions {{{2
 let g:session_directory       = "~/.vim/session"
 let g:session_autoload        = "no"
 let g:session_autosave        = "no"
 let g:session_command_aliases = 1
-cabbrev SO :OpenSession 
-cabbrev SS :SaveSession 
-cabbrev SD :DeleteSession
-cabbrev SC :CloseSession
+cabbrev SO OpenSession
+cabbrev SS SaveSession
+cabbrev SD DeleteSession
+cabbrev SC CloseSession
 
 " Airline {{{2
 " enable tabs, duh
 let g:airline#extensions#tabline#enabled = 1
 
 " Startify {{{2
-" custom header, ironically at the bottom
+" custom header
 let g:startify_custom_header = [
       \ '                                 ________  __ __        ',
       \ '            __                  /\_____  \/\ \\ \       ',
@@ -333,12 +358,13 @@ let g:startify_custom_header = [
       \ ]
 
 " Gundo {{{2
-nnoremap <leader>u :GundoToggle<CR>
+nnoremap <Leader>u :GundoToggle<CR>
 
 " NERDTree {{{2
-nnoremap <Tab> :NERDTreeToggle<CR>
-nnoremap <leader>f :NERDTreeToggle 
+" disabled because netrw is alright
+"nnoremap <Tab> :NERDTreeToggle<CR>
+"nnoremap <Leader>f :NERDTreeToggle 
 
 " Tagbar {{{2
-nnoremap <leader>t :TagbarToggle<CR>
+nnoremap <Leader>t :TagbarToggle<CR>
 
