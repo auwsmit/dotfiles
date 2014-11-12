@@ -1,26 +1,8 @@
 " Maintainer:  Austin Smith <AssailantLF@gmail.com>
 " Last touched on Nov. 12, 2014
 
-" ** INDEX ** (kinda pointless with folds)                {{{1
-" ============================================================
-"
-" NEOBUNDLE
-" - required begin
-" - MAIN PLUGINS
-"   - NEW/EXPERIMENTAL
-"   - TOGGLEABLE PANELS
-" - required end
-" GENERAL
-" APPEARANCE/VISUAL
-" KEYS/MAPS/ALIASES
-" - REMAPS OF DEFAULTS
-" - SHORTCUTS/ALIASES
-" - LEADER MAPS
-" VIM PLUGINS
-"
-" settings are reasonably grouped between
-" between white spaces for easy navigation
-" (tip: use { and })
+" Fold command reference:
+"   h: zo
 
 " ** NEOBUNDLE ** (less stable, more featured Vundle)     {{{1
 " ============================================================
@@ -104,7 +86,6 @@ set browsedir=buffer   " open file tree in current buffer directory
 set autoread           " autoload changed files
 set hidden             " allow multiple modified buffers
 set vb t_vb=           " plz stop the beeping
-set clipboard=unnamed  " yank to the system clipboard by default
 
 " use decimal instead of octal with ctrl+a and ctrl+x
 set nrformats=
@@ -112,6 +93,11 @@ set nrformats=
 " enable mouse because why not
 if has('mouse')
   set mouse=a
+endif
+
+" Source vimrc file after saving it
+if has("autocmd")
+  autocmd bufwritepost .vimrc source $MYVIMRC
 endif
 
 
@@ -141,6 +127,7 @@ set scrolloff=8       " keep some lines above & below for scope
 set lazyredraw        " redraw only when we need to
 set foldmethod=marker " default fold method
 set foldlevel=420     " open all folds at startup
+set linebreak         " don't wrap inbetween words
 
 " default tab settings
 set tabstop=4 softtabstop=4 shiftwidth=4
@@ -169,9 +156,6 @@ if has("autocmd")
   " fold settings
   autocmd FileType c setlocal foldmethod=syntax
 endif
-
-" netwr
-
 
 " window size
 "set lines=37 columns=74
@@ -277,13 +261,8 @@ let mapleader = " "
 nnoremap <Leader><Tab> :b#<cr>
 
 " open vimrc
-if has('unix')
-  nnoremap <Leader>v :e ~/.vimrc<CR>
-  nnoremap <Leader>V :tabnew ~/.vimrc<CR>
-else
-  nnoremap <Leader>v :e ~/_vimrc<CR>
-  nnoremap <Leader>V :tabnew ~/_vimrc<CR>
-endif
+nnoremap <Leader>v :e $MYVIMRC<CR>
+nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 
 " toggle relativenumber
 nnoremap <Leader>n :set rnu! rnu?<CR>
@@ -298,13 +277,7 @@ nmap <Leader>P "+P
 vmap <Leader>p "+p
 vmap <Leader>P "+P
 
-" edit files in the same directory as
-" the current file
-cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<cr>
-map <Leader>e  :e %%
-map <Leader>es :sp %%
-map <Leader>ev :vsp %%
-map <Leader>et :tabe %%
+
 
 " ** VIM PLUGINS ** (plugin related settings)             {{{1
 " ============================================================
@@ -312,22 +285,33 @@ map <Leader>et :tabe %%
 " If you don't have a certain plugin installed,
 " you should remove any corresponding settings
 
-" Syntastic {{{2
-let g:syntastic_check_on_open=1
-let g:syntastic_enable_signs=1
-
 " CtrlP {{{2
-" buffer search
 nnoremap <Leader>f :CtrlP 
+" buffer search
 nnoremap <Leader>b :CtrlPBuffer<CR>
 
 " Tabular {{{2
 noremap <Leader>= :Tabularize/
 
+" Gundo {{{2
+nnoremap <Leader>u :GundoToggle<CR>
+
+" NERDTree {{{2
+" disabled because netrw is alright
+"nnoremap <Tab> :NERDTreeToggle<CR>
+"nnoremap <Leader>f :NERDTreeToggle 
+
+" Tagbar {{{2
+nnoremap <Leader>t :TagbarToggle<CR>
+
 " vim-expand-region {{{2
 " v / ctrl+v to expand/shrink selection
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
+
+" Syntastic {{{2
+let g:syntastic_check_on_open=1
+let g:syntastic_enable_signs=1
 
 " vim-sessions {{{2
 let g:session_directory       = "~/.vim/session"
@@ -356,15 +340,4 @@ let g:startify_custom_header = [
       \ '',
       \ '',
       \ ]
-
-" Gundo {{{2
-nnoremap <Leader>u :GundoToggle<CR>
-
-" NERDTree {{{2
-" disabled because netrw is alright
-"nnoremap <Tab> :NERDTreeToggle<CR>
-"nnoremap <Leader>f :NERDTreeToggle 
-
-" Tagbar {{{2
-nnoremap <Leader>t :TagbarToggle<CR>
 
