@@ -1,8 +1,11 @@
 " Maintainer:  Austin Smith <AssailantLF@gmail.com>
-" Last touched on Nov. 12, 2014
+" Last touched on Nov. 13, 2014
 
-" Fold command reference:
+" *Fold Command Reference*  {{{1
+" Opening and Closing Folds
 "   h: zo
+" Moving Over Folds
+"   h: zj
 
 " ** NEOBUNDLE ** (less stable, more featured Vundle)     {{{1
 " ============================================================
@@ -70,8 +73,6 @@ filetype plugin indent on
 " prompt to auto install plugins at startup
 NeoBundleCheck
 
-
-
 " ** GENERAL **                                           {{{1
 " ============================================================
 
@@ -90,17 +91,19 @@ set vb t_vb=           " plz stop the beeping
 " use decimal instead of octal with ctrl+a and ctrl+x
 set nrformats=
 
+" don't save options with sessions
+set sessionoptions-=options
+
 " enable mouse because why not
 if has('mouse')
   set mouse=a
 endif
 
-" Source vimrc file after saving it
-if has("autocmd")
-  autocmd bufwritepost .vimrc source $MYVIMRC
-endif
-
-
+" disabled because :so% is easy
+" Source (load) vimrc file after saving it
+"if has("autocmd")
+"  autocmd! bufwritepost .vimrc source $MYVIMRC
+"endif
 
 " ** APPEARANCE/VISUAL **                                 {{{1
 " ============================================================
@@ -112,6 +115,7 @@ endif
 
 " vim colorscheme
 " favs: badwolf, xoria256, grb256, wombat256mod
+colorscheme koehler   " fallback default colorscheme
 colorscheme badwolf
 
 syntax on             " syntax highlighting
@@ -126,20 +130,31 @@ set cpoptions+=$      " $ as end marker for the change operator
 set scrolloff=8       " keep some lines above & below for scope
 set lazyredraw        " redraw only when we need to
 set foldmethod=marker " default fold method
-set foldlevel=420     " open all folds at startup
-set linebreak         " don't wrap inbetween words
-
-" default tab settings
-set tabstop=4 softtabstop=4 shiftwidth=4
+set nofoldenable      " default disabled folds, zi to toggle
+set showbreak=↪       " character to show wrapped lines
 
 " show tabs and eols
-set listchars=tab:▶\ ,eol:¬,trail:·
-"set list
+if has('unix')  " my unicode chars won't work in Windows
+  set listchars=tab:▶\ ,eol:¬,trail:·,extends:❯,precedes:❮
+endif
 
 " make it obvious where 80 characters is
 " highlight 81st column if reached
 highlight ColorColumn ctermbg=magenta
 call matchadd('ColorColumn', '\%81v', 100)
+
+" default tab settings
+set tabstop=4 softtabstop=4 shiftwidth=4
+
+" gvim specific
+if has('gui_running')
+  " dem fonts
+  if has('unix')
+    set guifont=Liberation\ Mono\ 11
+  else
+    set guifont=liberation_mono:h11
+  endif
+endif
 
 " file type specific
 if has("autocmd")
@@ -157,20 +172,9 @@ if has("autocmd")
   autocmd FileType c setlocal foldmethod=syntax
 endif
 
-" window size
-"set lines=37 columns=74
-
-" gvim specific
-if has('gui_running')
-  " dem fonts
-  if has('unix')
-    set guifont=Liberation\ Mono\ 11
-  else
-    set guifont=liberation_mono:h11
-  endif
-endif
-
-
+" resize splits when the window is resized
+" change ; to : if you get an error
+au VimResized * ;wincmd =
 
 " ** KEYS/MAPS/ALIASES **                                 {{{1
 " ============================================================
@@ -196,6 +200,10 @@ nnoremap <CR> G
 " backspace to BOF
 nnoremap <BS> gg
 
+" split line (sister to [j]oin lines)
+" the normal use of s is covered by cc, so don't worry about shadowing it.
+nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>`w
+
 " jump to the end of pasted text
 " useful for pasting multi-lines of text
 vnoremap <silent> y y`]
@@ -204,6 +212,20 @@ nnoremap <silent> p p`]
 
 " <Ctrl-l> removes any search highlighting, redraws screen
 nnoremap <C-l> :nohl <CR> <C-l>
+
+" toggle highlighting indent columns
+let g:indentguides_state = 0
+function! IndentGuides() " {{{
+    if g:indentguides_state
+        let g:indentguides_state = 0
+        2match None
+    else
+        let g:indentguides_state = 1
+        execute '2match IndentGuides /\%(\_^\s*\)\@<=\%(\%'.(0*&sw+1).'v\|\%'.(1*&sw+1).'v\|\%'.(2*&sw+1).'v\|\%'.(3*&sw+1).'v\|\%'.(4*&sw+1).'v\|\%'.(5*&sw+1).'v\|\%'.(6*&sw+1).'v\|\%'.(7*&sw+1).'v\)\s/'
+    endif
+endfunction " }}}
+hi def IndentGuides guibg=#303030 ctermbg=234
+nnoremap <leader>i :call IndentGuides()<cr>
 
 " * SHORTCUTS/ALIASES *       {{{2
 
@@ -243,15 +265,15 @@ noremap <silent> ,ck :wincmd k<CR>:close<CR>
 noremap <silent> ,ch :wincmd h<CR>:close<CR>
 noremap <silent> ,cl :wincmd l<CR>:close<CR>
 
+" Make zO recursively open whatever fold we're in, even if it's partially open.
+nnoremap zO zczO
+
 " make tabs slightly more convenient
 cabbrev te tabnew
 cabbrev tc tabclose
 
 " clear trailing white spaces
 cabbrev clearwhites %s/\s\+$//e
-
-
-
 " * LEADER MAPS *             {{{2
 
 " leader the easiest key to reach
@@ -265,9 +287,9 @@ nnoremap <Leader>v :e $MYVIMRC<CR>
 nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 
 " toggle relativenumber
-nnoremap <Leader>n :set rnu! rnu?<CR>
+nnoremap <Leader>n :setlocal rnu! rnu?<CR>
 
-" toggle showing tabs, eols, & trailing spaces
+" toggle showing list chars
 nnoremap <Leader>l :set list! list?<CR>
 
 " copy and paste from system clipboard
@@ -277,7 +299,8 @@ nmap <Leader>P "+P
 vmap <Leader>p "+p
 vmap <Leader>P "+P
 
-
+" show only current fold
+nnoremap <Leader>z zMzv
 
 " ** VIM PLUGINS ** (plugin related settings)             {{{1
 " ============================================================

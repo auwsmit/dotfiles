@@ -8,7 +8,7 @@ If you wanna test/use my Vim config, including all the plugins I use, all you ha
 
 2. Install NeoBundle (https://github.com/Shougo/neobundle.vim)
 
-3. a. Remove your vimrc, wherever it is (unix: ~/.vimrc; windows: $VIM/_vimrc OR ~/_vimrc)
+3. a. Remove your vimrc, wherever it is (in Vim, see :h $MYVIMRC)
 
    b. Copy my vimrc to that same place, with the correct name
 
