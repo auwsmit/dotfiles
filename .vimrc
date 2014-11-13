@@ -7,71 +7,71 @@
 " Moving Over Folds
 "   h: zj
 
-" ** NEOBUNDLE ** (less stable, more featured Vundle)     {{{1
-" ============================================================
-
-" required begin {{{2
-if has('vim_starting')
-  if has('unix')
-    set runtimepath+=~/.vim/bundle/neobundle.vim/
-  else
-    set runtimepath+=$VIM/vimfiles/bundle/neobundle.vim/
-  endif
-endif
-if has('unix')
-  call neobundle#begin(expand('~/.vim/bundle'))
-else
-  call neobundle#begin(expand('$VIM/vimfiles/bundle'))
-endif
-
-" *CORE PLUGINS*
-NeoBundleFetch 'Shougo/neobundle.vim' " The one.
-
-" *MAIN PLUGINS* {{{2
-NeoBundle 'flazz/vim-colorschemes'    " all the colorschemes
-NeoBundle 'scrooloose/NERDCommenter'  " intensely pleasant commenting
-NeoBundle 'tpope/vim-Fugitive'        " git integration
-NeoBundle 'tpope/vim-Surround'        " surroundings manipulation
-NeoBundle 'tpope/vim-Vinegar'         " improved file manager
-NeoBundle 'tpope/vim-unimpaired'      " pairs of handy bracket mappings
-NeoBundle 'scrooloose/Syntastic.git'  " real time error checking
-NeoBundle 'kien/CtrlP.vim'            " fuzzy file search
-NeoBundle 'Lokaltog/vim-EasyMotion'   " motion made easier
-NeoBundle 'godlygeek/Tabular'         " text alignment extension
-NeoBundle 'terryma/vim-expand-region' " convenient visual selection
-NeoBundle 'xolox/vim-session'         " extension of default sessions
-NeoBundle 'xolox/vim-misc'            " ^session requirement
-NeoBundle 'bling/vim-Airline'         " better aesthetics for UI
-NeoBundle 'mhinz/vim-Startify'        " startup screen
-
-" *NEW/EXPERIMENTAL*
-
-" *TOGGLEABLE PANELS*
-if has('python')
-  NeoBundle 'sjl/Gundo.vim'           " undo tree
-endif
-NeoBundle 'majutsushi/Tagbar'         " view tags easily
-
-" TODO: Read manuals for... {{{2
-" CtrlP
-" Fugitive
-" Airline
-" Syntastic
-" Surround
-" Session
-" Tabular
-" NERD Commenter
-" NERDTree
-" Gundo
-" Tagbar
-" NeoBundle
-
-" required end {{{2
-call neobundle#end()
-filetype plugin indent on
-
-" prompt to auto install plugins at startup
-NeoBundleCheck
+"" ** NEOBUNDLE ** (less stable, more featured Vundle)     {{{1
+"" ============================================================
+"
+"" required begin {{{2
+"if has('vim_starting')
+"  if has('unix')
+"    set runtimepath+=~/.vim/bundle/neobundle.vim/
+"  else
+"    set runtimepath+=$VIM/vimfiles/bundle/neobundle.vim/
+"  endif
+"endif
+"if has('unix')
+"  call neobundle#begin(expand('~/.vim/bundle'))
+"else
+"  call neobundle#begin(expand('$VIM/vimfiles/bundle'))
+"endif
+"
+"" *CORE PLUGINS*
+"NeoBundleFetch 'Shougo/neobundle.vim' " The one.
+"
+"" *MAIN PLUGINS* {{{2
+"NeoBundle 'flazz/vim-colorschemes'    " all the colorschemes
+"NeoBundle 'scrooloose/NERDCommenter'  " intensely pleasant commenting
+"NeoBundle 'tpope/vim-Fugitive'        " git integration
+"NeoBundle 'tpope/vim-Surround'        " surroundings manipulation
+"NeoBundle 'tpope/vim-Vinegar'         " improved file manager
+"NeoBundle 'tpope/vim-unimpaired'      " pairs of handy bracket mappings
+"NeoBundle 'scrooloose/Syntastic.git'  " real time error checking
+"NeoBundle 'kien/CtrlP.vim'            " fuzzy file search
+"NeoBundle 'Lokaltog/vim-EasyMotion'   " motion made easier
+"NeoBundle 'godlygeek/Tabular'         " text alignment extension
+"NeoBundle 'terryma/vim-expand-region' " convenient visual selection
+"NeoBundle 'xolox/vim-session'         " extension of default sessions
+"NeoBundle 'xolox/vim-misc'            " ^session requirement
+"NeoBundle 'bling/vim-Airline'         " better aesthetics for UI
+"NeoBundle 'mhinz/vim-Startify'        " startup screen
+"
+"" *NEW/EXPERIMENTAL*
+"
+"" *TOGGLEABLE PANELS*
+"if has('python')
+"  NeoBundle 'sjl/Gundo.vim'           " undo tree
+"endif
+"NeoBundle 'majutsushi/Tagbar'         " view tags easily
+"
+"" TODO: Read manuals for... {{{2
+"" CtrlP
+"" Fugitive
+"" Airline
+"" Syntastic
+"" Surround
+"" Session
+"" Tabular
+"" NERD Commenter
+"" NERDTree
+"" Gundo
+"" Tagbar
+"" NeoBundle
+"
+"" required end {{{2
+"call neobundle#end()
+"filetype plugin indent on
+"
+"" auto install plugins at startup
+"NeoBundleCheck
 
 " ** GENERAL **                                           {{{1
 " ============================================================
@@ -85,7 +85,7 @@ set incsearch          " do incremental searching
 set autoindent         " always set autoindenting on
 set browsedir=buffer   " open file tree in current buffer directory
 set autoread           " autoload changed files
-set hidden             " allow multiple modified buffers
+set hidden             " allow more than one modified buffer
 set vb t_vb=           " plz stop the beeping
 
 " use decimal instead of octal with ctrl+a and ctrl+x
@@ -265,7 +265,7 @@ noremap <silent> ,ck :wincmd k<CR>:close<CR>
 noremap <silent> ,ch :wincmd h<CR>:close<CR>
 noremap <silent> ,cl :wincmd l<CR>:close<CR>
 
-" Make zO recursively open whatever fold we're in, even if it's partially open.
+" make zO recursively open whatever fold we're in, even if it's partially open.
 nnoremap zO zczO
 
 " make tabs slightly more convenient
@@ -274,6 +274,7 @@ cabbrev tc tabclose
 
 " clear trailing white spaces
 cabbrev clearwhites %s/\s\+$//e
+
 " * LEADER MAPS *             {{{2
 
 " leader the easiest key to reach
@@ -289,7 +290,7 @@ nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 " toggle relativenumber
 nnoremap <Leader>n :setlocal rnu! rnu?<CR>
 
-" toggle showing list chars
+" toggle showing listchars
 nnoremap <Leader>l :set list! list?<CR>
 
 " copy and paste from system clipboard
@@ -302,65 +303,65 @@ vmap <Leader>P "+P
 " show only current fold
 nnoremap <Leader>z zMzv
 
-" ** VIM PLUGINS ** (plugin related settings)             {{{1
-" ============================================================
+"" ** VIM PLUGINS ** (plugin related settings)             {{{1
+"" ============================================================
+""
+"" If you don't have a certain plugin installed,
+"" you should remove any corresponding settings
 "
-" If you don't have a certain plugin installed,
-" you should remove any corresponding settings
-
-" CtrlP {{{2
-nnoremap <Leader>f :CtrlP 
-" buffer search
-nnoremap <Leader>b :CtrlPBuffer<CR>
-
-" Tabular {{{2
-noremap <Leader>= :Tabularize/
-
-" Gundo {{{2
-nnoremap <Leader>u :GundoToggle<CR>
-
-" NERDTree {{{2
-" disabled because netrw is alright
-"nnoremap <Tab> :NERDTreeToggle<CR>
-"nnoremap <Leader>f :NERDTreeToggle 
-
-" Tagbar {{{2
-nnoremap <Leader>t :TagbarToggle<CR>
-
-" vim-expand-region {{{2
-" v / ctrl+v to expand/shrink selection
-vmap v <Plug>(expand_region_expand)
-vmap <C-v> <Plug>(expand_region_shrink)
-
-" Syntastic {{{2
-let g:syntastic_check_on_open=1
-let g:syntastic_enable_signs=1
-
-" vim-sessions {{{2
-let g:session_directory       = "~/.vim/session"
-let g:session_autoload        = "no"
-let g:session_autosave        = "no"
-let g:session_command_aliases = 1
-cabbrev SO OpenSession
-cabbrev SS SaveSession
-cabbrev SD DeleteSession
-cabbrev SC CloseSession
-
-" Airline {{{2
-" enable tabs, duh
-let g:airline#extensions#tabline#enabled = 1
-
-" Startify {{{2
-" custom header
-let g:startify_custom_header = [
-      \ '                                 ________  __ __        ',
-      \ '            __                  /\_____  \/\ \\ \       ',
-      \ '    __  __ /\_\    ___ ___      \/___//''/''\ \ \\ \    ',
-      \ '   /\ \/\ \\/\ \ /'' __` __`\        /'' /''  \ \ \\ \_ ',
-      \ '   \ \ \_/ |\ \ \/\ \/\ \/\ \      /'' /''__  \ \__ ,__\',
-      \ '    \ \___/  \ \_\ \_\ \_\ \_\    /\_/ /\_\  \/_/\_\_/  ',
-      \ '     \/__/    \/_/\/_/\/_/\/_/    \//  \/_/     \/_/    ',
-      \ '',
-      \ '',
-      \ ]
-
+"" CtrlP {{{2
+"nnoremap <Leader>f :CtrlP 
+"" buffer search
+"nnoremap <Leader>b :CtrlPBuffer<CR>
+"
+"" Tabular {{{2
+"noremap <Leader>= :Tabularize/
+"
+"" Gundo {{{2
+"nnoremap <Leader>u :GundoToggle<CR>
+"
+"" NERDTree {{{2
+"" disabled because netrw is alright
+""nnoremap <Tab> :NERDTreeToggle<CR>
+""nnoremap <Leader>f :NERDTreeToggle 
+"
+"" Tagbar {{{2
+"nnoremap <Leader>t :TagbarToggle<CR>
+"
+"" vim-expand-region {{{2
+"" v / ctrl+v to expand/shrink selection
+"vmap v <Plug>(expand_region_expand)
+"vmap <C-v> <Plug>(expand_region_shrink)
+"
+"" Syntastic {{{2
+"let g:syntastic_check_on_open=1
+"let g:syntastic_enable_signs=1
+"
+"" vim-sessions {{{2
+"let g:session_directory       = "~/.vim/session"
+"let g:session_autoload        = "no"
+"let g:session_autosave        = "no"
+"let g:session_command_aliases = 1
+"cabbrev SO OpenSession
+"cabbrev SS SaveSession
+"cabbrev SD DeleteSession
+"cabbrev SC CloseSession
+"
+"" Airline {{{2
+"" enable tabs, duh
+"let g:airline#extensions#tabline#enabled = 1
+"
+"" Startify {{{2
+"" custom header
+"let g:startify_custom_header = [
+"      \ '                                 ________  __ __        ',
+"      \ '            __                  /\_____  \/\ \\ \       ',
+"      \ '    __  __ /\_\    ___ ___      \/___//''/''\ \ \\ \    ',
+"      \ '   /\ \/\ \\/\ \ /'' __` __`\        /'' /''  \ \ \\ \_ ',
+"      \ '   \ \ \_/ |\ \ \/\ \/\ \/\ \      /'' /''__  \ \__ ,__\',
+"      \ '    \ \___/  \ \_\ \_\ \_\ \_\    /\_/ /\_\  \/_/\_\_/  ',
+"      \ '     \/__/    \/_/\/_/\/_/\/_/    \//  \/_/     \/_/    ',
+"      \ '',
+"      \ '',
+"      \ ]
+"
