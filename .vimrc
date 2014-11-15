@@ -1,5 +1,5 @@
 " Maintainer:  Austin Smith <AssailantLF@gmail.com>
-" Last touched on Nov. 13, 2014
+" Last touched on Nov. 15, 2014
 
 " *Fold Command Reference*  {{{1
 " Opening and Closing Folds
@@ -130,7 +130,7 @@ set showcmd           " display incomplete commands
 set wildmenu          " better command-line completion
 set cpoptions+=$      " $ as end marker for the change operator
 set autoindent        " always set autoindenting on
-set scrolloff=8       " keep some lines above & below for scope
+"set scrolloff=8      " keep some lines above & below for scope
 set lazyredraw        " redraw only when we need to
 set foldmethod=marker " default fold method
 set nofoldenable      " disable folds, zi to toggle 
@@ -173,8 +173,8 @@ if has("autocmd")
   " tabs vs spaces
   autocmd FileType vim        setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType make       setlocal ts=8 sts=8 sw=8 noexpandtab
-  autocmd FileType c          setlocal ts=4 sts=4 sw=4 noexpandtab
   autocmd FileType html       setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType c          setlocal ts=4 sts=4 sw=4 noexpandtab
 
   " fold settings
   autocmd FileType c setlocal foldmethod=syntax
@@ -326,9 +326,17 @@ nnoremap <leader>i :call IndentGuides()<cr>
 " you should remove any corresponding settings
 
 " CtrlP {{{2
-nnoremap <Leader>f :CtrlP 
 " buffer search
 nnoremap <Leader>b :CtrlPBuffer<CR>
+
+" EasyMotion
+" just scan the entire screen, 
+" won't work with scrolloff enabled
+map <Leader>w H<Plug>(easymotion-w)
+map <Leader>W H<Plug>(easymotion-W)
+map <Leader>e H<Plug>(easymotion-e)
+map <Leader>E H<Plug>(easymotion-E)
+map <Leader>f H<Plug>(easymotion-f)
 
 " Tabular {{{2
 noremap <Leader>= :Tabularize/
