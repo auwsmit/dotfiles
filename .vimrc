@@ -48,9 +48,9 @@ NeoBundle 'mhinz/vim-Startify'        " startup screen
 
 " *TOGGLEABLE PANELS*
 if has('python')
-  NeoBundle 'sjl/Gundo.vim'           " undo tree
+  NeoBundle 'sjl/Gundo.vim'           " visual undo tree
 endif
-NeoBundle 'majutsushi/Tagbar'         " view tags easily
+NeoBundle 'majutsushi/Tagbar'         " view ctags easily
 
 " TODO: Read manuals for... {{{2
 " CtrlP
@@ -133,7 +133,7 @@ set autoindent        " always set autoindenting on
 "set scrolloff=8      " keep some lines above & below for scope
 set lazyredraw        " redraw only when we need to
 set foldmethod=marker " default fold method
-set nofoldenable      " disable folds, zi to toggle 
+set nofoldenable      " disable folds, zi to toggle
 set encoding=utf-8    " consistent character encoding
 set showbreak=«       " character to show wrapped lines
 set list              " show invisible characters
@@ -330,7 +330,7 @@ nnoremap <leader>i :call IndentGuides()<cr>
 nnoremap <Leader>b :CtrlPBuffer<CR>
 
 " EasyMotion
-" just scan the entire screen, 
+" just scan the entire screen,
 " won't work with scrolloff enabled
 map <Leader>w H<Plug>(easymotion-w)
 map <Leader>W H<Plug>(easymotion-W)
@@ -343,11 +343,6 @@ noremap <Leader>= :Tabularize/
 
 " Gundo {{{2
 nnoremap <Leader>u :GundoToggle<CR>
-
-" NERDTree {{{2
-" disabled because netrw is alright
-"nnoremap <Tab> :NERDTreeToggle<CR>
-"nnoremap <Leader>f :NERDTreeToggle 
 
 " Tagbar {{{2
 nnoremap <Leader>t :TagbarToggle<CR>
