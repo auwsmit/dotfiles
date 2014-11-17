@@ -1,4 +1,4 @@
-These are my config file(s).
+This is my vimrc, which is mostly made up of bits and pieces from other people's setups that I liked. I try to keep it laid out nice and commented well enough for anyone to understand what each setting or group of settings does.
 
 If you wanna test/use my Vim config, including all the plugins I use, all you have to do is:
 
