@@ -1,5 +1,5 @@
 " Maintainer:  Austin Smith <AssailantLF@gmail.com>
-" Last touched on Nov. 15, 2014
+" Last touched on Nov. 27, 2014
 
 " *Fold Command Reference*  {{{1
 " Opening and Closing Folds
@@ -36,7 +36,7 @@ NeoBundle 'tpope/vim-vinegar'         " improved file manager
 NeoBundle 'tpope/vim-unimpaired'      " pairs of handy bracket mappings
 NeoBundle 'scrooloose/Syntastic.git'  " real time error checking
 NeoBundle 'kien/CtrlP.vim'            " fuzzy file search
-NeoBundle 'Lokaltog/vim-EasyMotion'   " easier... motion
+"NeoBundle 'Lokaltog/vim-EasyMotion'  " easier... motion
 NeoBundle 'godlygeek/Tabular'         " text alignment extension
 NeoBundle 'terryma/vim-expand-region' " convenient visual selection
 NeoBundle 'xolox/vim-session'         " extension of default sessions
@@ -45,26 +45,13 @@ NeoBundle 'bling/vim-airline'         " better aesthetics for UI
 NeoBundle 'mhinz/vim-Startify'        " startup screen
 
 " *NEW/EXPERIMENTAL*
+NeoBundle 'boucherm/ShowMotion'       " motion highlighting
 
 " *TOGGLEABLE PANELS*
 if has('python')
   NeoBundle 'sjl/Gundo.vim'           " visual undo tree
 endif
 NeoBundle 'majutsushi/Tagbar'         " view ctags easily
-
-" TODO: Read manuals for... {{{2
-" CtrlP
-" vim-fugitive
-" vim-airline
-" Syntastic
-" vim-surround
-" vim-session
-" Tabular
-" NERD Commenter
-" NERDTree
-" Gundo
-" Tagbar
-" NeoBundle
 
 " required end {{{2
 call neobundle#end()
@@ -118,7 +105,7 @@ endif
 " vim colorscheme
 " favs: badwolf, xoria256, grb256, wombat256mod
 colorscheme koehler   " fallback default colorscheme
-colorscheme badwolf
+colorscheme blackwolf
 
 syntax on             " syntax highlighting
 set ruler             " show the cursor position all the time
@@ -130,13 +117,13 @@ set showcmd           " display incomplete commands
 set wildmenu          " better command-line completion
 set cpoptions+=$      " $ as end marker for the change operator
 set autoindent        " always set autoindenting on
-"set scrolloff=8      " keep some lines above & below for scope
+set linebreak         " break lines without breaking words
 set lazyredraw        " redraw only when we need to
 set foldmethod=marker " default fold method
 set nofoldenable      " disable folds, zi to toggle
 set encoding=utf-8    " consistent character encoding
-set showbreak=«       " character to show wrapped lines
-set list              " show invisible characters
+"set scrolloff=8      " keep some lines above & below for scope
+"set list             " show invisible characters
 
 " Windows/Linux differences..
 if has('unix')
@@ -150,7 +137,7 @@ endif
 " make it obvious where 80 characters is
 " highlight 81st column if reached
 highlight ColorColumn ctermbg=magenta
-call matchadd('ColorColumn', '\%81v', 100)
+call matchadd('ColorColumn', '\%81v.\+', 100)
 
 " default tab settings
 set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
@@ -174,7 +161,7 @@ if has("autocmd")
   autocmd FileType vim        setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType make       setlocal ts=8 sts=8 sw=8 noexpandtab
   autocmd FileType html       setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType c          setlocal ts=4 sts=4 sw=4 noexpandtab
+  autocmd FileType c          setlocal ts=4 sts=4 sw=4 expandtab
 
   " fold settings
   autocmd FileType c setlocal foldmethod=syntax
@@ -208,12 +195,6 @@ nnoremap <CR> G
 " backspace to BOF
 nnoremap <BS> gg
 
-" [K]ill window
-nnoremap K :q<CR>
-
-" Manual, to replace K
-nnoremap M K
-
 " split line (sister to [J]oin lines)
 " the normal use of S is covered by cc, so don't worry about shadowing it
 nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>
@@ -230,6 +211,7 @@ nnoremap <silent> p p`]
 inoremap jk <Esc>
 
 " maps to make handling windows a bit easier {{{
+" mostly replaces ctrl+W with comma
 "
 " creating windows
 noremap <silent> ,s :wincmd s<CR>
@@ -278,7 +260,7 @@ let mapleader = " "
 nnoremap <Leader><Tab> :b#<CR>
 
 " delete buffer, big D to not do it on accident
-nnoremap <Leader>D :bd<CR>
+nnoremap <Leader>D :bd!<CR>
 
 " open vimrc
 nnoremap <Leader>v :e $MYVIMRC<CR>
@@ -329,14 +311,35 @@ nnoremap <leader>i :call IndentGuides()<cr>
 " buffer search
 nnoremap <Leader>b :CtrlPBuffer<CR>
 
-" EasyMotion
-" just scan the entire screen,
-" won't work with scrolloff enabled
-map <Leader>w H<Plug>(easymotion-w)
-map <Leader>W H<Plug>(easymotion-W)
-map <Leader>e H<Plug>(easymotion-e)
-map <Leader>E H<Plug>(easymotion-E)
-map <Leader>f H<Plug>(easymotion-f)
+"" EasyMotion {{{2
+"" just scan the entire screen,
+"" won't work with scrolloff enabled
+"map <Leader>w H<Plug>(easymotion-w)
+"map <Leader>W H<Plug>(easymotion-W)
+"map <Leader>e H<Plug>(easymotion-e)
+"map <Leader>E H<Plug>(easymotion-E)
+"map <Leader>f H<Plug>(easymotion-f)
+
+" ShowMotion {{{2
+"*** If your colorscheme is loaded after your plugins {{{3
+function! SM_Highlight()
+  highlight SM_SmallMotionGroup cterm=italic                ctermbg=53 gui=italic                guibg=#5f005f
+  highlight SM_BigMotionGroup   cterm=italic,bold,underline ctermbg=54 gui=italic,bold,underline guibg=#5f0087
+  highlight SM_CharSearchGroup  cterm=italic,bold           ctermbg=4  gui=italic,bold           guibg=#3f6691
+endfunction
+call SM_Highlight()
+augroup SM_HighlightAutocmds
+  autocmd!
+  autocmd ColorScheme call SM_Highlight()
+augroup END " }}}
+"
+" highlights big and small motions
+nmap <silent> w <Plug>(show-motion-w)
+nmap <silent> W <Plug>(show-motion-W)
+nmap <silent> b <Plug>(show-motion-b)
+nmap <silent> B <Plug>(show-motion-B)
+nmap <silent> e <Plug>(show-motion-e)
+nmap <silent> E <Plug>(show-motion-E)
 
 " Tabular {{{2
 noremap <Leader>= :Tabularize/
