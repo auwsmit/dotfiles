@@ -1,5 +1,5 @@
 " Maintainer:  Austin Smith <AssailantLF@gmail.com>
-" Last touched on Nov. 27, 2014
+" Last touched on Dec. 1, 2014
 
 " *Fold Command Reference*  {{{1
 " Opening and Closing Folds
@@ -43,9 +43,11 @@ NeoBundle 'xolox/vim-session'         " extension of default sessions
 NeoBundle 'xolox/vim-misc'            " ^session requirement
 NeoBundle 'bling/vim-airline'         " better aesthetics for UI
 NeoBundle 'mhinz/vim-Startify'        " startup screen
+NeoBundle 'edkolev/tmuxline.vim'      " tmux status line plugin
 
 " *NEW/EXPERIMENTAL*
 NeoBundle 'boucherm/ShowMotion'       " motion highlighting
+NeoBundle 'SirVer/UltiSnips'          " a snippet plugin
 
 " *TOGGLEABLE PANELS*
 if has('python')
@@ -63,16 +65,28 @@ NeoBundleCheck
 " ** GENERAL **                                           {{{1
 " ============================================================
 
-set backspace=2        " backspace like most programs in insert mode
-set nobackup           " I live on the edge breh
+" use Vim settings over Vi settings
+set nocompatible
+
+" makes my bash environment work, mostly aliases
+set shell=/bin/bash\ --login
+
+set encoding=utf-8   " consistent character encoding
+set backspace=2      " backspace like most programs in insert mode
+set nobackup         " I live on the edge breh
 set nowritebackup
 set noswapfile
-set history=100        " keep x lines of command line history
-set incsearch          " do incremental searching
-set browsedir=buffer   " open file tree in current buffer directory
-set autoread           " autoload changed files
-set hidden             " allow more than one modified buffer
-set vb t_vb=           " plz stop the beeping
+set history=100      " keep x lines of command line history
+set incsearch        " do incremental searching
+set browsedir=buffer " open file tree in current buffer directory
+set autoread         " autoload changed files
+set hidden           " allow more than one modified buffer
+set vb t_vb=         " plz stop the beeping
+
+" this has been more trouble than it's worth
+" in the past, but I'm giving it another shot.
+" allow the cursor to go to invalid places
+set virtualedit=all
 
 " use decimal instead of octal with ctrl+a and ctrl+x
 set nrformats=
@@ -104,7 +118,7 @@ endif
 
 " vim colorscheme
 " favs: badwolf, xoria256, grb256, wombat256mod
-colorscheme koehler   " fallback default colorscheme
+colorscheme desert    " fallback default colorscheme
 colorscheme blackwolf
 
 syntax on             " syntax highlighting
@@ -121,15 +135,14 @@ set linebreak         " break lines without breaking words
 set lazyredraw        " redraw only when we need to
 set foldmethod=marker " default fold method
 set nofoldenable      " disable folds, zi to toggle
-set encoding=utf-8    " consistent character encoding
+set list              " show invisible characters
 "set scrolloff=8      " keep some lines above & below for scope
-"set list             " show invisible characters
 
 " Windows/Linux differences..
 if has('unix')
   " how to display invisible characters
   " Windows displays some characters incorrectly for me
-  set listchars=tab:▶\ ,eol:¬,trail:·,extends:❯,precedes:❮
+  set listchars=tab:▸\ ,eol:¬,trail:·,extends:❯,precedes:❮
 else
   set listchars=tab:\|-,eol:¬,trail:·,extends:>,precedes:<
 endif
@@ -180,24 +193,39 @@ au VimResized * ;wincmd =
 " * REMAPS OF DEFAULTS *      {{{2
 
 " swap ; and : for pinky's sake
-noremap ; :
-noremap : ;
+nnoremap ; :
+nnoremap : ;
 
 " swap v and ctrl+v because block mode is better
-nnoremap    v   <c-v>
-nnoremap <c-v>     v
-vnoremap    v   <c-v>
-vnoremap <c-v>     v
+nnoremap  v    <C-v>
+nnoremap <C-v>  v
+vnoremap  v    <C-v>
+vnoremap <C-v>  v
 
 " <CR> to EOF, #<CR> to line #
 nnoremap <CR> G
+vnoremap <CR> G
 
 " backspace to BOF
 nnoremap <BS> gg
+vnoremap <BS> gg
 
-" split line (sister to [J]oin lines)
+" [S]plit line (sister to [J]oin lines)
 " the normal use of S is covered by cc, so don't worry about shadowing it
-nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>
+nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
+
+" Y yanks until EOL, more like D and C
+" yy still yanks the whole line
+nnoremap Y y$
+
+" left and right arrow keys switch buffers
+nnoremap <Left> :bp<CR>
+nnoremap <Right> :bn<CR>
+
+" normal ctrl-v paste in insert mode
+" also remap ctrl-l to ctrl-v for literal inserts
+inoremap <C-v> <Esc>"+pa
+inoremap <C-l> <C-v>
 
 " jump to the end of pasted text
 " useful for pasting multi-lines of text
@@ -210,38 +238,42 @@ nnoremap <silent> p p`]
 " quick insert-mode escape
 inoremap jk <Esc>
 
+" select entire buffer
+nnoremap vaa ggvGg_
+
 " maps to make handling windows a bit easier {{{
 " mostly replaces ctrl+W with comma
 "
 " creating windows
-noremap <silent> ,s :wincmd s<CR>
-noremap <silent> ,v :wincmd v<CR>
+nnoremap <silent> ,s :wincmd s<CR>
+nnoremap <silent> ,v :wincmd v<CR>
 " navigating between windows
-noremap <C-h> <C-W>h<CR>
-noremap <C-j> <C-W>j<CR>
-noremap <C-k> <C-W>k<CR>
-noremap <C-l> <C-W>l<CR>
-noremap <silent> ,p :wincmd p<CR>
+nnoremap <silent> <C-h> <C-W>h<CR>
+nnoremap <silent> <C-j> <C-W>j<CR>
+nnoremap <silent> <C-k> <C-W>k<CR>
+nnoremap <silent> <C-l> <C-W>l<CR>
+nnoremap <silent> ,p :wincmd p<CR>
+nnoremap <silent> ,w :wincmd w<CR>
 " moving windows around
-noremap <silent> ,ml <C-W>L
-noremap <silent> ,mk <C-W>K
-noremap <silent> ,mh <C-W>H
-noremap <silent> ,mj <C-W>J
+nnoremap <silent> ,ml <C-W>L
+nnoremap <silent> ,mk <C-W>K
+nnoremap <silent> ,mh <C-W>H
+nnoremap <silent> ,mj <C-W>J
 " resizing windows
-noremap <silent> ,o     :wincmd o<CR>
-noremap <silent> ,=     :wincmd =<CR>
-noremap <silent> ,_     :wincmd _<CR>
-noremap <silent> ,<BAR> :wincmd <BAR><CR>
-noremap <silent> <C-Left>  :vertical resize -10<CR>
-noremap <silent> <C-Up>    :resize +10<CR>
-noremap <silent> <C-Down>  :resize -10<CR>
-noremap <silent> <C-Right> :vertical resize +10<CR>
+nnoremap <silent> ,o     :wincmd o<CR>
+nnoremap <silent> ,=     :wincmd =<CR>
+nnoremap <silent> ,_     :wincmd _<CR>
+nnoremap <silent> ,<Bar> :wincmd <Bar><CR>
+nnoremap <silent> <C-Left>  :vertical resize -10<CR>
+nnoremap <silent> <C-Up>    :resize +10<CR>
+nnoremap <silent> <C-Down>  :resize -10<CR>
+nnoremap <silent> <C-Right> :vertical resize +10<CR>
 " closing windows
-noremap <silent> ,cc :close<CR>
-noremap <silent> ,cj :wincmd j<CR>:close<CR>
-noremap <silent> ,ck :wincmd k<CR>:close<CR>
-noremap <silent> ,ch :wincmd h<CR>:close<CR>
-noremap <silent> ,cl :wincmd l<CR>:close<CR>
+nnoremap <silent> ,cc :close<CR>
+nnoremap <silent> ,cj :wincmd j<CR>:close<CR>
+nnoremap <silent> ,ck :wincmd k<CR>:close<CR>
+nnoremap <silent> ,ch :wincmd h<CR>:close<CR>
+nnoremap <silent> ,cl :wincmd l<CR>:close<CR>
 " }}}
 
 " make tabs slightly more convenient
@@ -250,6 +282,9 @@ cabbrev tc tabclose
 
 " clear trailing white spaces
 cabbrev clearwhites %s/\s\+$//e
+
+" KONAMI
+nnoremap <UP><UP><DOWN><DOWN><LEFT><RIGHT><LEFT><RIGHT>ba<CR> o _  _____  _   _    _    __  __ ___ <CR><ESC>i\| \|/ / _ \\| \ \| \|  / \  \|  \/  \|_ _\|<CR><ESC>i\| ' / \| \| \|  \\| \| / _ \ \| \|\/\| \|\| \| <CR><ESC>i\| . \ \|_\| \| \|\  \|/ ___ \\| \|  \| \|\| \| <CR><ESC>i\|_\|\_\___/\|_\| \_/_/   \_\_\|  \|_\|___\|<CR><ESC>
 
 " * LEADER MAPS *             {{{2
 
@@ -273,7 +308,7 @@ nnoremap <Leader>n :setlocal rnu! rnu?<CR>
 nnoremap <Leader>l :set list! list?<CR>
 
 " clears search highlights, redraws screen
-nnoremap <Leader>/ :nohl <CR> <C-l>
+nnoremap <Leader>/ :nohl<CR><C-l>
 
 " copy and paste from system clipboard
 vmap <Leader>y "+y
