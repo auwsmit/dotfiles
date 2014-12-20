@@ -1,5 +1,5 @@
 " Maintainer:  Austin Smith <AssailantLF@gmail.com>
-" Last touched on Dec. 18, 2014
+" Last touched on Dec. 19, 2014
 
 " *Fold Command Reference*  {{{1
 " Opening and Closing Folds
@@ -25,34 +25,35 @@ else
 endif
 
 " *CORE PLUGINS*
-NeoBundleFetch 'Shougo/neobundle.vim'     " The one.
+NeoBundleFetch 'Shougo/neobundle.vim'    " The one.
 
 " *MAIN PLUGINS* {{{2
-NeoBundle 'flazz/vim-colorschemes'        " all the colorschemes
-NeoBundle 'scrooloose/NERDCommenter'      " intensely pleasant commenting
-NeoBundle 'tpope/vim-fugitive'            " git integration
-NeoBundle 'tpope/vim-surround'            " surroundings manipulation
-NeoBundle 'tpope/vim-unimpaired'          " pairs of handy bracket mappings
-NeoBundle 'scrooloose/Syntastic.git'      " real time error checking
-NeoBundle 'kien/CtrlP.vim'                " fuzzy file search
-NeoBundle 'godlygeek/Tabular'             " text alignment extension
-NeoBundle 'xolox/vim-session'             " extension of default sessions
-NeoBundle 'xolox/vim-misc'                " ^session requirement
-NeoBundle 'SirVer/UltiSnips'              " snippet plugin
-NeoBundle 'tommcdo/vim-exchange'          " easy text exchange for vim
-NeoBundle 'jeetsukumaran/vim-filebeagle'  " vinegar inspired file manager
-NeoBundle 'Yggdroot/indentLine'           " shows indents made by spaces
-NeoBundle 'mhinz/vim-Startify'            " startup screen
-NeoBundle 'bling/vim-airline'             " better aesthetics for UI
-NeoBundle 'edkolev/tmuxline.vim'          " tmux status line
+NeoBundle 'flazz/vim-colorschemes'       " all the colorschemes
+NeoBundle 'scrooloose/NERDCommenter'     " intensely pleasant commenting
+NeoBundle 'tpope/vim-fugitive'           " git integration
+NeoBundle 'tpope/vim-surround'           " surroundings manipulation
+NeoBundle 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
+NeoBundle 'scrooloose/Syntastic.git'     " real time error checking
+NeoBundle 'kien/CtrlP.vim'               " fuzzy file search
+NeoBundle 'godlygeek/Tabular'            " text alignment plugin
+NeoBundle 'Raimondi/delimitMate'         " auto close quotes, (s, {s, etc
+NeoBundle 'xolox/vim-session'            " extension of default sessions
+NeoBundle 'xolox/vim-misc'               " ^session requirement
+NeoBundle 'SirVer/UltiSnips'             " snippet plugin
+NeoBundle 'tommcdo/vim-exchange'         " easy text exchange for vim
+NeoBundle 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
+NeoBundle 'Yggdroot/indentLine'          " shows indents made by spaces
+NeoBundle 'mhinz/vim-Startify'           " startup screen
+NeoBundle 'bling/vim-airline'            " better aesthetics for UI
+NeoBundle 'edkolev/tmuxline.vim'         " tmux status line
 
 " *NEW/EXPERIMENTAL*
 
 " *TOGGLEABLE PANELS*
 if has('python')
-  NeoBundle 'sjl/Gundo.vim'               " visual undo tree
+  NeoBundle 'sjl/Gundo.vim'              " visual undo tree
 endif
-NeoBundle 'majutsushi/Tagbar'             " view ctags easily
+NeoBundle 'majutsushi/Tagbar'            " view ctags easily
 
 " required end {{{2
 call neobundle#end()
@@ -108,9 +109,8 @@ if has('unix')
 endif
 
 " vim colorscheme
-" favs: badwolf, xoria256, grb256
 colorscheme desert    " fallback default colorscheme
-colorscheme blackwolf
+colorscheme jellyx
 
 " set the status line the way Derek Wyatt likes it
 set stl=%f\ %m\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
@@ -130,18 +130,19 @@ set lazyredraw        " redraw only when we need to
 set foldmethod=marker " default fold method
 set nofoldenable      " disable folds, zi to toggle
 set list              " show invisible characters
-set scrolloff=8       " keep some lines above & below for scope
+"set scrolloff=8       " keep some lines above & below for scope
+set cursorline        " highlights current line, slows redraws
 
 " Windows/Linux differences..
 if has('win32')
   " how to display invisible characters
   set listchars=tab:\|-,eol:¬,trail:·,extends:>,precedes:<
+  " automatically maximized window
+  au GUIEnter * simalt ~x
 else
   set listchars=tab:▸\ ,eol:¬,trail:·,extends:❯,precedes:❮
 endif
 
-" maximized window in Windows
-au GUIEnter * simalt ~x
 
 " highlight 81st column and beyond if reached,
 " this doesn't work well with gvim,
@@ -187,6 +188,14 @@ nnoremap <C-v>  v
 vnoremap  v    <C-v>
 vnoremap <C-v>  v
 
+" up and down arrow keys for scrolling
+nnoremap <Up> <C-u>
+nnoremap <Down> <C-d>
+
+" left and right arrow keys scroll through buffers
+nnoremap <Left> :bp<CR>
+nnoremap <Right> :bn<CR>
+
 " [S]plit line (sister to [J]oin lines)
 " cc will still substitute the line like S would
 nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
@@ -198,7 +207,7 @@ nnoremap Y y$
 " ctrl-c to copy system clipboard, because habits
 vnoremap <C-c> "+y
 " ctrl-v to paste in insert mode (from system clipboard)
-inoremap <C-v> <Space><Esc>x"+P`]a
+inoremap <C-v> a<Esc>x"+p`]a
 " also remap ctrl-l for literal inserts
 inoremap <C-l> <C-v>
 
@@ -212,6 +221,7 @@ nnoremap p p`]
 
 " quick insert-mode escape
 inoremap jk <Esc>
+inoremap jj <Esc>
 
 " select entire buffer
 nnoremap vaa ggvGg_
@@ -262,9 +272,6 @@ cabbrev clearwhites %s/\s\+$//e
 " more keystrokes, but easier to remember
 cabbrev buffdir %:p:h
 
-" KONAMI
-nnoremap <UP><UP><DOWN><DOWN><LEFT><RIGHT><LEFT><RIGHT>ba<CR> o _  _____  _   _    _    __  __ ___ <CR><ESC>i\| \|/ / _ \\| \ \| \|  / \  \|  \/  \|_ _\|<CR><ESC>i\| ' / \| \| \|  \\| \| / _ \ \| \|\/\| \|\| \| <CR><ESC>i\| . \ \|_\| \| \|\  \|/ ___ \\| \|  \| \|\| \| <CR><ESC>i\|_\|\_\___/\|_\| \_/_/   \_\_\|  \|_\|___\|<CR><ESC>
-
 " * LEADER MAPS *             {{{2
 
 " leader the easiest key to reach
@@ -274,7 +281,8 @@ let mapleader = " "
 nnoremap <Leader><Tab> :b#<CR>
 
 " delete buffer, big D to not do it on accident
-nnoremap <Leader>D :bd!<CR>
+" won't delete the split like it normally does
+nnoremap <Leader>D :bp<BAR>bd! #<CR>
 
 " open vimrc
 nnoremap <Leader>v :e $MYVIMRC<CR>
