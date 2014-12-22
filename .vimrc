@@ -1,5 +1,5 @@
 " Maintainer:  Austin Smith <AssailantLF@gmail.com>
-" Last touched on Dec. 19, 2014
+" Last touched on Dec. 21, 2014
 
 " *Fold Command Reference*  {{{1
 " Opening and Closing Folds
@@ -24,36 +24,35 @@ else
   call neobundle#begin(expand('~/.vim/bundle'))
 endif
 
-" *CORE PLUGINS*
 NeoBundleFetch 'Shougo/neobundle.vim'    " The one.
 
-" *MAIN PLUGINS* {{{2
-NeoBundle 'flazz/vim-colorschemes'       " all the colorschemes
-NeoBundle 'scrooloose/NERDCommenter'     " intensely pleasant commenting
-NeoBundle 'tpope/vim-fugitive'           " git integration
+" *CORE PLUGINS* {{{2
 NeoBundle 'tpope/vim-surround'           " surroundings manipulation
 NeoBundle 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
+NeoBundle 'tpope/vim-fugitive'           " git integration
 NeoBundle 'scrooloose/Syntastic.git'     " real time error checking
-NeoBundle 'kien/CtrlP.vim'               " fuzzy file search
-NeoBundle 'godlygeek/Tabular'            " text alignment plugin
-NeoBundle 'Raimondi/delimitMate'         " auto close quotes, (s, {s, etc
+NeoBundle 'scrooloose/NERDCommenter'     " intensely pleasant commenting
 NeoBundle 'xolox/vim-session'            " extension of default sessions
 NeoBundle 'xolox/vim-misc'               " ^session requirement
-NeoBundle 'SirVer/UltiSnips'             " snippet plugin
-NeoBundle 'tommcdo/vim-exchange'         " easy text exchange for vim
 NeoBundle 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
-NeoBundle 'Yggdroot/indentLine'          " shows indents made by spaces
-NeoBundle 'mhinz/vim-Startify'           " startup screen
-NeoBundle 'bling/vim-airline'            " better aesthetics for UI
-NeoBundle 'edkolev/tmuxline.vim'         " tmux status line
-
-" *NEW/EXPERIMENTAL*
-
-" *TOGGLEABLE PANELS*
+NeoBundle 'kien/CtrlP.vim'               " fuzzy file search
+NeoBundle 'godlygeek/Tabular'            " text alignment plugin
+NeoBundle 'Raimondi/delimitMate'         " auto close 's, (s, {s, etc
+NeoBundle 'tommcdo/vim-exchange'         " easy text exchange for vim
+NeoBundle 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
   NeoBundle 'sjl/Gundo.vim'              " visual undo tree
+  NeoBundle 'SirVer/UltiSnips'           " snippet plugin
+  NeoBundle 'honza/vim-snippets'         " preconfigured snippet package
 endif
-NeoBundle 'majutsushi/Tagbar'            " view ctags easily
+
+" *AESTHETIC PLUGINS* {{{2
+NeoBundle 'flazz/vim-colorschemes'       " all the colorschemes
+NeoBundle 'AssailantLF/badwolf'          " a real nice colorscheme
+NeoBundle 'bling/vim-airline'            " better looking UI
+NeoBundle 'mhinz/vim-Startify'           " nice startup screen
+NeoBundle 'edkolev/tmuxline.vim'         " tmux status line
+NeoBundle 'Yggdroot/indentLine'          " shows indents made by spaces
 
 " required end {{{2
 call neobundle#end()
@@ -91,7 +90,7 @@ if has('mouse')
   set mouse=a
 endif
 
-" make sure vim returns to the same line when you reopen a file
+" returns to the same line when you reopen a file
 augroup line_return
     au!
     au BufReadPost *
@@ -110,7 +109,7 @@ endif
 
 " vim colorscheme
 colorscheme desert    " fallback default colorscheme
-colorscheme jellyx
+colorscheme blackwolf
 
 " set the status line the way Derek Wyatt likes it
 set stl=%f\ %m\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
@@ -130,15 +129,11 @@ set lazyredraw        " redraw only when we need to
 set foldmethod=marker " default fold method
 set nofoldenable      " disable folds, zi to toggle
 set list              " show invisible characters
-"set scrolloff=8       " keep some lines above & below for scope
-set cursorline        " highlights current line, slows redraws
+set scrolloff=8       " keep some lines above & below for scope
 
 " Windows/Linux differences..
 if has('win32')
-  " how to display invisible characters
   set listchars=tab:\|-,eol:¬,trail:·,extends:>,precedes:<
-  " automatically maximized window
-  au GUIEnter * simalt ~x
 else
   set listchars=tab:▸\ ,eol:¬,trail:·,extends:❯,precedes:❮
 endif
@@ -151,15 +146,18 @@ highlight colorcolumn ctermbg=DarkRed
 call matchadd('colorcolumn', '\%81v.', 100)
 
 " default tab settings,
-" see ftplugins for more
+" see :h ftplugins for more
 set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
 
 " gvim specific
 if has('gui_running')
-  " dem fonts
   if has('win32')
+    " auto max window (Windows)
+    au GUIEnter * simalt ~x
+    " set font
     set guifont=liberation_mono:h11
   else
+    set lines=999 columns=999
     set guifont=Liberation\ Mono\ 11
   endif
 endif
@@ -367,14 +365,17 @@ let g:airline#extensions#tabline#enabled = 1
 " Startify {{{2
 " custom header
 let g:startify_custom_header = [
-      \ '                                 ________  __ __        ',
-      \ '            __                  /\_____  \/\ \\ \       ',
-      \ '    __  __ /\_\    ___ ___      \/___//''/''\ \ \\ \    ',
-      \ '   /\ \/\ \\/\ \ /'' __` __`\        /'' /''  \ \ \\ \_ ',
-      \ '   \ \ \_/ |\ \ \/\ \/\ \/\ \      /'' /''__  \ \__ ,__\',
-      \ '    \ \___/  \ \_\ \_\ \_\ \_\    /\_/ /\_\  \/_/\_\_/  ',
-      \ '     \/__/    \/_/\/_/\/_/\/_/    \//  \/_/     \/_/    ',
+      \ '__/\\\________/\\\___________________________        ',
+      \ ' _\/\\\_______\/\\\___________________________       ',
+      \ '  _\//\\\______/\\\___/\\\_____________________      ',
+      \ '   __\//\\\____/\\\___\///_____/\\\\\__/\\\\\___     ',
+      \ '    ___\//\\\__/\\\_____/\\\__/\\\///\\\\\///\\\_    ',
+      \ '     ____\//\\\/\\\_____\/\\\_\/\\\_\//\\\__\/\\\_   ',
+      \ '      _____\//\\\\\______\/\\\_\/\\\__\/\\\__\/\\\_  ',
+      \ '       ______\//\\\_______\/\\\_\/\\\__\/\\\__\/\\\_ ',
+      \ '        _______\///________\///__\///___\///___\///__',
       \ '',
       \ '',
       \ ]
+
 
