@@ -1,11 +1,17 @@
 " Maintainer:  Austin Smith <AssailantLF@gmail.com>
-" Last touched on Dec. 21, 2014
+" Last touched on Dec. 23, 2014
 
-" *Fold Command Reference*  {{{1
-" Opening and Closing Folds
-"   :h zo
-" Moving Over Folds
-"   :h zj
+" ** HELP ON HELP **                                 {{{1
+" ============================================================
+"
+" Generally, it's always good to :h[elp] any key mapping, setting, function,
+" etc. that you don't understand. Vim has very convenient help documentation
+" based on several Vi/Vim manuals, and if you take the time to RTFM, you
+" will be surprised how quickly you're learning things, and you'll wish
+" everything else had similar documentation.
+"
+" Here's a video tutorial on how to use, navigate, and search for help
+"   http://derekwyatt.org/vim/tutorials/novice/#Help 
 
 " ** NEOBUNDLE ** (less stable, more featured Vundle)     {{{1
 " ============================================================
@@ -37,8 +43,8 @@ NeoBundle 'xolox/vim-misc'               " ^session requirement
 NeoBundle 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 NeoBundle 'kien/CtrlP.vim'               " fuzzy file search
 NeoBundle 'godlygeek/Tabular'            " text alignment plugin
-NeoBundle 'Raimondi/delimitMate'         " auto close 's, (s, {s, etc
 NeoBundle 'tommcdo/vim-exchange'         " easy text exchange for vim
+NeoBundle 'Raimondi/delimitMate'         " auto close 's, (s, {s, etc
 NeoBundle 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
   NeoBundle 'sjl/Gundo.vim'              " visual undo tree
@@ -67,17 +73,19 @@ NeoBundleCheck
 " use Vim settings over Vi settings
 set nocompatible
 
-set encoding=utf-8   " consistent character encoding
-set backspace=2      " backspace like most programs in insert mode
-set nobackup         " I live on the edge breh
+set encoding=utf-8     " consistent character encoding
+set backspace=2        " backspace like most programs in insert mode
+set nobackup           " I live on the edge breh
 set nowritebackup
 set noswapfile
-set history=100      " keep x lines of command line history
-set incsearch        " do incremental searching
-set browsedir=buffer " open file tree in current buffer directory
-set autoread         " autoload changed files
-set hidden           " allow more than one modified buffer
-set vb t_vb=         " plz stop the beeping
+set showcmd            " display incomplete commands
+set history=200        " keep x lines of command line history
+set incsearch          " do incremental searching
+set browsedir=buffer   " open browser in current buffer directory
+set autoread           " autoload changed files
+set hidden             " allow more than one modified buffer
+set vb t_vb=           " plz stop the beeping
+set formatoptions=croj " see :h fo-table
 
 " use decimal instead of octal with ctrl+a and ctrl+x
 set nrformats=
@@ -99,7 +107,7 @@ augroup line_return
         \ endif
 augroup END
 
-" ** APPEARANCE/VISUAL **                                 {{{1
+" ** APPEARANCE SETTINGS **                                 {{{1
 " ============================================================
 
 " 256 color terminal, helps with terminal colorschemes
@@ -108,36 +116,34 @@ if has('unix')
 endif
 
 " vim colorscheme
-colorscheme desert    " fallback default colorscheme
+colorscheme desert     " fallback default colorscheme
 colorscheme blackwolf
 
 " set the status line the way Derek Wyatt likes it
 set stl=%f\ %m\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
 
-syntax on             " syntax highlighting
-set ruler             " show the cursor position all the time
-set number            " show line numbers
-set laststatus=2      " always show status bar
-set guioptions-=T     " no toolbar, it's ugly
-set hlsearch          " highlight last search pattern
-set showcmd           " display incomplete commands
-set wildmenu          " better command-line completion
-set cpoptions+=$      " $ as end marker for the change operator
-set autoindent        " always set autoindenting on
-set linebreak         " break lines without breaking words
-set lazyredraw        " redraw only when we need to
-set foldmethod=marker " default fold method
-set nofoldenable      " disable folds, zi to toggle
-set list              " show invisible characters
-set scrolloff=8       " keep some lines above & below for scope
+syntax on              " syntax highlighting
+set ruler              " show the cursor position all the time
+set number             " show line numbers
+set laststatus=2       " always show status bar
+set guioptions-=T      " no toolbar, it's ugly
+set wildmenu           " better command-line completion
+set cpoptions+=$       " $ as end marker for the change operator
+set autoindent         " always set autoindenting on
+set linebreak          " break lines without breaking words
+set lazyredraw         " redraw only when we need to
+set foldmethod=marker  " default fold method
+set nofoldenable       " disable folds, zi to toggle
+set list               " show invisible characters
+set scrolloff=8        " keep some lines above & below for scope
 
 " Windows/Linux differences..
 if has('win32')
+  set showbreak=…      " shows this symbol when a line breaks
   set listchars=tab:\|-,eol:¬,trail:·,extends:>,precedes:<
 else
   set listchars=tab:▸\ ,eol:¬,trail:·,extends:❯,precedes:❮
 endif
-
 
 " highlight 81st column and beyond if reached,
 " this doesn't work well with gvim,
@@ -147,7 +153,7 @@ call matchadd('colorcolumn', '\%81v.', 100)
 
 " default tab settings,
 " see :h ftplugins for more
-set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+set tabstop=2 softtabstop=4 shiftwidth=2 expandtab
 
 " gvim specific
 if has('gui_running')
@@ -157,6 +163,7 @@ if has('gui_running')
     " set font
     set guifont=liberation_mono:h11
   else
+    " auto max window
     set lines=999 columns=999
     set guifont=Liberation\ Mono\ 11
   endif
@@ -195,7 +202,7 @@ nnoremap <Left> :bp<CR>
 nnoremap <Right> :bn<CR>
 
 " [S]plit line (sister to [J]oin lines)
-" cc will still substitute the line like S would
+" cc still substitutes the line like S would
 nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
 " Y yanks until EOL, more like D and C
@@ -205,7 +212,7 @@ nnoremap Y y$
 " ctrl-c to copy system clipboard, because habits
 vnoremap <C-c> "+y
 " ctrl-v to paste in insert mode (from system clipboard)
-inoremap <C-v> a<Esc>x"+p`]a
+inoremap <C-v> a<Esc>x"+Pa
 " also remap ctrl-l for literal inserts
 inoremap <C-l> <C-v>
 
@@ -215,7 +222,7 @@ vnoremap y y`]
 vnoremap p p`]
 nnoremap p p`]
 
-" * SHORTCUTS/ALIASES *       {{{2
+" * CONVENIENCE MAPS *       {{{2
 
 " quick insert-mode escape
 inoremap jk <Esc>
@@ -259,17 +266,6 @@ nnoremap <silent> ,ch :wincmd h<CR>:close<CR>
 nnoremap <silent> ,cl :wincmd l<CR>:close<CR>
 " }}}
 
-" make tabs slightly more convenient
-cabbrev te tabnew
-cabbrev tc tabclose
-
-" clear trailing white spaces
-cabbrev clearwhites %s/\s\+$//e
-
-" alias for the current file's directory
-" more keystrokes, but easier to remember
-cabbrev buffdir %:p:h
-
 " * LEADER MAPS *             {{{2
 
 " leader the easiest key to reach
@@ -292,18 +288,17 @@ nnoremap <Leader>n :setlocal rnu! rnu?<CR>
 " toggle showing listchars
 nnoremap <Leader>l :set list! list?<CR>
 
-" clears search highlights, redraws screen
-nnoremap <Leader>/ :nohl<CR><C-l>
+" toggles search highlights
+nnoremap <Leader>/ :set hlsearch! hls?<CR>
 
-" copy and paste from system clipboard
+" copy and paste from system clipboard easier
 vmap <Leader>y "+y
-nmap <Leader>p "+p`]
-nmap <Leader>P "+P`]
-vmap <Leader>p "+p`]
-vmap <Leader>P "+P`]
+nmap <Leader>p "+p
+nmap <Leader>P "+P
+vmap <Leader>p "+p
+vmap <Leader>P "+P
 
 " toggle highlighting indent columns
-
 let g:indentguides_state = 0 " {{{
 function! IndentGuides()
     if g:indentguides_state
@@ -316,13 +311,26 @@ function! IndentGuides()
 endfunction
 hi def IndentGuides guibg=#303030 ctermbg=234
 " }}}
-nnoremap <leader>i :call IndentGuides()<cr>
+nnoremap <leader>i :call IndentGuides()<CR>
 
-" ** VIM PLUGINS ** (plugin related settings)             {{{1
+" * COMMAND ALIASES *       {{{2
+
+" clear trailing white spaces
+cabbrev ctw s/\s\+$//e
+
+" highlight a list of variables separated by commas
+" and run :ltl to split them into their own lines.
+" short for 'list to line'
+cabbrev ltl s/, /, \r/g
+
+" alias for the current buffer's directory
+cabbrev cbd %:p:h
+
+" ** VIM PLUGIN SETTINGS **                                       {{{1
 " ============================================================
 "
-" If you don't have a certain plugin installed,
-" you should remove any corresponding settings
+" If you don't have a certain plugin installed, you
+" should remove or disable any corresponding settings
 
 " FileBeagle {{{2
 " open specific directory
@@ -348,7 +356,12 @@ let g:syntastic_check_on_open=1
 let g:syntastic_enable_signs=1
 
 " vim-sessions {{{2
-let g:session_directory       = "~/.vim/session"
+if has('win32')
+  let g:session_directory       = expand('$VIM/vimfiles/session')
+else
+  let g:session_directory       = '~/.vim/session'
+endif
+
 let g:session_autoload        = "no"
 let g:session_autosave        = "no"
 let g:session_command_aliases = 1
