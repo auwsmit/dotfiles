@@ -1,8 +1,8 @@
 " vimrc
-" Maintainer:  Austin Smith <AssailantLF@gmail.com>
-" Last Change: Dec. 24, 2014
+" Author: Austin Smith <AssailantLF@gmail.com>
+" Source: https://github.com/AssailantLF/vimrc
 
-" ** HELP ON HELP **                                 {{{1
+" ** HELP ON HELP **                                      {{{1
 " ============================================================
 
 " Generally, it's always good to :h[elp] any key mapping,
@@ -12,7 +12,7 @@
 " surprised how quickly you're learning things, and you'll
 " wish everything else had similar documentation.
 
-" Beginner video on how to use, navigate, and search for help
+" Beginner video on how to use, navigate, and search for help:
 "   http://derekwyatt.org/vim/tutorials/novice/#Help 
 
 " ** NEOBUNDLE ** (less stable, more featured Vundle)     {{{1
@@ -20,14 +20,14 @@
 
 " required begin {{{2
 if has('vim_starting')
-  if has('win32')
-    set runtimepath+=$VIM/vimfiles/bundle/neobundle.vim/
+  if has('win32') || has('win32unix')
+    set runtimepath+=$HOME/vimfiles/bundle/neobundle.vim/
   else
     set runtimepath+=~/.vim/bundle/neobundle.vim/
   endif
 endif
-if has('win32')
-  call neobundle#begin(expand('$VIM/vimfiles/bundle'))
+if has('win32') || has('win32unix')
+  call neobundle#begin(expand('$HOME/vimfiles/bundle'))
 else
   call neobundle#begin(expand('~/.vim/bundle'))
 endif
@@ -52,6 +52,10 @@ if has('python')
   NeoBundle 'SirVer/UltiSnips'           " snippet plugin
   NeoBundle 'honza/vim-snippets'         " preconfigured snippet package
 endif
+
+" *NEW/EXPERIMENTAL* {{{2
+"NeoBundle 'vim-scripts/EnhancedJumps'    " extension of default jumps
+NeoBundle 'bkad/CamelCaseMotion'         " movement by camel case
 
 " *AESTHETIC PLUGINS* {{{2
 NeoBundle 'flazz/vim-colorschemes'       " all the colorschemes
@@ -88,6 +92,7 @@ set vb t_vb=             " plz stop the beeping
 set foldmethod=marker    " default fold method
 set nofoldenable         " disable folds, zi to toggle
 set lazyredraw           " redraw only when we need to
+set splitright           " open new v-splits to the right
 set nobackup             " I live on the edge breh
 set nowritebackup
 set noswapfile
@@ -109,7 +114,7 @@ augroup line_return
         \ endif
 augroup END
 
-" ** APPEARANCE **                                 {{{1
+" ** APPEARANCE **                                        {{{1
 " ============================================================
 
 " 256 color terminal, helps with terminal colorschemes
@@ -137,7 +142,7 @@ set list               " show invisible characters
 set scrolloff=8        " keep some lines above & below for scope
 
 " Windows/Linux differences..
-if has('win32')
+if has('win32') || has('win32unix')
   set listchars=tab:\|-,eol:¬,trail:·,extends:>,precedes:<
 else
   set listchars=tab:▸\ ,eol:¬,trail:·,extends:❯,precedes:❮
@@ -201,8 +206,8 @@ nnoremap <Right> :bn<CR>
 
 " swap (^/$) and (H/L)
 "
-" only because I navigate by line more
-" often and ^/$ are harder to reach for
+" only because I navigate by line more often
+" and ^/$ are harder to reach for
 nnoremap ^ H
 nnoremap $ L
 nnoremap H ^
@@ -220,7 +225,7 @@ nnoremap Y y$
 vnoremap <C-c> "+y
 
 " ctrl-v to paste in insert mode (from system clipboard)
-inoremap <C-v> a<Esc>x"+Pa
+inoremap <C-v> a<Esc>x"+pa
 " also remap ctrl-l for literal inserts
 inoremap <C-l> <C-v>
 
@@ -310,8 +315,8 @@ vmap <Leader>P "+P
 " This will vertically split the current buffer
 " into two which will stay scroll-locked together.
 " Allows you to see twice as much code at once
-" (disables wrap after being used)
-noremap <silent> <leader>sb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
+" (disables wrap and folds after being used)
+noremap <silent> <leader>sb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
 
 " toggle highlighting indent columns
 let g:indentguides_state = 0 " {{{
@@ -344,7 +349,7 @@ cabbrev cbdir %:p:h
 " delete all buffers
 cabbrev bdall 0,9999bd!
 
-" ** VIM PLUGINS SETTINGS **                                       {{{1
+" ** VIM PLUGINS SETTINGS **                              {{{1
 " ============================================================
 "
 " If you don't have a certain plugin installed, you
@@ -378,8 +383,8 @@ let g:syntastic_check_on_open=1
 let g:syntastic_enable_signs=1
 
 " vim-sessions {{{2
-if has('win32')
-  let g:session_directory = expand('$VIM/vimfiles/session')
+if has('win32') || has('win32unix')
+  let g:session_directory = expand('$HOME/vimfiles/session')
 else
   let g:session_directory = '~/.vim/session'
 endif
