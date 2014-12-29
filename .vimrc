@@ -133,7 +133,7 @@ syntax on              " syntax highlighting
 set ruler              " show the cursor position all the time
 set number             " show line numbers
 set laststatus=2       " always show status bar
-set guioptions-=T      " no toolbar, it's ugly
+set guioptions-=T      " no toolbar, it's ugly/unnecessary
 set wildmenu           " better command-line completion
 set cpoptions+=$       " $ as end marker for the change operator
 set autoindent         " always set autoindenting on
@@ -204,15 +204,6 @@ nnoremap <Down> <C-d>
 nnoremap <Left> :bp<CR>
 nnoremap <Right> :bn<CR>
 
-" swap (^/$) and (H/L)
-"
-" only because I navigate by line more often
-" and ^/$ are harder to reach for
-nnoremap ^ H
-nnoremap $ L
-nnoremap H ^
-nnoremap L $
-
 " [S]plit line (sister to [J]oin lines)
 " cc still substitutes the line like S would
 nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
@@ -240,9 +231,6 @@ nnoremap p p`]
 " quick insert-mode escape
 inoremap jk <Esc>
 inoremap jj <Esc>
-
-" select all text
-nnoremap vaa ggvGg_
 
 " maps to make handling windows a bit easier {{{
 " mostly replaces ctrl+W with comma
@@ -312,10 +300,9 @@ vmap <Leader>p "+p
 vmap <Leader>P "+P
 
 " Column Scroll-Binding
-" This will vertically split the current buffer
-" into two which will stay scroll-locked together.
-" Allows you to see twice as much code at once
-" (disables wrap and folds after being used)
+" This will vertically split the current buffer into two which will stay
+" scroll-locked together.  Allows you to see twice as much code at once
+" (disables the wrap setting and folds after being used)
 noremap <silent> <leader>sb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
 
 " toggle highlighting indent columns
