@@ -13,7 +13,7 @@
 " wish everything else had similar documentation.
 
 " Beginner video on how to use, navigate, and search for help:
-"   http://derekwyatt.org/vim/tutorials/novice/#Help 
+"   http://derekwyatt.org/vim/tutorials/novice/#Help
 
 " ** NEOBUNDLE ** (less stable, more featured Vundle)     {{{1
 " ============================================================
@@ -36,16 +36,19 @@ NeoBundleFetch 'Shougo/neobundle.vim'    " The one.
 
 " *CORE PLUGINS* {{{2
 NeoBundle 'tpope/vim-surround'           " surroundings manipulation
-NeoBundle 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
 NeoBundle 'tpope/vim-fugitive'           " git integration
+NeoBundle 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
 NeoBundle 'scrooloose/Syntastic.git'     " real time error checking
 NeoBundle 'scrooloose/NERDCommenter'     " intensely pleasant commenting
 NeoBundle 'xolox/vim-session'            " extension of default sessions
-NeoBundle 'xolox/vim-misc'               " ^session requirement
+NeoBundle 'xolox/vim-notes'              " note taking plugin
+NeoBundle 'xolox/vim-misc'               " ^session & notes requirement
 NeoBundle 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 NeoBundle 'kien/CtrlP.vim'               " fuzzy file search
 NeoBundle 'godlygeek/Tabular'            " text alignment plugin
 NeoBundle 'tommcdo/vim-exchange'         " easy text exchange for vim
+NeoBundle 'bkad/CamelCaseMotion'         " movement by camel case
+NeoBundle 'kurkale6ka/vim-pairs'         " new punctuation text objects
 NeoBundle 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
   NeoBundle 'sjl/Gundo.vim'              " visual undo tree
@@ -54,8 +57,6 @@ if has('python')
 endif
 
 " *NEW/EXPERIMENTAL* {{{2
-"NeoBundle 'vim-scripts/EnhancedJumps'    " extension of default jumps
-NeoBundle 'bkad/CamelCaseMotion'         " movement by camel case
 
 " *AESTHETIC PLUGINS* {{{2
 NeoBundle 'flazz/vim-colorschemes'       " all the colorschemes
@@ -87,13 +88,18 @@ set formatoptions=croq1j " see :h fo-table
 set hidden               " allow more than one modified buffer
 set showcmd              " display incomplete commands
 set incsearch            " do incremental searching
+set ignorecase           " search isn't case sensitive
+set smartcase            " only case sensitive with capitals
 set autoread             " auto reload changed files
 set vb t_vb=             " plz stop the beeping
 set foldmethod=marker    " default fold method
 set nofoldenable         " disable folds, zi to toggle
 set lazyredraw           " redraw only when we need to
 set splitright           " open new v-splits to the right
-set nobackup             " I live on the edge breh
+
+" disable automatically generated backup files
+" this has yet to become an issue
+set nobackup
 set nowritebackup
 set noswapfile
 
@@ -127,6 +133,7 @@ colorscheme desert     " fallback default colorscheme
 colorscheme blackwolf
 
 " set the status line the way Derek Wyatt likes it
+" (doesn't work with status line plugins like Airline)
 set stl=%f\ %m\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
 
 syntax on              " syntax highlighting
@@ -134,7 +141,7 @@ set ruler              " show the cursor position all the time
 set number             " show line numbers
 set laststatus=2       " always show status bar
 set guioptions-=T      " no toolbar, it's ugly/unnecessary
-set wildmenu           " better command-line completion
+set wildmenu           " visual command-line completion
 set cpoptions+=$       " $ as end marker for the change operator
 set autoindent         " always set autoindenting on
 set linebreak          " break lines without breaking words
@@ -185,16 +192,12 @@ au VimResized * ;wincmd =
 " * REMAPS OF DEFAULTS *      {{{2
 
 " swap ; and : for pinky's sake
-nnoremap ; :
-nnoremap : ;
-vnoremap ; :
-vnoremap : ;
+noremap ; :
+noremap : ;
 
 " swap v and ctrl+v because block mode is better
-nnoremap  v    <C-v>
-nnoremap <C-v>  v
-vnoremap  v    <C-v>
-vnoremap <C-v>  v
+noremap  v    <C-v>
+noremap <C-v>  v
 
 " up and down arrow keys for scrolling
 nnoremap <Up> <C-u>
@@ -203,6 +206,15 @@ nnoremap <Down> <C-d>
 " left and right arrow keys scroll through buffers
 nnoremap <Left> :bp<CR>
 nnoremap <Right> :bn<CR>
+
+" swap ^/$ and H/L
+"
+" only because I navigate by line more often
+" and ^/$ are harder to reach for
+nnoremap ^ H
+nnoremap $ L
+nnoremap H ^
+nnoremap L $
 
 " [S]plit line (sister to [J]oin lines)
 " cc still substitutes the line like S would
@@ -216,7 +228,7 @@ nnoremap Y y$
 vnoremap <C-c> "+y
 
 " ctrl-v to paste in insert mode (from system clipboard)
-inoremap <C-v> a<Esc>x"+pa
+inoremap <C-v> a<Esc>x"+Pa
 " also remap ctrl-l for literal inserts
 inoremap <C-l> <C-v>
 
@@ -228,9 +240,8 @@ nnoremap p p`]
 
 " * CONVENIENCE MAPS *       {{{2
 
-" quick insert-mode escape
-inoremap jk <Esc>
-inoremap jj <Esc>
+" quicker escape
+inoremap qq <Esc>
 
 " maps to make handling windows a bit easier {{{
 " mostly replaces ctrl+W with comma
@@ -244,7 +255,6 @@ nnoremap <silent> <C-j> <C-W>j<CR>
 nnoremap <silent> <C-k> <C-W>k<CR>
 nnoremap <silent> <C-l> <C-W>l<CR>
 nnoremap <silent> ,p :wincmd p<CR>
-nnoremap <silent> ,w :wincmd w<CR>
 " moving windows around
 nnoremap <silent> ,ml <C-W>L
 nnoremap <silent> ,mk <C-W>K
@@ -272,12 +282,11 @@ nnoremap <silent> ,cl :wincmd l<CR>:close<CR>
 " leader the easiest key to reach
 let mapleader = " "
 
-" switch to last buffer
-nnoremap <Leader><Tab> :b#<CR>
+" switch to last file, easier to reach than CTRL-^
+nnoremap <Leader><Tab> :e#<CR>
 
-" delete buffer, big D to not do it on accident
-" won't delete the split like it normally does
-nnoremap <Leader>D :bp<BAR>bd! #<CR>
+" delete buffer, but not the split
+nnoremap <Leader>D :bp<CR>:bd!#<CR>
 
 " open vimrc
 nnoremap <Leader>v :e $MYVIMRC<CR>
@@ -383,6 +392,13 @@ cabbrev SO OpenSession
 cabbrev SS SaveSession
 cabbrev SD DeleteSession
 cabbrev SC CloseSession
+
+" vim-notes
+if has('win32') || has('win32unix')
+  let g:notes_directories = ['X:\Cloud\Dropbox\Notes']
+else
+  let g:notes_directories = ['~/Dropbox/Notes']
+endif
 
 " vim-airline {{{2
 nnoremap <Leader>A :AirlineToggle<CR>
