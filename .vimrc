@@ -61,7 +61,6 @@ endif
 " *AESTHETIC PLUGINS* {{{2
 NeoBundle 'flazz/vim-colorschemes'       " all the colorschemes
 NeoBundle 'AssailantLF/badwolf'          " a colorscheme
-NeoBundle 'fmoralesc/molokayo'           " a colorscheme
 NeoBundle 'bling/vim-airline'            " better looking UI
 NeoBundle 'mhinz/vim-Startify'           " nice startup screen
 NeoBundle 'edkolev/tmuxline.vim'         " tmux status line
@@ -89,7 +88,6 @@ set hidden               " allow more than one modified buffer
 set showcmd              " display incomplete commands
 set incsearch            " do incremental searching
 set ignorecase           " search isn't case sensitive
-set smartcase            " only case sensitive with capitals
 set autoread             " auto reload changed files
 set vb t_vb=             " plz stop the beeping
 set foldmethod=marker    " default fold method
@@ -199,16 +197,7 @@ noremap : ;
 noremap  v    <C-v>
 noremap <C-v>  v
 
-" up and down arrow keys for scrolling
-nnoremap <Up> <C-u>
-nnoremap <Down> <C-d>
-
-" left and right arrow keys scroll through buffers
-nnoremap <Left> :bp<CR>
-nnoremap <Right> :bn<CR>
-
 " swap ^/$ and H/L
-"
 " only because I navigate by line more often
 " and ^/$ are harder to reach for
 nnoremap ^ H
@@ -238,43 +227,58 @@ vnoremap y y`]
 vnoremap p p`]
 nnoremap p p`]
 
+" backspace and spacebar for full-page scrolling
+noremap <Space> <C-f>
+noremap <BS> <C-b>
+
+" up and down arrow keys for half-page scrolling
+noremap <Up> <C-u>
+noremap <Down> <C-d>
+
+" left and right arrow keys scroll through buffers
+noremap <Left> :bp<CR>
+noremap <Right> :bn<CR>
+
 " * CONVENIENCE MAPS *       {{{2
 
-" quicker escape
-inoremap qq <Esc>
+" select all text
+noremap vaa ggVG
+
+" quit all, like ZQ on all windows
+noremap ZA :qa!<CR>
 
 " maps to make handling windows a bit easier {{{
 " mostly replaces ctrl+W with comma
 "
 " creating windows
-nnoremap <silent> ,s :wincmd s<CR>
-nnoremap <silent> ,v :wincmd v<CR>
+noremap <silent> ,s :wincmd s<CR>
+noremap <silent> ,v :wincmd v<CR>
 " navigating between windows
-nnoremap <silent> <C-h> <C-W>h<CR>
-nnoremap <silent> <C-j> <C-W>j<CR>
-nnoremap <silent> <C-k> <C-W>k<CR>
-nnoremap <silent> <C-l> <C-W>l<CR>
-nnoremap <silent> ,p :wincmd p<CR>
+noremap <silent> <C-h> <C-W>h<CR>
+noremap <silent> <C-j> <C-W>j<CR>
+noremap <silent> <C-k> <C-W>k<CR>
+noremap <silent> <C-l> <C-W>l<CR>
+noremap <silent> ,p :wincmd p<CR>
 " moving windows around
-nnoremap <silent> ,ml <C-W>L
-nnoremap <silent> ,mk <C-W>K
-nnoremap <silent> ,mh <C-W>H
-nnoremap <silent> ,mj <C-W>J
+noremap <silent> ,ml <C-W>L
+noremap <silent> ,mk <C-W>K
+noremap <silent> ,mh <C-W>H
+noremap <silent> ,mj <C-W>J
 " resizing windows
-nnoremap <silent> ,o     :wincmd o<CR>
-nnoremap <silent> ,=     :wincmd =<CR>
-nnoremap <silent> ,_     :wincmd _<CR>
-nnoremap <silent> ,<Bar> :wincmd <Bar><CR>
-nnoremap <silent> <C-Left>  :vertical resize -10<CR>
-nnoremap <silent> <C-Up>    :resize +10<CR>
-nnoremap <silent> <C-Down>  :resize -10<CR>
-nnoremap <silent> <C-Right> :vertical resize +10<CR>
+noremap <silent> ,o     :wincmd o<CR>
+noremap <silent> ,=     :wincmd =<CR>
+noremap <silent> ,_     :wincmd _<CR>
+noremap <silent> ,<Bar> :wincmd <Bar><CR>
+noremap <silent> <C-Left>  :vertical resize -10<CR>
+noremap <silent> <C-Up>    :resize +10<CR>
+noremap <silent> <C-Down>  :resize -10<CR>
+noremap <silent> <C-Right> :vertical resize +10<CR>
 " closing windows
-nnoremap <silent> ,cc :close<CR>
-nnoremap <silent> ,cj :wincmd j<CR>:close<CR>
-nnoremap <silent> ,ck :wincmd k<CR>:close<CR>
-nnoremap <silent> ,ch :wincmd h<CR>:close<CR>
-nnoremap <silent> ,cl :wincmd l<CR>:close<CR>
+noremap <silent> ,cc :close<CR>
+noremap <silent> ,cj :wincmd j<CR>:close<CR>
+noremap <silent> ,ck :wincmd k<CR>:close<CR>
+noremap <silent> ,ch :wincmd h<CR>:close<CR>
+noremap <silent> ,cl :wincmd l<CR>:close<CR>
 " }}}
 
 " * LEADER MAPS *             {{{2
@@ -282,31 +286,42 @@ nnoremap <silent> ,cl :wincmd l<CR>:close<CR>
 " leader the easiest key to reach
 let mapleader = " "
 
+" expands %% to current buffer's directory in command-line mode.
+" only placed under Leader Maps for the below commands
+cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<cr>
+
+" edit files from current file's directory without switching directories
+" open in (w)indow (s)plit (v)split or (t)ab
+map <Leader>ew ;e %%
+map <Leader>es ;sp %%
+map <Leader>ev ;vsp %%
+map <Leader>et ;tabe %%
+
 " switch to last file, easier to reach than CTRL-^
-nnoremap <Leader><Tab> :e#<CR>
+noremap <Leader><Tab> :e#<CR>
 
 " delete buffer, but not the split
-nnoremap <Leader>D :bp<CR>:bd!#<CR>
+noremap <Leader>D :bp<CR>:bd!#<CR>
 
 " open vimrc
-nnoremap <Leader>v :e $MYVIMRC<CR>
-nnoremap <Leader>V :tabnew $MYVIMRC<CR>
+noremap <Leader>v :e $MYVIMRC<CR>
+noremap <Leader>V :tabnew $MYVIMRC<CR>
 
 " toggle relativenumber
-nnoremap <Leader>n :setlocal rnu! rnu?<CR>
+noremap <Leader>n :setlocal rnu! rnu?<CR>
 
 " toggle showing listchars
-nnoremap <Leader>l :set list! list?<CR>
+noremap <Leader>l :set list! list?<CR>
 
 " toggle search highlighting
-nnoremap <Leader>/ :set hlsearch! hls?<CR>
+noremap <Leader>/ :set hlsearch! hls?<CR>
 
 " copy and paste from system clipboard easier
-vmap <Leader>y "+y
-nmap <Leader>p "+p
-nmap <Leader>P "+P
-vmap <Leader>p "+p
-vmap <Leader>P "+P
+vnoremap <Leader>y "+y
+nnoremap <Leader>p "+p
+nnoremap <Leader>P "+P
+vnoremap <Leader>p "+p
+vnoremap <Leader>P "+P
 
 " Column Scroll-Binding
 " This will vertically split the current buffer into two which will stay
@@ -327,7 +342,7 @@ function! IndentGuides()
 endfunction
 hi def IndentGuides guibg=#303030 ctermbg=234
 " }}}
-nnoremap <leader>i :call IndentGuides()<CR>
+noremap <leader>i :call IndentGuides()<CR>
 
 " * COMMAND ALIASES *       {{{2
 
@@ -338,9 +353,6 @@ cabbrev ctw s/\s\+$//e
 " highlight a list of variables separated by commas
 " and run :ltl to split them into their own lines.
 cabbrev ltl s/, /, \r/g
-
-" current buffer's directory
-cabbrev cbdir %:p:h
 
 " delete all buffers
 cabbrev bdall 0,9999bd!
@@ -393,7 +405,7 @@ cabbrev SS SaveSession
 cabbrev SD DeleteSession
 cabbrev SC CloseSession
 
-" vim-notes
+" vim-notes {{{2
 if has('win32') || has('win32unix')
   let g:notes_directories = ['X:\Cloud\Dropbox\Notes']
 else
