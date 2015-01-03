@@ -21,13 +21,13 @@
 " required begin {{{2
 if has('vim_starting')
   if has('win32') || has('win32unix')
-    set runtimepath+=$HOME/vimfiles/bundle/neobundle.vim/
+    set runtimepath+=~/vimfiles/bundle/neobundle.vim/
   else
     set runtimepath+=~/.vim/bundle/neobundle.vim/
   endif
 endif
 if has('win32') || has('win32unix')
-  call neobundle#begin(expand('$HOME/vimfiles/bundle'))
+  call neobundle#begin(expand('~/vimfiles/bundle'))
 else
   call neobundle#begin(expand('~/.vim/bundle'))
 endif
@@ -44,7 +44,7 @@ NeoBundle 'xolox/vim-session'            " extension of default sessions
 NeoBundle 'xolox/vim-notes'              " note taking plugin
 NeoBundle 'xolox/vim-misc'               " ^session & notes requirement
 NeoBundle 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
-NeoBundle 'kien/CtrlP.vim'               " fuzzy file search
+NeoBundle 'kien/CtrlP.vim'               " fuzzy file/buffer search
 NeoBundle 'godlygeek/Tabular'            " text alignment plugin
 NeoBundle 'tommcdo/vim-exchange'         " easy text exchange for vim
 NeoBundle 'bkad/CamelCaseMotion'         " movement by camel case
@@ -81,7 +81,7 @@ set nocompatible
 
 set encoding=utf-8       " consistent character encoding
 set backspace=2          " backspace like most programs in insert mode
-set history=200          " keep x lines of command line history
+set history=1000         " keep x lines of command line history
 set browsedir=buffer     " open browser in current buffer directory
 set formatoptions=croq1j " see :h fo-table
 set hidden               " allow more than one modified buffer
@@ -95,13 +95,24 @@ set nofoldenable         " disable folds, zi to toggle
 set lazyredraw           " redraw only when we need to
 set splitright           " open new v-splits to the right
 
+" save undo history to a file
+set undofile
+
+" set location to save undo files
+set undodir=~/vimfiles/undodir
+
+" create the undodir folder if it doesn't exist
+if !isdirectory(expand(&undodir))
+    call mkdir(expand(&undodir), "p")
+endif
+
 " disable automatically generated backup files
 " this has yet to become an issue
 set nobackup
 set nowritebackup
 set noswapfile
 
-" use decimal instead of octal with ctrl+a and ctrl+x
+" use decimal instead of octal with ctrl-a and ctrl-x
 set nrformats=
 
 " enable mouse because why not
@@ -138,7 +149,6 @@ syntax on              " syntax highlighting
 set ruler              " show the cursor position all the time
 set number             " show line numbers
 set laststatus=2       " always show status bar
-set guioptions-=T      " no toolbar, it's ugly/unnecessary
 set wildmenu           " visual command-line completion
 set cpoptions+=$       " $ as end marker for the change operator
 set autoindent         " always set autoindenting on
@@ -146,7 +156,7 @@ set linebreak          " break lines without breaking words
 set list               " show invisible characters
 set scrolloff=8        " keep some lines above & below for scope
 
-" Windows/Linux differences..
+" Windows/Linux font differences..
 if has('win32') || has('win32unix')
   set listchars=tab:\|-,eol:¬,trail:·,extends:>,precedes:<
 else
@@ -165,14 +175,24 @@ set tabstop=2 softtabstop=4 shiftwidth=2 expandtab
 
 " gvim specific
 if has('gui_running')
+
+  " remove the menu, toolbar, and scrollbars
+  set guioptions-=m
+  set guioptions-=T
+  set guioptions-=l
+  set guioptions-=L
+  set guioptions-=r
+  set guioptions-=R
+
   if has('win32')
     " auto max window (Windows)
     au GUIEnter * simalt ~x
-    " set font
+
     set guifont=liberation_mono:h11
   else
     " auto max window
     set lines=999 columns=999
+
     set guifont=Liberation\ Mono\ 11
   endif
 endif
@@ -226,10 +246,6 @@ inoremap <C-l> <C-v>
 vnoremap y y`]
 vnoremap p p`]
 nnoremap p p`]
-
-" backspace and spacebar for full-page scrolling
-noremap <Space> <C-f>
-noremap <BS> <C-b>
 
 " up and down arrow keys for half-page scrolling
 noremap <Up> <C-u>
@@ -329,21 +345,6 @@ vnoremap <Leader>P "+P
 " (disables the wrap setting and folds after being used)
 noremap <silent> <leader>sb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
 
-" toggle highlighting indent columns
-let g:indentguides_state = 0 " {{{
-function! IndentGuides()
-    if g:indentguides_state
-        let g:indentguides_state = 0
-        2match None
-    else
-        let g:indentguides_state = 1
-        execute '2match IndentGuides /\%(\_^\s*\)\@<=\%(\%'.(0*&sw+1).'v\|\%'.(1*&sw+1).'v\|\%'.(2*&sw+1).'v\|\%'.(3*&sw+1).'v\|\%'.(4*&sw+1).'v\|\%'.(5*&sw+1).'v\|\%'.(6*&sw+1).'v\|\%'.(7*&sw+1).'v\)\s/'
-    endif
-endfunction
-hi def IndentGuides guibg=#303030 ctermbg=234
-" }}}
-noremap <leader>i :call IndentGuides()<CR>
-
 " * COMMAND ALIASES *       {{{2
 
 " clear trailing white spaces
@@ -392,7 +393,7 @@ let g:syntastic_enable_signs=1
 
 " vim-sessions {{{2
 if has('win32') || has('win32unix')
-  let g:session_directory = expand('$HOME/vimfiles/session')
+  let g:session_directory = expand('~/vimfiles/session')
 else
   let g:session_directory = '~/.vim/session'
 endif
