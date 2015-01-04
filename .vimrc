@@ -226,23 +226,38 @@ nnoremap $ L
 nnoremap H ^
 nnoremap L $
 
+" ctrl-plus and ctrl-minus to add and subtract numbers
+nnoremap <C-+> <C-a>
+nnoremap <C--> <C-x>
+
+" Old habits that won't die {{{
+
 " ctrl-a to select all
 noremap <C-a> <Esc>ggVG
 
-" ctrl-v to paste over visually selected text
+" ctrl-c to copy text (to system clipboard)
+vnoremap <C-c> "+y
+
+" ctrl-v to paste over visually selected text (from system clipboard)
 vnoremap <C-v> ca<Esc>x"+Pa
 
-" ctrl-v to paste in insert mode (from system clipboard)
+" ctrl-v to paste in insert mode (system clipboard)
 inoremap <C-v> a<Esc>x"+Pa
+" }}}
 
 " make sure ctrl-q does literal inserts
 inoremap <C-q> <C-v>
 
 " jump to the end of pasted text
 " useful for pasting multi-lines of text
-vnoremap y y`]
 vnoremap p p`]
 nnoremap p p`]
+
+" non-arrow insert mode navigation
+inoremap <C-h> <Left>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
 
 " up and down arrow keys for half-page scrolling
 noremap <Up> <C-u>
