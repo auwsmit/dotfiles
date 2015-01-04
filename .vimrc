@@ -56,8 +56,7 @@ endif
 
 " *AESTHETIC PLUGINS* {{{2
 NeoBundle 'flazz/vim-colorschemes'       " all the colorschemes
-NeoBundle 'AssailantLF/badwolf'          " a colorscheme
-"NeoBundle 'bling/vim-airline'            " better looking UI
+NeoBundle 'AssailantLF/blackwolf.vim'    " my colorscheme
 NeoBundle 'ap/vim-buftabline'            " list buffers like tabs
 NeoBundle 'mhinz/vim-Startify'           " nice startup screen
 NeoBundle 'edkolev/tmuxline.vim'         " tmux status line
@@ -142,7 +141,7 @@ colorscheme blackwolf
 
 " set the status line the way Derek Wyatt likes it
 " (doesn't work with status line plugins like Airline)
-set stl=%f\ %m\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
+set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
 
 syntax on              " syntax highlighting
 set ruler              " show the cursor position all the time
@@ -152,22 +151,17 @@ set wildmenu           " visual command-line completion
 set cpoptions+=$       " $ as end marker for the change operator
 set autoindent         " always set autoindenting on
 set linebreak          " break lines without breaking words
-set list               " show invisible characters
+set list               " show 'listchars' characters
 set scrolloff=8        " keep some lines above & below for scope
 set winwidth=80        " minimum width for splits
 set winheight=15       " minimum height for splits
 
-" Windows/Linux font differences..
-if has('win32') || has('win32unix')
-  set listchars=tab:\|-,eol:¬,trail:·,extends:>,precedes:<
-else
-  set listchars=tab:▸\ ,eol:¬,trail:·,extends:❯,precedes:❮
-endif
+" how to display certain characters/indicators
+set listchars=tab:►\ ,eol:¬,trail:·,extends:>,precedes:<
 
-" highlight 81st column and beyond if reached,
-" sometimes doesn't work well with gvim,
-" see (:h ctermbg) if darkred doesn't fit with your colorscheme
+" highlight 81st column and beyond if reached
 highlight colorcolumn ctermbg=DarkRed
+highlight colorcolumn guibg=DarkRed
 call matchadd('colorcolumn', '\%81v.', 100)
 
 " default tab settings,
@@ -186,15 +180,12 @@ if has('gui_running')
   set guioptions-=r
   set guioptions-=R
 
+  " auto max window and set font, depending on OS
   if has('win32')
-    " auto max window (Windows)
     au GUIEnter * simalt ~x
-
     set guifont=liberation_mono:h11
   else
-    " auto max window
     set lines=999 columns=999
-
     set guifont=Liberation\ Mono\ 11
   endif
 endif
@@ -228,7 +219,7 @@ nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 nnoremap Y y$
 
 " swap ^/$ and H/L
-" only because I navigate by line more often
+" only because I never use H/M/L
 " and ^/$ are harder to reach for
 nnoremap ^ H
 nnoremap $ L
@@ -238,15 +229,13 @@ nnoremap L $
 " ctrl-a to select all
 noremap <C-a> <Esc>ggVG
 
-" ctrl-x to cut to the system clipboard
-vnoremap <C-x> "+x
-
-" ctrl-c to copy system clipboard
-vnoremap <C-c> "+y
+" ctrl-v to paste over visually selected text
+vnoremap <C-v> ca<Esc>x"+Pa
 
 " ctrl-v to paste in insert mode (from system clipboard)
 inoremap <C-v> a<Esc>x"+Pa
-" also remap ctrl-q for literal inserts
+
+" make sure ctrl-q does literal inserts
 inoremap <C-q> <C-v>
 
 " jump to the end of pasted text
@@ -316,24 +305,30 @@ map <Leader>es ;sp %%
 map <Leader>ev ;vsp %%
 map <Leader>et ;tabe %%
 
-" switch to last file, easier to reach than CTRL-^
-noremap <Leader><Tab> :e#<CR>
+" switch to last buffer
+nnoremap <Leader><Tab> :b#<CR>
+
+" delete buffer
+nnoremap <silent> <Leader>X :bd!<CR>
 
 " delete buffer, but not the split
-noremap <Leader>D :b#<CR>:bd!#<CR>
+nnoremap <silent> <Leader>D :b#<CR>:bd!#<CR>
 
 " open vimrc
-noremap <Leader>v :e $MYVIMRC<CR>
-noremap <Leader>V :tabnew $MYVIMRC<CR>
+nnoremap <Leader>v :e $MYVIMRC<CR>
+nnoremap <Leader>V :tabnew $MYVIMRC<CR>
+
+" toggle wrap
+nnoremap <Leader>w :setlocal wrap! wrap?<CR>
 
 " toggle relativenumber
-noremap <Leader>n :setlocal rnu! rnu?<CR>
+nnoremap <Leader>n :setlocal rnu!<CR>
 
 " toggle showing listchars
-noremap <Leader>l :set list! list?<CR>
+nnoremap <Leader>l :set list!<CR>
 
 " toggle search highlighting
-noremap <Leader>/ :set hlsearch! hls?<CR>
+nnoremap <Leader>/ :set hlsearch! hls?<CR>
 
 " copy and paste from system clipboard easier
 vnoremap <Leader>y "+y
@@ -345,8 +340,8 @@ vnoremap <Leader>P "+P
 " Column Scroll-Binding
 " This will vertically split the current buffer into two which will stay
 " scroll-locked together.  Allows you to see twice as much code at once
-" (disables the wrap setting and folds after being used)
-noremap <silent> <leader>sb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
+" (disables the wrap setting and expands folds to work better)
+nnoremap <silent> <leader>sb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
 
 " * COMMAND ALIASES *       {{{2
 
@@ -366,6 +361,15 @@ cabbrev bdall 0,9999bd!
 "
 " If you don't have a certain plugin installed, you
 " should remove or disable any corresponding settings
+
+" Fugitive {{{2
+nnoremap <Leader>gs :Gstatus<CR>
+nnoremap <Leader>gw :Gwrite<CR>
+nnoremap <Leader>gd :Gdiff<CR>
+nnoremap <Leader>gD :Gdiff HEAD<CR>
+nnoremap <Leader>gc :Gcommit<CR>
+nnoremap <Leader>gl :Git log<CR>
+nnoremap <Leader>gp :Git push<CR>
 
 " CtrlP {{{2
 " include hidden files
@@ -417,11 +421,6 @@ if has('win32') || has('win32unix')
 else
   let g:notes_directories = ['~/Dropbox/Notes']
 endif
-
-" vim-airline {{{2
-nnoremap <Leader>A :AirlineToggle<CR>
-" enable tabs, duh
-let g:airline#extensions#tabline#enabled = 1
 
 " Startify {{{2
 " custom header
