@@ -18,18 +18,15 @@
 " ** NEOBUNDLE ** (less stable, more featured Vundle)     {{{1
 " ============================================================
 
-" required begin {{{2
+" NeoBundle setup begin {{{2
 if has('vim_starting')
   if has('win32') || has('win32unix')
     set runtimepath+=~/vimfiles/bundle/neobundle.vim/
+    call neobundle#begin(expand('~/vimfiles/bundle'))
   else
     set runtimepath+=~/.vim/bundle/neobundle.vim/
+    call neobundle#begin(expand('~/.vim/bundle'))
   endif
-endif
-if has('win32') || has('win32unix')
-  call neobundle#begin(expand('~/vimfiles/bundle'))
-else
-  call neobundle#begin(expand('~/.vim/bundle'))
 endif
 
 NeoBundleFetch 'Shougo/neobundle.vim'    " The one.
@@ -43,12 +40,13 @@ NeoBundle 'scrooloose/NERDCommenter'     " intensely pleasant commenting
 NeoBundle 'xolox/vim-session'            " extension of default sessions
 NeoBundle 'xolox/vim-notes'              " note taking plugin
 NeoBundle 'xolox/vim-misc'               " ^session & notes requirement
-NeoBundle 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 NeoBundle 'kien/CtrlP.vim'               " fuzzy file/buffer search
+NeoBundle 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
+NeoBundle 'jlanzarotta/bufexplorer'      " buffer explorer/manager
 NeoBundle 'godlygeek/Tabular'            " text alignment plugin
-NeoBundle 'tommcdo/vim-exchange'         " easy text exchange for vim
-NeoBundle 'bkad/CamelCaseMotion'         " movement by camel case
+NeoBundle 'bkad/CamelCaseMotion'         " movement by CamelCase
 NeoBundle 'kurkale6ka/vim-pairs'         " new punctuation text objects
+NeoBundle 'tommcdo/vim-exchange'         " easy text exchange for vim
 NeoBundle 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
   NeoBundle 'sjl/Gundo.vim'              " visual undo tree
@@ -56,18 +54,19 @@ if has('python')
   NeoBundle 'honza/vim-snippets'         " preconfigured snippet package
 endif
 
-" *NEW/EXPERIMENTAL* {{{2
-
 " *AESTHETIC PLUGINS* {{{2
 NeoBundle 'flazz/vim-colorschemes'       " all the colorschemes
 NeoBundle 'AssailantLF/badwolf'          " a colorscheme
-NeoBundle 'bling/vim-airline'            " better looking UI
+"NeoBundle 'bling/vim-airline'            " better looking UI
+NeoBundle 'ap/vim-buftabline'            " list buffers like tabs
 NeoBundle 'mhinz/vim-Startify'           " nice startup screen
 NeoBundle 'edkolev/tmuxline.vim'         " tmux status line
 NeoBundle 'Yggdroot/indentLine'          " shows indents made by spaces
 
-" required end {{{2
+" NeoBundle setup end {{{2
 call neobundle#end()
+
+" enables filetype detection, ftplugins, and indent files 
 filetype plugin indent on
 
 " auto install plugins at startup
@@ -101,7 +100,7 @@ set undofile
 " set location to save undo files
 set undodir=~/vimfiles/undodir
 
-" create the undodir folder if it doesn't exist
+" create the undo history folder if it doesn't exist
 if !isdirectory(expand(&undodir))
     call mkdir(expand(&undodir), "p")
 endif
@@ -155,6 +154,8 @@ set autoindent         " always set autoindenting on
 set linebreak          " break lines without breaking words
 set list               " show invisible characters
 set scrolloff=8        " keep some lines above & below for scope
+set winwidth=80        " minimum width for splits
+set winheight=15       " minimum height for splits
 
 " Windows/Linux font differences..
 if has('win32') || has('win32unix')
@@ -170,10 +171,11 @@ highlight colorcolumn ctermbg=DarkRed
 call matchadd('colorcolumn', '\%81v.', 100)
 
 " default tab settings,
-" see :h ftplugins for more
+" see :h ftplugins for more, because I have
+" different preferences depending on the file type
 set tabstop=2 softtabstop=4 shiftwidth=2 expandtab
 
-" gvim specific
+" gvim specific, who needs a tiny gvimrc?
 if has('gui_running')
 
   " remove the menu, toolbar, and scrollbars
@@ -217,14 +219,6 @@ noremap : ;
 noremap  v    <C-v>
 noremap <C-v>  v
 
-" swap ^/$ and H/L
-" only because I navigate by line more often
-" and ^/$ are harder to reach for
-nnoremap ^ H
-nnoremap $ L
-nnoremap H ^
-nnoremap L $
-
 " [S]plit line (sister to [J]oin lines)
 " cc still substitutes the line like S would
 nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
@@ -233,13 +227,27 @@ nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 " yy still yanks the whole line
 nnoremap Y y$
 
-" ctrl-c to copy system clipboard, because habits
+" swap ^/$ and H/L
+" only because I navigate by line more often
+" and ^/$ are harder to reach for
+nnoremap ^ H
+nnoremap $ L
+nnoremap H ^
+nnoremap L $
+
+" ctrl-a to select all
+noremap <C-a> <Esc>ggVG
+
+" ctrl-x to cut to the system clipboard
+vnoremap <C-x> "+x
+
+" ctrl-c to copy system clipboard
 vnoremap <C-c> "+y
 
 " ctrl-v to paste in insert mode (from system clipboard)
 inoremap <C-v> a<Esc>x"+Pa
-" also remap ctrl-l for literal inserts
-inoremap <C-l> <C-v>
+" also remap ctrl-q for literal inserts
+inoremap <C-q> <C-v>
 
 " jump to the end of pasted text
 " useful for pasting multi-lines of text
@@ -251,16 +259,13 @@ nnoremap p p`]
 noremap <Up> <C-u>
 noremap <Down> <C-d>
 
-" left and right arrow keys scroll through buffers
+" left and right arrow keys to scroll through buffers
 noremap <Left> :bp<CR>
 noremap <Right> :bn<CR>
 
 " * CONVENIENCE MAPS *       {{{2
 
-" select all text
-noremap vaa ggVG
-
-" quit all, like ZQ on all windows
+" quit all, basically ZQ on all windows
 noremap ZA :qa!<CR>
 
 " maps to make handling windows a bit easier {{{
@@ -280,17 +285,15 @@ noremap <silent> ,ml <C-W>L
 noremap <silent> ,mk <C-W>K
 noremap <silent> ,mh <C-W>H
 noremap <silent> ,mj <C-W>J
+noremap <silent> ,mx <C-W>x
 " resizing windows
 noremap <silent> ,o     :wincmd o<CR>
-noremap <silent> ,=     :wincmd =<CR>
-noremap <silent> ,_     :wincmd _<CR>
-noremap <silent> ,<Bar> :wincmd <Bar><CR>
 noremap <silent> <C-Left>  :vertical resize -10<CR>
 noremap <silent> <C-Up>    :resize +10<CR>
 noremap <silent> <C-Down>  :resize -10<CR>
 noremap <silent> <C-Right> :vertical resize +10<CR>
 " closing windows
-noremap <silent> ,cc :close<CR>
+noremap <silent> ,x :close<CR>
 noremap <silent> ,cj :wincmd j<CR>:close<CR>
 noremap <silent> ,ck :wincmd k<CR>:close<CR>
 noremap <silent> ,ch :wincmd h<CR>:close<CR>
@@ -317,7 +320,7 @@ map <Leader>et ;tabe %%
 noremap <Leader><Tab> :e#<CR>
 
 " delete buffer, but not the split
-noremap <Leader>D :bp<CR>:bd!#<CR>
+noremap <Leader>D :b#<CR>:bd!#<CR>
 
 " open vimrc
 noremap <Leader>v :e $MYVIMRC<CR>
@@ -364,19 +367,21 @@ cabbrev bdall 0,9999bd!
 " If you don't have a certain plugin installed, you
 " should remove or disable any corresponding settings
 
+" CtrlP {{{2
+" include hidden files
+let g:ctrlp_show_hidden = 1
+" specific directory search
+nnoremap <Leader><C-p> :CtrlP 
+
 " FileBeagle {{{2
 " show hidden files by default
 let g:filebeagle_show_hidden = 1
 " open specific directory
 nnoremap <Leader><C-f> :FileBeagle 
 
-" CtrlP {{{2
-" include dotfiles/directories in search
-let g:ctrlp_show_hidden = 1
-" buffer search
-nnoremap <Leader>b :CtrlPBuffer<CR>
-" specific directory search
-nnoremap <Leader><C-p> :CtrlP 
+" BufExplorer {{{2
+let g:bufExplorerDisableDefaultKeyMapping=1
+nnoremap <Leader>b :BufExplorer<CR>
 
 " Tabular {{{2
 noremap <Leader>= :Tabularize/
