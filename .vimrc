@@ -218,14 +218,6 @@ nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 " yy still yanks the whole line
 nnoremap Y y$
 
-" swap ^/$ and H/L
-" only because I never use H/M/L
-" and ^/$ are harder to reach for
-nnoremap ^ H
-nnoremap $ L
-nnoremap H ^
-nnoremap L $
-
 " quick insert mode navigation
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
@@ -287,9 +279,9 @@ noremap <silent> ,cl :wincmd l<CR>:close<CR>
 " leader the easiest key to reach
 let mapleader = " "
 
-" expands %% to current buffer's directory in command-line mode.
+" expands %% to current file's directory in command-line mode.
 " only placed under Leader Maps for the below commands
-cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<cr>
+cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
 
 " edit files from current file's directory without switching directories
 " open in (w)indow (s)plit (v)split or (t)ab
@@ -297,6 +289,10 @@ map <Leader>ew ;e %%
 map <Leader>es ;sp %%
 map <Leader>ev ;vsp %%
 map <Leader>et ;tabe %%
+
+" open vimrc
+nnoremap <Leader>v :e $MYVIMRC<CR>
+nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 
 " switch to last buffer
 nnoremap <Leader><Tab> :b#<CR>
@@ -306,10 +302,6 @@ nnoremap <silent> <Leader>X :bd!<CR>
 
 " delete buffer, but not the split
 nnoremap <silent> <Leader>D :b#<CR>:bd!#<CR>
-
-" open vimrc
-nnoremap <Leader>v :e $MYVIMRC<CR>
-nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 
 " toggle wrap
 nnoremap <Leader>w :setlocal wrap! wrap?<CR>
@@ -422,17 +414,17 @@ endif
 " Startify {{{2
 " custom header
 let g:startify_custom_header = [
-      \ '                                               ',
-      \ '         ___________________________           ',
-      \ '        /                           \          ',
-      \ '        |     VIM - Vi IMproved     |          ',
-      \ '        |       version 7.4         |          ',
-      \ '        |  by Bram Moolenaar et al. |          ',
-      \ '        \_________   _______________/          ',
-      \ '                  \ / ^__^                     ',
-      \ '                   \\ (oo)\_______             ',
-      \ '                    \ (__)\       )\/\         ',
-      \ '                          ||----w |            ',
-      \ '                          ||     ||            ',
-      \ '                                               ',
+      \ '                                             ',
+      \ '       ___________________________           ',
+      \ '      /                           \          ',
+      \ '      |     VIM - Vi IMproved     |          ',
+      \ '      |       version 7.4         |          ',
+      \ '      |  by Bram Moolenaar et al. |          ',
+      \ '      \_________   _______________/          ',
+      \ '                \ / ^__^                     ',
+      \ '                 \\ (oo)\_______             ',
+      \ '                  \ (__)\       )\/\         ',
+      \ '                        ||----w |            ',
+      \ '                        ||     ||            ',
+      \ '                                             ',
       \ ]
