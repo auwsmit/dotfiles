@@ -226,34 +226,7 @@ nnoremap $ L
 nnoremap H ^
 nnoremap L $
 
-" ctrl-plus and ctrl-minus to add and subtract numbers
-nnoremap <C-+> <C-a>
-nnoremap <C--> <C-x>
-
-" Old habits that won't die {{{
-
-" ctrl-a to select all
-noremap <C-a> <Esc>ggVG
-
-" ctrl-c to copy text (to system clipboard)
-vnoremap <C-c> "+y
-
-" ctrl-v to paste over visually selected text (from system clipboard)
-vnoremap <C-v> ca<Esc>x"+Pa
-
-" ctrl-v to paste in insert mode (system clipboard)
-inoremap <C-v> a<Esc>x"+Pa
-" }}}
-
-" make sure ctrl-q does literal inserts
-inoremap <C-q> <C-v>
-
-" jump to the end of pasted text
-" useful for pasting multi-lines of text
-vnoremap p p`]
-nnoremap p p`]
-
-" non-arrow insert mode navigation
+" quick insert mode navigation
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
 inoremap <C-k> <Up>
@@ -266,6 +239,11 @@ noremap <Down> <C-d>
 " left and right arrow keys to scroll through buffers
 noremap <Left> :bp<CR>
 noremap <Right> :bn<CR>
+
+" jump to the end of pasted text
+" useful for pasting multi-lines of text
+vnoremap p p`]
+nnoremap p p`]
 
 " * CONVENIENCE MAPS *       {{{2
 
@@ -392,8 +370,12 @@ let g:ctrlp_show_hidden = 1
 " specific directory search
 nnoremap <Leader><C-p> :CtrlP 
 
+" quick access to recent files and buffers
+nnoremap <Leader><C-e> :CtrlPMRUFiles<CR>
+nnoremap <Leader><C-b> :CtrlPBuffer<CR>
+
 " FileBeagle {{{2
-" show hidden files by default
+" show hidden files
 let g:filebeagle_show_hidden = 1
 " open specific directory
 nnoremap <Leader><C-f> :FileBeagle 
@@ -440,16 +422,17 @@ endif
 " Startify {{{2
 " custom header
 let g:startify_custom_header = [
-      \ '__/\\\________/\\\___________________________        ',
-      \ ' _\/\\\_______\/\\\___________________________       ',
-      \ '  _\//\\\______/\\\___/\\\_____________________      ',
-      \ '   __\//\\\____/\\\___\///_____/\\\\\__/\\\\\___     ',
-      \ '    ___\//\\\__/\\\_____/\\\__/\\\///\\\\\///\\\_    ',
-      \ '     ____\//\\\/\\\_____\/\\\_\/\\\_\//\\\__\/\\\_   ',
-      \ '      _____\//\\\\\______\/\\\_\/\\\__\/\\\__\/\\\_  ',
-      \ '       ______\//\\\_______\/\\\_\/\\\__\/\\\__\/\\\_ ',
-      \ '        _______\///________\///__\///___\///___\///__',
-      \ '',
-      \ '',
+      \ '                                               ',
+      \ '         ___________________________           ',
+      \ '        /                           \          ',
+      \ '        |     VIM - Vi IMproved     |          ',
+      \ '        |       version 7.4         |          ',
+      \ '        |  by Bram Moolenaar et al. |          ',
+      \ '        \_________   _______________/          ',
+      \ '                  \ / ^__^                     ',
+      \ '                   \\ (oo)\_______             ',
+      \ '                    \ (__)\       )\/\         ',
+      \ '                          ||----w |            ',
+      \ '                          ||     ||            ',
+      \ '                                               ',
       \ ]
-
