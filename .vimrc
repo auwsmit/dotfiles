@@ -2,6 +2,8 @@
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Source: https://github.com/AssailantLF/vimrc
 
+" Organized with folds, try to use them
+
 " ** HELP ON HELP **                                      {{{1
 " ============================================================
 
@@ -15,8 +17,9 @@
 " Beginner video on how to use, navigate, and search for help:
 "   http://derekwyatt.org/vim/tutorials/novice/#Help
 
-" ** NEOBUNDLE ** (less stable, more featured Vundle)     {{{1
+" ** NEOBUNDLE **                                         {{{1
 " ============================================================
+" (less stable, more featured Vundle)
 
 " NeoBundle setup begin {{{2
 if has('vim_starting')
@@ -56,8 +59,8 @@ endif
 
 " *AESTHETIC PLUGINS* {{{2
 NeoBundle 'flazz/vim-colorschemes'       " all the colorschemes
-NeoBundle 'AssailantLF/blackwolf.vim'    " my colorscheme
-NeoBundle 'ap/vim-buftabline'            " list buffers like tabs
+NeoBundle 'AssailantLF/blackwolf'        " my colorscheme
+NeoBundle 'bling/vim-airline'            " better looking UI
 NeoBundle 'mhinz/vim-Startify'           " nice startup screen
 NeoBundle 'edkolev/tmuxline.vim'         " tmux status line
 NeoBundle 'Yggdroot/indentLine'          " shows indents made by spaces
@@ -71,19 +74,18 @@ filetype plugin indent on
 " auto install plugins at startup
 NeoBundleCheck
 
-" ** GENERAL **                                           {{{1
+" ** GENERAL SETTINGS **                                           {{{1
 " ============================================================
 
 " use Vim settings over Vi settings
 set nocompatible
 
-set encoding=utf-8       " consistent character encoding
 set backspace=2          " backspace like most programs in insert mode
 set history=1000         " keep x lines of command line history
 set browsedir=buffer     " open browser in current buffer directory
-set formatoptions=croq1j " see :h fo-table
 set hidden               " allow more than one modified buffer
 set showcmd              " display incomplete commands
+set wildmenu             " visual command-line completion
 set incsearch            " do incremental searching
 set ignorecase           " search isn't case sensitive
 set autoread             " auto reload changed files
@@ -93,11 +95,15 @@ set nofoldenable         " disable folds, zi to toggle
 set lazyredraw           " redraw only when we need to
 set splitright           " open new v-splits to the right
 
-" save undo history to a file
+" save undo history
 set undofile
 
 " set location to save undo files
-set undodir=~/vimfiles/undodir
+if has('win32') || has('win32unix')
+  set undodir=~/vimfiles/undodir
+else
+  set undodir=~/.vim/undodir
+endif
 
 " create the undo history folder if it doesn't exist
 if !isdirectory(expand(&undodir))
@@ -105,13 +111,10 @@ if !isdirectory(expand(&undodir))
 endif
 
 " disable automatically generated backup files
-" this has yet to become an issue
+" I live on the edge
 set nobackup
 set nowritebackup
 set noswapfile
-
-" use decimal instead of octal with ctrl-a and ctrl-x
-set nrformats=
 
 " enable mouse because why not
 if has('mouse')
@@ -127,34 +130,16 @@ augroup line_return
         \ endif
 augroup END
 
-" ** APPEARANCE **                                        {{{1
+" ** TEXT AND FORMATTING **                                   {{{1
 " ============================================================
 
-" 256 color terminal, helps with terminal colorschemes
-if has('unix')
-  set t_Co=256
-endif
-
-" vim colorscheme
-colorscheme desert     " fallback default colorscheme
-colorscheme blackwolf
-
-" set the status line the way Derek Wyatt likes it
-" (doesn't work with status line plugins like Airline)
-set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
-
-syntax on              " syntax highlighting
-set ruler              " show the cursor position all the time
-set number             " show line numbers
-set laststatus=2       " always show status bar
-set wildmenu           " visual command-line completion
-set cpoptions+=$       " $ as end marker for the change operator
-set autoindent         " always set autoindenting on
-set linebreak          " break lines without breaking words
-set list               " show 'listchars' characters
-set scrolloff=8        " keep some lines above & below for scope
-set winwidth=80        " minimum width for splits
-set winheight=15       " minimum height for splits
+set encoding=utf-8      " consistent character encoding
+set formatoptions=roq1j " see :h fo-table
+set cpoptions+=$        " $ as end marker for the change operator
+set autoindent          " always set autoindenting on
+set smartindent         " trying out smartindent for C
+set linebreak           " break lines without breaking words
+set list                " show 'listchars' characters
 
 " how to display certain characters/indicators
 set listchars=tab:►\ ,eol:¬,trail:·,extends:>,precedes:<
@@ -168,6 +153,28 @@ call matchadd('colorcolumn', '\%81v.', 100)
 " see :h ftplugins for more, because I have
 " different preferences depending on the file type
 set tabstop=2 softtabstop=4 shiftwidth=2 expandtab
+
+" use decimal instead of octal with ctrl-a and ctrl-x
+set nrformats=
+
+" ** AESTHETIC/APPEARANCE **                                        {{{1
+" ============================================================
+
+" vim colorscheme
+colorscheme desert     " fallback default colorscheme
+colorscheme blackwolf
+
+syntax on              " syntax highlighting
+set ruler              " show the cursor position all the time
+set number             " show line numbers
+set laststatus=2       " always show status bar
+set scrolloff=5        " keep some lines above & below for scope
+set winwidth=80        " minimum width for splits
+set winheight=15       " minimum height for splits
+
+" set the status line the way Derek Wyatt likes it
+" (doesn't work with status line plugins like Airline)
+set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
 
 " gvim specific, who needs a tiny gvimrc?
 if has('gui_running')
@@ -190,8 +197,13 @@ if has('gui_running')
   endif
 endif
 
+" 256 color terminal, helps with terminal colorschemes
+if has('unix')
+  set t_Co=256
+endif
+
 " resize splits when the window is resized
-" change ; to : if you get an error
+" change ; to : if there's an error
 au VimResized * ;wincmd =
 
 " ** KEYS/MAPS/ALIASES **                                 {{{1
@@ -209,6 +221,9 @@ noremap : ;
 " swap v and ctrl+v because block mode is better
 noremap  v    <C-v>
 noremap <C-v>  v
+
+" CTRL-Q for Quit, I never use Ex-mode
+noremap <C-q> :quit<CR>
 
 " [S]plit line (sister to [J]oin lines)
 " cc still substitutes the line like S would
@@ -330,7 +345,7 @@ nnoremap <silent> <leader>sb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR
 
 " * COMMAND ALIASES *       {{{2
 
-" clear trailing white spaces
+" Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
 
 " List To Line
@@ -341,7 +356,7 @@ cabbrev ltl s/, /, \r/g
 " delete all buffers
 cabbrev bdall 0,9999bd!
 
-" ** VIM PLUGINS SETTINGS **                              {{{1
+" ** PLUGIN SETTINGS **                              {{{1
 " ============================================================
 "
 " If you don't have a certain plugin installed, you
@@ -411,6 +426,11 @@ else
   let g:notes_directories = ['~/Dropbox/Notes']
 endif
 
+" vim-airline {{{2
+nnoremap <Leader>A :AirlineToggle<CR>
+" enable tabs, duh
+let g:airline#extensions#tabline#enabled = 1
+
 " Startify {{{2
 " custom header
 let g:startify_custom_header = [
@@ -423,7 +443,7 @@ let g:startify_custom_header = [
       \ '      \_________   _______________/          ',
       \ '                \ / ^__^                     ',
       \ '                 \\ (oo)\_______             ',
-      \ '                  \ (__)\       )\/\         ',
+      \ '                    (__)\       )\/\         ',
       \ '                        ||----w |            ',
       \ '                        ||     ||            ',
       \ '                                             ',
