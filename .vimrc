@@ -4,32 +4,21 @@
 
 " Organized with folds, try to use them
 
-" ** HELP ON HELP **                                      {{{1
-" ============================================================
-
-" Generally, it's always good to :h[elp] any key mapping,
-" setting, function, etc. that you don't understand. Vim has
-" very convenient help documentation based on several Vi/Vim
-" manuals, and if you take the time to RTFM, you will be
-" surprised how quickly you're learning things, and you'll
-" wish everything else had similar documentation.
-
-" Beginner video on how to use, navigate, and search for help:
-"   http://derekwyatt.org/vim/tutorials/novice/#Help
-
 " ** NEOBUNDLE **                                         {{{1
 " ============================================================
 " (less stable, more featured Vundle)
 
-" NeoBundle setup begin {{{2
+" NeoBundle startup begin {{{2
+
+" Windows/Linux differences *sigh*
+let g:myvimdir ="~/.vim"
+if has('win32') || has('win32unix')
+  let g:myvimdir ="~/vimfiles"
+endif
+
 if has('vim_starting')
-  if has('win32') || has('win32unix')
-    set runtimepath+=~/vimfiles/bundle/neobundle.vim/
-    call neobundle#begin(expand('~/vimfiles/bundle'))
-  else
-    set runtimepath+=~/.vim/bundle/neobundle.vim/
-    call neobundle#begin(expand('~/.vim/bundle'))
-  endif
+  let &runtimepath.=',' . g:myvimdir . "/bundle/neobundle.vim/"
+  call neobundle#begin(expand(g:myvimdir . "/bundle"))
 endif
 
 NeoBundleFetch 'Shougo/neobundle.vim'    " The one.
@@ -65,7 +54,7 @@ NeoBundle 'mhinz/vim-Startify'           " nice startup screen
 NeoBundle 'edkolev/tmuxline.vim'         " tmux status line
 NeoBundle 'Yggdroot/indentLine'          " shows indents made by spaces
 
-" NeoBundle setup end {{{2
+" NeoBundle startup end {{{2
 call neobundle#end()
 
 " enables filetype detection, ftplugins, and indent files 
@@ -99,11 +88,7 @@ set splitright           " open new v-splits to the right
 set undofile
 
 " set location to save undo files
-if has('win32') || has('win32unix')
-  set undodir=~/vimfiles/undodir
-else
-  set undodir=~/.vim/undodir
-endif
+let &undodir=g:myvimdir."/undodir"
 
 " create the undo history folder if it doesn't exist
 if !isdirectory(expand(&undodir))
@@ -171,6 +156,7 @@ set laststatus=2       " always show status bar
 set scrolloff=5        " keep some lines above & below for scope
 set winwidth=80        " minimum width for splits
 set winheight=15       " minimum height for splits
+set t_Co=256           " allow more colors
 
 " set the status line the way Derek Wyatt likes it
 " (doesn't work with status line plugins like Airline)
@@ -195,11 +181,6 @@ if has('gui_running')
     set lines=999 columns=999
     set guifont=Liberation\ Mono\ 11
   endif
-endif
-
-" 256 color terminal, helps with terminal colorschemes
-if has('unix')
-  set t_Co=256
 endif
 
 " resize splits when the window is resized
@@ -256,6 +237,9 @@ nnoremap p p`]
 
 " quit all, basically ZQ on all windows
 noremap ZA :qa!<CR>
+
+" visually select all
+nnoremap vsa ggVG
 
 " maps to make handling windows a bit easier {{{
 " mostly replaces ctrl+W with comma
@@ -405,11 +389,7 @@ let g:syntastic_check_on_open=1
 let g:syntastic_enable_signs=1
 
 " vim-sessions {{{2
-if has('win32') || has('win32unix')
-  let g:session_directory = expand('~/vimfiles/session')
-else
-  let g:session_directory = '~/.vim/session'
-endif
+let g:session_directory = g:myvimdir.'/session'
 
 let g:session_autoload        = "no"
 let g:session_autosave        = "no"
@@ -438,7 +418,7 @@ let g:startify_custom_header = [
       \ '       ___________________________           ',
       \ '      /                           \          ',
       \ '      |     VIM - Vi IMproved     |          ',
-      \ '      |       version 7.4         |          ',
+      \ '      |        version 7.4        |          ',
       \ '      |  by Bram Moolenaar et al. |          ',
       \ '      \_________   _______________/          ',
       \ '                \ / ^__^                     ',
