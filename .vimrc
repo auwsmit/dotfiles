@@ -4,66 +4,62 @@
 
 " Organized with folds, try to use them
 
-" ** NEOBUNDLE **                                         {{{1
+" ** VIM-PLUG **                                          {{{1
 " ============================================================
-" (less stable, more featured Vundle)
+" (minimalist plugin manager)
 
-" NeoBundle startup begin {{{2
-
+" REQUIRED {{{2
 " Windows/Linux differences *sigh*
 let g:myvimdir ="~/.vim"
 if has('win32') || has('win32unix')
   let g:myvimdir ="~/vimfiles"
 endif
 
-if has('vim_starting')
-  let &runtimepath.=',' . g:myvimdir . "/bundle/neobundle.vim/"
-  call neobundle#begin(expand(g:myvimdir . "/bundle"))
-endif
+" don't load plugins if Vim-Plug isn't installed
+if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
-NeoBundleFetch 'Shougo/neobundle.vim'    " The one.
+call plug#begin()
+" }}}
 
-" *CORE PLUGINS* {{{2
-NeoBundle 'tpope/vim-surround'           " surroundings manipulation
-NeoBundle 'tpope/vim-fugitive'           " git integration
-NeoBundle 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
-NeoBundle 'scrooloose/Syntastic.git'     " real time error checking
-NeoBundle 'scrooloose/NERDCommenter'     " intensely pleasant commenting
-NeoBundle 'xolox/vim-session'            " extension of default sessions
-NeoBundle 'xolox/vim-notes'              " note taking plugin
-NeoBundle 'xolox/vim-misc'               " ^session & notes requirement
-NeoBundle 'kien/CtrlP.vim'               " fuzzy file/buffer search
-NeoBundle 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
-NeoBundle 'jlanzarotta/bufexplorer'      " buffer explorer/manager
-NeoBundle 'godlygeek/Tabular'            " text alignment plugin
-NeoBundle 'bkad/CamelCaseMotion'         " movement by CamelCase
-NeoBundle 'kurkale6ka/vim-pairs'         " new punctuation text objects
-NeoBundle 'tommcdo/vim-exchange'         " easy text exchange for vim
-NeoBundle 'majutsushi/Tagbar'            " view ctags easily
+" *CORE PLUGINS*
+Plug 'tpope/vim-surround'           " surroundings manipulation
+Plug 'tpope/vim-fugitive'           " git integration
+Plug 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
+Plug 'scrooloose/Syntastic.git'     " real time error checking
+Plug 'scrooloose/NERDCommenter'     " intensely pleasant commenting
+Plug 'xolox/vim-session'            " extension of default sessions
+Plug 'xolox/vim-notes'              " note taking plugin
+Plug 'xolox/vim-misc'               " ^session & notes requirement
+Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
+Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
+Plug 'jlanzarotta/bufexplorer'      " buffer explorer/manager
+Plug 'godlygeek/Tabular'            " text alignment plugin
+Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
+Plug 'kurkale6ka/vim-pairs'         " new punctuation text objects
+Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
+Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
-  NeoBundle 'sjl/Gundo.vim'              " visual undo tree
-  NeoBundle 'SirVer/UltiSnips'           " snippet plugin
-  NeoBundle 'honza/vim-snippets'         " preconfigured snippet package
+  Plug 'sjl/Gundo.vim'              " visual undo tree
+  Plug 'SirVer/UltiSnips'           " snippet plugin
+  Plug 'honza/vim-snippets'         " preconfigured snippet package
 endif
 
-" *AESTHETIC PLUGINS* {{{2
-NeoBundle 'flazz/vim-colorschemes'       " all the colorschemes
-NeoBundle 'AssailantLF/blackwolf'        " my colorscheme
-NeoBundle 'bling/vim-airline'            " better looking UI
-NeoBundle 'mhinz/vim-Startify'           " nice startup screen
-NeoBundle 'edkolev/tmuxline.vim'         " tmux status line
-NeoBundle 'Yggdroot/indentLine'          " shows indents made by spaces
+" *AESTHETIC PLUGINS*
+Plug 'flazz/vim-colorschemes'       " all the colorschemes
+Plug 'AssailantLF/blackwolf'        " my colorscheme
+Plug 'bling/vim-airline'            " better looking UI
+Plug 'mhinz/vim-Startify'           " nice startup screen
+Plug 'edkolev/tmuxline.vim'         " tmux status line
+Plug 'Yggdroot/indentLine'          " shows indents made by spaces
 
-" NeoBundle startup end {{{2
-call neobundle#end()
-
+" REQUIRED {{{2
 " enables filetype detection, ftplugins, and indent files 
 filetype plugin indent on
 
-" auto install plugins at startup
-NeoBundleCheck
+call plug#end()
+endif " }}}
 
-" ** GENERAL SETTINGS **                                           {{{1
+" ** GENERAL SETTINGS **                                  {{{1
 " ============================================================
 
 " use Vim settings over Vi settings
@@ -85,10 +81,10 @@ set lazyredraw           " redraw only when we need to
 set splitright           " open new v-splits to the right
 
 " save undo history
-set undofile
+silent! set undofile
 
 " set location to save undo files
-let &undodir=g:myvimdir."/undodir"
+let &undodir=expand(g:myvimdir."/undodir")
 
 " create the undo history folder if it doesn't exist
 if !isdirectory(expand(&undodir))
@@ -115,7 +111,7 @@ augroup line_return
         \ endif
 augroup END
 
-" ** TEXT AND FORMATTING **                                   {{{1
+" ** TEXT AND FORMATTING **                               {{{1
 " ============================================================
 
 set encoding=utf-8      " consistent character encoding
@@ -124,7 +120,7 @@ set cpoptions+=$        " $ as end marker for the change operator
 set autoindent          " always set autoindenting on
 set smartindent         " trying out smartindent for C
 set linebreak           " break lines without breaking words
-set list                " show 'listchars' characters
+set list                " don't show 'listchars' characters
 
 " how to display certain characters/indicators
 set listchars=tab:►\ ,eol:¬,trail:·,extends:>,precedes:<
@@ -136,18 +132,19 @@ call matchadd('colorcolumn', '\%81v.', 100)
 
 " default tab settings,
 " see :h ftplugins for more, because I have
-" different preferences depending on the file type
+" different preferences depending on file type
 set tabstop=2 softtabstop=4 shiftwidth=2 expandtab
 
 " use decimal instead of octal with ctrl-a and ctrl-x
 set nrformats=
 
-" ** AESTHETIC/APPEARANCE **                                        {{{1
+" ** AESTHETIC/APPEARANCE **                              {{{1
 " ============================================================
 
-" vim colorscheme
+" default colorscheme
 colorscheme desert     " fallback default colorscheme
-colorscheme blackwolf
+silent! colorscheme blackwolf
+
 
 syntax on              " syntax highlighting
 set ruler              " show the cursor position all the time
@@ -340,11 +337,8 @@ cabbrev ltl s/, /, \r/g
 " delete all buffers
 cabbrev bdall 0,9999bd!
 
-" ** PLUGIN SETTINGS **                              {{{1
+" ** PLUGIN SETTINGS **                                   {{{1
 " ============================================================
-"
-" If you don't have a certain plugin installed, you
-" should remove or disable any corresponding settings
 
 " Fugitive {{{2
 nnoremap <Leader>gs :Gstatus<CR>
