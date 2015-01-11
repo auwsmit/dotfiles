@@ -1,3 +1,4 @@
+
 " vimrc
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Source: https://github.com/AssailantLF/vimrc
@@ -18,46 +19,46 @@ endif
 " don't load plugins if Vim-Plug isn't installed
 if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
-call plug#begin()
-" }}}
+  call plug#begin() " }}}
 
-" *CORE PLUGINS*
-Plug 'tpope/vim-surround'           " surroundings manipulation
-Plug 'tpope/vim-fugitive'           " git integration
-Plug 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
-Plug 'scrooloose/Syntastic.git'     " real time error checking
-Plug 'scrooloose/NERDCommenter'     " intensely pleasant commenting
-Plug 'xolox/vim-session'            " extension of default sessions
-Plug 'xolox/vim-notes'              " note taking plugin
-Plug 'xolox/vim-misc'               " ^session & notes requirement
-Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
-Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
-Plug 'jlanzarotta/bufexplorer'      " buffer explorer/manager
-Plug 'godlygeek/Tabular'            " text alignment plugin
-Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
-Plug 'kurkale6ka/vim-pairs'         " new punctuation text objects
-Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
-Plug 'majutsushi/Tagbar'            " view ctags easily
-if has('python')
-  Plug 'sjl/Gundo.vim'              " visual undo tree
-  Plug 'SirVer/UltiSnips'           " snippet plugin
-  Plug 'honza/vim-snippets'         " preconfigured snippet package
+  " *CORE PLUGINS*
+  Plug 'tpope/vim-surround'           " surroundings manipulation
+  Plug 'tpope/vim-fugitive'           " git integration
+  Plug 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
+  Plug 'scrooloose/Syntastic'         " real time error checking
+  Plug 'scrooloose/NERDCommenter'     " intensely pleasant commenting
+  Plug 'xolox/vim-session'            " extension of default sessions
+  Plug 'xolox/vim-notes'              " note taking plugin
+  Plug 'xolox/vim-misc'               " ^session & notes requirement
+  Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
+  Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
+  Plug 'jlanzarotta/bufexplorer'      " buffer explorer/manager
+  Plug 'godlygeek/Tabular'            " text alignment plugin
+  Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
+  Plug 'kurkale6ka/vim-pairs'         " new punctuation text objects
+  Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
+  Plug 'majutsushi/Tagbar'            " view ctags easily
+  if has('python')
+    Plug 'sjl/Gundo.vim'              " visual undo tree
+    Plug 'SirVer/UltiSnips'           " snippet plugin
+    Plug 'honza/vim-snippets'         " preconfigured snippet package
+  endif
+
+  " *AESTHETIC PLUGINS*
+  Plug 'flazz/vim-colorschemes'       " all the colorschemes
+  Plug 'AssailantLF/blackwolf'        " my colorscheme
+  Plug 'bling/vim-airline'            " better looking UI
+  Plug 'mhinz/vim-Startify'           " nice startup screen
+  Plug 'edkolev/tmuxline.vim'         " tmux status line
+  Plug 'Yggdroot/indentLine'          " shows indents made by spaces
+
+  " REQUIRED {{{2
+  call plug#end()
 endif
 
-" *AESTHETIC PLUGINS*
-Plug 'flazz/vim-colorschemes'       " all the colorschemes
-Plug 'AssailantLF/blackwolf'        " my colorscheme
-Plug 'bling/vim-airline'            " better looking UI
-Plug 'mhinz/vim-Startify'           " nice startup screen
-Plug 'edkolev/tmuxline.vim'         " tmux status line
-Plug 'Yggdroot/indentLine'          " shows indents made by spaces
-
-" REQUIRED {{{2
 " enables filetype detection, ftplugins, and indent files 
 filetype plugin indent on
-
-call plug#end()
-endif " }}}
+" }}}
 
 " ** GENERAL SETTINGS **                                  {{{1
 " ============================================================
@@ -200,7 +201,7 @@ noremap : ;
 noremap  v    <C-v>
 noremap <C-v>  v
 
-" CTRL-Q for Quit, I never use Ex-mode
+" CTRL-Q for Quit
 noremap <C-q> :quit<CR>
 
 " [S]plit line (sister to [J]oin lines)
@@ -217,11 +218,11 @@ inoremap <C-j> <Down>
 inoremap <C-k> <Up>
 inoremap <C-l> <Right>
 
-" up and down arrow keys for half-page scrolling
-noremap <Up> <C-u>
-noremap <Down> <C-d>
+" up and down arrow keys scroll through tabs
+noremap <Up> :tabnext<CR>
+noremap <Down> :tabprev<CR>
 
-" left and right arrow keys to scroll through buffers
+" left and right arrow keys scroll through buffers
 noremap <Left> :bp<CR>
 noremap <Right> :bn<CR>
 
@@ -230,45 +231,33 @@ noremap <Right> :bn<CR>
 vnoremap p p`]
 nnoremap p p`]
 
+" { and } skip over folds when they're closed
+nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
+nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
+
+" reselect visual block after indent
+vnoremap < <gv
+vnoremap > >gv
+
 " * CONVENIENCE MAPS *       {{{2
 
 " quit all, basically ZQ on all windows
 noremap ZA :qa!<CR>
 
 " visually select all
-nnoremap vsa ggVG
+nnoremap vaa ggVG
 
-" maps to make handling windows a bit easier {{{
-" mostly replaces ctrl+W with comma
-"
-" creating windows
-noremap <silent> ,s :wincmd s<CR>
-noremap <silent> ,v :wincmd v<CR>
 " navigating between windows
 noremap <silent> <C-h> <C-W>h<CR>
 noremap <silent> <C-j> <C-W>j<CR>
 noremap <silent> <C-k> <C-W>k<CR>
 noremap <silent> <C-l> <C-W>l<CR>
-noremap <silent> ,p :wincmd p<CR>
-" moving windows around
-noremap <silent> ,ml <C-W>L
-noremap <silent> ,mk <C-W>K
-noremap <silent> ,mh <C-W>H
-noremap <silent> ,mj <C-W>J
-noremap <silent> ,mx <C-W>x
+
 " resizing windows
-noremap <silent> ,o     :wincmd o<CR>
 noremap <silent> <C-Left>  :vertical resize -10<CR>
 noremap <silent> <C-Up>    :resize +10<CR>
 noremap <silent> <C-Down>  :resize -10<CR>
 noremap <silent> <C-Right> :vertical resize +10<CR>
-" closing windows
-noremap <silent> ,x :close<CR>
-noremap <silent> ,cj :wincmd j<CR>:close<CR>
-noremap <silent> ,ck :wincmd k<CR>:close<CR>
-noremap <silent> ,ch :wincmd h<CR>:close<CR>
-noremap <silent> ,cl :wincmd l<CR>:close<CR>
-" }}}
 
 " * LEADER MAPS *             {{{2
 
@@ -342,12 +331,13 @@ cabbrev bdall 0,9999bd!
 
 " Fugitive {{{2
 nnoremap <Leader>gs :Gstatus<CR>
-nnoremap <Leader>gw :Gwrite<CR>
 nnoremap <Leader>gd :Gdiff<CR>
 nnoremap <Leader>gD :Gdiff HEAD<CR>
 nnoremap <Leader>gc :Gcommit<CR>
 nnoremap <Leader>gl :Git log<CR>
 nnoremap <Leader>gp :Git push<CR>
+nnoremap <Leader>gw :Gwrite<CR>
+nnoremap <Leader>gr :Gremove<CR>
 
 " CtrlP {{{2
 " include hidden files
