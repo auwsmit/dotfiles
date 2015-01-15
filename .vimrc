@@ -1,25 +1,27 @@
-
 " vimrc
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Source: https://github.com/AssailantLF/vimrc
 
 " Organized with folds, try to use them
 
+" ** STARTUP **                                           {{{1
+" ============================================================
+
+" Windows/Linux differences
+" I don't really own/use Macs currently
+let s:running_windows = has("win16") || has("win32") || has("win64")
+let g:myvimdir ="~/.vim"
+if s:running_windows
+  let g:myvimdir ="~/vimfiles"
+endif
+
 " ** VIM-PLUG **                                          {{{1
 " ============================================================
 " (minimalist plugin manager)
 
-" REQUIRED {{{2
-" Windows/Linux differences *sigh*
-let g:myvimdir ="~/.vim"
-if has('win32') || has('win32unix')
-  let g:myvimdir ="~/vimfiles"
-endif
-
 " don't load plugins if Vim-Plug isn't installed
 if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
-
-  call plug#begin() " }}}
+  call plug#begin()
 
   " *CORE PLUGINS*
   Plug 'tpope/vim-surround'           " surroundings manipulation
@@ -50,15 +52,12 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   Plug 'bling/vim-airline'            " better looking UI
   Plug 'mhinz/vim-Startify'           " nice startup screen
   Plug 'edkolev/tmuxline.vim'         " tmux status line
-  Plug 'Yggdroot/indentLine'          " shows indents made by spaces
-
-  " REQUIRED {{{2
+  Plug 'Yggdroot/indentLine'          " shows indents made of spaces
   call plug#end()
 endif
 
 " enables filetype detection, ftplugins, and indent files 
 filetype plugin indent on
-" }}}
 
 " ** GENERAL SETTINGS **                                  {{{1
 " ============================================================
@@ -67,8 +66,8 @@ filetype plugin indent on
 set nocompatible
 
 set backspace=2          " backspace like most programs in insert mode
+set laststatus=2         " always show status bar
 set history=1000         " keep x lines of command line history
-set browsedir=buffer     " open browser in current buffer directory
 set hidden               " allow more than one modified buffer
 set showcmd              " display incomplete commands
 set wildmenu             " visual command-line completion
@@ -126,31 +125,36 @@ set list                " don't show 'listchars' characters
 " how to display certain characters/indicators
 set listchars=tab:►\ ,eol:¬,trail:·,extends:>,precedes:<
 
-" highlight 81st column and beyond if reached
-highlight colorcolumn ctermbg=DarkRed
-highlight colorcolumn guibg=DarkRed
-call matchadd('colorcolumn', '\%81v.', 100)
-
 " default tab settings,
 " see :h ftplugins for more, because I have
 " different preferences depending on file type
-set tabstop=2 softtabstop=4 shiftwidth=2 expandtab
+set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 
 " use decimal instead of octal with ctrl-a and ctrl-x
 set nrformats=
 
-" ** AESTHETIC/APPEARANCE **                              {{{1
+" fonts
+if s:running_windows
+  set guifont=DejaVu_Sans_Mono:h11
+else
+  set guifont=Liberation\ Mono\ 11
+end
+
+" ** APPEARANCE/AESTHETIC **                              {{{1
 " ============================================================
 
 " default colorscheme
 colorscheme desert     " fallback default colorscheme
 silent! colorscheme blackwolf
 
+" highlight 81st column and beyond if reached
+highlight colorcolumn ctermbg=DarkRed
+highlight colorcolumn guibg=DarkRed
+call matchadd('colorcolumn', '\%81v.', 100)
 
 syntax on              " syntax highlighting
 set ruler              " show the cursor position all the time
 set number             " show line numbers
-set laststatus=2       " always show status bar
 set scrolloff=5        " keep some lines above & below for scope
 set winwidth=80        " minimum width for splits
 set winheight=15       " minimum height for splits
@@ -160,25 +164,20 @@ set t_Co=256           " allow more colors
 " (doesn't work with status line plugins like Airline)
 set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
 
-" gvim specific, who needs a tiny gvimrc?
-if has('gui_running')
+" remove the menu, toolbar, and scrollbars
+set guioptions-=m
+set guioptions-=T
+set guioptions-=l
+set guioptions-=L
+set guioptions-=r
+set guioptions-=R
 
-  " remove the menu, toolbar, and scrollbars
-  set guioptions-=m
-  set guioptions-=T
-  set guioptions-=l
-  set guioptions-=L
-  set guioptions-=r
-  set guioptions-=R
-
-  " auto max window and set font, depending on OS
-  if has('win32')
-    au GUIEnter * simalt ~x
-    set guifont=liberation_mono:h11
-  else
-    set lines=999 columns=999
-    set guifont=Liberation\ Mono\ 11
-  endif
+" maximize window, doesn't always work
+" with terminal vim and some Linux distros
+if s:running_windows
+  au GUIEnter * simalt ~x
+else
+  call system('wmctrl -i -b add,maximized_vert,maximized_horz -r '.v:windowid)
 endif
 
 " resize splits when the window is resized
@@ -194,8 +193,8 @@ au VimResized * ;wincmd =
 " * REMAPS OF DEFAULTS *      {{{2
 
 " swap ; and : for pinky's sake
-noremap ; :
 noremap : ;
+noremap ; :
 
 " swap v and ctrl+v because block mode is better
 noremap  v    <C-v>
@@ -234,10 +233,6 @@ nnoremap p p`]
 " { and } skip over folds when they're closed
 nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
 nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
-
-" reselect visual block after indent
-vnoremap < <gv
-vnoremap > >gv
 
 " * CONVENIENCE MAPS *       {{{2
 
@@ -344,16 +339,17 @@ nnoremap <Leader>gr :Gremove<CR>
 let g:ctrlp_show_hidden = 1
 " specific directory search
 nnoremap <Leader><C-p> :CtrlP 
-
 " quick access to recent files and buffers
 nnoremap <Leader><C-e> :CtrlPMRUFiles<CR>
 nnoremap <Leader><C-b> :CtrlPBuffer<CR>
 
 " FileBeagle {{{2
+" no default maps
+let g:filebeagle_suppress_keymaps = 1
 " show hidden files
 let g:filebeagle_show_hidden = 1
 " open specific directory
-nnoremap <Leader><C-f> :FileBeagle 
+nnoremap <Leader>f :FileBeagle 
 
 " BufExplorer {{{2
 let g:bufExplorerDisableDefaultKeyMapping=1
@@ -368,9 +364,20 @@ nnoremap <Leader>u :GundoToggle<CR>
 " Tagbar {{{2
 nnoremap <Leader>t :TagbarToggle<CR>
 
+" CamelCaseMotion {{{2
+" use CCM by default
+map <silent> w <Plug>CamelCaseMotion_w
+map <silent> b <Plug>CamelCaseMotion_b
+map <silent> e <Plug>CamelCaseMotion_e
+sunmap w
+sunmap b
+sunmap e
+nnoremap ,w w
+nnoremap ,b b
+nnoremap ,e e
+
 " Syntastic {{{2
 let g:syntastic_check_on_open=1
-let g:syntastic_enable_signs=1
 
 " vim-sessions {{{2
 let g:session_directory = g:myvimdir.'/session'
@@ -384,7 +391,7 @@ cabbrev SD DeleteSession
 cabbrev SC CloseSession
 
 " vim-notes {{{2
-if has('win32') || has('win32unix')
+if s:running_windows
   let g:notes_directories = ['X:\Cloud\Dropbox\Notes']
 else
   let g:notes_directories = ['~/Dropbox/Notes']
