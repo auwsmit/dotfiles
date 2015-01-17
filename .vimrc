@@ -19,42 +19,53 @@ endif
 " ============================================================
 " (minimalist plugin manager)
 
-" don't load plugins if Vim-Plug isn't installed
-if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
-  call plug#begin()
-
-  " *CORE PLUGINS*
-  Plug 'tpope/vim-surround'           " surroundings manipulation
-  Plug 'tpope/vim-fugitive'           " git integration
-  Plug 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
-  Plug 'scrooloose/Syntastic'         " real time error checking
-  Plug 'scrooloose/NERDCommenter'     " intensely pleasant commenting
-  Plug 'xolox/vim-session'            " extension of default sessions
-  Plug 'xolox/vim-notes'              " note taking plugin
-  Plug 'xolox/vim-misc'               " ^session & notes requirement
-  Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
-  Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
-  Plug 'jlanzarotta/bufexplorer'      " buffer explorer/manager
-  Plug 'godlygeek/Tabular'            " text alignment plugin
-  Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
-  Plug 'kurkale6ka/vim-pairs'         " new punctuation text objects
-  Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
-  Plug 'majutsushi/Tagbar'            " view ctags easily
-  if has('python')
-    Plug 'sjl/Gundo.vim'              " visual undo tree
-    Plug 'SirVer/UltiSnips'           " snippet plugin
-    Plug 'honza/vim-snippets'         " preconfigured snippet package
+" Install Vim-Plug if it isn't installed {{{2
+if !filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
+  echo "Installing Vim-Plug and plugins. Restart after it's done."
+  silent call mkdir(expand(g:myvimdir . "/autoload", 1), 'p')
+  if s:running_windows
+    silent! execute "!curl -kfLo ".expand($USERPROFILE . "\\vimfiles\\autoload\\plug.vim", 1)
+          \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+  else
+    silent! execute "!curl -fLo ".expand(g:myvimdir . "/autoload/plug.vim", 1)
+          \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   endif
+  autocmd VimEnter * PlugInstall
+endif " }}}
 
-  " *AESTHETIC PLUGINS*
-  Plug 'flazz/vim-colorschemes'       " all the colorschemes
-  Plug 'AssailantLF/blackwolf'        " my colorscheme
-  Plug 'bling/vim-airline'            " better looking UI
-  Plug 'mhinz/vim-Startify'           " nice startup screen
-  Plug 'edkolev/tmuxline.vim'         " tmux status line
-  Plug 'Yggdroot/indentLine'          " shows indents made of spaces
-  call plug#end()
+call plug#begin()
+
+" *CORE PLUGINS*
+Plug 'tpope/vim-surround'           " surroundings manipulation
+Plug 'tpope/vim-fugitive'           " git integration
+Plug 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
+Plug 'scrooloose/Syntastic'         " real time error checking
+Plug 'scrooloose/NERDCommenter'     " intensely pleasant commenting
+Plug 'xolox/vim-session'            " extension of default sessions
+Plug 'xolox/vim-notes'              " note taking plugin
+Plug 'xolox/vim-misc'               " ^session & notes requirement
+Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
+Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
+Plug 'jlanzarotta/bufexplorer'      " buffer explorer/manager
+Plug 'godlygeek/Tabular'            " text alignment plugin
+Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
+Plug 'kurkale6ka/vim-pairs'         " new punctuation text objects
+Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
+Plug 'majutsushi/Tagbar'            " view ctags easily
+if has('python')
+  Plug 'sjl/Gundo.vim'              " visual undo tree
+  Plug 'SirVer/UltiSnips'           " snippet plugin
+  Plug 'honza/vim-snippets'         " preconfigured snippet package
 endif
+
+" *AESTHETIC PLUGINS*
+"Plug 'flazz/vim-colorschemes'       " all the colorschemes
+Plug 'AssailantLF/blackwolf'        " my colorscheme
+Plug 'bling/vim-airline'            " better looking UI
+Plug 'mhinz/vim-Startify'           " nice startup screen
+Plug 'edkolev/tmuxline.vim'         " tmux status line
+Plug 'Yggdroot/indentLine'          " shows indents made of spaces
+call plug#end()
 
 " enables filetype detection, ftplugins, and indent files 
 filetype plugin indent on
@@ -143,34 +154,34 @@ end
 " ** APPEARANCE/AESTHETIC **                              {{{1
 " ============================================================
 
-" default colorscheme
-colorscheme desert     " fallback default colorscheme
-silent! colorscheme blackwolf
-
-" highlight 81st column and beyond if reached
-highlight colorcolumn ctermbg=DarkRed
-highlight colorcolumn guibg=DarkRed
-call matchadd('colorcolumn', '\%81v.', 100)
-
 syntax on              " syntax highlighting
 set ruler              " show the cursor position all the time
 set number             " show line numbers
 set scrolloff=5        " keep some lines above & below for scope
 set winwidth=80        " minimum width for splits
 set winheight=15       " minimum height for splits
+set guioptions=        " remove extra gui elements
 set t_Co=256           " allow more colors
+
+if s:running_windows   " trick to support 256 colors in conemu for Windows
+  set term=xterm
+  let &t_AF="\e[38;5;%dm"
+  let &t_AB="\e[48;5;%dm"
+endif
+
+" highlight 81st column and beyond if reached
+highlight colorcolumn ctermbg=DarkRed
+highlight colorcolumn guibg=DarkRed
+call matchadd('colorcolumn', '\%81v.', 100)
+
+" fallback default colorscheme
+colorscheme desert
+" colorscheme of choice
+silent! colorscheme blackwolf
 
 " set the status line the way Derek Wyatt likes it
 " (doesn't work with status line plugins like Airline)
 set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
-
-" remove the menu, toolbar, and scrollbars
-set guioptions-=m
-set guioptions-=T
-set guioptions-=l
-set guioptions-=L
-set guioptions-=r
-set guioptions-=R
 
 " maximize window, doesn't always work
 " with terminal vim and some Linux distros
@@ -324,6 +335,9 @@ cabbrev bdall 0,9999bd!
 " ** PLUGIN SETTINGS **                                   {{{1
 " ============================================================
 
+" Don't load any settings without plugins installed
+if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
+
 " Fugitive {{{2
 nnoremap <Leader>gs :Gstatus<CR>
 nnoremap <Leader>gd :Gdiff<CR>
@@ -348,7 +362,9 @@ nnoremap <Leader><C-b> :CtrlPBuffer<CR>
 let g:filebeagle_suppress_keymaps = 1
 " show hidden files
 let g:filebeagle_show_hidden = 1
-" open specific directory
+" open current buffer directory
+map <silent> - <Plug>FileBeagleOpenCurrentBufferDir
+" open a specific directory
 nnoremap <Leader>f :FileBeagle 
 
 " BufExplorer {{{2
@@ -398,6 +414,9 @@ else
 endif
 
 " vim-airline {{{2
+" theme
+let g:airline_theme = 'base16'
+" airline toggle
 nnoremap <Leader>A :AirlineToggle<CR>
 " enable tabs, duh
 let g:airline#extensions#tabline#enabled = 1
@@ -419,3 +438,5 @@ let g:startify_custom_header = [
       \ '                        ||     ||            ',
       \ '                                             ',
       \ ]
+
+endif
