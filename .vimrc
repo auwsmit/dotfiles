@@ -169,15 +169,15 @@ if s:running_windows   " trick to support 256 colors in conemu for Windows
   let &t_AB="\e[48;5;%dm"
 endif
 
-" highlight 81st column and beyond if reached
-highlight colorcolumn ctermbg=DarkRed
-highlight colorcolumn guibg=DarkRed
-call matchadd('colorcolumn', '\%81v.', 100)
-
 " fallback default colorscheme
 colorscheme desert
 " colorscheme of choice
 silent! colorscheme blackwolf
+
+" highlight 81st column and beyond if reached
+highlight colorcolumn ctermbg=DarkRed
+highlight colorcolumn guibg=DarkRed
+call matchadd('colorcolumn', '\%81v.', 100)
 
 " set the status line the way Derek Wyatt likes it
 " (doesn't work with status line plugins like Airline)
