@@ -15,11 +15,18 @@ if s:running_windows
   let g:myvimdir ="~/vimfiles"
 endif
 
+" use Vim settings over Vi settings
+set nocompatible
+
+" enables filetype detection, ftplugins, and indent files 
+filetype plugin indent on
+
 " ** VIM-PLUG **                                          {{{1
 " ============================================================
 " (minimalist plugin manager)
 
 " Install Vim-Plug if it isn't installed {{{2
+" (requires curl and git)
 if !filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   echo "Installing Vim-Plug and plugins. Restart after it's done."
   silent call mkdir(expand(g:myvimdir . "/autoload", 1), 'p')
@@ -35,7 +42,7 @@ endif " }}}
 
 call plug#begin()
 
-" *CORE PLUGINS*
+" *PRIMARY PLUGINS*
 Plug 'tpope/vim-surround'           " surroundings manipulation
 Plug 'tpope/vim-fugitive'           " git integration
 Plug 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
@@ -59,25 +66,19 @@ if has('python')
 endif
 
 " *AESTHETIC PLUGINS*
-"Plug 'flazz/vim-colorschemes'       " all the colorschemes
+Plug 'flazz/vim-colorschemes'       " all the colorschemes
 Plug 'AssailantLF/blackwolf'        " my colorscheme
 Plug 'bling/vim-airline'            " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
 Plug 'edkolev/tmuxline.vim'         " tmux status line
 Plug 'Yggdroot/indentLine'          " shows indents made of spaces
-call plug#end()
 
-" enables filetype detection, ftplugins, and indent files 
-filetype plugin indent on
+call plug#end()
 
 " ** GENERAL SETTINGS **                                  {{{1
 " ============================================================
 
-" use Vim settings over Vi settings
-set nocompatible
-
 set backspace=2          " backspace like most programs in insert mode
-set laststatus=2         " always show status bar
 set history=1000         " keep x lines of command line history
 set hidden               " allow more than one modified buffer
 set showcmd              " display incomplete commands
@@ -87,7 +88,7 @@ set ignorecase           " search isn't case sensitive
 set autoread             " auto reload changed files
 set vb t_vb=             " plz stop the beeping
 set foldmethod=marker    " default fold method
-set nofoldenable         " disable folds, zi to toggle
+set nofoldenable         " all folds open initially
 set lazyredraw           " redraw only when we need to
 set splitright           " open new v-splits to the right
 
@@ -122,6 +123,38 @@ augroup line_return
         \ endif
 augroup END
 
+" ** APPEARANCE/UI **                                     {{{1
+" ============================================================
+
+" fallback default colorscheme
+colorscheme desert
+" colorscheme of choice
+silent! colorscheme blackwolf
+
+syntax on         " syntax highlighting
+set laststatus=2  " always show status bar
+set ruler         " show the cursor position all the time
+set number        " show line numbers
+set scrolloff=5   " keep some lines above & below for scope
+set guioptions=   " remove extra gui elements
+set t_Co=256      " allow more colors
+
+" set the status line the way Derek Wyatt likes it
+" (doesn't work with status line plugins like Airline)
+set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
+
+" maximize window, doesn't always work
+" with terminal vim and some Linux distros
+if s:running_windows
+  au GUIEnter * simalt ~x
+else
+  call system('wmctrl -i -b add,maximized_vert,maximized_horz -r '.v:windowid)
+endif
+
+" resize splits when the window is resized
+" change ; to : if there's an error
+au VimResized * ;wincmd =
+
 " ** TEXT AND FORMATTING **                               {{{1
 " ============================================================
 
@@ -151,49 +184,13 @@ else
   set guifont=Liberation\ Mono\ 11
 end
 
-" ** APPEARANCE/AESTHETIC **                              {{{1
-" ============================================================
-
-syntax on              " syntax highlighting
-set ruler              " show the cursor position all the time
-set number             " show line numbers
-set scrolloff=5        " keep some lines above & below for scope
-set winwidth=80        " minimum width for splits
-set winheight=15       " minimum height for splits
-set guioptions=        " remove extra gui elements
-set t_Co=256           " allow more colors
-
-if s:running_windows   " trick to support 256 colors in conemu for Windows
-  set term=xterm
-  let &t_AF="\e[38;5;%dm"
-  let &t_AB="\e[48;5;%dm"
-endif
-
-" fallback default colorscheme
-colorscheme desert
-" colorscheme of choice
-silent! colorscheme blackwolf
-
-" highlight 81st column and beyond if reached
+" highlight 81st column if reached
+" (must be set after applying syntax and colorscheme
+" or the highlight color might get reset)
+" Example line Example line Example line Example line Example line Example li>>>E<<<ple line 
 highlight colorcolumn ctermbg=DarkRed
 highlight colorcolumn guibg=DarkRed
 call matchadd('colorcolumn', '\%81v.', 100)
-
-" set the status line the way Derek Wyatt likes it
-" (doesn't work with status line plugins like Airline)
-set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
-
-" maximize window, doesn't always work
-" with terminal vim and some Linux distros
-if s:running_windows
-  au GUIEnter * simalt ~x
-else
-  call system('wmctrl -i -b add,maximized_vert,maximized_horz -r '.v:windowid)
-endif
-
-" resize splits when the window is resized
-" change ; to : if there's an error
-au VimResized * ;wincmd =
 
 " ** KEYS/MAPS/ALIASES **                                 {{{1
 " ============================================================
@@ -268,7 +265,7 @@ noremap <silent> <C-Right> :vertical resize +10<CR>
 " * LEADER MAPS *             {{{2
 
 " leader the easiest key to reach
-let mapleader = " "
+let mapleader = "\<Space>"
 
 " expands %% to current file's directory in command-line mode.
 " only placed under Leader Maps for the below commands
@@ -415,7 +412,7 @@ endif
 
 " vim-airline {{{2
 " theme
-let g:airline_theme = 'base16'
+let g:airline_theme = 'dark'
 " airline toggle
 nnoremap <Leader>A :AirlineToggle<CR>
 " enable tabs, duh
