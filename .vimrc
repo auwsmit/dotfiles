@@ -78,20 +78,20 @@ call plug#end()
 " ** GENERAL SETTINGS **                                  {{{1
 " ============================================================
 
-set backspace=2          " backspace like most programs in insert mode
-set history=1000         " keep x lines of command line history
-set hidden               " allow more than one modified buffer
-set showcmd              " display incomplete commands
-set wildmenu             " visual command-line completion
-set incsearch            " do incremental searching
-set ignorecase           " search isn't case sensitive
-set autoread             " auto reload changed files
-set vb t_vb=             " plz stop the beeping
-set foldmethod=marker    " default fold method
-set nofoldenable         " all folds open initially
-set lazyredraw           " redraw only when we need to
-set splitright           " open new v-splits to the right
-set gdefault             " global substitude by default
+set backspace=2       " backspace like most programs in insert mode
+set history=1000      " keep x lines of command line history
+set hidden            " allow more than one modified buffer
+set showcmd           " display incomplete commands
+set wildmenu          " visual command-line completion
+set incsearch         " do incremental searching
+set ignorecase        " search isn't case sensitive
+set autoread          " auto reload changed files
+set vb t_vb=          " plz stop the beeping
+set foldmethod=marker " default fold method
+set nofoldenable      " all folds open initially
+set lazyredraw        " redraw only when we need to
+set splitright        " open new v-splits to the right
+set gdefault          " global substitute by default
 
 " save undo history
 silent! set undofile
