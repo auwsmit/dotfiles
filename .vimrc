@@ -91,6 +91,7 @@ set foldmethod=marker    " default fold method
 set nofoldenable         " all folds open initially
 set lazyredraw           " redraw only when we need to
 set splitright           " open new v-splits to the right
+set gdefault             " global substitude by default
 
 " save undo history
 silent! set undofile
@@ -172,7 +173,7 @@ set listchars=tab:►\ ,eol:¬,trail:·,extends:>,precedes:<
 " default tab settings,
 " see :h ftplugins for more, because I have
 " different preferences depending on file type
-set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+set tabstop=4 shiftwidth=4 noexpandtab
 
 " use decimal instead of octal with ctrl-a and ctrl-x
 set nrformats=
@@ -201,12 +202,8 @@ call matchadd('colorcolumn', '\%81v.', 100)
 " * REMAPS OF DEFAULTS *      {{{2
 
 " swap ; and : for pinky's sake
-noremap : ;
 noremap ; :
-
-" swap v and ctrl+v because block mode is better
-noremap  v    <C-v>
-noremap <C-v>  v
+noremap : ;
 
 " CTRL-Q for Quit
 noremap <C-q> :quit<CR>
@@ -225,9 +222,10 @@ inoremap <C-j> <Down>
 inoremap <C-k> <Up>
 inoremap <C-l> <Right>
 
-" up and down arrow keys scroll through tabs
-noremap <Up> :tabnext<CR>
-noremap <Down> :tabprev<CR>
+" up and down arrow keys
+" scroll the screen like a browser
+noremap <Up> <C-y>
+noremap <Down> <C-e>
 
 " left and right arrow keys scroll through buffers
 noremap <Left> :bp<CR>
@@ -378,13 +376,14 @@ nnoremap <Leader>u :GundoToggle<CR>
 nnoremap <Leader>t :TagbarToggle<CR>
 
 " CamelCaseMotion {{{2
-" use CCM by default
+" use camel motion by default
 map <silent> w <Plug>CamelCaseMotion_w
 map <silent> b <Plug>CamelCaseMotion_b
 map <silent> e <Plug>CamelCaseMotion_e
 sunmap w
 sunmap b
 sunmap e
+" remap original movement keys
 nnoremap ,w w
 nnoremap ,b b
 nnoremap ,e e
@@ -412,7 +411,7 @@ endif
 
 " vim-airline {{{2
 " theme
-let g:airline_theme = 'dark'
+let g:airline_theme = 'base16'
 " airline toggle
 nnoremap <Leader>A :AirlineToggle<CR>
 " enable tabs, duh
