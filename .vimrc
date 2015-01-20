@@ -67,6 +67,7 @@ endif
 
 " *AESTHETIC PLUGINS*
 Plug 'flazz/vim-colorschemes'       " all the colorschemes
+Plug 'chriskempson/base16-vim'      " dat base16
 Plug 'AssailantLF/blackwolf'        " my colorscheme
 Plug 'bling/vim-airline'            " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
@@ -78,20 +79,20 @@ call plug#end()
 " ** GENERAL SETTINGS **                                  {{{1
 " ============================================================
 
-set backspace=2          " backspace like most programs in insert mode
-set history=1000         " keep x lines of command line history
-set hidden               " allow more than one modified buffer
-set showcmd              " display incomplete commands
-set wildmenu             " visual command-line completion
-set incsearch            " do incremental searching
-set ignorecase           " search isn't case sensitive
-set autoread             " auto reload changed files
-set vb t_vb=             " plz stop the beeping
-set foldmethod=marker    " default fold method
-set nofoldenable         " all folds open initially
-set lazyredraw           " redraw only when we need to
-set splitright           " open new v-splits to the right
-set gdefault             " global substitude by default
+set backspace=2       " backspace like most programs in insert mode
+set history=1000      " keep x lines of command line history
+set hidden            " allow more than one modified buffer
+set showcmd           " display incomplete commands
+set wildmenu          " visual command-line completion
+set incsearch         " do incremental searching
+set ignorecase        " search isn't case sensitive
+set autoread          " auto reload changed files
+set vb t_vb=          " plz stop the beeping
+set foldmethod=marker " default fold method
+set nofoldenable      " all folds open initially
+set lazyredraw        " redraw only when we need to
+set splitright        " open new v-splits to the right
+set gdefault          " global substitute by default
 
 " save undo history
 silent! set undofile
@@ -186,12 +187,26 @@ else
 end
 
 " highlight 81st column if reached
-" (must be set after applying syntax and colorscheme
-" or the highlight color might get reset)
 " Example line Example line Example line Example line Example line Example li>>>E<<<ple line 
-highlight colorcolumn ctermbg=DarkRed
-highlight colorcolumn guibg=DarkRed
-call matchadd('colorcolumn', '\%81v.', 100)
+function! MarkMargin (on)
+  highlight colorcolumn ctermbg=DarkRed
+  highlight colorcolumn guibg=DarkRed
+  if exists('b:MarkMargin')
+    try
+      call matchdelete(b:MarkMargin)
+    catch /./
+    endtry
+    unlet b:MarkMargin
+  endif
+  if a:on
+    let b:MarkMargin = matchadd('ColorColumn', '\%81v', 100)
+  endif
+endfunction
+
+augroup MarkMargin
+  autocmd!
+  autocmd BufEnter * :call MarkMargin(1)
+augroup END
 
 " ** KEYS/MAPS/ALIASES **                                 {{{1
 " ============================================================
@@ -288,18 +303,6 @@ nnoremap <silent> <Leader>X :bd!<CR>
 
 " delete buffer, but not the split
 nnoremap <silent> <Leader>D :b#<CR>:bd!#<CR>
-
-" toggle wrap
-nnoremap <Leader>w :setlocal wrap! wrap?<CR>
-
-" toggle relativenumber
-nnoremap <Leader>n :setlocal rnu!<CR>
-
-" toggle showing listchars
-nnoremap <Leader>l :set list!<CR>
-
-" toggle search highlighting
-nnoremap <Leader>/ :set hlsearch! hls?<CR>
 
 " copy and paste from system clipboard easier
 vnoremap <Leader>y "+y
