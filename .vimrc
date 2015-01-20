@@ -44,7 +44,7 @@ call plug#begin()
 
 " *PRIMARY PLUGINS*
 Plug 'tpope/vim-surround'           " surroundings manipulation
-Plug 'tpope/vim-fugitive'           " git integration
+Plug 'tpope/vim-fugitive'           " Git integration
 Plug 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'scrooloose/NERDCommenter'     " intensely pleasant commenting
@@ -58,6 +58,7 @@ Plug 'godlygeek/Tabular'            " text alignment plugin
 Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
 Plug 'kurkale6ka/vim-pairs'         " new punctuation text objects
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
+Plug 'terryma/vim-multiple-cursors' " multiple selection like Sublime
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
   Plug 'sjl/Gundo.vim'              " visual undo tree
