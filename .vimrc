@@ -67,7 +67,6 @@ endif
 
 " *AESTHETIC PLUGINS*
 Plug 'flazz/vim-colorschemes'       " all the colorschemes
-Plug 'chriskempson/base16-vim'      " dat base16
 Plug 'AssailantLF/blackwolf'        " my colorscheme
 Plug 'bling/vim-airline'            " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
@@ -231,6 +230,9 @@ nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 " yy still yanks the whole line
 nnoremap Y y$
 
+" go substitute because a map for sleeping is silly
+nnoremap gs :%s//<Left>
+
 " quick insert mode navigation
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
@@ -275,17 +277,20 @@ noremap <silent> <C-Up>    :resize +10<CR>
 noremap <silent> <C-Down>  :resize -10<CR>
 noremap <silent> <C-Right> :vertical resize +10<CR>
 
+" (go) Continuous Scroll-Binding
+" This will vertically split the current buffer into two which will stay
+" scroll-bound together.  Allows you to see twice as much code at once
+" (disables the wrap setting and expands folds to work better)
+nnoremap <silent> gcsb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
+
 " * LEADER MAPS *             {{{2
 
 " leader the easiest key to reach
 let mapleader = "\<Space>"
 
-" expands %% to current file's directory in command-line mode.
-" only placed under Leader Maps for the below commands
-cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
-
 " edit files from current file's directory without switching directories
-" open in (w)indow (s)plit (v)split or (t)ab
+" open in [w]indow [s]plit [v]split or [t]ab
+" (see Command Aliases section for more on %%)
 map <Leader>ew ;e %%
 map <Leader>es ;sp %%
 map <Leader>ev ;vsp %%
@@ -311,13 +316,10 @@ nnoremap <Leader>P "+P
 vnoremap <Leader>p "+p
 vnoremap <Leader>P "+P
 
-" Column Scroll-Binding
-" This will vertically split the current buffer into two which will stay
-" scroll-locked together.  Allows you to see twice as much code at once
-" (disables the wrap setting and expands folds to work better)
-nnoremap <silent> <leader>sb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
-
 " * COMMAND ALIASES *       {{{2
+
+" expands %% to current file's directory in command-line mode
+cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
 
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
