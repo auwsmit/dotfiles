@@ -28,7 +28,8 @@ filetype plugin indent on
 " Install Vim-Plug if it isn't installed {{{2
 " (requires curl and git)
 if !filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
-  echo "Installing Vim-Plug and plugins. Restart after it's done."
+  echo "Installing Vim-Plug and plugins,"
+  echo "restart Vim to finish installation."
   silent call mkdir(expand(g:myvimdir . "/autoload", 1), 'p')
   if s:running_windows
     silent! execute "!curl -kfLo ".expand($USERPROFILE . "\\vimfiles\\autoload\\plug.vim", 1)
@@ -161,7 +162,7 @@ au VimResized * ;wincmd =
 " ============================================================
 
 set encoding=utf-8      " consistent character encoding
-set formatoptions=roq1j " see :h fo-table
+set formatoptions=rq1j  " see :h fo-table
 set cpoptions+=$        " $ as end marker for the change operator
 set autoindent          " always set autoindenting on
 set smartindent         " trying out smartindent for C
@@ -234,6 +235,14 @@ nnoremap Y y$
 " go substitute because a map for sleeping is silly
 nnoremap gs :%s//<Left>
 
+" visually select the last paste or change
+nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
+
+" jump to the end of pasted text
+" useful for pasting multi-lines of text
+vnoremap p p`]
+nnoremap p p`]
+
 " quick insert mode navigation
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
@@ -248,11 +257,6 @@ noremap <Down> <C-e>
 " left and right arrow keys scroll through buffers
 noremap <Left> :bp<CR>
 noremap <Right> :bn<CR>
-
-" jump to the end of pasted text
-" useful for pasting multi-lines of text
-vnoremap p p`]
-nnoremap p p`]
 
 " { and } skip over folds when they're closed
 nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
@@ -336,7 +340,7 @@ cabbrev bdall 0,9999bd!
 " ** PLUGIN SETTINGS **                                   {{{1
 " ============================================================
 
-" Don't load any settings without plugins installed
+" Don't load any settings without Vim-Plug
 if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
 " Fugitive {{{2
@@ -380,19 +384,6 @@ nnoremap <Leader>u :GundoToggle<CR>
 
 " Tagbar {{{2
 nnoremap <Leader>t :TagbarToggle<CR>
-
-" CamelCaseMotion {{{2
-" use camel motion by default
-map <silent> w <Plug>CamelCaseMotion_w
-map <silent> b <Plug>CamelCaseMotion_b
-map <silent> e <Plug>CamelCaseMotion_e
-sunmap w
-sunmap b
-sunmap e
-" remap original movement keys
-nnoremap ,w w
-nnoremap ,b b
-nnoremap ,e e
 
 " Syntastic {{{2
 let g:syntastic_check_on_open=1
