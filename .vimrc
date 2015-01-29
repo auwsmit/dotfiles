@@ -26,16 +26,18 @@ filetype plugin indent on
 " (minimalist plugin manager)
 
 " Install Vim-Plug if it isn't installed {{{2
-" (requires curl and git)
+" (Windows needs curl, Linux needs curl or wget)
 if !filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   echo "Installing Vim-Plug and plugins,"
   echo "restart Vim to finish installation."
   silent call mkdir(expand(g:myvimdir . "/autoload", 1), 'p')
   if s:running_windows
-    silent! execute "!curl -kfLo ".expand($USERPROFILE . "\\vimfiles\\autoload\\plug.vim", 1)
+    sil execute "!curl -kfLo ".expand($userprofile . "\\vimfiles\\autoload\\plug.vim", 1)
           \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   else
-    silent! execute "!curl -fLo ".expand(g:myvimdir . "/autoload/plug.vim", 1)
+    sil execute "!wget -nc -q github.com/junegunn/vim-plug/raw/master/plug.vim -P "
+          \ .expand(g:myvimdir . "/autoload/", 1)
+    sil execute "!curl -fLo ".expand(g:myvimdir . "/autoload/plug.vim", 1)
           \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   endif
   autocmd VimEnter * PlugInstall
@@ -68,11 +70,10 @@ if has('python')
 endif
 
 " *AESTHETIC PLUGINS*
-Plug 'flazz/vim-colorschemes'       " all the colorschemes
+"Plug 'flazz/vim-colorschemes'       " all the colorschemes
 Plug 'AssailantLF/blackwolf'        " my colorscheme
 Plug 'bling/vim-airline'            " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
-Plug 'edkolev/tmuxline.vim'         " tmux status line
 Plug 'Yggdroot/indentLine'          " shows indents made of spaces
 
 call plug#end()
@@ -89,11 +90,10 @@ set incsearch         " do incremental searching
 set ignorecase        " search isn't case sensitive
 set autoread          " auto reload changed files
 set vb t_vb=          " plz stop the beeping
-set foldmethod=marker " default fold method
-set nofoldenable      " all folds open initially
 set lazyredraw        " redraw only when we need to
 set splitright        " open new v-splits to the right
 set gdefault          " global substitute by default
+set complete=.,w,b,t  " see :help 'complete'
 
 " save undo history
 silent! set undofile
@@ -103,7 +103,7 @@ let &undodir=expand(g:myvimdir."/undodir")
 
 " create the undo history folder if it doesn't exist
 if !isdirectory(expand(&undodir))
-    call mkdir(expand(&undodir), "p")
+  call mkdir(expand(&undodir), "p")
 endif
 
 " disable automatically generated backup files
@@ -119,8 +119,8 @@ endif
 
 " returns to the same line when you reopen a file
 augroup line_return
-    au!
-    au BufReadPost *
+  au!
+  au BufReadPost *
         \ if line("'\"") > 0 && line("'\"") <= line("$") |
         \     execute 'normal! g`"zvzz' |
         \ endif
@@ -129,18 +129,18 @@ augroup END
 " ** APPEARANCE/UI **                                     {{{1
 " ============================================================
 
+syntax on             " syntax highlighting
+set laststatus=2      " always show status bar
+set ruler             " show the cursor position all the time
+set number            " show line numbers
+set scrolloff=5       " keep some lines above & below for scope
+set guioptions=       " remove extra gui elements
+set t_Co=256          " allow more colors
+
 " fallback default colorscheme
 colorscheme desert
 " colorscheme of choice
 silent! colorscheme blackwolf
-
-syntax on         " syntax highlighting
-set laststatus=2  " always show status bar
-set ruler         " show the cursor position all the time
-set number        " show line numbers
-set scrolloff=5   " keep some lines above & below for scope
-set guioptions=   " remove extra gui elements
-set t_Co=256      " allow more colors
 
 " set the status line the way Derek Wyatt likes it
 " (doesn't work with status line plugins like Airline)
@@ -161,21 +161,36 @@ au VimResized * ;wincmd =
 " ** TEXT AND FORMATTING **                               {{{1
 " ============================================================
 
-set encoding=utf-8      " consistent character encoding
-set formatoptions=rq1j  " see :h fo-table
-set cpoptions+=$        " $ as end marker for the change operator
-set autoindent          " always set autoindenting on
-set smartindent         " trying out smartindent for C
-set linebreak           " break lines without breaking words
-set list                " don't show 'listchars' characters
+set encoding=utf-8    " consistent character encoding
+set cpoptions+=$      " $ as end marker for the change operator
+set autoindent        " always set autoindenting on
+set smartindent       " trying out smartindent for C
+set foldmethod=syntax " default fold method
+set nofoldenable      " all folds open initially
+set list              " don't show 'listchars' characters
 
 " how to display certain characters/indicators
 set listchars=tab:►\ ,eol:¬,trail:·,extends:>,precedes:<
 
-" default tab settings,
-" see :h ftplugins for more, because I have
-" different preferences depending on file type
-set tabstop=4 shiftwidth=4 noexpandtab
+" don't show trailing spaces in insert mode
+augroup trailing
+  au!
+  au InsertEnter * :set listchars-=trail:·
+  au InsertLeave * :set listchars+=trail:·
+augroup END
+
+" default tab/indent settings,
+set tabstop=4 shiftwidth=4
+
+" filetype specific formatting
+augroup filetype_format
+  au!
+  " constantly reset formatoptions because Vim's default
+  " ftplugins can overwrite them, which is lame
+  au BufEnter * :set formatoptions=rq1j
+  au FileType vim :setlocal ts=2 sts=0 sw=2 et fdm=marker
+  au FileType sh :setlocal ts=2 sts=0 sw=2 et
+augroup END
 
 " use decimal instead of octal with ctrl-a and ctrl-x
 set nrformats=
@@ -188,7 +203,8 @@ else
 end
 
 " highlight 81st column if reached
-" Example line Example line Example line Example line Example line Example li>>>E<<<ple line 
+" (may be slightly inaccurate with linebreak enabled)
+" Example line Example line Example line Example line Example line Example li>>>E<<<ple line
 function! MarkMargin (on)
   highlight colorcolumn ctermbg=DarkRed
   highlight colorcolumn guibg=DarkRed
@@ -233,21 +249,10 @@ nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 nnoremap Y y$
 
 " go substitute because a map for sleeping is silly
-nnoremap gs :%s//<Left>
+nnoremap gs :%s/\<\>/<Left><Left><Left>
 
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
-
-" jump to the end of pasted text
-" useful for pasting multi-lines of text
-vnoremap p p`]
-nnoremap p p`]
-
-" quick insert mode navigation
-inoremap <C-h> <Left>
-inoremap <C-j> <Down>
-inoremap <C-k> <Up>
-inoremap <C-l> <Right>
 
 " up and down arrow keys
 " scroll the screen like a browser
@@ -258,11 +263,25 @@ noremap <Down> <C-e>
 noremap <Left> :bp<CR>
 noremap <Right> :bn<CR>
 
+" move by wrapped lines instead of line numbers
+noremap j gj
+noremap k gk
+noremap gj j
+noremap gk k
+
 " { and } skip over folds when they're closed
 nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
 nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
 
+" jump to the end of pasted text
+" useful for pasting multi-lines of text
+vnoremap p p`]
+nnoremap p p`]
+
 " * CONVENIENCE MAPS *       {{{2
+
+" quick insert escape
+inoremap jk <Esc>
 
 " quit all, basically ZQ on all windows
 noremap ZA :qa!<CR>
@@ -270,17 +289,32 @@ noremap ZA :qa!<CR>
 " visually select all
 nnoremap vaa ggVG
 
+" change to current buffer's directory
+nnoremap cd expand('%:h:p')<CR>
+
+" quick insert mode navigation
+inoremap <C-h> <Left>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
+
 " navigating between windows
-noremap <silent> <C-h> <C-W>h<CR>
-noremap <silent> <C-j> <C-W>j<CR>
-noremap <silent> <C-k> <C-W>k<CR>
-noremap <silent> <C-l> <C-W>l<CR>
+noremap <silent> <C-h> <C-w>h<CR>
+noremap <silent> <C-j> <C-w>j<CR>
+noremap <silent> <C-k> <C-w>k<CR>
+noremap <silent> <C-l> <C-w>l<CR>
 
 " resizing windows
 noremap <silent> <C-Left>  :vertical resize -10<CR>
 noremap <silent> <C-Up>    :resize +10<CR>
 noremap <silent> <C-Down>  :resize -10<CR>
 noremap <silent> <C-Right> :vertical resize +10<CR>
+
+" Emacs beginning/end of text
+inoremap <C-a> <Esc>I
+inoremap <C-e> <Esc>A
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
 
 " (go) Continuous Scroll-Binding
 " This will vertically split the current buffer into two which will stay
@@ -305,13 +339,13 @@ map <Leader>et ;tabe %%
 nnoremap <Leader>v :e $MYVIMRC<CR>
 nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 
-" switch to last buffer
+" switch to last buffer, like alt+tab
 nnoremap <Leader><Tab> :b#<CR>
 
 " delete buffer
 nnoremap <silent> <Leader>X :bd!<CR>
 
-" delete buffer, but not the split
+" delete buffer, but not split
 nnoremap <silent> <Leader>D :b#<CR>:bd!#<CR>
 
 " copy and paste from system clipboard easier
@@ -343,93 +377,101 @@ cabbrev bdall 0,9999bd!
 " Don't load any settings without Vim-Plug
 if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
-" Fugitive {{{2
-nnoremap <Leader>gs :Gstatus<CR>
-nnoremap <Leader>gd :Gdiff<CR>
-nnoremap <Leader>gD :Gdiff HEAD<CR>
-nnoremap <Leader>gc :Gcommit<CR>
-nnoremap <Leader>gl :Git log<CR>
-nnoremap <Leader>gp :Git push<CR>
-nnoremap <Leader>gw :Gwrite<CR>
-nnoremap <Leader>gr :Gremove<CR>
+  " Fugitive {{{2
+  nnoremap <Leader>gs :Gstatus<CR>
+  nnoremap <Leader>gd :Gdiff<CR>
+  nnoremap <Leader>gD :Gdiff HEAD<CR>
+  nnoremap <Leader>gc :Gcommit<CR>
+  nnoremap <Leader>gl :Git log<CR>
+  nnoremap <Leader>gp :Git push<CR>
+  nnoremap <Leader>gw :Gwrite<CR>
+  nnoremap <Leader>gr :Gremove<CR>
 
-" CtrlP {{{2
-" include hidden files
-let g:ctrlp_show_hidden = 1
-" specific directory search
-nnoremap <Leader><C-p> :CtrlP 
-" quick access to recent files and buffers
-nnoremap <Leader><C-e> :CtrlPMRUFiles<CR>
-nnoremap <Leader><C-b> :CtrlPBuffer<CR>
+  " CtrlP {{{2
+  " include hidden files
+  let g:ctrlp_show_hidden = 1
+  " specific directory search
+  nnoremap <Leader><C-p> :CtrlP 
+  " quick access to recent files and buffers
+  nnoremap <Leader><C-e> :CtrlPMRUFiles<CR>
+  nnoremap <Leader><C-b> :CtrlPBuffer<CR>
 
-" FileBeagle {{{2
-" no default maps
-let g:filebeagle_suppress_keymaps = 1
-" show hidden files
-let g:filebeagle_show_hidden = 1
-" open current buffer directory
-map <silent> - <Plug>FileBeagleOpenCurrentBufferDir
-" open a specific directory
-nnoremap <Leader>f :FileBeagle 
+  " FileBeagle {{{2
+  " no default maps
+  let g:filebeagle_suppress_keymaps = 1
+  " show hidden files
+  let g:filebeagle_show_hidden = 1
+  " open current buffer directory
+  map <silent> - <Plug>FileBeagleOpenCurrentBufferDir
+  " open a specific directory
+  nnoremap <Leader>f :FileBeagle 
 
-" BufExplorer {{{2
-let g:bufExplorerDisableDefaultKeyMapping=1
-nnoremap <Leader>b :BufExplorer<CR>
+  " BufExplorer {{{2
+  let g:bufExplorerDisableDefaultKeyMapping=1
+  nnoremap <Leader>b :BufExplorer<CR>
 
-" Tabular {{{2
-noremap <Leader>= :Tabularize/
+  " Tabular {{{2
+  noremap <Leader>= :Tabularize/
 
-" Gundo {{{2
-nnoremap <Leader>u :GundoToggle<CR>
+  " Gundo {{{2
+  nnoremap <Leader>u :GundoToggle<CR>
 
-" Tagbar {{{2
-nnoremap <Leader>t :TagbarToggle<CR>
+  " Tagbar {{{2
+  nnoremap <Leader>t :TagbarToggle<CR>
 
-" Syntastic {{{2
-let g:syntastic_check_on_open=1
+  " CamelCaseMotion {{{2
+  " remap prefix to \ instead of ,
+  map <silent> \w <Plug>CamelCaseMotion_w
+  map <silent> \b <Plug>CamelCaseMotion_b
+  map <silent> \e <Plug>CamelCaseMotion_e
 
-" vim-sessions {{{2
-let g:session_directory = g:myvimdir.'/session'
+  " Syntastic {{{2
+  let g:syntastic_check_on_open=1
+  " reset Syntastic (clears errors and such)
+  nnoremap <Leader>S :SyntasticReset<CR>
 
-let g:session_autoload        = "no"
-let g:session_autosave        = "no"
-let g:session_command_aliases = 1
-cabbrev SO OpenSession
-cabbrev SS SaveSession
-cabbrev SD DeleteSession
-cabbrev SC CloseSession
+  " vim-sessions {{{2
+  let g:session_directory = g:myvimdir.'/session'
 
-" vim-notes {{{2
-if s:running_windows
-  let g:notes_directories = ['X:\Cloud\Dropbox\Notes']
-else
-  let g:notes_directories = ['~/Dropbox/Notes']
-endif
+  let g:session_autoload        = "no"
+  let g:session_autosave        = "no"
+  let g:session_command_aliases = 1
+  cabbrev SO OpenSession
+  cabbrev SS SaveSession
+  cabbrev SD DeleteSession
+  cabbrev SC CloseSession
 
-" vim-airline {{{2
-" theme
-let g:airline_theme = 'base16'
-" airline toggle
-nnoremap <Leader>A :AirlineToggle<CR>
-" enable tabs, duh
-let g:airline#extensions#tabline#enabled = 1
+  " vim-notes {{{2
+  if s:running_windows
+    let g:notes_directories = ['X:\Cloud\Dropbox\Notes']
+  else
+    let g:notes_directories = ['~/Dropbox/Notes']
+  endif
 
-" Startify {{{2
-" custom header
-let g:startify_custom_header = [
-      \ '                                             ',
-      \ '       ___________________________           ',
-      \ '      /                           \          ',
-      \ '      |     VIM - Vi IMproved     |          ',
-      \ '      |        version 7.4        |          ',
-      \ '      |  by Bram Moolenaar et al. |          ',
-      \ '      \_________   _______________/          ',
-      \ '                \ / ^__^                     ',
-      \ '                 \\ (oo)\_______             ',
-      \ '                    (__)\       )\/\         ',
-      \ '                        ||----w |            ',
-      \ '                        ||     ||            ',
-      \ '                                             ',
-      \ ]
+  " vim-airline {{{2
+  " theme
+  let g:airline_theme = 'base16'
+  " airline toggle
+  nnoremap <Leader>A :AirlineToggle<CR>
+  " enable tabs, duh
+  let g:airline#extensions#tabline#enabled = 1
+
+  " Startify {{{2
+  " custom header
+  let g:startify_custom_header = [
+        \ '                                             ',
+        \ '       ___________________________           ',
+        \ '      /                           \          ',
+        \ '      |     VIM - Vi IMproved     |          ',
+        \ '      |        version 7.4        |          ',
+        \ '      |  by Bram Moolenaar et al. |          ',
+        \ '      \_________   _______________/          ',
+        \ '                \ / ^__^                     ',
+        \ '                 \\ (oo)\_______             ',
+        \ '                    (__)\       )\/\         ',
+        \ '                        ||----w |            ',
+        \ '                        ||     ||            ',
+        \ '                                             ',
+        \ ]
 
 endif
