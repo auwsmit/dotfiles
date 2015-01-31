@@ -61,7 +61,6 @@ Plug 'godlygeek/Tabular'            " text alignment plugin
 Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
 Plug 'kurkale6ka/vim-pairs'         " new punctuation text objects
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
-Plug 'terryma/vim-multiple-cursors' " multiple selection like Sublime
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
   Plug 'sjl/Gundo.vim'              " visual undo tree
@@ -179,7 +178,7 @@ augroup trailing
   au InsertLeave * :set listchars+=trail:·
 augroup END
 
-" default tab/indent settings,
+" default tab/indent settings
 set tabstop=4 shiftwidth=4
 
 " filetype specific formatting
@@ -237,8 +236,8 @@ augroup END
 noremap ; :
 noremap : ;
 
-" CTRL-Q for Quit
-noremap <C-q> :quit<CR>
+" K for Kill window
+noremap K :quit<CR>
 
 " [S]plit line (sister to [J]oin lines)
 " cc still substitutes the line like S would
@@ -254,8 +253,7 @@ nnoremap gs :%s/\<\>/<Left><Left><Left>
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 
-" up and down arrow keys
-" scroll the screen like a browser
+" up and down arrow keys scroll the screen like a browser
 noremap <Up> <C-y>
 noremap <Down> <C-e>
 
@@ -269,7 +267,7 @@ noremap k gk
 noremap gj j
 noremap gk k
 
-" { and } skip over folds when they're closed
+" { and } skip over closed folds
 nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
 nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
 
@@ -280,19 +278,18 @@ nnoremap p p`]
 
 " * CONVENIENCE MAPS *       {{{2
 
-" quick insert escape
-inoremap jk <Esc>
+" change to current buffer's directory
+" (see Aliases section for more on %%)
+map <silent> cd ;cd %%<CR>
 
-" quit all, basically ZQ on all windows
+" quit all, basically ZQ on all windows; be very careful
 noremap ZA :qa!<CR>
 
 " visually select all
 nnoremap vaa ggVG
 
-" change to current buffer's directory
-nnoremap cd expand('%:h:p')<CR>
-
 " quick insert mode navigation
+" only for emergencies /s
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
 inoremap <C-k> <Up>
@@ -316,7 +313,7 @@ inoremap <C-e> <Esc>A
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
 
-" (go) Continuous Scroll-Binding
+" Go Continuous Scroll-Binding
 " This will vertically split the current buffer into two which will stay
 " scroll-bound together.  Allows you to see twice as much code at once
 " (disables the wrap setting and expands folds to work better)
@@ -329,7 +326,7 @@ let mapleader = "\<Space>"
 
 " edit files from current file's directory without switching directories
 " open in [w]indow [s]plit [v]split or [t]ab
-" (see Command Aliases section for more on %%)
+" (see Aliases section for more on %%)
 map <Leader>ew ;e %%
 map <Leader>es ;sp %%
 map <Leader>ev ;vsp %%
@@ -374,7 +371,7 @@ cabbrev bdall 0,9999bd!
 " ** PLUGIN SETTINGS **                                   {{{1
 " ============================================================
 
-" Don't load any settings without Vim-Plug
+" Only load these settings when Vim-Plug seems to be installed
 if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
   " Fugitive {{{2
