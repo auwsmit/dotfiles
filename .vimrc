@@ -179,7 +179,7 @@ augroup trailing
 augroup END
 
 " default tab/indent settings
-set tabstop=4 shiftwidth=4
+set tabstop=4 softtabstop=0 shiftwidth=4 noexpandtab
 
 " filetype specific formatting
 augroup filetype_format
@@ -187,8 +187,11 @@ augroup filetype_format
   " constantly reset formatoptions because Vim's default
   " ftplugins can overwrite them, which is lame
   au BufEnter * :set formatoptions=rq1j
+
   au FileType vim :setlocal ts=2 sts=0 sw=2 et fdm=marker
-  au FileType sh :setlocal ts=2 sts=0 sw=2 et
+  au FileType sh  :setlocal ts=2 sts=0 sw=2 et
+  au FileType c   :setlocal ts=8 sts=0 sw=8 noet
+  au FileType cpp :setlocal ts=8 sts=0 sw=8 noet
 augroup END
 
 " use decimal instead of octal with ctrl-a and ctrl-x
@@ -260,6 +263,9 @@ noremap <Down> <C-e>
 " left and right arrow keys scroll through buffers
 noremap <Left> :bp<CR>
 noremap <Right> :bn<CR>
+
+" switch back to last buffer, like alt+tab
+nnoremap <Backspace> :b#<CR>
 
 " move by wrapped lines instead of line numbers
 noremap j gj
@@ -336,9 +342,6 @@ map <Leader>et ;tabe %%
 nnoremap <Leader>v :e $MYVIMRC<CR>
 nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 
-" switch to last buffer, like alt+tab
-nnoremap <Leader><Tab> :b#<CR>
-
 " delete buffer
 nnoremap <silent> <Leader>X :bd!<CR>
 
@@ -371,7 +374,7 @@ cabbrev bdall 0,9999bd!
 " ** PLUGIN SETTINGS **                                   {{{1
 " ============================================================
 
-" Only load these settings when Vim-Plug seems to be installed
+" Only load these settings if Vim-Plug seems to be installed
 if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
   " Fugitive {{{2
