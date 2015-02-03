@@ -51,15 +51,12 @@ Plug 'tpope/vim-fugitive'           " Git integration
 Plug 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'scrooloose/NERDCommenter'     " intensely pleasant commenting
-Plug 'xolox/vim-session'            " extension of default sessions
-Plug 'xolox/vim-notes'              " note taking plugin
-Plug 'xolox/vim-misc'               " ^session & notes requirement
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'jlanzarotta/bufexplorer'      " buffer explorer/manager
 Plug 'godlygeek/Tabular'            " text alignment plugin
 Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
-Plug 'kurkale6ka/vim-pairs'         " new punctuation text objects
+Plug 'kurkale6ka/vim-pairs'         " more punctuation text objects
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
@@ -352,8 +349,7 @@ nnoremap <silent> <Leader>D :b#<CR>:bd!#<CR>
 vnoremap <Leader>y "+y
 nnoremap <Leader>p "+p
 nnoremap <Leader>P "+P
-vnoremap <Leader>p "+p
-vnoremap <Leader>P "+P
+vnoremap <Leader>p d"+P
 
 " * COMMAND ALIASES *       {{{2
 
@@ -427,26 +423,8 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
   " Syntastic {{{2
   let g:syntastic_check_on_open=1
-  " reset Syntastic (clears errors and such)
+  " reset Syntastic (for clearing errors)
   nnoremap <Leader>S :SyntasticReset<CR>
-
-  " vim-sessions {{{2
-  let g:session_directory = g:myvimdir.'/session'
-
-  let g:session_autoload        = "no"
-  let g:session_autosave        = "no"
-  let g:session_command_aliases = 1
-  cabbrev SO OpenSession
-  cabbrev SS SaveSession
-  cabbrev SD DeleteSession
-  cabbrev SC CloseSession
-
-  " vim-notes {{{2
-  if s:running_windows
-    let g:notes_directories = ['X:\Cloud\Dropbox\Notes']
-  else
-    let g:notes_directories = ['~/Dropbox/Notes']
-  endif
 
   " vim-airline {{{2
   " theme
