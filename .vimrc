@@ -53,7 +53,6 @@ Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'scrooloose/NERDCommenter'     " intensely pleasant commenting
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
-Plug 'jlanzarotta/bufexplorer'      " buffer explorer/manager
 Plug 'godlygeek/Tabular'            " text alignment plugin
 Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
 Plug 'kurkale6ka/vim-pairs'         " more punctuation text objects
@@ -66,7 +65,7 @@ if has('python')
 endif
 
 " *AESTHETIC PLUGINS*
-"Plug 'flazz/vim-colorschemes'       " all the colorschemes
+Plug 'flazz/vim-colorschemes'       " all the colorschemes
 Plug 'AssailantLF/blackwolf'        " my colorscheme
 Plug 'bling/vim-airline'            " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
@@ -175,7 +174,7 @@ augroup trailing
   au InsertLeave * :set listchars+=trail:·
 augroup END
 
-" default tab/indent settings
+" default tab settings
 set tabstop=4 softtabstop=0 shiftwidth=4 noexpandtab
 
 " filetype specific formatting
@@ -185,10 +184,11 @@ augroup filetype_format
   " ftplugins can overwrite them, which is lame
   au BufEnter * :set formatoptions=rq1j
 
-  au FileType vim :setlocal ts=2 sts=0 sw=2 et fdm=marker
-  au FileType sh  :setlocal ts=2 sts=0 sw=2 et
-  au FileType c   :setlocal ts=8 sts=0 sw=8 noet
-  au FileType cpp :setlocal ts=8 sts=0 sw=8 noet
+  au FileType vim  :setlocal ts=2 sts=0 sw=2 et fdm=marker
+  au FileType sh   :setlocal ts=2 sts=0 sw=2 et
+  au FileType html :setlocal ts=2 sts=0 sw=2 et
+  au FileType c    :setlocal ts=8 sts=0 sw=8 noet
+  au FileType cpp  :setlocal ts=8 sts=0 sw=8 noet
 augroup END
 
 " use decimal instead of octal with ctrl-a and ctrl-x
@@ -253,16 +253,20 @@ nnoremap gs :%s/\<\>/<Left><Left><Left>
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 
-" up and down arrow keys scroll the screen like a browser
-noremap <Up> <C-y>
-noremap <Down> <C-e>
+" quickly manage buffers
+nnoremap <Tab> :ls<CR>:b 
+nnoremap <S-Tab> :ls!<CR>:b 
+
+" switch to last buffer, like alt+tab
+nnoremap <Backspace> :b#<CR>
 
 " left and right arrow keys scroll through buffers
 noremap <Left> :bp<CR>
 noremap <Right> :bn<CR>
 
-" switch back to last buffer, like alt+tab
-nnoremap <Backspace> :b#<CR>
+" up and down arrow keys scroll the screen like a browser
+noremap <Up> <C-y>
+noremap <Down> <C-e>
 
 " move by wrapped lines instead of line numbers
 noremap j gj
@@ -285,11 +289,11 @@ nnoremap p p`]
 " (see Aliases section for more on %%)
 map <silent> cd ;cd %%<CR>
 
-" quit all, basically ZQ on all windows; be very careful
-noremap ZA :qa!<CR>
-
 " visually select all
 nnoremap vaa ggVG
+
+" saving habits
+nnoremap <silent> <C-s> :update<CR>
 
 " quick insert mode navigation
 " only for emergencies /s
@@ -310,7 +314,7 @@ noremap <silent> <C-Up>    :resize +10<CR>
 noremap <silent> <C-Down>  :resize -10<CR>
 noremap <silent> <C-Right> :vertical resize +10<CR>
 
-" Emacs beginning/end of text
+" go to beginning/end of text
 inoremap <C-a> <Esc>I
 inoremap <C-e> <Esc>A
 cnoremap <C-a> <Home>
@@ -402,10 +406,6 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   " open a specific directory
   nnoremap <Leader>f :FileBeagle 
 
-  " BufExplorer {{{2
-  let g:bufExplorerDisableDefaultKeyMapping=1
-  nnoremap <Leader>b :BufExplorer<CR>
-
   " Tabular {{{2
   noremap <Leader>= :Tabularize/
 
@@ -422,8 +422,7 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   map <silent> \e <Plug>CamelCaseMotion_e
 
   " Syntastic {{{2
-  let g:syntastic_check_on_open=1
-  " reset Syntastic (for clearing errors)
+  " reset Syntastic (clears errors)
   nnoremap <Leader>S :SyntasticReset<CR>
 
   " vim-airline {{{2
