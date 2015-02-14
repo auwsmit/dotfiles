@@ -57,6 +57,7 @@ Plug 'godlygeek/Tabular'            " text alignment plugin
 Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
 Plug 'kurkale6ka/vim-pairs'         " more punctuation text objects
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
+Plug 'takac/vim-hardtime'           " stop hjkl-ing so much
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
   Plug 'sjl/Gundo.vim'              " visual undo tree
@@ -253,10 +254,6 @@ nnoremap gs :%s/\<\>/<Left><Left><Left>
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 
-" quickly manage buffers
-nnoremap <Tab> :ls<CR>:b 
-nnoremap <S-Tab> :ls!<CR>:b 
-
 " switch to last buffer, like alt+tab
 nnoremap <Backspace> :b#<CR>
 
@@ -342,6 +339,10 @@ map <Leader>et ;tabe %%
 " open vimrc
 nnoremap <Leader>v :e $MYVIMRC<CR>
 nnoremap <Leader>V :tabnew $MYVIMRC<CR>
+
+" quickly manage buffers
+nnoremap <Leader>b :ls<CR>:b 
+nnoremap <Leader>B :ls!<CR>:b 
 
 " delete buffer
 nnoremap <silent> <Leader>X :bd!<CR>
