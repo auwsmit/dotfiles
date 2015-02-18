@@ -149,8 +149,7 @@ else
 endif
 
 " resize splits when the window is resized
-" change ; to : if there's an error
-au VimResized * ;wincmd =
+au VimResized * :wincmd =
 
 " ** TEXT AND FORMATTING **                               {{{1
 " ============================================================
@@ -280,7 +279,7 @@ nnoremap p p`]
 
 " change to current buffer's directory
 " (see Aliases section for more on %%)
-map <silent> cd ;cd %%<CR>
+map <silent> cd :cd %%<CR>
 
 " visually select all
 nnoremap vaa ggVG
@@ -327,10 +326,10 @@ let mapleader = "\<Space>"
 " edit files from current file's directory without switching directories
 " open in [w]indow [s]plit [v]split or [t]ab
 " (see Aliases section for more on %%)
-map <Leader>ew ;e %%
-map <Leader>es ;sp %%
-map <Leader>ev ;vsp %%
-map <Leader>et ;tabe %%
+map <Leader>ew :e %%
+map <Leader>es :sp %%
+map <Leader>ev :vsp %%
+map <Leader>et :tabe %%
 
 " open vimrc
 nnoremap <Leader>v :e $MYVIMRC<CR>
@@ -385,6 +384,7 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   nnoremap <Leader>gr :Gremove<CR>
 
   " CtrlP {{{2
+  " ignore .git folders to speed up searches
   let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
   " include hidden files
   let g:ctrlp_show_hidden = 1
