@@ -49,15 +49,14 @@ call plug#begin()
 Plug 'tpope/vim-surround'           " surroundings manipulation
 Plug 'tpope/vim-fugitive'           " Git integration
 Plug 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
+Plug 'tpope/vim-commentary'         " easier commenting
 Plug 'scrooloose/Syntastic'         " real time error checking
-Plug 'scrooloose/NERDCommenter'     " intensely pleasant commenting
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'godlygeek/Tabular'            " text alignment plugin
 Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
 Plug 'kurkale6ka/vim-pairs'         " more punctuation text objects
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
-Plug 'takac/vim-hardtime'           " stop hjkl-ing so much
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
   Plug 'sjl/Gundo.vim'              " visual undo tree
@@ -67,8 +66,7 @@ endif
 
 " *AESTHETIC PLUGINS*
 Plug 'flazz/vim-colorschemes'       " all the colorschemes
-Plug 'AssailantLF/blackwolf'        " my colorscheme
-Plug 'bling/vim-airline'            " better looking UI
+Plug 'itchyny/lightline.vim'        " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
 Plug 'Yggdroot/indentLine'          " shows indents made of spaces
 
@@ -136,7 +134,7 @@ set t_Co=256          " allow more colors
 " fallback default colorscheme
 colorscheme desert
 " colorscheme of choice
-silent! colorscheme blackwolf
+silent! colorscheme badwolf
 
 " set the status line the way Derek Wyatt likes it
 " (doesn't work with status line plugins like Airline)
@@ -178,8 +176,7 @@ augroup END
 " default tab settings
 set tabstop=4 softtabstop=0 shiftwidth=4 noexpandtab
 
-" filetype specific formatting
-augroup filetype_format
+augroup filetype_specific_format
   au!
   " constantly reset formatoptions because Vim's default
   " ftplugins can overwrite them, which is lame
@@ -233,9 +230,8 @@ augroup END
 
 " * REMAPS OF DEFAULTS *      {{{2
 
-" swap ; and : for pinky's sake
-noremap ; :
-noremap : ;
+" Enter command mode
+noremap <CR> :
 
 " K for Kill window
 noremap K :quit<CR>
@@ -389,6 +385,7 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   nnoremap <Leader>gr :Gremove<CR>
 
   " CtrlP {{{2
+  let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
   " include hidden files
   let g:ctrlp_show_hidden = 1
   " specific directory search
@@ -425,14 +422,6 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   " Syntastic {{{2
   " reset Syntastic (clears errors)
   nnoremap <Leader>S :SyntasticReset<CR>
-
-  " vim-airline {{{2
-  " theme
-  let g:airline_theme = 'base16'
-  " airline toggle
-  nnoremap <Leader>A :AirlineToggle<CR>
-  " enable tabs, duh
-  let g:airline#extensions#tabline#enabled = 1
 
   " Startify {{{2
   " custom header
