@@ -8,7 +8,6 @@
 " ============================================================
 
 " Windows/Linux differences
-" I don't really own/use Macs currently
 let s:running_windows = has("win16") || has("win32") || has("win64")
 let g:myvimdir ="~/.vim"
 if s:running_windows
@@ -18,14 +17,14 @@ endif
 " use Vim settings over Vi settings
 set nocompatible
 
-" enables filetype detection, ftplugins, and indent files 
+" enables filetype detection, ftplugins, and indent files
 filetype plugin indent on
 
 " ** VIM-PLUG **                                          {{{1
 " ============================================================
 " (minimalist plugin manager)
 
-" Install Vim-Plug if it isn't installed {{{2
+" Install Vim-Plug at startup if it isn't installed {{{2
 " (Windows needs curl, Linux needs curl or wget)
 if !filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   echo "Installing Vim-Plug and plugins,"
@@ -55,7 +54,6 @@ Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'godlygeek/Tabular'            " text alignment plugin
 Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
-Plug 'kurkale6ka/vim-pairs'         " more punctuation text objects
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
@@ -231,6 +229,7 @@ augroup END
 
 " Enter command mode
 noremap <CR> :
+noremap <S-CR> <CR>
 
 " K for Kill window
 noremap K :quit<CR>
@@ -277,15 +276,15 @@ nnoremap p p`]
 
 " * CONVENIENCE MAPS *       {{{2
 
-" change to current buffer's directory
-" (see Aliases section for more on %%)
-map <silent> cd :cd %%<CR>
+" saving habits
+nnoremap <silent> <C-s> :update<CR>
 
 " visually select all
 nnoremap vaa ggVG
 
-" saving habits
-nnoremap <silent> <C-s> :update<CR>
+" change to current buffer's directory
+" (see Aliases section for more on %%)
+map <silent> cd :cd %%<CR>
 
 " quick insert mode navigation
 " only for emergencies /s
@@ -305,12 +304,6 @@ noremap <silent> <C-Left>  :vertical resize -10<CR>
 noremap <silent> <C-Up>    :resize +10<CR>
 noremap <silent> <C-Down>  :resize -10<CR>
 noremap <silent> <C-Right> :vertical resize +10<CR>
-
-" go to beginning/end of text
-inoremap <C-a> <Esc>I
-inoremap <C-e> <Esc>A
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
 
 " Go Continuous Scroll-Binding
 " This will vertically split the current buffer into two which will stay
@@ -336,8 +329,8 @@ nnoremap <Leader>v :e $MYVIMRC<CR>
 nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 
 " quickly manage buffers
-nnoremap <Leader>b :ls<CR>:b 
-nnoremap <Leader>B :ls!<CR>:b 
+nnoremap <Leader>b :ls<CR>:b<Space>
+nnoremap <Leader>B :ls!<CR>:b<Space>
 
 " delete buffer
 nnoremap <silent> <Leader>X :bd!<CR>
@@ -389,20 +382,16 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   " include hidden files
   let g:ctrlp_show_hidden = 1
   " specific directory search
-  nnoremap <Leader><C-p> :CtrlP 
+  nnoremap <Leader><C-p> :CtrlP<Space>
   " quick access to recent files and buffers
   nnoremap <Leader><C-e> :CtrlPMRUFiles<CR>
   nnoremap <Leader><C-b> :CtrlPBuffer<CR>
 
   " FileBeagle {{{2
-  " no default maps
-  let g:filebeagle_suppress_keymaps = 1
   " show hidden files
   let g:filebeagle_show_hidden = 1
-  " open current buffer directory
-  map <silent> - <Plug>FileBeagleOpenCurrentBufferDir
   " open a specific directory
-  nnoremap <Leader>f :FileBeagle 
+  nnoremap <Leader><C-f> :FileBeagle<Space>
 
   " Tabular {{{2
   noremap <Leader>= :Tabularize/
@@ -419,6 +408,9 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   map <silent> \b <Plug>CamelCaseMotion_b
   map <silent> \e <Plug>CamelCaseMotion_e
 
+  " lightline {{{2
+  " toggle lightline
+  nnoremap <silent> <Leader>L :exec lightline#toggle()<CR>
   " Syntastic {{{2
   " reset Syntastic (clears errors)
   nnoremap <Leader>S :SyntasticReset<CR>
