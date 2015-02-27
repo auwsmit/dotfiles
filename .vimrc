@@ -182,8 +182,8 @@ augroup filetype_specific_format
   au FileType vim  :setlocal ts=2 sts=0 sw=2 et fdm=marker
   au FileType sh   :setlocal ts=2 sts=0 sw=2 et
   au FileType html :setlocal ts=2 sts=0 sw=2 et
-  au FileType c    :setlocal ts=8 sts=0 sw=8 noet
-  au FileType cpp  :setlocal ts=8 sts=0 sw=8 noet
+  au FileType c    :setlocal ts=4 sts=0 sw=4 noet
+  au FileType cpp  :setlocal ts=4 sts=0 sw=4 noet
 augroup END
 
 " use decimal instead of octal with ctrl-a and ctrl-x
@@ -219,7 +219,7 @@ augroup MarkMargin
   autocmd BufEnter * :call MarkMargin(1)
 augroup END
 
-" ** KEYS/MAPS/ALIASES **                                 {{{1
+" ** KEY MAPPINGS/ALIASES **                                 {{{1
 " ============================================================
 "
 " anything related to plugins is located
@@ -227,20 +227,32 @@ augroup END
 
 " * REMAPS OF DEFAULTS *      {{{2
 
+" disable F1 because it's awful
+noremap <F1> <NOP>
+
 " Enter command mode
 noremap <CR> :
 noremap <S-CR> <CR>
 
+" go back to last buffer
+nnoremap <Backspace> :b#<CR>
+
 " K for Kill window
-noremap K :quit<CR>
+noremap K <c-W>c
 
 " [S]plit line (sister to [J]oin lines)
-" cc still substitutes the line like S would
 nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
 nnoremap Y y$
+
+" U as a more sensible redo
+nnoremap U <C-r>
+
+" H and L scroll through buffers
+noremap H :bp<CR>
+noremap L :bn<CR>
 
 " go substitute because a map for sleeping is silly
 nnoremap gs :%s/\<\>/<Left><Left><Left>
@@ -248,22 +260,14 @@ nnoremap gs :%s/\<\>/<Left><Left><Left>
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 
-" switch to last buffer, like alt+tab
-nnoremap <Backspace> :b#<CR>
-
-" left and right arrow keys scroll through buffers
-noremap <Left> :bp<CR>
-noremap <Right> :bn<CR>
-
-" up and down arrow keys scroll the screen like a browser
-noremap <Up> <C-y>
-noremap <Down> <C-e>
-
 " move by wrapped lines instead of line numbers
 noremap j gj
 noremap k gk
 noremap gj j
 noremap gk k
+
+" replace - with _ so that both use shift
+noremap _ -
 
 " { and } skip over closed folds
 nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
@@ -276,22 +280,16 @@ nnoremap p p`]
 
 " * CONVENIENCE MAPS *       {{{2
 
-" saving habits
+" habits
 nnoremap <silent> <C-s> :update<CR>
+inoremap <C-BS> <C-w>
+cnoremap <C-BS> <C-w>
 
 " visually select all
 nnoremap vaa ggVG
 
 " change to current buffer's directory
-" (see Aliases section for more on %%)
-map <silent> cd :cd %%<CR>
-
-" quick insert mode navigation
-" only for emergencies /s
-inoremap <C-h> <Left>
-inoremap <C-j> <Down>
-inoremap <C-k> <Up>
-inoremap <C-l> <Right>
+map <silent> cd :cd <C-R>=expand("%:p:h")<CR><CR>
 
 " navigating between windows
 noremap <silent> <C-h> <C-w>h<CR>
@@ -318,11 +316,10 @@ let mapleader = "\<Space>"
 
 " edit files from current file's directory without switching directories
 " open in [w]indow [s]plit [v]split or [t]ab
-" (see Aliases section for more on %%)
-map <Leader>ew :e %%
-map <Leader>es :sp %%
-map <Leader>ev :vsp %%
-map <Leader>et :tabe %%
+map <Leader>ew :e <C-R>=expand("%:p:h") . "/" <CR>
+map <Leader>es :sp <C-R>=expand("%:p:h") . "/" <CR>
+map <Leader>ev :vsp <C-R>=expand("%:p:h") . "/" <CR>
+map <Leader>et :tabe <C-R>=expand("%:p:h") . "/" <CR>
 
 " open vimrc
 nnoremap <Leader>v :e $MYVIMRC<CR>
@@ -335,8 +332,8 @@ nnoremap <Leader>B :ls!<CR>:b<Space>
 " delete buffer
 nnoremap <silent> <Leader>X :bd!<CR>
 
-" delete buffer, but not split
-nnoremap <silent> <Leader>D :b#<CR>:bd!#<CR>
+" delete buffer, but not split/window
+nnoremap <silent> <Leader>D :bn<CR>:bd!#<CR>
 
 " copy and paste from system clipboard easier
 vnoremap <Leader>y "+y
