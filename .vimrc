@@ -227,7 +227,7 @@ augroup END
 
 " * REMAPS OF DEFAULTS *      {{{2
 
-" disable F1 because it's awful
+" I always accidentally tap this, so it's disabled
 noremap <F1> <NOP>
 
 " Enter command mode
@@ -235,12 +235,13 @@ noremap <CR> :
 noremap <S-CR> <CR>
 
 " go back to last buffer
-nnoremap <Backspace> :b#<CR>
+noremap <Backspace> :b#<CR>
 
 " K for Kill window
 noremap K <c-W>c
 
 " [S]plit line (sister to [J]oin lines)
+" cc still substitutes the line like S would
 nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
 " Y yanks until EOL, more like D and C
@@ -266,7 +267,7 @@ noremap k gk
 noremap gj j
 noremap gk k
 
-" replace - with _ so that both use shift
+" replace - with _ to make it more consistant with +
 noremap _ -
 
 " { and } skip over closed folds
@@ -330,10 +331,10 @@ nnoremap <Leader>b :ls<CR>:b<Space>
 nnoremap <Leader>B :ls!<CR>:b<Space>
 
 " delete buffer
-nnoremap <silent> <Leader>X :bd!<CR>
+nnoremap <silent> <Leader>X :bw!<CR>
 
 " delete buffer, but not split/window
-nnoremap <silent> <Leader>D :bn<CR>:bd!#<CR>
+nnoremap <silent> <Leader>D :bn<CR>:bw!#<CR>
 
 " copy and paste from system clipboard easier
 vnoremap <Leader>y "+y
