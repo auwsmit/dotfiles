@@ -202,32 +202,6 @@ else
   set guifont=Liberation\ Mono\ 11
 end
 
-" highlight 81st column if reached
-" (linebreak is auto enabled and disabled along with this)
-" (see the mapping under the Leader Maps section)
-" Example line Example line Example line Example line Example line Example li>>>E<<<ple line
-let b:MarkMargin = matchadd('ColorColumn', '\%81v', 100)
-function! MarkMargin() " {{{
-  highlight colorcolumn ctermbg=DarkRed
-  highlight colorcolumn guibg=DarkRed
-  if exists('b:MarkMargin')
-    try
-      call matchdelete(b:MarkMargin)
-      set linebreak
-    catch /./
-    endtry
-    unlet b:MarkMargin
-  else
-    let b:MarkMargin = matchadd('ColorColumn', '\%81v', 100)
-    set nolinebreak
-  endif
-endfunction
-
-augroup MarkMargin
-  autocmd!
-  autocmd BufEnter * :call MarkMargin()
-augroup END " }}}
-
 " ** KEY MAPPINGS/ALIASES **                                 {{{1
 " ============================================================
 "
@@ -324,8 +298,32 @@ nnoremap <silent> gcsb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo v
 " leader the easiest key to reach
 let mapleader = "\<Space>"
 
-" toggle marking the 81st column (see Text and Formatting section)
+" highlight 81st column if reached (disabled by default) {{{
+" (linebreak is auto enabled and disabled along with this)
+
+" toggle marking the 81st column
 nnoremap <Leader>m :call MarkMargin()<CR>
+
+function! MarkMargin()
+  highlight colorcolumn ctermbg=DarkRed
+  highlight colorcolumn guibg=DarkRed
+  if exists('b:MarkMargin')
+    try
+      call matchdelete(b:MarkMargin)
+      set linebreak
+    catch /./
+    endtry
+    unlet b:MarkMargin
+  else
+    let b:MarkMargin = matchadd('ColorColumn', '\%81v', 100)
+    set nolinebreak
+  endif
+endfunction
+
+augroup MarkMargin
+  autocmd!
+  autocmd BufEnter * :call MarkMargin()
+augroup END " }}}
 
 " edit files from current file's directory without switching directories
 " open in [w]indow [s]plit [v]split or [t]ab
