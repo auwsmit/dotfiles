@@ -210,8 +210,10 @@ end
 
 " * REMAPS OF DEFAULTS *      {{{2
 
-" I always accidentally tap this, so it's disabled
+" disabled
 noremap <F1> <NOP>
+inoremap <F1> <NOP>
+noremap ZQ <NOP>
 
 " Enter command mode
 noremap <CR> :
