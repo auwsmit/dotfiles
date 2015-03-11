@@ -144,6 +144,30 @@ silent! colorscheme badwolf
 " (doesn't work with status line plugins like Airline)
 set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
 
+" show relative line numbers in the currently active window,
+" otherwise use regular line numbers
+if has('autocmd')
+  augroup vimrc_linenumbering
+    autocmd!
+    autocmd WinLeave *
+          \ if &number |
+          \   set norelativenumber |
+          \ endif
+    autocmd BufWinEnter *
+          \ if &number |
+          \   set relativenumber |
+          \ endif
+    autocmd WinEnter *
+          \ if &number |
+          \   set relativenumber |
+          \ endif
+    autocmd VimEnter *
+          \ if &number |
+          \   set relativenumber |
+          \ endif
+  augroup END
+endif
+
 " maximize window, doesn't always work
 " with terminal vim and some Linux distros
 if s:running_windows
@@ -165,6 +189,7 @@ set smartindent       " trying out smartindent for C
 set foldmethod=syntax " default fold method
 set nofoldenable      " all folds open initially
 set list              " don't show 'listchars' characters
+set linebreak         " when wrapping lines, don't break words
 
 " how to display certain characters/indicators
 set listchars=tab:►\ ,eol:¬,trail:·,extends:>,precedes:<
@@ -300,33 +325,6 @@ nnoremap <silent> gcsb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo v
 " leader the easiest key to reach
 let mapleader = "\<Space>"
 
-" highlight 81st column if reached (disabled by default) {{{
-" (linebreak is auto enabled and disabled along with this)
-
-" toggle marking the 81st column
-nnoremap <Leader>m :call MarkMargin()<CR>
-
-function! MarkMargin()
-  highlight colorcolumn ctermbg=DarkRed
-  highlight colorcolumn guibg=DarkRed
-  if exists('b:MarkMargin')
-    try
-      call matchdelete(b:MarkMargin)
-      set linebreak
-    catch /./
-    endtry
-    unlet b:MarkMargin
-  else
-    let b:MarkMargin = matchadd('ColorColumn', '\%81v', 100)
-    set nolinebreak
-  endif
-endfunction
-
-augroup MarkMargin
-  autocmd!
-  autocmd BufEnter * :call MarkMargin()
-augroup END " }}}
-
 " edit files from current file's directory without switching directories
 " open in [w]indow [s]plit [v]split or [t]ab
 map <Leader>ew :e <C-R>=expand("%:p:h") . "/" <CR>
@@ -400,8 +398,6 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   " FileBeagle {{{2
   " show hidden files
   let g:filebeagle_show_hidden = 1
-  " open a specific directory
-  nnoremap <Leader><C-f> :FileBeagle<Space>
 
   " Tabular {{{2
   noremap <Leader>= :Tabularize/
@@ -421,6 +417,7 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   " lightline {{{2
   " toggle lightline
   nnoremap <silent> <Leader>L :exec lightline#toggle()<CR>
+
   " Syntastic {{{2
   " reset Syntastic (clears errors)
   nnoremap <Leader>S :SyntasticReset<CR>
