@@ -54,6 +54,7 @@ Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'godlygeek/Tabular'            " text alignment plugin
 Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
+Plug 'justinmk/vim-sneak'           " medium-range motion for s/S
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
@@ -86,6 +87,7 @@ set lazyredraw        " redraw only when we need to
 set splitright        " open new v-splits to the right
 set gdefault          " global substitute by default
 set complete=.,w,b,t  " see :help 'complete'
+set fileformat=unix   " consistent EOLs
 
 " save undo history
 silent! set undofile
@@ -127,13 +129,8 @@ set ruler             " show the cursor position all the time
 set number            " show line numbers
 set scrolloff=5       " keep some lines above & below for scope
 set guioptions=       " remove extra gui elements
-set term=xterm
-set t_Co=256
-
-if s:running_windows  " trick to support 256 colors in conemu for Windows
-  let &t_AF="\e[38;5;%dm"
-  let &t_AB="\e[48;5;%dm"
-endif
+set guioptions+=c     " console dialogs instead of popups
+set t_Co=256          " 256 colors, please
 
 " fallback default colorscheme
 colorscheme desert
@@ -143,30 +140,6 @@ silent! colorscheme badwolf
 " set the status line the way Derek Wyatt likes it
 " (doesn't work with status line plugins like Airline)
 set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
-
-" show relative line numbers in the currently active window,
-" otherwise use regular line numbers
-if has('autocmd')
-  augroup vimrc_linenumbering
-    autocmd!
-    autocmd WinLeave *
-          \ if &number |
-          \   set norelativenumber |
-          \ endif
-    autocmd BufWinEnter *
-          \ if &number |
-          \   set relativenumber |
-          \ endif
-    autocmd WinEnter *
-          \ if &number |
-          \   set relativenumber |
-          \ endif
-    autocmd VimEnter *
-          \ if &number |
-          \   set relativenumber |
-          \ endif
-  augroup END
-endif
 
 " maximize window, doesn't always work
 " with terminal vim and some Linux distros
@@ -202,7 +175,7 @@ augroup trailing
 augroup END
 
 " default tab settings
-set tabstop=4 softtabstop=0 shiftwidth=4 noexpandtab
+set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
 augroup filetype_specific_format
   au!
@@ -213,8 +186,8 @@ augroup filetype_specific_format
   au FileType vim  :setlocal ts=2 sts=0 sw=2 et fdm=marker
   au FileType sh   :setlocal ts=2 sts=0 sw=2 et
   au FileType html :setlocal ts=2 sts=0 sw=2 et
-  au FileType c    :setlocal ts=4 sts=0 sw=4 noet
-  au FileType cpp  :setlocal ts=4 sts=0 sw=4 noet
+  au FileType c    :setlocal ts=4 sts=0 sw=4 et
+  au FileType cpp  :setlocal ts=4 sts=0 sw=4 et
 augroup END
 
 " use decimal instead of octal with ctrl-a and ctrl-x
@@ -224,7 +197,7 @@ set nrformats=
 if s:running_windows
   set guifont=DejaVu_Sans_Mono:h11
 else
-  set guifont=Liberation\ Mono\ 11
+  set guifont=DejaVu\ Sans\ Mono\ 11
 end
 
 " ** KEY MAPPINGS/ALIASES **                                 {{{1
@@ -250,23 +223,22 @@ noremap <Backspace> :b#<CR>
 " K for Kill window
 noremap K <c-W>c
 
-" [S]plit line (sister to [J]oin lines)
-" cc still substitutes the line like S would
-nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
-
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
 nnoremap Y y$
 
 " U as a more sensible redo
 nnoremap U <C-r>
+nnoremap <C-r> :echoerr "Use U"<CR>
 
-" H and L scroll through buffers
-noremap H :bp<CR>
-noremap L :bn<CR>
+" this is because ^/$ are hard to reach,
+" and I never use normal H/L anyway
+noremap H ^
+noremap L $
 
-" go substitute because a map for sleeping is silly
-nnoremap gs :%s/\<\>/<Left><Left><Left>
+" go [s]plit line (sister to [J]oin lines)
+" cc still substitutes the line like S would
+nnoremap gs i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
