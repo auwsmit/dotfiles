@@ -197,7 +197,7 @@ set nrformats=
 if s:running_windows
   set guifont=DejaVu_Sans_Mono:h11
 else
-  set guifont=DejaVu\ Sans\ Mono\ 11
+  set guifont=DejaVu\ Sans\ Mono\ 10
 end
 
 " ** KEY MAPPINGS/ALIASES **                                 {{{1
@@ -229,7 +229,6 @@ nnoremap Y y$
 
 " U as a more sensible redo
 nnoremap U <C-r>
-nnoremap <C-r> :echoerr "Use U"<CR>
 
 " this is because ^/$ are hard to reach,
 " and I never use normal H/L anyway
@@ -267,6 +266,10 @@ nnoremap p p`]
 nnoremap <silent> <C-s> :update<CR>
 inoremap <C-BS> <C-w>
 cnoremap <C-BS> <C-w>
+inoremap <C-a> <Esc>I
+cnoremap <C-a> <Home>
+inoremap <C-e> <Esc>A
+cnoremap <C-e> <End>
 
 " visually select all
 nnoremap vaa ggVG
@@ -351,7 +354,7 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   nnoremap <Leader>gd :Gdiff<CR>
   nnoremap <Leader>gD :Gdiff HEAD<CR>
   nnoremap <Leader>gc :Gcommit<CR>
-  nnoremap <Leader>gl :Git log<CR>
+  nnoremap <Leader>gl :!git log<CR>
   nnoremap <Leader>gp :Git push<CR>
   nnoremap <Leader>gw :Gwrite<CR>
   nnoremap <Leader>gr :Gremove<CR>
