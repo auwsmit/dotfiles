@@ -56,6 +56,7 @@ Plug 'godlygeek/Tabular'            " text alignment plugin
 Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
 Plug 'justinmk/vim-sneak'           " medium-range motion for s/S
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
+Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
   Plug 'sjl/Gundo.vim'              " visual undo tree
