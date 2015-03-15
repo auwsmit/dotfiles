@@ -237,7 +237,6 @@ noremap H ^
 noremap L $
 
 " go [s]plit line (sister to [J]oin lines)
-" cc still substitutes the line like S would
 nnoremap gs i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
 " visually select the last paste or change
