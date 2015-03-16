@@ -88,7 +88,6 @@ set lazyredraw        " redraw only when we need to
 set splitright        " open new v-splits to the right
 set gdefault          " global substitute by default
 set complete=.,w,b,t  " see :help 'complete'
-set fileformat=unix   " consistent EOLs
 
 " save undo history
 silent! set undofile
@@ -164,6 +163,7 @@ set foldmethod=syntax " default fold method
 set nofoldenable      " all folds open initially
 set list              " don't show 'listchars' characters
 set linebreak         " when wrapping lines, don't break words
+set textwidth=80      " always gq to 80 characters
 
 " how to display certain characters/indicators
 set listchars=tab:►\ ,eol:¬,trail:·,extends:>,precedes:<
@@ -178,12 +178,16 @@ augroup END
 " default tab settings
 set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
+augroup persistent_settings
+  au!
+  " consistent EOLs
+  au BufEnter * :set fileformat=unix
+  " formatting options (see :h fo-table)
+  au BufEnter * :set formatoptions=rq1j
+augroup END
+
 augroup filetype_specific_format
   au!
-  " constantly reset formatoptions because Vim's default
-  " ftplugins can overwrite them, which is lame
-  au BufEnter * :set formatoptions=rq1j
-
   au FileType vim  :setlocal ts=2 sts=0 sw=2 et fdm=marker
   au FileType sh   :setlocal ts=2 sts=0 sw=2 et
   au FileType html :setlocal ts=2 sts=0 sw=2 et
@@ -196,7 +200,7 @@ set nrformats=
 
 " fonts
 if s:running_windows
-  set guifont=DejaVu_Sans_Mono:h11
+  set guifont=DejaVu_Sans_Mono:h10
 else
   set guifont=DejaVu\ Sans\ Mono\ 10
 end
