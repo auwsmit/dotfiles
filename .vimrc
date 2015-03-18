@@ -129,7 +129,6 @@ set ruler             " show the cursor position all the time
 set number            " show line numbers
 set scrolloff=5       " keep some lines above & below for scope
 set guioptions=       " remove extra gui elements
-set guioptions+=c     " console dialogs instead of popups
 set t_Co=256          " 256 colors, please
 
 " fallback default colorscheme
@@ -159,14 +158,21 @@ set encoding=utf-8    " consistent character encoding
 set cpoptions+=$      " $ as end marker for the change operator
 set autoindent        " always set autoindenting on
 set smartindent       " trying out smartindent for C
+set breakindent       " wrapped lines appear indented
 set foldmethod=syntax " default fold method
 set nofoldenable      " all folds open initially
 set list              " don't show 'listchars' characters
 set linebreak         " when wrapping lines, don't break words
 set textwidth=80      " always gq to 80 characters
 
+augroup persistent_settings
+  au!
+  " formatting options (see :h fo-table)
+  au BufEnter * :set formatoptions=rq1j
+augroup END
+
 " how to display certain characters/indicators
-set listchars=tab:►\ ,eol:¬,trail:·,extends:>,precedes:<
+set listchars=tab:▸\ ,eol:¬,trail:·,extends:>,precedes:<
 
 " don't show trailing spaces in insert mode
 augroup trailing
@@ -178,14 +184,6 @@ augroup END
 " default tab settings
 set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
-augroup persistent_settings
-  au!
-  " consistent EOLs
-  au BufEnter * :set fileformat=unix
-  " formatting options (see :h fo-table)
-  au BufEnter * :set formatoptions=rq1j
-augroup END
-
 augroup filetype_specific_format
   au!
   au FileType vim  :setlocal ts=2 sts=0 sw=2 et fdm=marker
@@ -193,6 +191,7 @@ augroup filetype_specific_format
   au FileType html :setlocal ts=2 sts=0 sw=2 et
   au FileType c    :setlocal ts=4 sts=0 sw=4 et
   au FileType cpp  :setlocal ts=4 sts=0 sw=4 et
+  au FileType make :setlocal ts=4 sts=0 sw=4 noet
 augroup END
 
 " use decimal instead of octal with ctrl-a and ctrl-x
@@ -304,13 +303,6 @@ nnoremap <silent> gcsb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo v
 " leader the easiest key to reach
 let mapleader = "\<Space>"
 
-" edit files from current file's directory without switching directories
-" open in [w]indow [s]plit [v]split or [t]ab
-map <Leader>ew :e <C-R>=expand("%:p:h") . "/" <CR>
-map <Leader>es :sp <C-R>=expand("%:p:h") . "/" <CR>
-map <Leader>ev :vsp <C-R>=expand("%:p:h") . "/" <CR>
-map <Leader>et :tabe <C-R>=expand("%:p:h") . "/" <CR>
-
 " open vimrc
 nnoremap <Leader>v :e $MYVIMRC<CR>
 nnoremap <Leader>V :tabnew $MYVIMRC<CR>
@@ -320,12 +312,13 @@ nnoremap <Leader>b :ls<CR>:b<Space>
 nnoremap <Leader>B :ls!<CR>:b<Space>
 
 " delete buffer
-nnoremap <silent> <Leader>X :bw!<CR>
+nnoremap <silent> <Leader>X :bd!<CR>
 
 " delete buffer, but not split/window
-nnoremap <silent> <Leader>D :bn<CR>:bw!#<CR>
+nnoremap <silent> <Leader>D :bn<CR>:bd!#<CR>
 
 " copy and paste from system clipboard easier
+nnoremap <Leader>y "+y
 vnoremap <Leader>y "+y
 nnoremap <Leader>p "+p
 nnoremap <Leader>P "+P
@@ -338,11 +331,6 @@ cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
 
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
-
-" List To Line
-" highlight a list of variables separated by commas
-" and run :ltl to split them into their own lines.
-cabbrev ltl s/, /, \r/g
 
 " delete all buffers
 cabbrev bdall 0,9999bd!
