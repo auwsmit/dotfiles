@@ -158,7 +158,6 @@ set encoding=utf-8    " consistent character encoding
 set cpoptions+=$      " $ as end marker for the change operator
 set autoindent        " always set autoindenting on
 set smartindent       " trying out smartindent for C
-set breakindent       " wrapped lines appear indented
 set foldmethod=syntax " default fold method
 set nofoldenable      " all folds open initially
 set list              " don't show 'listchars' characters
@@ -287,10 +286,10 @@ noremap <silent> <C-k> <C-w>k<CR>
 noremap <silent> <C-l> <C-w>l<CR>
 
 " resizing windows
-noremap <silent> <C-Left>  :vertical resize -10<CR>
-noremap <silent> <C-Up>    :resize +10<CR>
-noremap <silent> <C-Down>  :resize -10<CR>
-noremap <silent> <C-Right> :vertical resize +10<CR>
+noremap <silent> <C-Left>  :vertical resize -3<CR>
+noremap <silent> <C-Up>    :resize +2<CR>
+noremap <silent> <C-Down>  :resize -2<CR>
+noremap <silent> <C-Right> :vertical resize +3<CR>
 
 " Go Continuous Scroll-Binding
 " This will vertically split the current buffer into two which will stay
@@ -319,6 +318,9 @@ nnoremap <silent> <Leader>X :bd!<CR>
 
 " delete buffer, but not split/window
 nnoremap <silent> <Leader>D :bn<CR>:bd!#<CR>
+
+" toggle syntax highlighting
+nnoremap <silent> <Leader>s :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif<CR>
 
 " copy and paste from system clipboard easier
 nnoremap <Leader>y "+y
