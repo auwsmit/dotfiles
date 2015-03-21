@@ -310,9 +310,6 @@ nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 nnoremap <Leader>b :ls<CR>:b<Space>
 nnoremap <Leader>B :ls!<CR>:b<Space>
 
-" toggle syntax highlighting
-nnoremap <Leader>s :if exists("g:syntax_on") <BAR> syntax off <BAR> else <BAR> syntax enable <BAR> endif<CR>
-
 " delete buffer
 nnoremap <silent> <Leader>X :bd!<CR>
 
