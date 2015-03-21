@@ -251,7 +251,7 @@ noremap k gk
 noremap gj j
 noremap gk k
 
-" replace - with _ to make it more consistant with +
+" replace - with _ to make it more consistent with +
 noremap _ -
 
 " { and } skip over closed folds
@@ -310,6 +310,9 @@ nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 " quickly manage buffers
 nnoremap <Leader>b :ls<CR>:b<Space>
 nnoremap <Leader>B :ls!<CR>:b<Space>
+
+" toggle syntax highlighting
+nnoremap <Leader>s :if exists("g:syntax_on") <BAR> syntax off <BAR> else <BAR> syntax enable <BAR> endif<CR>
 
 " delete buffer
 nnoremap <silent> <Leader>X :bd!<CR>
