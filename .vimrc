@@ -75,19 +75,20 @@ call plug#end()
 " ** GENERAL SETTINGS **                                  {{{1
 " ============================================================
 
-set backspace=2       " backspace like most programs in insert mode
-set history=1000      " keep x lines of command line history
-set hidden            " allow more than one modified buffer
-set showcmd           " display incomplete commands
-set wildmenu          " visual command-line completion
-set incsearch         " do incremental searching
-set ignorecase        " search isn't case sensitive
-set autoread          " auto reload changed files
-set vb t_vb=          " plz stop the beeping
-set lazyredraw        " redraw only when we need to
-set splitright        " open new v-splits to the right
-set gdefault          " global substitute by default
-set complete=.,w,b,t  " see :help 'complete'
+set backspace=2        " backspace like most programs in insert mode
+set history=1000       " keep x lines of command line history
+set hidden             " allow more than one modified buffer
+set showcmd            " display incomplete commands
+" set wildmenu         " visual command-line completion
+set wildmode=list:full " see :help 'wildmode'
+set incsearch          " do incremental searching
+set ignorecase         " search isn't case sensitive
+set autoread           " auto reload changed files
+set vb t_vb=           " plz stop the beeping
+set lazyredraw         " redraw only when we need to
+set splitright         " open new v-splits to the right
+set gdefault           " global substitute by default
+set complete=.,w,b,t   " see :help 'complete'
 
 " save undo history
 silent! set undofile
@@ -126,7 +127,6 @@ augroup END
 syntax on             " syntax highlighting
 set laststatus=2      " always show status bar
 set ruler             " show the cursor position all the time
-set number            " show line numbers
 set scrolloff=5       " keep some lines above & below for scope
 set guioptions=       " remove extra gui elements
 set t_Co=256          " 256 colors, please
@@ -360,7 +360,7 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   let g:ctrlp_show_hidden = 1
   " specific directory search
   nnoremap <Leader><C-p> :CtrlP<Space>
-  " quick access to recent files and buffers
+  " access recent files and buffers
   nnoremap <Leader><C-e> :CtrlPMRUFiles<CR>
   nnoremap <Leader><C-b> :CtrlPBuffer<CR>
 
@@ -382,6 +382,14 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   map <silent> \w <Plug>CamelCaseMotion_w
   map <silent> \b <Plug>CamelCaseMotion_b
   map <silent> \e <Plug>CamelCaseMotion_e
+
+  " vim-sneak {{{2
+  " replace 'f' with 1-char Sneak
+  map f <Plug>Sneak_f
+  map F <Plug>Sneak_F
+  " replace 't' with 1-char Sneak
+  map t <Plug>Sneak_t
+  map T <Plug>Sneak_T
 
   " lightline {{{2
   " toggle lightline
