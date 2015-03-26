@@ -47,7 +47,7 @@ call plug#begin()
 " *PRIMARY PLUGINS*
 Plug 'tpope/vim-surround'           " surroundings manipulation
 Plug 'tpope/vim-fugitive'           " Git integration
-Plug 'tpope/vim-unimpaired'         " pairs of handy bracket mappings
+Plug 'tpope/vim-unimpaired'         " many helpful mappings
 Plug 'tpope/vim-commentary'         " easier commenting
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
@@ -75,21 +75,21 @@ call plug#end()
 " ** GENERAL SETTINGS **                                  {{{1
 " ============================================================
 
-set backspace=2        " backspace like most programs in insert mode
-set history=1000       " keep x lines of command line history
-set hidden             " allow more than one modified buffer
-set showcmd            " display incomplete commands
-" set wildmenu         " visual command-line completion
-set wildmode=list:full " see :help 'wildmode'
-set incsearch          " do incremental searching
-set ignorecase         " search isn't case sensitive
-set autoread           " auto reload changed files
-set vb t_vb=           " plz stop the beeping
-set lazyredraw         " redraw only when we need to
-set splitright         " open new v-splits to the right
-set gdefault           " global substitute by default
-set complete=.,w,b,t   " see :help 'complete'
+set backspace=2      " backspace like most programs in insert mode
+set history=1000     " keep x lines of command line history
+set hidden           " allow more than one modified buffer
+set showcmd          " display incomplete commands
+set wildmenu         " visual command-line completion
+set incsearch        " do incremental searching
+set ignorecase       " search isn't case sensitive
+set autoread         " auto reload changed files
+set vb t_vb=         " plz stop the beeping
+set lazyredraw       " redraw only when we need to
+set splitright       " open new v-splits to the right
+set gdefault         " global substitute by default
+set complete=.,w,b,t " see :help 'complete'
 
+" Undo Settings {{{2
 " save undo history
 silent! set undofile
 
@@ -100,6 +100,7 @@ let &undodir=expand(g:myvimdir."/undodir")
 if !isdirectory(expand(&undodir))
   call mkdir(expand(&undodir), "p")
 endif
+" }}}
 
 " disable automatically generated backup files
 " I live on the edge
@@ -124,12 +125,12 @@ augroup END
 " ** APPEARANCE/UI **                                     {{{1
 " ============================================================
 
-syntax on             " syntax highlighting
-set laststatus=2      " always show status bar
-set ruler             " show the cursor position all the time
-set scrolloff=5       " keep some lines above & below for scope
-set guioptions=       " remove extra gui elements
-set t_Co=256          " 256 colors, please
+syntax on        " syntax highlighting
+set laststatus=2 " always show status bar
+set ruler        " show the cursor position all the time
+set scrolloff=5  " keep some lines above & below for scope
+set guioptions=  " remove extra gui elements
+set t_Co=256     " 256 colors, please
 
 " fallback default colorscheme
 colorscheme desert
