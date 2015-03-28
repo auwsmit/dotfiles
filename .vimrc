@@ -239,8 +239,8 @@ nnoremap U <C-r>
 noremap H ^
 noremap L $
 
-" go [s]plit line (sister to [J]oin lines)
-nnoremap gs i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
+" [S]plit line (sister to [J]oin lines)
+nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
@@ -266,7 +266,6 @@ nnoremap p p`]
 " * CONVENIENCE MAPS *       {{{2
 
 " habits
-nnoremap <silent> <C-s> :update<CR>
 inoremap <C-BS> <C-w>
 cnoremap <C-BS> <C-w>
 inoremap <C-a> <Esc>I
@@ -385,6 +384,9 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   map <silent> \e <Plug>CamelCaseMotion_e
 
   " vim-sneak {{{2
+  " ctrl-s to Sneak backwards,
+  " because I use S for something else
+  map <C-s> <Plug>Sneak_S
   " replace 'f' with 1-char Sneak
   map f <Plug>Sneak_f
   map F <Plug>Sneak_F
