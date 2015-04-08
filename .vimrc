@@ -56,6 +56,7 @@ Plug 'godlygeek/Tabular'            " text alignment plugin
 Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
 Plug 'justinmk/vim-sneak'           " medium-range motion for s/S
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
+Plug 'ajh17/VimCompletesMe'         " simple tab completion
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python')
@@ -385,7 +386,7 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
   " vim-sneak {{{2
   " ctrl-s to Sneak backwards,
-  " because I use S for something else
+  " because I use S for other things
   map <C-s> <Plug>Sneak_S
   " replace 'f' with 1-char Sneak
   map f <Plug>Sneak_f
@@ -393,6 +394,10 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   " replace 't' with 1-char Sneak
   map t <Plug>Sneak_t
   map T <Plug>Sneak_T
+
+  " UltiSnips {{{2
+  " change default key
+  let g:UltiSnipsExpandTrigger="<c-e>"
 
   " lightline {{{2
   " toggle lightline
