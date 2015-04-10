@@ -54,12 +54,12 @@ Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'godlygeek/Tabular'            " text alignment plugin
 Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
-Plug 'justinmk/vim-sneak'           " medium-range motion for s/S
+Plug 'justinmk/vim-sneak'           " new medium-range motion
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'ajh17/VimCompletesMe'         " simple tab completion
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
 Plug 'majutsushi/Tagbar'            " view ctags easily
-if has('python')
+if has('python') || has('python3')
   Plug 'sjl/Gundo.vim'              " visual undo tree
   Plug 'SirVer/UltiSnips'           " snippet plugin
   Plug 'honza/vim-snippets'         " preconfigured snippet package
@@ -85,13 +85,13 @@ set incsearch        " do incremental searching
 set ignorecase       " search isn't case sensitive
 set autoread         " auto reload changed files
 set vb t_vb=         " plz stop the beeping
-set lazyredraw       " redraw only when we need to
+set lazyredraw       " redraw the screen less often
 set splitright       " open new v-splits to the right
-set gdefault         " global substitute by default
+set gdefault         " global :substitute by default
 set complete=.,w,b,t " see :help 'complete'
 
 " Undo Settings {{{2
-" save undo history
+" save undo history to file
 silent! set undofile
 
 " set location to save undo files
@@ -104,7 +104,7 @@ endif
 " }}}
 
 " disable automatically generated backup files
-" I live on the edge
+" livin' on the edge
 set nobackup
 set nowritebackup
 set noswapfile
@@ -114,7 +114,7 @@ if has('mouse')
   set mouse=a
 endif
 
-" returns to the same line when you reopen a file
+" return to the same line when a file is reopened
 augroup line_return
   au!
   au BufReadPost *
@@ -139,7 +139,7 @@ colorscheme desert
 silent! colorscheme badwolf
 
 " set the status line the way Derek Wyatt likes it
-" (doesn't work with status line plugins like Airline)
+" (doesn't work with status line plugins like Lightline)
 set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
 
 " maximize window, doesn't always work
@@ -166,14 +166,16 @@ set list              " don't show 'listchars' characters
 set linebreak         " when wrapping lines, don't break words
 set textwidth=80      " always gq to 80 characters
 
+" how to display certain characters/indicators
+set listchars=tab:▸\ ,eol:¬,trail:·,extends:>,precedes:<
+
+" these will sometimes get overwritten,
+" so this is my duct-tape solution
 augroup persistent_settings
   au!
   " formatting options (see :h fo-table)
   au BufEnter * :set formatoptions=rq1j
 augroup END
-
-" how to display certain characters/indicators
-set listchars=tab:▸\ ,eol:¬,trail:·,extends:>,precedes:<
 
 " don't show trailing spaces in insert mode
 augroup trailing
@@ -235,11 +237,6 @@ nnoremap Y y$
 " U as a more sensible redo
 nnoremap U <C-r>
 
-" this is because ^/$ are hard to reach,
-" and I never use normal H/L anyway
-noremap H ^
-noremap L $
-
 " [S]plit line (sister to [J]oin lines)
 nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
@@ -269,9 +266,9 @@ nnoremap p p`]
 " habits
 inoremap <C-BS> <C-w>
 cnoremap <C-BS> <C-w>
-inoremap <C-a> <Esc>I
+inoremap <C-a> <Home>
 cnoremap <C-a> <Home>
-inoremap <C-e> <Esc>A
+inoremap <C-e> <End>
 cnoremap <C-e> <End>
 
 " visually select all
@@ -386,7 +383,7 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
   " vim-sneak {{{2
   " ctrl-s to Sneak backwards,
-  " because I use S for other things
+  " because S is already used
   map <C-s> <Plug>Sneak_S
   " replace 'f' with 1-char Sneak
   map f <Plug>Sneak_f
@@ -397,7 +394,7 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
   " UltiSnips {{{2
   " change default key
-  let g:UltiSnipsExpandTrigger="<c-e>"
+  let g:UltiSnipsExpandTrigger="<c-s>"
 
   " lightline {{{2
   " toggle lightline
