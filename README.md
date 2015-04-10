@@ -2,21 +2,21 @@
 This is my vimrc, which is mostly made up of bits and pieces from other people's setups that I liked. I try to keep it laid out nice and commented well enough for anyone to understand what each setting or group of settings does.
 
 ## Installation Steps
-1. Clone the repo to wherever you want, like ~/dotvimrc for example
+1. Clone the repo to wherever; I like ~/dotvimrc, for example
 	* `git clone https://github.com/AssailantLF/vimrc ~/dotvimrc`
 
-2. Next is creating a symbolic link, for convenience
-	* If you're on Windows, run WinSymLink.bat with adminstrator privileges
+2. Create a symbolic link, for convenience
+	* If on Windows, run WinSymLink.bat with adminstrator privileges
 	* If Linux/Mac, run UnixSymLink.sh. Make sure it's executable
 
-3. Now startup Vim, and it should tell you that it's downloading Vim-Plug, as well as all the plugins.
-	* With Ruby installed and in your PATH, plugins will install simultaneously and save time thanks to Vim-Plug
+3. Startup Vim, and it should say that it's downloading vim-plug, as well as all the plugins.
 	* Note: Windows makes a bunch of command prompts during this process, just wait for them to disappear.
 
-4. Once the plugins have finished, just restart Vim and enjoy!
-
-## Note
-A few of the plugins I use (UltiSnips & Gundo come to mind) require Python in order to be active and run.
-
-## Another Note
-I haven't tested this very extensively on Mac OS, but it _should_ work fine in theory.
+4. Once the plugins have finished, just restart Vim to complete
+ 
+## Requirements
+ * Vim 7.4+
+ * curl or wget to automatically download [vim-plug](https://github.com/junegunn/vim-plug) (plugin manager)
+   * or just [manually install](https://github.com/junegunn/vim-plug#usage) it
+ * [Ruby](https://www.ruby-lang.org/en/downloads/) so that vim-plug can download/update plugins simultaneously (big time saver)
+ * [Python](https://www.python.org/downloads/) for snippets plugin ([UltiSnips](https://github.com/SirVer/ultisnips)) and visual undo tree plugin ([Gundo](https://github.com/sjl/gundo.vim))
