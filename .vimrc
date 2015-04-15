@@ -53,8 +53,6 @@ Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'godlygeek/Tabular'            " text alignment plugin
-Plug 'bkad/CamelCaseMotion'         " movement by CamelCase
-Plug 'justinmk/vim-sneak'           " new medium-range motion
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'ajh17/VimCompletesMe'         " simple tab completion
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
@@ -122,6 +120,11 @@ augroup line_return
         \     execute 'normal! g`"zvzz' |
         \ endif
 augroup END
+
+" set the locale for consistency
+if has('unix')
+  LC_ALL=c vi
+endif
 
 " ** APPEARANCE/UI **                                     {{{1
 " ============================================================
@@ -374,23 +377,6 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
   " Tagbar {{{2
   nnoremap <Leader>t :TagbarToggle<CR>
-
-  " CamelCaseMotion {{{2
-  " remap prefix to \ instead of ,
-  map <silent> \w <Plug>CamelCaseMotion_w
-  map <silent> \b <Plug>CamelCaseMotion_b
-  map <silent> \e <Plug>CamelCaseMotion_e
-
-  " vim-sneak {{{2
-  " ctrl-s to Sneak backwards,
-  " because S is already used
-  map <C-s> <Plug>Sneak_S
-  " replace 'f' with 1-char Sneak
-  map f <Plug>Sneak_f
-  map F <Plug>Sneak_F
-  " replace 't' with 1-char Sneak
-  map t <Plug>Sneak_t
-  map T <Plug>Sneak_T
 
   " UltiSnips {{{2
   " change default key
