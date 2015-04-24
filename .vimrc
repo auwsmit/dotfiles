@@ -52,8 +52,9 @@ Plug 'tpope/vim-commentary'         " easier commenting
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
-Plug 'godlygeek/Tabular'            " text alignment plugin
+Plug 'junegunn/vim-easy-align'      " text alignment plugin
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
+Plug 'wellle/targets.vim'           " new and improved text objects
 Plug 'ajh17/VimCompletesMe'         " simple tab completion
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
 Plug 'majutsushi/Tagbar'            " view ctags easily
@@ -120,11 +121,6 @@ augroup line_return
         \     execute 'normal! g`"zvzz' |
         \ endif
 augroup END
-
-" set the locale for consistency
-if has('unix')
-  LC_ALL=c vi
-endif
 
 " ** APPEARANCE/UI **                                     {{{1
 " ============================================================
@@ -269,16 +265,13 @@ nnoremap p p`]
 " habits
 inoremap <C-BS> <C-w>
 cnoremap <C-BS> <C-w>
-inoremap <C-a> <Home>
-cnoremap <C-a> <Home>
-inoremap <C-e> <End>
-cnoremap <C-e> <End>
-
-" visually select all
-nnoremap vaa ggVG
+inoremap <C-a>  <Home>
+cnoremap <C-a>  <Home>
+inoremap <C-e>  <End>
+cnoremap <C-e>  <End>
 
 " change to current buffer's directory
-map <silent> cd :cd <C-R>=expand("%:p:h")<CR><CR>
+nmap <silent> cd :cd <C-R>=expand("%:p:h")<CR><CR>
 
 " navigating between windows
 noremap <silent> <C-h> <C-w>h<CR>
@@ -288,8 +281,8 @@ noremap <silent> <C-l> <C-w>l<CR>
 
 " resizing windows
 noremap <silent> <C-Left>  :vertical resize -3<CR>
-noremap <silent> <C-Up>    :resize +2<CR>
-noremap <silent> <C-Down>  :resize -2<CR>
+noremap <silent> <C-Up>    :resize   +2<CR>
+noremap <silent> <C-Down>  :resize   -2<CR>
 noremap <silent> <C-Right> :vertical resize +3<CR>
 
 " Go Continuous Scroll-Binding
@@ -368,6 +361,12 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   " FileBeagle {{{2
   " show hidden files
   let g:filebeagle_show_hidden = 1
+
+  " vim-easy-align {{{2
+  " Start interactive EasyAlign in visual mode (e.g. vipga)
+  vmap ga <Plug>(EasyAlign)
+  " Start interactive EasyAlign for a motion/text object (e.g. gaip)
+  nmap ga <Plug>(EasyAlign)
 
   " Tabular {{{2
   noremap <Leader>= :Tabularize/
