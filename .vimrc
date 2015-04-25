@@ -88,6 +88,7 @@ set lazyredraw       " redraw the screen less often
 set splitright       " open new v-splits to the right
 set gdefault         " global :substitute by default
 set complete=.,w,b,t " see :help 'complete'
+set synmaxcol=400    " don't highlight past 400 characters
 
 " Undo Settings {{{2
 " save undo history to file
@@ -168,8 +169,8 @@ set textwidth=80      " always gq to 80 characters
 " how to display certain characters/indicators
 set listchars=tab:▸\ ,eol:¬,trail:·,extends:>,precedes:<
 
-" these will sometimes get overwritten,
-" so this is my duct-tape solution
+" these settings will sometimes get overwritten,
+" so this is my duct-tape solution for when that happens
 augroup persistent_settings
   au!
   " formatting options (see :h fo-table)
@@ -224,7 +225,7 @@ noremap <CR> :
 noremap <S-CR> <CR>
 
 " go back to last buffer
-noremap <Backspace> :b#<CR>
+noremap <Backspace> <C-^>
 
 " K for Kill window
 noremap K <c-W>c
@@ -241,6 +242,10 @@ nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
+
+" zip right
+" moves the character under the cursor to the end of the line
+nnoremap zl :let @z=@"<CR>x$p:let @"=@z<CR>
 
 " move by wrapped lines instead of line numbers
 noremap j gj
@@ -259,6 +264,14 @@ nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
 " useful for pasting multi-lines of text
 vnoremap p p`]
 nnoremap p p`]
+
+" left and right arrow keys cycle buffers
+nnoremap <silent> <Left> :bnext<CR>
+nnoremap <silent> <Right> :bprev<CR>
+
+" up and down arrow keys scroll the page
+nnoremap <Up> <C-u>
+nnoremap <Down> <C-d>
 
 " * CONVENIENCE MAPS *       {{{2
 
@@ -284,6 +297,9 @@ noremap <silent> <C-Left>  :vertical resize -3<CR>
 noremap <silent> <C-Up>    :resize   +2<CR>
 noremap <silent> <C-Down>  :resize   -2<CR>
 noremap <silent> <C-Right> :vertical resize +3<CR>
+
+" panic button
+nnoremap <f9> mzggg?G`z
 
 " Go Continuous Scroll-Binding
 " This will vertically split the current buffer into two which will stay
@@ -367,9 +383,6 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   vmap ga <Plug>(EasyAlign)
   " Start interactive EasyAlign for a motion/text object (e.g. gaip)
   nmap ga <Plug>(EasyAlign)
-
-  " Tabular {{{2
-  noremap <Leader>= :Tabularize/
 
   " Gundo {{{2
   nnoremap <Leader>u :GundoToggle<CR>
