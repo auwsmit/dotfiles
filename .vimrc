@@ -52,6 +52,7 @@ Plug 'tpope/vim-commentary'         " easier commenting
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
+Plug 'vim-scripts/a.vim'            " switch between source/header files
 Plug 'junegunn/vim-easy-align'      " text alignment plugin
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'wellle/targets.vim'           " new and improved text objects
@@ -306,6 +307,9 @@ nnoremap <f9> mzggg?G`z
 " scroll-bound together.  Allows you to see twice as much code at once
 " (disables the wrap setting and expands folds to work better)
 nnoremap <silent> gcsb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
+
+" search for numbers (go search numbers)
+nnoremap <silent> g/# /\v\d+<CR>
 
 " * LEADER MAPS *             {{{2
 
