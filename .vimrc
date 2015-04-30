@@ -1,4 +1,4 @@
-" vim: set foldmethod=marker foldlevel=0:
+" a vimrc
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Source: https://github.com/AssailantLF/vimrc
 
@@ -25,8 +25,7 @@ filetype plugin indent on
 " ===========================================================================
 " (minimalist plugin manager)
 
-" Install Vim-Plug at startup if it isn't installed {{{2
-" (Windows needs curl, Linux needs curl or wget)
+" Install Vim-Plug at startup if it isn't installed {{{
 if !filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   echo "Installing Vim-Plug and plugins,"
   echo "restart Vim to finish installation."
@@ -41,6 +40,11 @@ if !filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
           \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   endif
   autocmd VimEnter * PlugInstall
+endif
+
+" also enable parallel installer for Windows GVim
+if s:running_windows
+  let g:plug_threads = 8
 endif " }}}
 
 call plug#begin()
@@ -53,7 +57,6 @@ Plug 'tpope/vim-commentary'         " easier commenting
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
-Plug 'vim-scripts/a.vim'            " switch between source/header files
 Plug 'junegunn/vim-easy-align'      " text alignment plugin
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'wellle/targets.vim'           " new and improved text objects
@@ -113,6 +116,9 @@ set nobackup
 set nowritebackup
 set noswapfile
 
+" use decimal instead of octal with ctrl-a and ctrl-x
+set nrformats=
+
 " enable mouse because why not
 if has('mouse')
   set mouse=a
@@ -138,6 +144,7 @@ set ruler        " show the cursor position all the time
 set scrolloff=5  " keep some lines above & below for scope
 set guioptions=  " remove extra gui elements
 set t_Co=256     " 256 colors, please
+set cpoptions+=$ " $ as end marker for the change operator
 
 " fallback default colorscheme
 colorscheme desert
@@ -159,20 +166,26 @@ endif
 " resize splits when the window is resized
 au VimResized * :wincmd =
 
+" fonts
+if s:running_windows
+  set guifont=DejaVu_Sans_Mono:h10
+else
+  set guifont=DejaVu\ Sans\ Mono\ 10
+end
+
 " }}}
 " ===========================================================================
 " TEXT AND FORMATTING {{{
 " ===========================================================================
 
 set encoding=utf-8    " consistent character encoding
-set cpoptions+=$      " $ as end marker for the change operator
 set autoindent        " always set autoindenting on
 set smartindent       " trying out smartindent for C
 set foldmethod=syntax " default fold method
-set nofoldenable      " all folds open initially
+set foldlevel=99      " all folds open initially
 set list              " don't show 'listchars' characters
 set linebreak         " when wrapping lines, don't break words
-set textwidth=80      " always gq to 80 characters
+set textwidth=80      " always gq format to 80 characters
 
 " how to display certain characters/indicators
 set listchars=tab:▸\ ,eol:¬,trail:·,extends:>,precedes:<
@@ -195,25 +208,16 @@ augroup END
 " default tab settings
 set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
-augroup filetype_specific_format
+" indent/format settings for different file types
+augroup filetype_specific
   au!
-  au FileType vim  :setlocal ts=2 sts=0 sw=2 et fdm=marker
+  au FileType vim  :setlocal ts=2 sts=0 sw=2 et fdm=marker fdl=0
   au FileType sh   :setlocal ts=2 sts=0 sw=2 et
   au FileType html :setlocal ts=2 sts=0 sw=2 et
   au FileType c    :setlocal ts=4 sts=0 sw=4 et
   au FileType cpp  :setlocal ts=4 sts=0 sw=4 et
-  au FileType make :setlocal ts=4 sts=0 sw=4 noet
+  au FileType make :setlocal ts=8 sts=0 sw=4 noet
 augroup END
-
-" use decimal instead of octal with ctrl-a and ctrl-x
-set nrformats=
-
-" fonts
-if s:running_windows
-  set guifont=DejaVu_Sans_Mono:h10
-else
-  set guifont=DejaVu\ Sans\ Mono\ 10
-end
 
 " }}}
 " ===========================================================================
@@ -231,13 +235,6 @@ end
 noremap  <F1> <NOP>
 inoremap <F1> <NOP>
 noremap  ZQ   <NOP>
-
-" Enter command mode
-noremap <CR> :
-noremap <S-CR> <CR>
-
-" go back to last buffer
-noremap <Backspace> <C-^>
 
 " K for Kill window
 noremap K <c-W>c
@@ -268,8 +265,13 @@ noremap k gk
 noremap gj j
 noremap gk k
 
-" replace - with _ to make it more consistent with +
-noremap _ -
+" left and right arrow keys cycle buffers
+nnoremap <silent> <Left> :bnext<CR>
+nnoremap <silent> <Right> :bprev<CR>
+
+" up and down arrow keys scroll the page
+nnoremap <Up>   <C-u>
+nnoremap <Down> <C-d>
 
 " { and } skip over closed folds
 nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
@@ -280,18 +282,20 @@ nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
 xnoremap p p`]
 nnoremap p p`]
 
-" left and right arrow keys cycle buffers
-nnoremap <silent> <Left> :bnext<CR>
-nnoremap <silent> <Right> :bprev<CR>
-
-" up and down arrow keys scroll the page
-nnoremap <Up>   <C-u>
-nnoremap <Down> <C-d>
+" replace - with _ to make it more consistent with +
+noremap _ -
 
 " }}}
 " ---------------------------------------------------------------------------
 " CONVENIENCE MAPS {{{
 " ---------------------------------------------------------------------------
+
+" Enter command mode
+noremap <CR> :
+noremap <S-CR> <CR>
+
+" go back to last buffer
+noremap <Backspace> <C-^>
 
 " change to current buffer's directory
 nmap <silent> cd :cd <C-R>=expand("%:p:h")<CR><CR>
@@ -304,9 +308,9 @@ cnoremap <C-a>  <Home>
 inoremap <C-e>  <End>
 cnoremap <C-e>  <End>
 
-" jump list (to newer position)
+" jump list
 nnoremap <C-j> <C-i>
-nnoremap <C-k> <C-i>
+nnoremap <C-k> <C-o>
 
 " circular windows navigation
 nnoremap <Tab>   <c-W>w
@@ -385,7 +389,7 @@ cabbrev bdall 0,9999bd!
 " ===========================================================================
 
 " Only load these settings if Vim-Plug seems to be installed
-if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
+if isdirectory(expand(g:myvimdir . "/plugged"))
 
   " Fugitive {{{
   nnoremap <Leader>gs :Gstatus<CR>
@@ -396,8 +400,8 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   nnoremap <Leader>gp :Git push<CR>
   nnoremap <Leader>gw :Gwrite<CR>
   nnoremap <Leader>gr :Gremove<CR>
-
   " }}}
+
   " CtrlP {{{
   " ignore .git folders to speed up searches
   let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
@@ -408,43 +412,43 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   " access recent files and buffers
   nnoremap <Leader><C-e> :CtrlPMRUFiles<CR>
   nnoremap <Leader><C-b> :CtrlPBuffer<CR>
-
   " }}}
+
   " FileBeagle {{{
   " show hidden files
   let g:filebeagle_show_hidden = 1
-
   " }}}
+
   " vim-easy-align {{{
   " Start interactive EasyAlign in visual mode (e.g. vipga)
   vmap ga <Plug>(EasyAlign)
   " Start interactive EasyAlign for a motion/text object (e.g. gaip)
   nmap ga <Plug>(EasyAlign)
-
   " }}}
+
   " Gundo {{{
   nnoremap <Leader>u :GundoToggle<CR>
-
   " }}}
+
   " Tagbar {{{
   nnoremap <Leader>t :TagbarToggle<CR>
-
   " }}}
+
   " UltiSnips {{{
   " change default key
   let g:UltiSnipsExpandTrigger="<c-s>"
-
   " }}}
+
   " lightline {{{
   " toggle lightline
   nnoremap <silent> <Leader>L :exec lightline#toggle()<CR>
-
   " }}}
+
   " Syntastic {{{
   " reset Syntastic (clears errors)
   nnoremap <Leader>S :SyntasticReset<CR>
-
   " }}}
+
   " Startify {{{
   " custom header
   let g:startify_custom_header = [
@@ -462,8 +466,8 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
         \ '                        ||     ||            ',
         \ '                                             ',
         \ ]
-
   " }}}
+
 endif
 " }}}
 " ===========================================================================
