@@ -1,11 +1,10 @@
-" vimrc
+" vim: set foldmethod=marker foldlevel=0:
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Source: https://github.com/AssailantLF/vimrc
 
-" Organized with folds, try to use them
-
-" ** STARTUP **                                           {{{1
-" ============================================================
+" ===========================================================================
+" STARTUP {{{
+" ===========================================================================
 
 " Windows/Linux differences
 let s:running_windows = has("win16") || has("win32") || has("win64")
@@ -20,8 +19,10 @@ set nocompatible
 " enables filetype detection, ftplugins, and indent files
 filetype plugin indent on
 
-" ** VIM-PLUG **                                          {{{1
-" ============================================================
+" }}}
+" ===========================================================================
+" VIM-PLUG {{{
+" ===========================================================================
 " (minimalist plugin manager)
 
 " Install Vim-Plug at startup if it isn't installed {{{2
@@ -73,8 +74,10 @@ Plug 'Yggdroot/indentLine'          " shows indents made of spaces
 
 call plug#end()
 
-" ** GENERAL SETTINGS **                                  {{{1
-" ============================================================
+" }}}
+" ===========================================================================
+"  GENERAL SETTINGS {{{
+" ===========================================================================
 
 set backspace=2      " backspace like most programs in insert mode
 set history=1000     " keep x lines of command line history
@@ -91,7 +94,7 @@ set gdefault         " global :substitute by default
 set complete=.,w,b,t " see :help 'complete'
 set synmaxcol=400    " don't highlight past 400 characters
 
-" Undo Settings {{{2
+" Undo Settings {{{
 " save undo history to file
 silent! set undofile
 
@@ -124,8 +127,10 @@ augroup line_return
         \ endif
 augroup END
 
-" ** APPEARANCE/UI **                                     {{{1
-" ============================================================
+" }}}
+" ===========================================================================
+"  APPEARANCE/AESTHETIC {{{
+" ===========================================================================
 
 syntax on        " syntax highlighting
 set laststatus=2 " always show status bar
@@ -154,8 +159,10 @@ endif
 " resize splits when the window is resized
 au VimResized * :wincmd =
 
-" ** TEXT AND FORMATTING **                               {{{1
-" ============================================================
+" }}}
+" ===========================================================================
+" TEXT AND FORMATTING {{{
+" ===========================================================================
 
 set encoding=utf-8    " consistent character encoding
 set cpoptions+=$      " $ as end marker for the change operator
@@ -208,18 +215,22 @@ else
   set guifont=DejaVu\ Sans\ Mono\ 10
 end
 
-" ** KEY MAPPINGS/ALIASES **                                 {{{1
-" ============================================================
+" }}}
+" ===========================================================================
+" KEY MAPPINGS/ALIASES {{{
+" ===========================================================================
 "
 " anything related to plugins is located
 " under its respective vim plugins section
 
-" * REMAPS OF DEFAULTS *      {{{2
+" ---------------------------------------------------------------------------
+" REMAPS OF DEFAULTS {{{
+" ---------------------------------------------------------------------------
 
 " disabled
-noremap <F1> <NOP>
+noremap  <F1> <NOP>
 inoremap <F1> <NOP>
-noremap ZQ <NOP>
+noremap  ZQ   <NOP>
 
 " Enter command mode
 noremap <CR> :
@@ -240,6 +251,9 @@ nnoremap U <C-r>
 
 " [S]plit line (sister to [J]oin lines)
 nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
+
+" qq to record, Q to replay
+nmap Q @q
 
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
@@ -263,7 +277,7 @@ nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
 
 " jump to the end of pasted text
 " useful for pasting multi-lines of text
-vnoremap p p`]
+xnoremap p p`]
 nnoremap p p`]
 
 " left and right arrow keys cycle buffers
@@ -271,10 +285,16 @@ nnoremap <silent> <Left> :bnext<CR>
 nnoremap <silent> <Right> :bprev<CR>
 
 " up and down arrow keys scroll the page
-nnoremap <Up> <C-u>
+nnoremap <Up>   <C-u>
 nnoremap <Down> <C-d>
 
-" * CONVENIENCE MAPS *       {{{2
+" }}}
+" ---------------------------------------------------------------------------
+" CONVENIENCE MAPS {{{
+" ---------------------------------------------------------------------------
+
+" change to current buffer's directory
+nmap <silent> cd :cd <C-R>=expand("%:p:h")<CR><CR>
 
 " habits
 inoremap <C-BS> <C-w>
@@ -284,14 +304,13 @@ cnoremap <C-a>  <Home>
 inoremap <C-e>  <End>
 cnoremap <C-e>  <End>
 
-" change to current buffer's directory
-nmap <silent> cd :cd <C-R>=expand("%:p:h")<CR><CR>
+" jump list (to newer position)
+nnoremap <C-j> <C-i>
+nnoremap <C-k> <C-i>
 
-" navigating between windows
-noremap <silent> <C-h> <C-w>h<CR>
-noremap <silent> <C-j> <C-w>j<CR>
-noremap <silent> <C-k> <C-w>k<CR>
-noremap <silent> <C-l> <C-w>l<CR>
+" circular windows navigation
+nnoremap <Tab>   <c-W>w
+nnoremap <S-Tab> <c-W>W
 
 " resizing windows
 noremap <silent> <C-Left>  :vertical resize -3<CR>
@@ -308,10 +327,13 @@ nnoremap <f9> mzggg?G`z
 " (disables the wrap setting and expands folds to work better)
 nnoremap <silent> gcsb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
 
-" search for numbers (go search numbers)
+" (go search numbers) search for numbers
 nnoremap <silent> g/# /\v\d+<CR>
 
-" * LEADER MAPS *             {{{2
+" }}}
+" ---------------------------------------------------------------------------
+" LEADER MAPS {{{
+" ---------------------------------------------------------------------------
 
 " leader the easiest key to reach
 let mapleader = "\<Space>"
@@ -335,12 +357,15 @@ nnoremap <silent> <Leader>s :if exists("g:syntax_on") <Bar> syntax off <Bar> els
 
 " copy and paste from system clipboard easier
 nnoremap <Leader>y "+y
-vnoremap <Leader>y "+y
+xnoremap <Leader>y "+y
 nnoremap <Leader>p "+p
 nnoremap <Leader>P "+P
-vnoremap <Leader>p d"+P
+xnoremap <Leader>p d"+P
 
-" * COMMAND ALIASES *       {{{2
+" }}}
+" ---------------------------------------------------------------------------
+" COMMAND ALIASES {{{
+" ---------------------------------------------------------------------------
 
 " expands %% to current file's directory in command-line mode
 cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
@@ -351,13 +376,18 @@ cabbrev ctw s/\s\+$//e
 " delete all buffers
 cabbrev bdall 0,9999bd!
 
-" ** PLUGIN SETTINGS **                                   {{{1
-" ============================================================
+" }}}
+" ---------------------------------------------------------------------------
+
+" }}}
+" ===========================================================================
+" PLUGIN SETTINGS {{{
+" ===========================================================================
 
 " Only load these settings if Vim-Plug seems to be installed
 if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 
-  " Fugitive {{{2
+  " Fugitive {{{
   nnoremap <Leader>gs :Gstatus<CR>
   nnoremap <Leader>gd :Gdiff<CR>
   nnoremap <Leader>gD :Gdiff HEAD<CR>
@@ -367,7 +397,8 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   nnoremap <Leader>gw :Gwrite<CR>
   nnoremap <Leader>gr :Gremove<CR>
 
-  " CtrlP {{{2
+  " }}}
+  " CtrlP {{{
   " ignore .git folders to speed up searches
   let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
   " include hidden files
@@ -378,35 +409,43 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   nnoremap <Leader><C-e> :CtrlPMRUFiles<CR>
   nnoremap <Leader><C-b> :CtrlPBuffer<CR>
 
-  " FileBeagle {{{2
+  " }}}
+  " FileBeagle {{{
   " show hidden files
   let g:filebeagle_show_hidden = 1
 
-  " vim-easy-align {{{2
+  " }}}
+  " vim-easy-align {{{
   " Start interactive EasyAlign in visual mode (e.g. vipga)
   vmap ga <Plug>(EasyAlign)
   " Start interactive EasyAlign for a motion/text object (e.g. gaip)
   nmap ga <Plug>(EasyAlign)
 
-  " Gundo {{{2
+  " }}}
+  " Gundo {{{
   nnoremap <Leader>u :GundoToggle<CR>
 
-  " Tagbar {{{2
+  " }}}
+  " Tagbar {{{
   nnoremap <Leader>t :TagbarToggle<CR>
 
-  " UltiSnips {{{2
+  " }}}
+  " UltiSnips {{{
   " change default key
   let g:UltiSnipsExpandTrigger="<c-s>"
 
-  " lightline {{{2
+  " }}}
+  " lightline {{{
   " toggle lightline
   nnoremap <silent> <Leader>L :exec lightline#toggle()<CR>
 
-  " Syntastic {{{2
+  " }}}
+  " Syntastic {{{
   " reset Syntastic (clears errors)
   nnoremap <Leader>S :SyntasticReset<CR>
 
-  " Startify {{{2
+  " }}}
+  " Startify {{{
   " custom header
   let g:startify_custom_header = [
         \ '                                             ',
@@ -424,4 +463,7 @@ if filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
         \ '                                             ',
         \ ]
 
+  " }}}
 endif
+" }}}
+" ===========================================================================
