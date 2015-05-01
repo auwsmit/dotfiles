@@ -392,6 +392,32 @@ cabbrev bdall 0,9999bd!
 " PLUGIN SETTINGS {{{
 " ===========================================================================
 
+" :A command {{{
+" Alternate between header and source files.
+" (credit to junegunn's vimrc)
+function! s:a()
+  let name = expand('%:r')
+  let ext = tolower(expand('%:e'))
+  let sources = ['c', 'cc', 'cpp', 'cxx']
+  let headers = ['h', 'hh', 'hpp', 'hxx']
+  for pair in [[sources, headers], [headers, sources]]
+    let [set1, set2] = pair
+    if index(set1, ext) >= 0
+      for h in set2
+        let aname = name.'.'.h
+        for a in [aname, toupper(aname)]
+          if filereadable(a)
+            execute 'e' a
+            return
+          end
+        endfor
+      endfor
+    endif
+  endfor
+endfunction
+command! A call s:a()
+" }}}
+
 " Fugitive {{{
 nnoremap <Leader>gs :Gstatus<CR>
 nnoremap <Leader>gd :Gdiff<CR>
