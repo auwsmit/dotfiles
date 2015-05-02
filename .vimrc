@@ -252,10 +252,6 @@ nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 " qq to record, Q to replay
 nnoremap Q @q
 
-" H/L to scroll the view left/right
-nnoremap H zH
-nnoremap L zL
-
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 
@@ -352,7 +348,7 @@ nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 
 " quickly manage buffers
 nnoremap <Leader>b :ls<CR>:b<Space>
-nnoremap <Leader>B :ls!<CR>:b<Space>
+nnoremap <Leader>B :ls<CR>:bd!<Left><Left><Left>
 
 " delete buffer
 nnoremap <silent> <Leader>X :bd!<CR>
