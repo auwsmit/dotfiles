@@ -9,7 +9,7 @@ set vimrepo=%~dp0
 
 REM delete previous symbolic link if it exists
 dir "%homedir%\_vimrc" | find "<SYMLINK>" && (
-	rm "%homedir%\_vimrc"
+	del "%homedir%\_vimrc"
 )
 
 REM backup the previous vimrc if it exists
