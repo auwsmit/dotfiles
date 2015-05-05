@@ -54,6 +54,7 @@ Plug 'tpope/vim-surround'           " surroundings manipulation
 Plug 'tpope/vim-fugitive'           " Git integration
 Plug 'tpope/vim-unimpaired'         " many helpful mappings
 Plug 'tpope/vim-commentary'         " easier commenting
+Plug 'tpope/vim-dispatch'           " asynchronous building/testing
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
@@ -236,9 +237,6 @@ noremap  ZQ   <NOP>
 " K for kill window
 noremap K <c-W>c
 
-" M for manual
-noremap M K
-
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
 nnoremap Y y$
@@ -265,13 +263,11 @@ noremap k gk
 noremap gj j
 noremap gk k
 
-" left and right arrow keys cycle buffers
-nnoremap <silent> <Left> :bnext<CR>
-nnoremap <silent> <Right> :bprev<CR>
-
-" up and down arrow keys scroll the page
-nnoremap <Up>   <C-u>
-nnoremap <Down> <C-d>
+" arrow keys directionally scroll the page
+nnoremap <Up>    <C-u>
+nnoremap <Down>  <C-d>
+nnoremap <Left>  zH
+nnoremap <Right> zL
 
 " { and } skip over closed folds
 nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
@@ -348,7 +344,7 @@ nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 
 " quickly manage buffers
 nnoremap <Leader>b :ls<CR>:b<Space>
-nnoremap <Leader>B :ls<CR>:bd!<Left><Left><Left>
+nnoremap <Leader>B :ls<CR>:bd!<Space>
 
 " delete buffer
 nnoremap <silent> <Leader>X :bd!<CR>
