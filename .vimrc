@@ -55,6 +55,7 @@ Plug 'tpope/vim-fugitive'           " Git integration
 Plug 'tpope/vim-unimpaired'         " many helpful mappings
 Plug 'tpope/vim-commentary'         " easier commenting
 Plug 'tpope/vim-dispatch'           " asynchronous building/testing
+Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
@@ -281,10 +282,6 @@ nnoremap p p`]
 " replace - with _ to make it more consistent with +
 noremap _ -
 
-" circular windows navigation
-nnoremap <Tab>   <c-W>w
-nnoremap <S-Tab> <c-W>W
-
 " }}}
 " ---------------------------------------------------------------------------
 " NORMAL MAPS {{{
@@ -307,6 +304,10 @@ inoremap <C-a>  <Home>
 cnoremap <C-a>  <Home>
 inoremap <C-e>  <End>
 cnoremap <C-e>  <End>
+
+" circular windows navigation
+nnoremap <Tab>   <c-W>w
+nnoremap <S-Tab> <c-W>W
 
 " jump list
 nnoremap <C-j> <C-i>
@@ -346,11 +347,11 @@ nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 nnoremap <Leader>b :ls<CR>:b<Space>
 nnoremap <Leader>B :ls<CR>:bd!<Space>
 
-" delete buffer
-nnoremap <silent> <Leader>X :bd!<CR>
+" " delete buffer
+" nnoremap <silent> <Leader>X :bd!<CR>
 
-" delete buffer, but not split/window
-nnoremap <silent> <Leader>D :bn<CR>:bd!#<CR>
+" " delete buffer, but not split/window
+" nnoremap <silent> <Leader>D :bn<CR>:bd!#<CR>
 
 " toggle syntax highlighting
 nnoremap <silent> <Leader>s :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif<CR>
@@ -419,6 +420,11 @@ nnoremap <Leader>gl :!git log<CR>
 nnoremap <Leader>gp :Git push<CR>
 nnoremap <Leader>gw :Gwrite<CR>
 nnoremap <Leader>gr :Gremove<CR>
+" }}}
+
+" Sayonara {{{
+nnoremap gs :Sayonara<CR>
+nnoremap gS :Sayonara!<CR>
 " }}}
 
 " CtrlP {{{
