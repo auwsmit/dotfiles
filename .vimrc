@@ -188,7 +188,7 @@ set linebreak         " when wrapping lines, don't break words
 set textwidth=80      " always gq format to 80 characters
 
 " how to display certain characters/indicators
-set listchars=tab:▸\ ,eol:¬,trail:·,extends:>,precedes:<
+set listchars=tab:▸\ ,trail:■,extends:»,precedes:«
 
 " these settings will sometimes get overwritten,
 " so this is my duct-tape solution for when that happens
@@ -201,8 +201,8 @@ augroup END
 " don't show trailing spaces in insert mode
 augroup trailing
   au!
-  au InsertEnter * :set listchars-=trail:·
-  au InsertLeave * :set listchars+=trail:·
+  au InsertEnter * :set listchars-=trail:■
+  au InsertLeave * :set listchars+=trail:■
 augroup END
 
 " default indent settings
@@ -254,10 +254,6 @@ nnoremap Q @q
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 
-" zip right
-" moves the character under the cursor to the end of the line
-nnoremap zl :let @z=@"<CR>x$p:let @"=@z<CR>
-
 " move by wrapped lines instead of line numbers
 noremap j gj
 noremap k gk
@@ -267,8 +263,8 @@ noremap gk k
 " arrow keys directionally scroll the page
 nnoremap <Up>    <C-u>
 nnoremap <Down>  <C-d>
-nnoremap <Left>  zH
-nnoremap <Right> zL
+nnoremap <Left>  3zh
+nnoremap <Right> 3zl
 
 " { and } skip over closed folds
 nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
@@ -346,12 +342,6 @@ nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 " quickly manage buffers
 nnoremap <Leader>b :ls<CR>:b<Space>
 nnoremap <Leader>B :ls<CR>:bd!<Space>
-
-" " delete buffer
-" nnoremap <silent> <Leader>X :bd!<CR>
-
-" " delete buffer, but not split/window
-" nnoremap <silent> <Leader>D :bn<CR>:bd!#<CR>
 
 " toggle syntax highlighting
 nnoremap <silent> <Leader>s :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif<CR>
