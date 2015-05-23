@@ -60,6 +60,7 @@ Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'junegunn/vim-easy-align'      " text alignment plugin
+Plug 'junegunn/goyo.vim'            " distraction free text editing
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'wellle/targets.vim'           " new and improved text objects
 Plug 'ajh17/VimCompletesMe'         " simple tab completion
@@ -89,6 +90,7 @@ set history=1000     " keep x lines of command line history
 set hidden           " allow more than one modified buffer
 set showcmd          " display incomplete commands
 set wildmenu         " visual command-line completion
+set wildmode=full    " specifies options for wildmenu
 set incsearch        " do incremental searching
 set ignorecase       " search isn't case sensitive
 set autoread         " auto reload changed files
@@ -233,7 +235,6 @@ augroup END
 " disabled
 noremap  <F1> <NOP>
 inoremap <F1> <NOP>
-noremap  ZQ   <NOP>
 
 " K for kill window
 noremap K <c-W>c
@@ -260,12 +261,6 @@ noremap k gk
 noremap gj j
 noremap gk k
 
-" arrow keys directionally scroll the page
-nnoremap <Up>    <C-u>
-nnoremap <Down>  <C-d>
-nnoremap <Left>  3zh
-nnoremap <Right> 3zl
-
 " { and } skip over closed folds
 nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
 nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
@@ -274,9 +269,6 @@ nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
 " useful for pasting multi-lines of text
 xnoremap p p`]
 nnoremap p p`]
-
-" replace - with _ to make it more consistent with +
-noremap _ -
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -294,8 +286,6 @@ noremap <Backspace> <C-^>
 nmap cd :cd <C-R>=expand("%:p:h")<CR><CR>
 
 " habits
-inoremap <C-BS> <C-w>
-cnoremap <C-BS> <C-w>
 inoremap <C-a>  <Home>
 cnoremap <C-a>  <Home>
 inoremap <C-e>  <End>
@@ -310,10 +300,10 @@ nnoremap <C-j> <C-i>
 nnoremap <C-k> <C-o>
 
 " resizing windows
-noremap <silent> <C-Left>  :vertical resize -3<CR>
-noremap <silent> <C-Up>    :resize   +2<CR>
-noremap <silent> <C-Down>  :resize   -2<CR>
-noremap <silent> <C-Right> :vertical resize +3<CR>
+noremap <silent> <C-Left>  :vertical resize -1<CR>
+noremap <silent> <C-Up>    :resize   +1<CR>
+noremap <silent> <C-Down>  :resize   -1<CR>
+noremap <silent> <C-Right> :vertical resize +1<CR>
 
 " panic button
 nnoremap <f9> mzggg?G`z
@@ -347,11 +337,7 @@ nnoremap <Leader>B :ls<CR>:bd!<Space>
 nnoremap <silent> <Leader>s :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif<CR>
 
 " copy and paste from system clipboard easier
-nnoremap <Leader>y "+y
-xnoremap <Leader>y "+y
-nnoremap <Leader>p "+p
-nnoremap <Leader>P "+P
-xnoremap <Leader>p d"+P
+nnoremap <Leader><Leader> "+
 
 " }}}
 " ---------------------------------------------------------------------------
