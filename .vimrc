@@ -143,7 +143,6 @@ augroup END
 syntax on        " syntax highlighting
 set laststatus=2 " always show status bar
 set ruler        " show the cursor position all the time
-set scrolloff=5  " keep some lines above & below for scope
 set guioptions=  " remove extra gui elements
 set t_Co=256     " 256 colors, please
 set cpoptions+=$ " $ as end marker for the change operator
@@ -291,13 +290,17 @@ cnoremap <C-a>  <Home>
 inoremap <C-e>  <End>
 cnoremap <C-e>  <End>
 
+" convenient page scrolling
+nnoremap <C-j> <C-d>
+nnoremap <C-k> <C-u>
+
 " circular windows navigation
 nnoremap <Tab>   <c-W>w
 nnoremap <S-Tab> <c-W>W
 
-" jump list
-nnoremap <C-j> <C-i>
-nnoremap <C-k> <C-o>
+" jump list (previous, next)
+nnoremap <C-p> <C-o>
+nnoremap <C-n> <C-i>
 
 " resizing windows
 noremap <silent> <C-Left>  :vertical resize -1<CR>
@@ -399,7 +402,9 @@ nnoremap <Leader>gr :Gremove<CR>
 " }}}
 
 " Sayonara {{{
+" close buffer
 nnoremap gs :Sayonara<CR>
+" close buffer, but not window
 nnoremap gS :Sayonara!<CR>
 " }}}
 
@@ -408,6 +413,8 @@ nnoremap gS :Sayonara!<CR>
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 " include hidden files
 let g:ctrlp_show_hidden = 1
+" change default CtrlP mapping
+let g:ctrlp_map = '<Leader>p'
 " specific directory search
 nnoremap <Leader><C-p> :CtrlP<Space>
 " access recent files and buffers
@@ -418,6 +425,11 @@ nnoremap <Leader><C-b> :CtrlPBuffer<CR>
 " FileBeagle {{{
 " show hidden files
 let g:filebeagle_show_hidden = 1
+" }}}
+
+" Goyo {{{
+" toggle Goyo (distraction free editing)
+nnoremap <Leader>G :Goyo<CR>
 " }}}
 
 " vim-easy-align {{{
@@ -451,6 +463,10 @@ nnoremap <Leader>S :SyntasticReset<CR>
 " }}}
 
 " Startify {{{
+" I use <CR> to enter command mode,
+" so use <S-CR> to open files instead.
+autocmd User Startified unmap <buffer> <CR>
+autocmd User Startified nmap <buffer> <S-CR> <plug>(startify-open-buffers)
 " custom header
 let g:startify_custom_header = [
       \ '                                             ',
