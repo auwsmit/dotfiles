@@ -449,6 +449,7 @@ nnoremap <Leader>t :TagbarToggle<CR>
 
 " UltiSnips {{{
 " change default key
+" mnemonic: control-snippet
 let g:UltiSnipsExpandTrigger="<c-s>"
 " }}}
 
@@ -464,9 +465,9 @@ nnoremap <Leader>S :SyntasticReset<CR>
 
 " Startify {{{
 " I use <CR> to enter command mode,
-" so use <S-CR> to open files instead.
+" so use o to open files instead.
 autocmd User Startified unmap <buffer> <CR>
-autocmd User Startified nmap <buffer> <S-CR> <plug>(startify-open-buffers)
+autocmd User Startified nmap <buffer> o <plug>(startify-open-buffers)
 " custom header
 let g:startify_custom_header = [
       \ '                                             ',
