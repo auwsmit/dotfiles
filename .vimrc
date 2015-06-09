@@ -191,8 +191,6 @@ set textwidth=80      " always gq format to 80 characters
 " how to display certain characters/indicators
 set listchars=tab:▸\ ,trail:■,extends:»,precedes:«
 
-" these settings will sometimes get overwritten,
-" so this is my duct-tape solution for when that happens
 augroup persistent_settings
   au!
   " formatting options (see :h fo-table)
@@ -276,7 +274,9 @@ nnoremap p p`]
 
 " Enter command mode
 noremap <CR> :
-noremap <S-CR> <CR>
+" \ for times when regular <CR> is needed,
+" mostly for the command-line window
+noremap \ <CR>
 
 " go back to last buffer
 noremap <Backspace> <C-^>
@@ -299,8 +299,8 @@ nnoremap <Tab>   <c-W>w
 nnoremap <S-Tab> <c-W>W
 
 " jump list (previous, next)
-nnoremap <C-p> <C-o>
-nnoremap <C-n> <C-i>
+nnoremap <C-p> <C-o>zz
+nnoremap <C-n> <C-i>zz
 
 " resizing windows
 noremap <silent> <C-Left>  :vertical resize -1<CR>
@@ -319,6 +319,9 @@ nnoremap <silent> gcsb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo v
 
 " (go search numbers) search for numbers
 nnoremap <silent> g/# /\v\d+<CR>
+
+" run current line as an Ex command
+nnoremap g: yy:<C-r>0<BS><CR>
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -340,7 +343,7 @@ nnoremap <Leader>B :ls<CR>:bd!<Space>
 nnoremap <silent> <Leader>s :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif<CR>
 
 " copy and paste from system clipboard easier
-nnoremap <Leader><Leader> "+
+noremap <Leader><Leader> "+
 
 " }}}
 " ---------------------------------------------------------------------------
