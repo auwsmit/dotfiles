@@ -189,7 +189,7 @@ set linebreak         " when wrapping lines, don't break words
 set textwidth=80      " always gq format to 80 characters
 
 " how to display certain characters/indicators
-set listchars=tab:▸\ ,trail:■,extends:»,precedes:«
+set listchars=tab:▸\ ,eol:¬,trail:■,extends:»,precedes:«
 
 augroup persistent_settings
   au!
@@ -266,6 +266,9 @@ nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
 " useful for pasting multi-lines of text
 xnoremap p p`]
 nnoremap p p`]
+
+" esc to stop inserting in Neovim terminal mode
+silent! tnoremap <Esc> <C-\><C-n>
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -357,7 +360,7 @@ cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
 cabbrev ctw s/\s\+$//e
 
 " delete all buffers
-cabbrev bdall 0,9999bd!
+cabbrev bdall 0,999bd!
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -398,7 +401,7 @@ nnoremap <Leader>gs :Gstatus<CR>
 nnoremap <Leader>gd :Gdiff<CR>
 nnoremap <Leader>gD :Gdiff HEAD<CR>
 nnoremap <Leader>gc :Gcommit<CR>
-nnoremap <Leader>gl :!git log<CR>
+nnoremap <Leader>gl :Git log<CR>
 nnoremap <Leader>gp :Git push<CR>
 nnoremap <Leader>gw :Gwrite<CR>
 nnoremap <Leader>gr :Gremove<CR>
