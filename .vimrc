@@ -277,9 +277,9 @@ silent! tnoremap <Esc> <C-\><C-n>
 
 " Enter command mode
 noremap <CR> :
-" \ for times when regular <CR> is needed,
+" | for times when regular <CR> is needed,
 " mostly for the command-line window
-noremap \ <CR>
+noremap <Bar> <CR>
 
 " go back to last buffer
 noremap <Backspace> <C-^>
@@ -465,8 +465,10 @@ nnoremap <silent> <Leader>L :exec lightline#toggle()<CR>
 " }}}
 
 " Syntastic {{{
+" opens errors in the location list
+nnoremap <Leader>e :Errors<CR>
 " reset Syntastic (clears errors)
-nnoremap <Leader>S :SyntasticReset<CR>
+nnoremap <Leader>E :SyntasticReset<CR>
 " }}}
 
 " Startify {{{
