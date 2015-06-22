@@ -445,6 +445,10 @@ vmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 " }}}
 
+" indentLine {{{
+nnoremap <Leader>l :IndentLinesToggle<CR>
+" }}}
+
 " Gundo {{{
 nnoremap <Leader>u :GundoToggle<CR>
 " }}}
