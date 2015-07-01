@@ -55,6 +55,7 @@ Plug 'tpope/vim-fugitive'           " Git integration
 Plug 'tpope/vim-unimpaired'         " many helpful mappings
 Plug 'tpope/vim-commentary'         " easier commenting
 Plug 'tpope/vim-dispatch'           " asynchronous building/testing
+Plug 'tpope/vim-repeat'             " . repeat for some plugins
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
@@ -63,7 +64,7 @@ Plug 'junegunn/vim-easy-align'      " text alignment plugin
 Plug 'junegunn/goyo.vim'            " distraction free text editing
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'wellle/targets.vim'           " new and improved text objects
-Plug 'ajh17/VimCompletesMe'         " simple tab completion
+Plug 'ervandew/supertab'            " tab auto completion
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python') || has('python3')
@@ -140,7 +141,7 @@ augroup END
 "  APPEARANCE/AESTHETIC {{{
 " ===========================================================================
 
-syntax on        " syntax highlighting
+syntax off       " syntax highlighting
 set laststatus=2 " always show status bar
 set ruler        " show the cursor position all the time
 set guioptions=  " remove extra gui elements
@@ -288,10 +289,10 @@ noremap <Backspace> <C-^>
 nmap cd :cd <C-R>=expand("%:p:h")<CR><CR>
 
 " habits
-inoremap <C-a>  <Home>
-cnoremap <C-a>  <Home>
-inoremap <C-e>  <End>
-cnoremap <C-e>  <End>
+inoremap <C-a> <Home>
+cnoremap <C-a> <Home>
+inoremap <C-e> <End>
+cnoremap <C-e> <End>
 
 " convenient page scrolling
 nnoremap <C-j> <C-d>
@@ -333,6 +334,9 @@ nnoremap g: yy:<C-r>0<BS><CR>
 
 " leader the easiest key to reach
 let mapleader = "\<Space>"
+
+" write file
+nnoremap <Leader>w :w<CR>
 
 " open vimrc
 nnoremap <Leader>v :e $MYVIMRC<CR>
@@ -446,7 +450,7 @@ nmap ga <Plug>(EasyAlign)
 " }}}
 
 " indentLine {{{
-nnoremap <Leader>l :IndentLinesToggle<CR>
+nnoremap <Leader>i :IndentLinesToggle<CR>
 " }}}
 
 " Gundo {{{
@@ -455,12 +459,6 @@ nnoremap <Leader>u :GundoToggle<CR>
 
 " Tagbar {{{
 nnoremap <Leader>t :TagbarToggle<CR>
-" }}}
-
-" UltiSnips {{{
-" change default key
-" mnemonic: control-snippet
-let g:UltiSnipsExpandTrigger="<c-s>"
 " }}}
 
 " lightline {{{
@@ -472,7 +470,7 @@ nnoremap <silent> <Leader>L :exec lightline#toggle()<CR>
 " opens errors in the location list
 nnoremap <Leader>e :Errors<CR>
 " reset Syntastic (clears errors)
-nnoremap <Leader>E :SyntasticReset<CR>
+nnoremap <Leader>r :SyntasticReset<CR>
 " }}}
 
 " Startify {{{
