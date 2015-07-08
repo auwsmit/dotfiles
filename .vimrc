@@ -54,14 +54,18 @@ Plug 'tpope/vim-surround'           " surroundings manipulation
 Plug 'tpope/vim-fugitive'           " Git integration
 Plug 'tpope/vim-unimpaired'         " many helpful mappings
 Plug 'tpope/vim-commentary'         " easier commenting
+Plug 'tpope/vim-speeddating'        " increment dates, times, and more
 Plug 'tpope/vim-dispatch'           " asynchronous building/testing
-Plug 'tpope/vim-repeat'             " . repeat for some plugins
+Plug 'tpope/vim-abolish'            " improved search/substitute
+Plug 'tpope/vim-repeat'             " . repeat for plugins
+Plug 'tpope/vim-eunuch'             " UNIX helper commands
+Plug 'tpope/vim-rsi'                " readline style insertion
+Plug 'haya14busa/incsearch.vim'     " improved incsearch
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'junegunn/vim-easy-align'      " text alignment plugin
-Plug 'junegunn/goyo.vim'            " distraction free text editing
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'wellle/targets.vim'           " new and improved text objects
 Plug 'ervandew/supertab'            " tab auto completion
@@ -78,6 +82,8 @@ Plug 'flazz/vim-colorschemes'       " all the colorschemes
 Plug 'itchyny/lightline.vim'        " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
 Plug 'Yggdroot/indentLine'          " shows indents made of spaces
+Plug 'junegunn/goyo.vim'            " distraction free text editing
+Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
 
 call plug#end()
 
@@ -141,7 +147,7 @@ augroup END
 "  APPEARANCE/AESTHETIC {{{
 " ===========================================================================
 
-syntax off       " syntax highlighting
+syntax on        " syntax highlighting
 set laststatus=2 " always show status bar
 set ruler        " show the cursor position all the time
 set guioptions=  " remove extra gui elements
@@ -288,23 +294,17 @@ noremap <Backspace> <C-^>
 " change to current buffer's directory
 nmap cd :cd <C-R>=expand("%:p:h")<CR><CR>
 
-" habits
-inoremap <C-a> <Home>
-cnoremap <C-a> <Home>
-inoremap <C-e> <End>
-cnoremap <C-e> <End>
-
-" convenient page scrolling
-nnoremap <C-j> <C-d>
-nnoremap <C-k> <C-u>
+" easier scrolling
+nnoremap <C-j> <C-e>
+nnoremap <C-k> <C-y>
 
 " circular windows navigation
 nnoremap <Tab>   <c-W>w
 nnoremap <S-Tab> <c-W>W
 
 " jump list (previous, next)
-nnoremap <C-p> <C-o>zz
-nnoremap <C-n> <C-i>zz
+nnoremap <C-p> <C-o>
+nnoremap <C-n> <C-i>
 
 " resizing windows
 noremap <silent> <C-Left>  :vertical resize -1<CR>
@@ -315,17 +315,31 @@ noremap <silent> <C-Right> :vertical resize +1<CR>
 " panic button
 nnoremap <f9> mzggg?G`z
 
+" quickly manage buffers
+nnoremap gb :ls<CR>:b<Space>
+
 " Go Continuous Scroll-Binding
 " This will vertically split the current buffer into two which will stay
-" scroll-bound together.  Allows you to see twice as much code at once
+" scroll-bound together.  Allows you to see twice as much as before.
 " (disables the wrap setting and expands folds to work better)
 nnoremap <silent> gcsb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
 
-" (go search numbers) search for numbers
+" (go search numbers) search for all numbers
 nnoremap <silent> g/# /\v\d+<CR>
 
 " run current line as an Ex command
 nnoremap g: yy:<C-r>0<BS><CR>
+
+" quit :help with q (mostly from Junegunn's vimrc)
+function! s:helptab()
+  if &buftype == 'help'
+    nnoremap <buffer> q :q<cr>
+  endif
+endfunction
+augroup vimrc_help
+  autocmd!
+  autocmd BufEnter *.txt call s:helptab()
+augroup END
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -342,15 +356,8 @@ nnoremap <Leader>w :w<CR>
 nnoremap <Leader>v :e $MYVIMRC<CR>
 nnoremap <Leader>V :tabnew $MYVIMRC<CR>
 
-" quickly manage buffers
-nnoremap <Leader>b :ls<CR>:b<Space>
-nnoremap <Leader>B :ls<CR>:bd!<Space>
-
 " toggle syntax highlighting
 nnoremap <silent> <Leader>s :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif<CR>
-
-" copy and paste from system clipboard easier
-noremap <Leader><Leader> "+
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -429,7 +436,7 @@ let g:ctrlp_map = '<Leader>p'
 nnoremap <Leader><C-p> :CtrlP<Space>
 " access recent files and buffers
 nnoremap <Leader><C-e> :CtrlPMRUFiles<CR>
-nnoremap <Leader><C-b> :CtrlPBuffer<CR>
+nnoremap <Leader>b :CtrlPBuffer<CR>
 " }}}
 
 " FileBeagle {{{
@@ -451,6 +458,14 @@ nmap ga <Plug>(EasyAlign)
 
 " indentLine {{{
 nnoremap <Leader>i :IndentLinesToggle<CR>
+" disable by default
+let g:indentLine_enabled = 0
+" enable for certain filetypes
+augroup aindentLine
+  au!
+  au FileType c   execute 'IndentLinesEnable' | doautocmd indentLine Syntax
+  au FileType cpp execute 'IndentLinesEnable' | doautocmd indentLine Syntax
+augroup END
 " }}}
 
 " Gundo {{{
