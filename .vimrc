@@ -91,7 +91,8 @@ call plug#end()
 " ===========================================================================
 
 set backspace=indent,eol,start
-set history=1000
+set history=10000
+set undolevels=100000
 set hidden
 set showcmd
 set wildmenu
