@@ -1,6 +1,6 @@
 " a vimrc
 " Author: Austin Smith <AssailantLF@gmail.com>
-" Source: https://github.com/AssailantLF/vimrc
+" Source: https://gitlab.com/AssailantLF/vimrc
 
 " ===========================================================================
 " STARTUP {{{
@@ -103,7 +103,6 @@ set smartcase
 set autoread
 set vb t_vb=
 set lazyredraw
-set splitright
 set gdefault
 set complete=.,w,b,t
 set synmaxcol=400
@@ -145,6 +144,7 @@ set ruler
 set guioptions=
 set t_Co=256
 set cpoptions+=$
+set splitright
 
 " fallback default colorscheme
 colorscheme desert
