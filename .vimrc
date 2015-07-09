@@ -6,12 +6,12 @@
 " STARTUP {{{
 " ===========================================================================
 
-let s:is_cygwin = has('win32unix') || has('win64unix')
+" let s:is_cygwin = has('win32unix') || has('win64unix')
+" let s:is_mac = has('gui_macvim') || has('mac')
 let s:is_windows = has('win32') || has('win64')
-let s:is_mac = has('gui_macvim') || has('mac')
-let g:myvimdir ="~/.vim"
+let s:myvimdir ="~/.vim"
 if s:is_windows
-  let g:myvimdir ="~/vimfiles"
+  let s:myvimdir ="~/vimfiles"
 endif
 
 " use Vim settings over Vi settings
@@ -19,6 +19,7 @@ set nocompatible
 
 " enables filetype detection, ftplugins, and indent files
 filetype plugin indent on
+
 " }}}
 " ===========================================================================
 " VIM-PLUG {{{
@@ -26,17 +27,12 @@ filetype plugin indent on
 " (minimalist plugin manager)
 
 " Install Vim-Plug at startup if it isn't installed {{{
-if !filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
+if !filereadable(expand(s:myvimdir . "/autoload/plug.vim"))
   echo "Installing Vim-Plug and plugins,"
   echo "restart Vim to finish installation."
-  silent call mkdir(expand(g:myvimdir . "/autoload", 1), 'p')
-  if s:is_windows
-    sil execute "!curl -kfLo ".expand($userprofile . "\\vimfiles\\autoload\\plug.vim", 1)
-          \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
-  else
-    sil execute "!curl -fLo ".expand(g:myvimdir . "/autoload/plug.vim", 1)
-          \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
-  endif
+  sil! call mkdir(expand(s:myvimdir . "/autoload"), 'p')
+  sil! execute "!curl -fLo ".expand(s:myvimdir . "/autoload/plug.vim")
+        \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   autocmd VimEnter * PlugInstall
 endif
 
@@ -117,7 +113,7 @@ set noswapfile
 
 " set location to save undo files
 if has('persistent_undo')
-  let &undodir=expand(g:myvimdir."/undodir")
+  let &undodir=expand(s:myvimdir."/undodir")
   if !isdirectory(expand(&undodir))
     call mkdir(expand(&undodir), "p")
   endif
