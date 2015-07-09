@@ -6,10 +6,11 @@
 " STARTUP {{{
 " ===========================================================================
 
-" Windows/Linux differences
-let s:running_windows = has("win16") || has("win32") || has("win64")
+let s:is_cygwin = has('win32unix') || has('win64unix')
+let s:is_windows = has('win32') || has('win64')
+let s:is_mac = has('gui_macvim') || has('mac')
 let g:myvimdir ="~/.vim"
-if s:running_windows
+if s:is_windows
   let g:myvimdir ="~/vimfiles"
 endif
 
@@ -18,7 +19,6 @@ set nocompatible
 
 " enables filetype detection, ftplugins, and indent files
 filetype plugin indent on
-
 " }}}
 " ===========================================================================
 " VIM-PLUG {{{
@@ -30,12 +30,10 @@ if !filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
   echo "Installing Vim-Plug and plugins,"
   echo "restart Vim to finish installation."
   silent call mkdir(expand(g:myvimdir . "/autoload", 1), 'p')
-  if s:running_windows
+  if s:is_windows
     sil execute "!curl -kfLo ".expand($userprofile . "\\vimfiles\\autoload\\plug.vim", 1)
           \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   else
-    sil execute "!wget -nc -q github.com/junegunn/vim-plug/raw/master/plug.vim -P "
-          \ .expand(g:myvimdir . "/autoload/", 1)
     sil execute "!curl -fLo ".expand(g:myvimdir . "/autoload/plug.vim", 1)
           \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   endif
@@ -43,7 +41,7 @@ if !filereadable(expand(g:myvimdir . "/autoload/plug.vim"))
 endif
 
 " also enable parallel installer for Windows GVim
-if s:running_windows
+if s:is_windows
   let g:plug_threads = 8
 endif " }}}
 
@@ -64,11 +62,11 @@ Plug 'haya14busa/incsearch.vim'     " improved incsearch
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
+Plug 'ervandew/supertab'            " tab auto completion
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
-Plug 'junegunn/vim-easy-align'      " text alignment plugin
+Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'wellle/targets.vim'           " new and improved text objects
-Plug 'ervandew/supertab'            " tab auto completion
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python') || has('python3')
@@ -83,7 +81,7 @@ Plug 'itchyny/lightline.vim'        " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
 Plug 'Yggdroot/indentLine'          " shows indents made of spaces
 Plug 'junegunn/goyo.vim'            " distraction free text editing
-Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
+Plug 'junegunn/vim-easy-align'      " text alignment plugin
 
 call plug#end()
 
@@ -92,45 +90,38 @@ call plug#end()
 "  GENERAL SETTINGS {{{
 " ===========================================================================
 
-set backspace=2      " backspace like most programs in insert mode
-set history=1000     " keep x lines of command line history
-set hidden           " allow more than one modified buffer
-set showcmd          " display incomplete commands
-set wildmenu         " visual command-line completion
-set wildmode=full    " specifies options for wildmenu
-set incsearch        " do incremental searching
-set ignorecase       " search isn't case sensitive
-set autoread         " auto reload changed files
-set vb t_vb=         " plz stop the beeping
-set lazyredraw       " redraw the screen less often
-set splitright       " open new v-splits to the right
-set gdefault         " global :substitute by default
-set complete=.,w,b,t " see :help 'complete'
-set synmaxcol=400    " don't highlight past 400 characters
+set backspace=indent,eol,start
+set history=1000
+set hidden
+set showcmd
+set wildmenu
+set wildmode=full
+set incsearch
+set ignorecase
+set smartcase
+set autoread
+set vb t_vb=
+set lazyredraw
+set splitright
+set gdefault
+set complete=.,w,b,t
+set synmaxcol=400
+set nrformats-=octal
+silent! set mouse=a
 
-" Undo Settings {{{
-" save undo history to file
-silent! set undofile
-" set location to save undo files
-let &undodir=expand(g:myvimdir."/undodir")
-" create the undo history folder if it doesn't exist
-if !isdirectory(expand(&undodir))
-  call mkdir(expand(&undodir), "p")
-endif
-" }}}
-
-" disable automatically generated backup files
+" disable backup/swap files
 " livin' on the edge
 set nobackup
 set nowritebackup
 set noswapfile
 
-" use decimal instead of octal with ctrl-a and ctrl-x
-set nrformats=
-
-" enable mouse because why not
-if has('mouse')
-  set mouse=a
+" set location to save undo files
+if has('persistent_undo')
+  let &undodir=expand(g:myvimdir."/undodir")
+  if !isdirectory(expand(&undodir))
+    call mkdir(expand(&undodir), "p")
+  endif
+  set undofile
 endif
 
 " return to the same line when a file is reopened
@@ -147,74 +138,51 @@ augroup END
 "  APPEARANCE/AESTHETIC {{{
 " ===========================================================================
 
-syntax on        " syntax highlighting
-set laststatus=2 " always show status bar
-set ruler        " show the cursor position all the time
-set guioptions=  " remove extra gui elements
-set t_Co=256     " 256 colors, please
-set cpoptions+=$ " $ as end marker for the change operator
+syntax on
+set laststatus=2
+set ruler
+set guioptions=
+set t_Co=256
+set cpoptions+=$
 
 " fallback default colorscheme
 colorscheme desert
-" colorscheme of choice
 silent! colorscheme badwolf
 
 " set the status line the way Derek Wyatt likes it
 " (doesn't work with status line plugins like Lightline)
 set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
 
-" maximize window, doesn't always work
-" with terminal vim and some Linux distros
-if s:running_windows
-  au GUIEnter * simalt ~x
-else
-  call system('wmctrl -i -b add,maximized_vert,maximized_horz -r '.v:windowid)
-endif
-
-" resize splits when the window is resized
-au VimResized * :wincmd =
-
-" fonts
-if s:running_windows
-  set guifont=DejaVu_Sans_Mono:h10
-else
-  set guifont=DejaVu\ Sans\ Mono\ 10
-end
+augroup appearance
+  au!
+  if s:is_windows
+    " maximize window in windows
+    au GUIEnter * simalt ~x
+    set guifont=DejaVu_Sans_Mono:h10
+  else
+    set guifont=DejaVu\ Sans\ Mono\ 10
+  endif
+  " resize splits when the window is resized
+  au VimResized * :wincmd =
+augroup END
 
 " }}}
 " ===========================================================================
 " TEXT AND FORMATTING {{{
 " ===========================================================================
 
-set encoding=utf-8    " consistent character encoding
-set autoindent        " always set autoindenting on
-set smartindent       " trying out smartindent for C
-set foldmethod=syntax " default fold method
-set foldlevel=99      " all folds open initially
-set list              " don't show 'listchars' characters
-set linebreak         " when wrapping lines, don't break words
-set textwidth=80      " always gq format to 80 characters
-
-" how to display certain characters/indicators
+set encoding=utf-8
+set autoindent
+set smartindent
+set foldmethod=syntax
+set foldlevel=99
+set list
+set linebreak
+set textwidth=80
+set nosmarttab
 set listchars=tab:▸\ ,eol:¬,trail:■,extends:»,precedes:«
-
-augroup persistent_settings
-  au!
-  " formatting options (see :h fo-table)
-  au BufEnter * :set formatoptions=rq1j
-augroup END
-
-" don't show trailing spaces in insert mode
-augroup trailing
-  au!
-  au InsertEnter * :set listchars-=trail:■
-  au InsertLeave * :set listchars+=trail:■
-augroup END
-
-" default indent settings
 set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
-" indent/format settings for different file types
 augroup filetype_specific
   au!
   au FileType vim  :setlocal ts=2 sts=0 sw=2 et fdm=marker fdl=0
@@ -223,6 +191,17 @@ augroup filetype_specific
   au FileType c    :setlocal ts=4 sts=0 sw=4 et
   au FileType cpp  :setlocal ts=4 sts=0 sw=4 et
   au FileType make :setlocal ts=8 sts=0 sw=4 noet
+augroup END
+
+augroup persistent_settings
+  au!
+  au BufEnter * :set formatoptions=rq1j
+augroup END
+
+augroup no_trail_in_insert
+  au!
+  au InsertEnter * :set listchars-=trail:■
+  au InsertLeave * :set listchars+=trail:■
 augroup END
 
 " }}}
@@ -269,7 +248,7 @@ noremap gk k
 nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
 nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
 
-" jump to the end of pasted text
+" automatically jump to the end of pasted text
 " useful for pasting multi-lines of text
 xnoremap p p`]
 nnoremap p p`]
@@ -282,7 +261,7 @@ silent! tnoremap <Esc> <C-\><C-n>
 " NORMAL MAPS {{{
 " ---------------------------------------------------------------------------
 
-" Enter command mode
+" Enter command line mode
 noremap <CR> :
 " | for times when regular <CR> is needed,
 " mostly for the command-line window
@@ -294,9 +273,8 @@ noremap <Backspace> <C-^>
 " change to current buffer's directory
 nmap cd :cd <C-R>=expand("%:p:h")<CR><CR>
 
-" easier scrolling
-nnoremap <C-j> <C-e>
-nnoremap <C-k> <C-y>
+" quickly manage buffers
+nnoremap gb :ls<CR>:b<Space>
 
 " circular windows navigation
 nnoremap <Tab>   <c-W>w
@@ -305,6 +283,10 @@ nnoremap <S-Tab> <c-W>W
 " jump list (previous, next)
 nnoremap <C-p> <C-o>
 nnoremap <C-n> <C-i>
+
+" easier scrolling
+nnoremap <C-j> <C-e>
+nnoremap <C-k> <C-y>
 
 " resizing windows
 noremap <silent> <C-Left>  :vertical resize -1<CR>
@@ -315,9 +297,6 @@ noremap <silent> <C-Right> :vertical resize +1<CR>
 " panic button
 nnoremap <f9> mzggg?G`z
 
-" quickly manage buffers
-nnoremap gb :ls<CR>:b<Space>
-
 " Go Continuous Scroll-Binding
 " This will vertically split the current buffer into two which will stay
 " scroll-bound together.  Allows you to see twice as much as before.
@@ -327,10 +306,7 @@ nnoremap <silent> gcsb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo v
 " (go search numbers) search for all numbers
 nnoremap <silent> g/# /\v\d+<CR>
 
-" run current line as an Ex command
-nnoremap g: yy:<C-r>0<BS><CR>
-
-" quit :help with q (mostly from Junegunn's vimrc)
+" quit :help windows with q (mostly from Junegunn's vimrc)
 function! s:helptab()
   if &buftype == 'help'
     nnoremap <buffer> q :q<cr>
@@ -340,6 +316,30 @@ augroup vimrc_help
   autocmd!
   autocmd BufEnter *.txt call s:helptab()
 augroup END
+
+" source vimscript operator
+function! SourceVimscript(type)
+  let sel_save = &selection
+  let &selection = "inclusive"
+  let reg_save = @"
+  if a:type == 'line'
+    silent execute "normal! '[V']y"
+  elseif a:type == 'char'
+    silent execute "normal! `[v`]y"
+  elseif a:type == "visual"
+    silent execute "normal! gvy"
+  elseif a:type == "currentline"
+    silent execute "normal! yy"
+  endif
+  let @" = substitute(@", '\n\s*\\', '', 'g')
+  " source the content
+  @"
+  let &selection = sel_save
+  let @" = reg_save
+endfunction
+nnoremap <silent> g: :set opfunc=SourceVimscript<CR>g@
+vnoremap <silent> g: :<C-U>call SourceVimscript("visual")<CR>
+nnoremap <silent> g:: :call SourceVimscript("currentline")<CR>
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -468,6 +468,12 @@ augroup aindentLine
 augroup END
 " }}}
 
+" incsearch.vim {{{
+" default maps
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-backward)
+" }}}
+
 " Gundo {{{
 nnoremap <Leader>u :GundoToggle<CR>
 " }}}
@@ -478,7 +484,7 @@ nnoremap <Leader>t :TagbarToggle<CR>
 
 " lightline {{{
 " toggle lightline
-nnoremap <silent> <Leader>L :exec lightline#toggle()<CR>
+nnoremap <silent> <Leader>l :exec lightline#toggle()<CR>
 " }}}
 
 " Syntastic {{{
@@ -489,7 +495,7 @@ nnoremap <Leader>r :SyntasticReset<CR>
 " }}}
 
 " Startify {{{
-" I use <CR> to enter command mode,
+" I use <CR> to enter command line mode,
 " so use o to open files instead.
 autocmd User Startified unmap <buffer> <CR>
 autocmd User Startified nmap <buffer> o <plug>(startify-open-buffers)
