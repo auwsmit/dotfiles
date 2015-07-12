@@ -218,17 +218,17 @@ noremap  <F1> <NOP>
 inoremap <F1> <NOP>
 
 " K for kill window
-noremap K <c-W>c
+noremap K <c-w>c
 
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
 nnoremap Y y$
 
 " U as a more sensible redo
-nnoremap U <C-r>
+nnoremap U <c-r>
 
 " [S]plit line (sister to [J]oin lines)
-nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
+nnoremap S i<cr><Esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>
 
 " qq to record, Q to replay
 nnoremap Q @q
@@ -252,7 +252,7 @@ xnoremap p p`]
 nnoremap p p`]
 
 " esc to stop inserting in Neovim terminal mode
-silent! tnoremap <Esc> <C-\><C-n>
+silent! tnoremap <Esc> <c-\><c-n>
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -260,37 +260,37 @@ silent! tnoremap <Esc> <C-\><C-n>
 " ---------------------------------------------------------------------------
 
 " Enter command line mode
-noremap <CR> :
-" | for times when regular <CR> is needed,
+noremap <cr> :
+" | for times when regular <cr> is needed,
 " mostly for the command-line window
-noremap <Bar> <CR>
+noremap <Bar> <cr>
 
 " go back to last buffer
-noremap <Backspace> <C-^>
+noremap <Backspace> <c-^>
 
 " change to current buffer's directory
-nmap cd :cd <C-R>=expand("%:p:h")<CR><CR>
+nmap cd :cd <c-R>=expand("%:p:h")<cr><cr>
 
 " quickly manage buffers
-nnoremap gb :ls<CR>:b<Space>
+nnoremap gb :ls<cr>:b<Space>
 
 " circular windows navigation
 nnoremap <Tab>   <c-W>w
 nnoremap <S-Tab> <c-W>W
 
 " jump list (previous, next)
-nnoremap <C-p> <C-o>
-nnoremap <C-n> <C-i>
+nnoremap <c-p> <c-o>
+nnoremap <c-n> <c-i>
 
 " easier scrolling
-nnoremap <C-j> <C-e>
-nnoremap <C-k> <C-y>
+nnoremap <c-j> <c-e>
+nnoremap <c-k> <c-y>
 
 " resizing windows
-noremap <silent> <C-Left>  :vertical resize -1<CR>
-noremap <silent> <C-Up>    :resize   +1<CR>
-noremap <silent> <C-Down>  :resize   -1<CR>
-noremap <silent> <C-Right> :vertical resize +1<CR>
+noremap <silent> <c-left>  :vertical resize -1<cr>
+noremap <silent> <c-up>    :resize   +1<cr>
+noremap <silent> <c-down>  :resize   -1<cr>
+noremap <silent> <c-right> :vertical resize +1<cr>
 
 " panic button
 nnoremap <f9> mzggg?G`z
@@ -299,15 +299,15 @@ nnoremap <f9> mzggg?G`z
 " This will vertically split the current buffer into two which will stay
 " scroll-bound together.  Allows you to see twice as much as before.
 " (disables the wrap setting and expands folds to work better)
-nnoremap <silent> gcsb :<C-u>let @z=&so<CR>:set so=0 noscb nowrap nofen<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>
+nnoremap <silent> gcsb :<c-u>let @z=&so<cr>:set so=0 noscb nowrap nofen<cr>:bo vs<cr>Ljzt:setl scb<cr><c-w>p:setl scb<cr>:let &so=@z<cr>
 
 " (go search numbers) search for all numbers
-nnoremap <silent> g/# /\v\d+<CR>
+nnoremap <silent> g/# /\v\d+<cr>
 
 " quit :help windows with q (mostly from Junegunn's vimrc)
 function! s:helptab()
   if &buftype == 'help'
-    nnoremap <buffer> q :q<cr>
+    nnoremap <buffer> q :bd<cr>
   endif
 endfunction
 augroup vimrc_help
@@ -335,9 +335,9 @@ function! SourceVimscript(type)
   let &selection = sel_save
   let @" = reg_save
 endfunction
-nnoremap <silent> g: :set opfunc=SourceVimscript<CR>g@
-vnoremap <silent> g: :<C-U>call SourceVimscript("visual")<CR>
-nnoremap <silent> g:: :call SourceVimscript("currentline")<CR>
+nnoremap <silent> g: :set opfunc=SourceVimscript<cr>g@
+vnoremap <silent> g: :<c-U>call SourceVimscript("visual")<cr>
+nnoremap <silent> g:: :call SourceVimscript("currentline")<cr>
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -348,14 +348,14 @@ nnoremap <silent> g:: :call SourceVimscript("currentline")<CR>
 let mapleader = "\<Space>"
 
 " write file
-nnoremap <Leader>w :w<CR>
+nnoremap <leader>w :w<cr>
 
 " open vimrc
-nnoremap <Leader>v :e $MYVIMRC<CR>
-nnoremap <Leader>V :tabnew $MYVIMRC<CR>
+nnoremap <leader>v :e $MYVIMRC<cr>
+nnoremap <leader>V :tabnew $MYVIMRC<cr>
 
 " toggle syntax highlighting
-nnoremap <silent> <Leader>s :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif<CR>
+nnoremap <silent> <leader>s :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif<cr>
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -363,7 +363,7 @@ nnoremap <silent> <Leader>s :if exists("g:syntax_on") <Bar> syntax off <Bar> els
 " ---------------------------------------------------------------------------
 
 " expands %% to current file's directory in command-line mode
-cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
+cnoremap %% <c-r>=fnameescape(expand('%:h')).'/'<cr>
 
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
@@ -406,21 +406,21 @@ command! A call s:a()
 " }}}
 
 " Fugitive {{{
-nnoremap <Leader>gs :Gstatus<CR>
-nnoremap <Leader>gd :Gdiff<CR>
-nnoremap <Leader>gD :Gdiff HEAD<CR>
-nnoremap <Leader>gc :Gcommit<CR>
-nnoremap <Leader>gl :Git log<CR>
-nnoremap <Leader>gp :Git push<CR>
-nnoremap <Leader>gw :Gwrite<CR>
-nnoremap <Leader>gr :Gremove<CR>
+nnoremap <leader>gs :Gstatus<cr>
+nnoremap <leader>gd :Gdiff<cr>
+nnoremap <leader>gD :Gdiff HEAD<cr>
+nnoremap <leader>gc :Gcommit<cr>
+nnoremap <leader>gl :Git log<cr>
+nnoremap <leader>gp :Git push<cr>
+nnoremap <leader>gw :Gwrite<cr>
+nnoremap <leader>gr :Gremove<cr>
 " }}}
 
 " Sayonara {{{
 " close buffer
-nnoremap gs :Sayonara<CR>
+nnoremap gs :Sayonara<cr>
 " close buffer, but not window
-nnoremap gS :Sayonara!<CR>
+nnoremap gS :Sayonara!<cr>
 " }}}
 
 " CtrlP {{{
@@ -429,12 +429,12 @@ let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclu
 " include hidden files
 let g:ctrlp_show_hidden = 1
 " change default CtrlP mapping
-let g:ctrlp_map = '<Leader>p'
+let g:ctrlp_map = '<leader>p'
 " specific directory search
-nnoremap <Leader><C-p> :CtrlP<Space>
+nnoremap <leader><c-p> :CtrlP<Space>
 " access recent files and buffers
-nnoremap <Leader><C-e> :CtrlPMRUFiles<CR>
-nnoremap <Leader>b :CtrlPBuffer<CR>
+nnoremap <leader><c-e> :CtrlPMRUFiles<cr>
+nnoremap <leader>b :CtrlPBuffer<cr>
 " }}}
 
 " FileBeagle {{{
@@ -444,7 +444,7 @@ let g:filebeagle_show_hidden = 1
 
 " Goyo {{{
 " toggle Goyo (distraction free editing)
-nnoremap <Leader>G :Goyo<CR>
+nnoremap <leader>G :Goyo<cr>
 " }}}
 
 " vim-easy-align {{{
@@ -455,7 +455,7 @@ nmap ga <Plug>(EasyAlign)
 " }}}
 
 " indentLine {{{
-nnoremap <Leader>i :IndentLinesToggle<CR>
+nnoremap <leader>i :IndentLinesToggle<cr>
 " disable by default
 let g:indentLine_enabled = 0
 " enable for certain filetypes
@@ -473,29 +473,29 @@ map ?  <Plug>(incsearch-backward)
 " }}}
 
 " Gundo {{{
-nnoremap <Leader>u :GundoToggle<CR>
+nnoremap <leader>u :GundoToggle<cr>
 " }}}
 
 " Tagbar {{{
-nnoremap <Leader>t :TagbarToggle<CR>
+nnoremap <leader>t :TagbarToggle<cr>
 " }}}
 
 " lightline {{{
 " toggle lightline
-nnoremap <silent> <Leader>l :exec lightline#toggle()<CR>
+nnoremap <silent> <leader>l :exec lightline#toggle()<cr>
 " }}}
 
 " Syntastic {{{
 " opens errors in the location list
-nnoremap <Leader>e :Errors<CR>
+nnoremap <leader>e :Errors<cr>
 " reset Syntastic (clears errors)
-nnoremap <Leader>r :SyntasticReset<CR>
+nnoremap <leader>r :SyntasticReset<cr>
 " }}}
 
 " Startify {{{
-" I use <CR> to enter command line mode,
+" I use <cr> to enter command line mode,
 " so use o to open files instead.
-autocmd User Startified unmap <buffer> <CR>
+autocmd User Startified unmap <buffer> <cr>
 autocmd User Startified nmap <buffer> o <plug>(startify-open-buffers)
 " custom header
 let g:startify_custom_header = [
