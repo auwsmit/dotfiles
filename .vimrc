@@ -30,8 +30,8 @@ filetype plugin indent on
 if !filereadable(expand(s:myvimdir . "/autoload/plug.vim"))
   echo "Installing Vim-Plug and plugins,"
   echo "restart Vim to finish installation."
-  sil! call mkdir(expand(s:myvimdir . "/autoload"), 'p')
-  sil! execute "!curl -fLo ".expand(s:myvimdir . "/autoload/plug.vim")
+  silent! call mkdir(expand(s:myvimdir . "/autoload"), 'p')
+  silent! execute "!curl -fLo ".expand(s:myvimdir . "/autoload/plug.vim")
         \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   autocmd VimEnter * PlugInstall
 endif
@@ -177,7 +177,8 @@ set list
 set linebreak
 set textwidth=80
 set nosmarttab
-set listchars=tab:▸\ ,eol:¬,trail:■,extends:»,precedes:«
+set listchars=tab:▸\ ,trail:■,extends:»,precedes:«
+silent! set showbreak=↪
 set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
 augroup filetype_specific
