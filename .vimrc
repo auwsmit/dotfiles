@@ -90,9 +90,6 @@ set backspace=indent,eol,start
 set history=10000
 set undolevels=100000
 set hidden
-set showcmd
-set wildmenu
-set wildmode=full
 set incsearch
 set ignorecase
 set smartcase
@@ -103,7 +100,18 @@ set gdefault
 set complete=.,w,b,t
 set synmaxcol=400
 set nrformats-=octal
+set showcmd
 silent! set mouse=a
+
+set wildmenu
+set wildmode=full
+set wildignore+=.hg,.git,.svn                    " Version control
+set wildignore+=*.aux,*.out,*.toc                " LaTeX intermediate files
+set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg   " binary images
+set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest " compiled object files
+set wildignore+=*.spl                            " compiled spelling word lists
+set wildignore+=*.sw?                            " Vim swap files
+set wildignore+=*.DS_Store                       " OSX bullshit
 
 " disable backup/swap files
 " livin' on the edge
@@ -141,6 +149,7 @@ set guioptions=
 set t_Co=256
 set cpoptions+=$
 set splitright
+set numberwidth=1
 
 " fallback default colorscheme
 colorscheme desert
@@ -178,7 +187,12 @@ set linebreak
 set textwidth=80
 set nosmarttab
 set listchars=tab:▸\ ,trail:■,extends:»,precedes:«
-silent! set showbreak=↪
+if has('linebreak')
+  set showbreak=↪
+else
+  set listchars+=eol:¬
+endif
+
 set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
 augroup filetype_specific
@@ -263,20 +277,20 @@ silent! tnoremap <Esc> <c-\><c-n>
 noremap <cr> :
 " | for times when regular <cr> is needed,
 " mostly for the command-line window
-noremap <Bar> <cr>
+noremap <bar> <cr>
 
 " go back to last buffer
-noremap <Backspace> <c-^>
+noremap <backspace> <c-^>
 
 " change to current buffer's directory
-nmap cd :cd <c-R>=expand("%:p:h")<cr><cr>
+nmap cd :cd <c-r>=expand("%:p:h")<cr><cr>
 
 " quickly manage buffers
-nnoremap gb :ls<cr>:b<Space>
+nnoremap gb :ls<cr>:b<space>
 
 " circular windows navigation
-nnoremap <Tab>   <c-W>w
-nnoremap <S-Tab> <c-W>W
+nnoremap <tab>   <c-w>w
+nnoremap <s-tab> <c-w>W
 
 " jump list (previous, next)
 nnoremap <c-p> <c-o>
@@ -307,7 +321,7 @@ nnoremap <silent> g/# /\v\d+<cr>
 " quit :help windows with q (mostly from Junegunn's vimrc)
 function! s:helptab()
   if &buftype == 'help'
-    nnoremap <buffer> q :bd<cr>
+    nnoremap <buffer> q :q<cr>
   endif
 endfunction
 augroup vimrc_help
@@ -345,7 +359,7 @@ nnoremap <silent> g:: :call SourceVimscript("currentline")<cr>
 " ---------------------------------------------------------------------------
 
 " leader the easiest key to reach
-let mapleader = "\<Space>"
+let mapleader = "\<space>"
 
 " write file
 nnoremap <leader>w :w<cr>
@@ -355,7 +369,7 @@ nnoremap <leader>v :e $MYVIMRC<cr>
 nnoremap <leader>V :tabnew $MYVIMRC<cr>
 
 " toggle syntax highlighting
-nnoremap <silent> <leader>s :if exists("g:syntax_on") <Bar> syntax off <Bar> else <Bar> syntax enable <Bar> endif<cr>
+nnoremap <silent> <leader>s :if exists("g:syntax_on") <bar> syntax off <bar> else <bar> syntax enable <bar> endif<cr>
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -431,7 +445,7 @@ let g:ctrlp_show_hidden = 1
 " change default CtrlP mapping
 let g:ctrlp_map = '<leader>p'
 " specific directory search
-nnoremap <leader><c-p> :CtrlP<Space>
+nnoremap <leader><c-p> :CtrlP<space>
 " access recent files and buffers
 nnoremap <leader><c-e> :CtrlPMRUFiles<cr>
 nnoremap <leader>b :CtrlPBuffer<cr>
@@ -496,7 +510,7 @@ nnoremap <leader>r :SyntasticReset<cr>
 " I use <cr> to enter command line mode,
 " so use o to open files instead.
 autocmd User Startified unmap <buffer> <cr>
-autocmd User Startified nmap <buffer> o <plug>(startify-open-buffers)
+autocmd User Startified nmap <buffer> o <Plug>(startify-open-buffers)
 " custom header
 let g:startify_custom_header = [
       \ '                                             ',
