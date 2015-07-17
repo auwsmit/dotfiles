@@ -188,7 +188,7 @@ set textwidth=80
 set nosmarttab
 set listchars=tab:▸\ ,trail:■,extends:»,precedes:«
 if has('linebreak')
-  set showbreak=↪
+  set showbreak=+↪
 else
   set listchars+=eol:¬
 endif
@@ -318,15 +318,15 @@ nnoremap <silent> gcsb :<c-u>let @z=&so<cr>:set so=0 noscb nowrap nofen<cr>:bo v
 " (go search numbers) search for all numbers
 nnoremap <silent> g/# /\v\d+<cr>
 
-" quit :help windows with q (mostly from Junegunn's vimrc)
-function! s:helptab()
+" quit help and quickfix windows with q (mostly from Junegunn's vimrc)
+function! s:qquit()
   if &buftype == 'help'
     nnoremap <buffer> q :q<cr>
   endif
 endfunction
 augroup vimrc_help
   autocmd!
-  autocmd BufEnter *.txt call s:helptab()
+  autocmd BufEnter * call s:qquit()
 augroup END
 
 " source vimscript operator
