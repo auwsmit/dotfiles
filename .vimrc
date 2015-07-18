@@ -320,7 +320,7 @@ nnoremap <silent> g/# /\v\d+<cr>
 
 " quit help and quickfix windows with q (mostly from Junegunn's vimrc)
 function! s:qquit()
-  if &buftype == 'help'
+  if &buftype == 'help' || &buftype == 'quickfix'
     nnoremap <buffer> q :q<cr>
   endif
 endfunction
