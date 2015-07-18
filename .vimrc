@@ -14,7 +14,7 @@ if s:is_windows
   let s:myvimdir ="~/vimfiles"
 endif
 
-" use Vim settings over Vi settings
+" use Vim settings over obsolescent Vi settings
 set nocompatible
 
 " enables filetype detection, ftplugins, and indent files
@@ -43,7 +43,7 @@ endif " }}}
 
 call plug#begin()
 
-" *PRIMARY PLUGINS*
+" PLUGINS
 Plug 'tpope/vim-surround'           " surroundings manipulation
 Plug 'tpope/vim-fugitive'           " Git integration
 Plug 'tpope/vim-unimpaired'         " many helpful mappings
@@ -54,6 +54,7 @@ Plug 'tpope/vim-abolish'            " improved search/substitute
 Plug 'tpope/vim-repeat'             " . repeat for plugins
 Plug 'tpope/vim-eunuch'             " UNIX helper commands
 Plug 'tpope/vim-rsi'                " readline style insertion
+Plug 'szw/vim-g'                    " google search from Vim
 Plug 'haya14busa/incsearch.vim'     " improved incsearch
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'scrooloose/Syntastic'         " real time error checking
@@ -63,6 +64,12 @@ Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'wellle/targets.vim'           " new and improved text objects
+Plug 'flazz/vim-colorschemes'       " all the colorschemes
+Plug 'itchyny/lightline.vim'        " better looking UI
+Plug 'mhinz/vim-Startify'           " nice startup screen
+Plug 'Yggdroot/indentLine'          " shows indents made of spaces
+Plug 'junegunn/goyo.vim'            " distraction free text editing
+Plug 'junegunn/vim-easy-align'      " text alignment plugin
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python') || has('python3')
@@ -71,14 +78,6 @@ if has('python') || has('python3')
   Plug 'honza/vim-snippets'         " preconfigured snippet package
 endif
 
-" *AESTHETIC PLUGINS*
-Plug 'flazz/vim-colorschemes'       " all the colorschemes
-Plug 'itchyny/lightline.vim'        " better looking UI
-Plug 'mhinz/vim-Startify'           " nice startup screen
-Plug 'Yggdroot/indentLine'          " shows indents made of spaces
-Plug 'junegunn/goyo.vim'            " distraction free text editing
-Plug 'junegunn/vim-easy-align'      " text alignment plugin
-
 call plug#end()
 
 " }}}
@@ -86,21 +85,23 @@ call plug#end()
 "  GENERAL SETTINGS {{{
 " ===========================================================================
 
-set backspace=indent,eol,start
-set history=10000
-set undolevels=100000
 set hidden
 set incsearch
 set ignorecase
 set smartcase
 set autoread
-set vb t_vb=
 set lazyredraw
 set gdefault
+set showcmd
+set vb t_vb=
+set backspace=indent,eol,start
+set history=10000
+set undolevels=100000
 set complete=.,w,b,t
 set synmaxcol=400
 set nrformats-=octal
-set showcmd
+set fileformat=unix
+set virtualedit=all
 silent! set mouse=a
 
 set wildmenu
@@ -114,7 +115,6 @@ set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX bullshit
 
 " disable backup/swap files
-" livin' on the edge
 set nobackup
 set nowritebackup
 set noswapfile
@@ -205,7 +205,7 @@ augroup filetype_specific
   au FileType make :setlocal ts=8 sts=0 sw=4 noet
 augroup END
 
-augroup persistent_settings
+augroup persistent_formatoptions
   au!
   au BufEnter * :set formatoptions=rq1j
 augroup END
@@ -318,41 +318,6 @@ nnoremap <silent> gcsb :<c-u>let @z=&so<cr>:set so=0 noscb nowrap nofen<cr>:bo v
 " (go search numbers) search for all numbers
 nnoremap <silent> g/# /\v\d+<cr>
 
-" quit help and quickfix windows with q (mostly from Junegunn's vimrc)
-function! s:qquit()
-  if &buftype == 'help' || &buftype == 'quickfix'
-    nnoremap <buffer> q :q<cr>
-  endif
-endfunction
-augroup vimrc_help
-  autocmd!
-  autocmd BufEnter * call s:qquit()
-augroup END
-
-" source vimscript operator
-function! SourceVimscript(type)
-  let sel_save = &selection
-  let &selection = "inclusive"
-  let reg_save = @"
-  if a:type == 'line'
-    silent execute "normal! '[V']y"
-  elseif a:type == 'char'
-    silent execute "normal! `[v`]y"
-  elseif a:type == "visual"
-    silent execute "normal! gvy"
-  elseif a:type == "currentline"
-    silent execute "normal! yy"
-  endif
-  let @" = substitute(@", '\n\s*\\', '', 'g')
-  " source the content
-  @"
-  let &selection = sel_save
-  let @" = reg_save
-endfunction
-nnoremap <silent> g: :set opfunc=SourceVimscript<cr>g@
-vnoremap <silent> g: :<c-U>call SourceVimscript("visual")<cr>
-nnoremap <silent> g:: :call SourceVimscript("currentline")<cr>
-
 " }}}
 " ---------------------------------------------------------------------------
 " LEADER MAPS {{{
@@ -390,8 +355,36 @@ cabbrev bdall 0,999bd!
 
 " }}}
 " ===========================================================================
-" PLUGIN SETTINGS {{{
+" MINI PLUGINS {{{
 " ===========================================================================
+
+" Quit help and quickfix with q {{{
+" (mostly from Junegunn's vimrc)
+function! s:qquit()
+  if &buftype == 'help' || &buftype == 'quickfix'
+    nnoremap <buffer> q :bd<cr>
+  endif
+endfunction
+augroup vimrc_help
+  autocmd!
+  autocmd BufEnter * call s:qquit()
+augroup END
+" }}}
+
+" Scratch buffer commands {{{
+" (credit to dhruvasagar)
+function! ScratchEdit(cmd, options)
+	exe a:cmd "Scratch"
+  exe "nnoremap <buffer> q :bd<cr>"
+	setl buftype=nofile bufhidden=wipe nobuflisted
+	if !empty(a:options) | exe 'setl' a:options | endif
+endfunction
+
+command! -bar -nargs=* Sce call ScratchEdit('edit',   <q-args>)
+command! -bar -nargs=* Scs call ScratchEdit('split',  <q-args>)
+command! -bar -nargs=* Scv call ScratchEdit('vsplit', <q-args>)
+command! -bar -nargs=* Sct call ScratchEdit('tabe',   <q-args>)
+" }}}
 
 " :A command {{{
 " Alternate between header and source files.
@@ -418,6 +411,37 @@ function! s:a()
 endfunction
 command! A call s:a()
 " }}}
+
+" Source vimscript operator {{{
+function! SourceVimscript(type)
+  let sel_save = &selection
+  let &selection = "inclusive"
+  let reg_save = @"
+  if a:type == 'line'
+    silent execute "normal! '[V']y"
+  elseif a:type == 'char'
+    silent execute "normal! `[v`]y"
+  elseif a:type == "visual"
+    silent execute "normal! gvy"
+  elseif a:type == "currentline"
+    silent execute "normal! yy"
+  endif
+  let @" = substitute(@", '\n\s*\\', '', 'g')
+  " source the content
+  @"
+  let &selection = sel_save
+  let @" = reg_save
+endfunction
+nnoremap <silent> g: :set opfunc=SourceVimscript<cr>g@
+vnoremap <silent> g: :<c-U>call SourceVimscript("visual")<cr>
+nnoremap <silent> g:: :call SourceVimscript("currentline")<cr>
+" }}}
+
+" }}}
+" ===========================================================================
+" PLUGIN SETTINGS {{{
+" ===========================================================================
+
 
 " Fugitive {{{
 nnoremap <leader>gs :Gstatus<cr>
