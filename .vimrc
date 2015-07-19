@@ -374,16 +374,16 @@ augroup END
 " Scratch buffer commands {{{
 " (credit to dhruvasagar)
 function! ScratchEdit(cmd, options)
-	exe a:cmd "Scratch"
+	exe a:cmd tempname()."_Scratch"
   exe "nnoremap <buffer> q :bd<cr>"
 	setl buftype=nofile bufhidden=wipe nobuflisted
 	if !empty(a:options) | exe 'setl' a:options | endif
 endfunction
 
-command! -bar -nargs=* Sce call ScratchEdit('edit',   <q-args>)
-command! -bar -nargs=* Scs call ScratchEdit('split',  <q-args>)
-command! -bar -nargs=* Scv call ScratchEdit('vsplit', <q-args>)
-command! -bar -nargs=* Sct call ScratchEdit('tabe',   <q-args>)
+command! -bar -nargs=* Sedit   call ScratchEdit('edit',   <q-args>)
+command! -bar -nargs=* Ssplit  call ScratchEdit('split',  <q-args>)
+command! -bar -nargs=* Svsplit call ScratchEdit('vsplit', <q-args>)
+command! -bar -nargs=* Stabe   call ScratchEdit('tabe',   <q-args>)
 " }}}
 
 " :A command {{{
