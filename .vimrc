@@ -33,7 +33,7 @@ if !filereadable(expand(s:myvimdir . "/autoload/plug.vim"))
   silent! call mkdir(expand(s:myvimdir . "/autoload"), 'p')
   silent! execute "!curl -fLo ".expand(s:myvimdir . "/autoload/plug.vim")
         \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
-  autocmd VimEnter * PlugInstall
+  au VimEnter * PlugInstall
 endif
 
 " also enable parallel installer for Windows GVim
@@ -54,13 +54,14 @@ Plug 'tpope/vim-abolish'            " improved search/substitute
 Plug 'tpope/vim-repeat'             " . repeat for plugins
 Plug 'tpope/vim-eunuch'             " UNIX helper commands
 Plug 'tpope/vim-rsi'                " readline style insertion
+Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'szw/vim-g'                    " google search from Vim
+Plug 'Konfekt/FastFold'             " more efficient automatic folding
 Plug 'haya14busa/incsearch.vim'     " improved incsearch
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
 Plug 'ervandew/supertab'            " tab auto completion
-Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'wellle/targets.vim'           " new and improved text objects
@@ -68,8 +69,8 @@ Plug 'flazz/vim-colorschemes'       " all the colorschemes
 Plug 'itchyny/lightline.vim'        " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
 Plug 'Yggdroot/indentLine'          " shows indents made of spaces
-Plug 'junegunn/goyo.vim'            " distraction free text editing
 Plug 'junegunn/vim-easy-align'      " text alignment plugin
+Plug 'junegunn/goyo.vim'            " distraction free text editing
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python') || has('python3')
@@ -197,12 +198,12 @@ set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
 augroup filetype_specific
   au!
-  au FileType vim  :setlocal ts=2 sts=0 sw=2 et fdm=marker fdl=0
-  au FileType sh   :setlocal ts=2 sts=0 sw=2 et
-  au FileType html :setlocal ts=2 sts=0 sw=2 et
-  au FileType c    :setlocal ts=4 sts=0 sw=4 et
-  au FileType cpp  :setlocal ts=4 sts=0 sw=4 et
-  au FileType make :setlocal ts=8 sts=0 sw=4 noet
+  au FileType vim  :setlocal ts=2 sts=2 sw=2 et fdm=marker fdl=0
+  au FileType sh   :setlocal ts=2 sts=2 sw=2 et
+  au FileType html :setlocal ts=2 sts=2 sw=2 et
+  au FileType c    :setlocal ts=4 sts=4 sw=4 et
+  au FileType cpp  :setlocal ts=4 sts=4 sw=4 et
+  au FileType make :setlocal ts=8 sts=8 sw=4 noet
 augroup END
 
 augroup persistent_formatoptions
@@ -275,9 +276,12 @@ silent! tnoremap <Esc> <c-\><c-n>
 
 " Enter command line mode
 noremap <cr> :
-" | for times when regular <cr> is needed,
-" mostly for the command-line window
-noremap <bar> <cr>
+" make Enter/CR work in quickfix and command-window
+augroup enter_correctly
+  au!
+  au BufReadPost quickfix nnoremap <buffer> <cr> <cr>
+  au CmdWinEnter * nnoremap <buffer> <cr> <cr>
+augroup END
 
 " go back to last buffer
 noremap <backspace> <c-^>
@@ -358,16 +362,17 @@ cabbrev bdall 0,999bd!
 " MINI PLUGINS {{{
 " ===========================================================================
 
-" Quit help and quickfix with q {{{
+" q to quit help and quickfix window{{{
 " (mostly from Junegunn's vimrc)
-function! s:qquit()
-  if &buftype == 'help' || &buftype == 'quickfix'
-    nnoremap <buffer> q :bd<cr>
+function! s:helpquit()
+  if &buftype == 'help'
+    nnoremap <buffer> q :q<cr>
   endif
 endfunction
-augroup vimrc_help
-  autocmd!
-  autocmd BufEnter * call s:qquit()
+augroup qquit
+  au!
+  au BufReadPost quickfix nnoremap <buffer> q :q<cr>
+  au BufEnter *.txt call s:helpquit()
 augroup END
 " }}}
 
@@ -499,8 +504,8 @@ let g:indentLine_enabled = 0
 " enable for certain filetypes
 augroup aindentLine
   au!
-  au FileType c   execute 'IndentLinesEnable' | doautocmd indentLine Syntax
-  au FileType cpp execute 'IndentLinesEnable' | doautocmd indentLine Syntax
+  au FileType c   execute 'IndentLinesEnable' | doau indentLine Syntax
+  au FileType cpp execute 'IndentLinesEnable' | doau indentLine Syntax
 augroup END
 " }}}
 
@@ -531,10 +536,13 @@ nnoremap <leader>r :SyntasticReset<cr>
 " }}}
 
 " Startify {{{
-" I use <cr> to enter command line mode,
-" so use o to open files instead.
-autocmd User Startified unmap <buffer> <cr>
-autocmd User Startified nmap <buffer> o <Plug>(startify-open-buffers)
+augroup startify_remap
+  au!
+  " I use <cr> to enter command line mode,
+  " so use o to open files instead.
+  au User Startified unmap <buffer> <cr>
+  au User Startified nmap <buffer> o <Plug>(startify-open-buffers)
+augroup END
 " custom header
 let g:startify_custom_header = [
       \ '                                             ',
