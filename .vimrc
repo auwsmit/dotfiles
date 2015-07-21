@@ -103,6 +103,7 @@ set synmaxcol=400
 set nrformats-=octal
 set fileformat=unix
 set virtualedit=all
+set sessionoptions-=options
 silent! set mouse=a
 
 set wildmenu
@@ -363,12 +364,12 @@ cabbrev bdall 0,999bd!
 " (mostly from Junegunn's vimrc)
 function! s:helpquit()
   if &buftype == 'help'
-    nnoremap <buffer> q :q<cr>
+    nnoremap <buffer> q :bd<cr>
   endif
 endfunction
 augroup qquit
   au!
-  au BufReadPost quickfix nnoremap <buffer> q :q<cr>
+  au BufReadPost quickfix nnoremap <buffer> q :bd<cr>
   au BufEnter *.txt call s:helpquit()
 augroup END
 " }}}
