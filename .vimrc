@@ -232,6 +232,15 @@ augroup END
 noremap  <F1> <NOP>
 inoremap <F1> <NOP>
 
+" Enter command line mode
+noremap <cr> :
+" make Enter/CR work normally in quickfix and command-window
+augroup enter_correctly
+  au!
+  au BufReadPost quickfix nnoremap <buffer> <cr> <cr>
+  au CmdWinEnter * nnoremap <buffer> <cr> <cr>
+augroup END
+
 " K for kill window
 noremap K <c-w>c
 
@@ -244,9 +253,6 @@ nnoremap U <c-r>
 
 " [S]plit line (sister to [J]oin lines)
 nnoremap S i<cr><Esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>
-
-" qq to record, Q to replay
-nnoremap Q @q
 
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
@@ -267,27 +273,18 @@ xnoremap p p`]
 nnoremap p p`]
 
 " esc to stop inserting in Neovim terminal mode
-silent! tnoremap <Esc> <c-\><c-n>
+silent! tnoremap <Esc><Esc> <c-\><c-n>
 
 " }}}
 " ---------------------------------------------------------------------------
 " NORMAL MAPS {{{
 " ---------------------------------------------------------------------------
 
-" Enter command line mode
-noremap <cr> :
-" make Enter/CR work in quickfix and command-window
-augroup enter_correctly
-  au!
-  au BufReadPost quickfix nnoremap <buffer> <cr> <cr>
-  au CmdWinEnter * nnoremap <buffer> <cr> <cr>
-augroup END
-
 " go back to last buffer
 noremap <backspace> <c-^>
 
 " change to current buffer's directory
-nmap cd :cd <c-r>=expand("%:p:h")<cr><cr>
+nnoremap cd :cd <c-r>=expand("%:p:h")<cr><cr>
 
 " quickly manage buffers
 nnoremap gb :ls<cr>:b<space>
@@ -549,7 +546,7 @@ let g:startify_custom_header = [
       \ '       ___________________________           ',
       \ '      /                           \          ',
       \ '      |     VIM - Vi IMproved     |          ',
-      \ '      |        version 7.4        |          ',
+      \ '      |    -------------------    |          ',
       \ '      |  by Bram Moolenaar et al. |          ',
       \ '      \_________   _______________/          ',
       \ '                \ / ^__^                     ',
