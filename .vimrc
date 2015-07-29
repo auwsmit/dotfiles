@@ -60,7 +60,7 @@ Plug 'Konfekt/FastFold'             " more efficient automatic folding
 Plug 'haya14busa/incsearch.vim'     " improved incsearch
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'scrooloose/Syntastic'         " real time error checking
-Plug 'kien/CtrlP.vim'               " fuzzy file/buffer search
+Plug 'ctrlpvim/ctrlp.vim'           " fuzzy file/buffer search
 Plug 'ervandew/supertab'            " tab auto completion
 Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
