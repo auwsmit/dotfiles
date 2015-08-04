@@ -44,6 +44,8 @@ endif " }}}
 call plug#begin()
 
 " PLUGINS
+
+" Tim Pope
 Plug 'tpope/vim-surround'           " surroundings manipulation
 Plug 'tpope/vim-fugitive'           " Git integration
 Plug 'tpope/vim-unimpaired'         " many helpful mappings
@@ -54,23 +56,33 @@ Plug 'tpope/vim-abolish'            " improved search/substitute
 Plug 'tpope/vim-repeat'             " . repeat for plugins
 Plug 'tpope/vim-eunuch'             " UNIX helper commands
 Plug 'tpope/vim-rsi'                " readline style insertion
-Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
-Plug 'szw/vim-g'                    " google search from Vim
-Plug 'Konfekt/FastFold'             " more efficient automatic folding
+
+" text objects
+Plug 'kana/vim-textobj-user'        " custom text object plugin
+Plug 'kana/vim-textobj-entire'      " entire document text objects
+Plug 'kana/vim-textobj-function'    " function text objects
+Plug 'kana/vim-textobj-indent'      " function text objects
+Plug 'glts/vim-textobj-comment'     " comment text objects
+Plug 'wellle/targets.vim'           " new and improved text objects
+
+" the rest
+Plug 'unblevable/quick-scope'       " improved horizontal movement
 Plug 'haya14busa/incsearch.vim'     " improved incsearch
+Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
+Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
+Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
+Plug 'Konfekt/FastFold'             " more efficient automatic folding
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'ctrlpvim/ctrlp.vim'           " fuzzy file/buffer search
 Plug 'ervandew/supertab'            " tab auto completion
-Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
-Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
-Plug 'wellle/targets.vim'           " new and improved text objects
 Plug 'flazz/vim-colorschemes'       " all the colorschemes
 Plug 'itchyny/lightline.vim'        " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
 Plug 'Yggdroot/indentLine'          " shows indents made of spaces
 Plug 'junegunn/vim-easy-align'      " text alignment plugin
 Plug 'junegunn/goyo.vim'            " distraction free text editing
+Plug 'szw/vim-g'                    " google search from Vim
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
 Plug 'majutsushi/Tagbar'            " view ctags easily
 if has('python') || has('python3')
@@ -106,6 +118,7 @@ set virtualedit=all
 set sessionoptions-=options
 silent! set mouse=a
 
+" command-line completion settings
 set wildmenu
 set wildmode=full
 set wildignore+=.hg,.git,.svn                    " Version control
@@ -184,13 +197,14 @@ set autoindent
 set smartindent
 set foldmethod=syntax
 set foldlevel=99
-set list
-set linebreak
 set textwidth=80
 set nosmarttab
+set linebreak
 set listchars=tab:▸\ ,trail:■,extends:»,precedes:«
+set list
 if has('linebreak')
   set showbreak=+↪
+  set breakindent
 else
   set listchars+=eol:¬
 endif
@@ -374,21 +388,6 @@ augroup qquit
 augroup END
 " }}}
 
-" Scratch buffer commands {{{
-" (credit to dhruvasagar)
-function! ScratchEdit(cmd, options)
-	exe a:cmd tempname()."_Scratch"
-  exe "nnoremap <buffer> q :bd<cr>"
-	setl buftype=nofile bufhidden=wipe nobuflisted
-	if !empty(a:options) | exe 'setl' a:options | endif
-endfunction
-
-command! -bar -nargs=* Sedit   call ScratchEdit('edit',   <q-args>)
-command! -bar -nargs=* Ssplit  call ScratchEdit('split',  <q-args>)
-command! -bar -nargs=* Svsplit call ScratchEdit('vsplit', <q-args>)
-command! -bar -nargs=* Stabe   call ScratchEdit('tabe',   <q-args>)
-" }}}
-
 " :A command {{{
 " Alternate between header and source files.
 " (credit to junegunn's vimrc)
@@ -467,6 +466,8 @@ nnoremap gS :Sayonara!<cr>
 " CtrlP {{{
 " ignore .git folders to speed up searches
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+let g:ctrlp_max_depth = 15
+let g:ctrlp_max_files = 0
 " include hidden files
 let g:ctrlp_show_hidden = 1
 " change default CtrlP mapping
