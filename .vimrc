@@ -57,31 +57,33 @@ Plug 'tpope/vim-repeat'             " . repeat for plugins
 Plug 'tpope/vim-eunuch'             " UNIX helper commands
 Plug 'tpope/vim-rsi'                " readline style insertion
 
-" text objects
+" Text Objects
 Plug 'kana/vim-textobj-user'        " custom text object plugin
-Plug 'kana/vim-textobj-entire'      " entire document text objects
-Plug 'kana/vim-textobj-function'    " function text objects
-Plug 'kana/vim-textobj-indent'      " function text objects
-Plug 'glts/vim-textobj-comment'     " comment text objects
-Plug 'wellle/targets.vim'           " new and improved text objects
+Plug 'kana/vim-textobj-entire'      " entire document
+Plug 'kana/vim-textobj-function'    " function
+Plug 'kana/vim-textobj-indent'      " indent
+Plug 'glts/vim-textobj-comment'     " comment
+Plug 'wellle/targets.vim'           " more extra text objects
 
-" the rest
-Plug 'unblevable/quick-scope'       " improved horizontal movement
-Plug 'haya14busa/incsearch.vim'     " improved incsearch
+" Appearance/UI
 Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
-Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
-Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
-Plug 'Konfekt/FastFold'             " more efficient automatic folding
-Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
-Plug 'scrooloose/Syntastic'         " real time error checking
-Plug 'ctrlpvim/ctrlp.vim'           " fuzzy file/buffer search
-Plug 'ervandew/supertab'            " tab auto completion
 Plug 'flazz/vim-colorschemes'       " all the colorschemes
 Plug 'itchyny/lightline.vim'        " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
 Plug 'Yggdroot/indentLine'          " shows indents made of spaces
 Plug 'junegunn/vim-easy-align'      " text alignment plugin
 Plug 'junegunn/goyo.vim'            " distraction free text editing
+Plug 'mattn/disableitalic-vim'      " ...disable italics
+
+" The Rest
+Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
+Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
+Plug 'Konfekt/FastFold'             " more efficient automatic folding
+Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
+Plug 'scrooloose/Syntastic'         " real time error checking
+Plug 'haya14busa/incsearch.vim'     " improved incsearch
+Plug 'ctrlpvim/ctrlp.vim'           " fuzzy file/buffer search
+Plug 'ervandew/supertab'            " tab auto completion
 Plug 'szw/vim-g'                    " google search from Vim
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
 Plug 'majutsushi/Tagbar'            " view ctags easily
@@ -168,7 +170,7 @@ set numberwidth=1
 
 " fallback default colorscheme
 colorscheme desert
-silent! colorscheme badwolf
+silent! colorscheme molokai
 
 " set the status line the way Derek Wyatt likes it
 " (doesn't work with status line plugins like Lightline)
@@ -532,6 +534,12 @@ nnoremap <silent> <leader>l :exec lightline#toggle()<cr>
 nnoremap <leader>e :Errors<cr>
 " reset Syntastic (clears errors)
 nnoremap <leader>r :SyntasticReset<cr>
+" }}}
+
+" disableitalic.vim {{{
+augroup disableitalic
+  au!
+  au VimEnter * DisableItalic
 " }}}
 
 " Startify {{{
