@@ -170,7 +170,7 @@ set numberwidth=1
 
 " fallback default colorscheme
 colorscheme desert
-silent! colorscheme molokai
+silent! colorscheme badwolf
 
 " set the status line the way Derek Wyatt likes it
 " (doesn't work with status line plugins like Lightline)
@@ -540,6 +540,8 @@ nnoremap <leader>r :SyntasticReset<cr>
 augroup disableitalic
   au!
   au VimEnter * DisableItalic
+  au ColorScheme * DisableItalic
+augroup END
 " }}}
 
 " Startify {{{
