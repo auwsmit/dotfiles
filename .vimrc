@@ -75,13 +75,12 @@ Plug 'junegunn/goyo.vim'            " distraction free text editing
 Plug 'mattn/disableitalic-vim'      " ...disable italics
 
 " The Rest
-Plug 'unblevable/quick-scope'       " helpful highlights for fFtT
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'Konfekt/FastFold'             " more efficient automatic folding
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'scrooloose/Syntastic'         " real time error checking
-Plug 'haya14busa/incsearch.vim'     " improved incsearch
+Plug 'terryma/vim-multiple-cursors' " Sublime multi-cursors for Vim
 Plug 'ctrlpvim/ctrlp.vim'           " fuzzy file/buffer search
 Plug 'ervandew/supertab'            " tab auto completion
 Plug 'szw/vim-g'                    " google search from Vim
@@ -446,28 +445,13 @@ nnoremap <silent> g:: :call SourceVimscript("currentline")<cr>
 " PLUGIN SETTINGS {{{
 " ===========================================================================
 
-" quick-scope {{{
-" only enable the quick-scope plugin's
-" highlighting when using the f/F/t/T movements.
-" ^ credit to cszentkiralyi and VanLaser
-let g:qs_enable = 0
-let g:qs_enable_char_list = [ 'f', 'F', 't', 'T' ]
-function! Quick_scope_selective(movement)
-  let needs_disabling = 0
-  if !g:qs_enable
-    QuickScopeToggle
-    redraw
-    let needs_disabling = 1
-  endif
-  let letter = nr2char(getchar())
-  if needs_disabling
-    QuickScopeToggle
-  endif
-  return a:movement . letter
-endfunction
-for i in g:qs_enable_char_list
-  execute 'noremap <expr> <silent>' . i . " Quick_scope_selective('". i . "')"
-endfor
+" vim-multiple-cursors {{{
+let g:multi_cursor_use_default_mapping=0
+" Default mapping
+let g:multi_cursor_next_key='<c-f>'
+let g:multi_cursor_prev_key='<c-b>'
+let g:multi_cursor_skip_key='<c-x>'
+let g:multi_cursor_quit_key='<Esc>'
 " }}}
 
 " Fugitive {{{
