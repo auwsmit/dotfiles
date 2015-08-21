@@ -476,7 +476,7 @@ nnoremap gS :Sayonara!<cr>
 " ignore .git folders to speed up searches
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:ctrlp_max_depth = 15
-let g:ctrlp_max_files = 0
+let g:ctrlp_max_files = 30000
 " include hidden files
 let g:ctrlp_show_hidden = 1
 " change default CtrlP mapping
@@ -515,12 +515,6 @@ augroup aindentLine
   au FileType c   execute 'IndentLinesEnable' | doau indentLine Syntax
   au FileType cpp execute 'IndentLinesEnable' | doau indentLine Syntax
 augroup END
-" }}}
-
-" incsearch.vim {{{
-" default maps
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
 " }}}
 
 " Gundo {{{
