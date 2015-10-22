@@ -80,7 +80,6 @@ Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'Konfekt/FastFold'             " more efficient automatic folding
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'scrooloose/Syntastic'         " real time error checking
-Plug 'terryma/vim-multiple-cursors' " Sublime multi-cursors for Vim
 Plug 'ctrlpvim/ctrlp.vim'           " fuzzy file/buffer search
 Plug 'ervandew/supertab'            " tab auto completion
 Plug 'szw/vim-g'                    " google search from Vim
@@ -268,7 +267,7 @@ nnoremap Y y$
 nnoremap U <c-r>
 
 " [S]plit line (sister to [J]oin lines)
-nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>
+nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>$
 
 " visually select the last paste or change
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
@@ -379,7 +378,7 @@ cabbrev bdall 0,999bd!
 " (mostly from Junegunn's vimrc)
 function! s:helpquit()
   if &buftype == 'help'
-    nnoremap <buffer> q :bd<cr>
+    nnoremap <buffer> q :bd<cr>:silent! close<cr>
   endif
 endfunction
 augroup qquit
@@ -444,15 +443,6 @@ nnoremap <silent> g:: :call SourceVimscript("currentline")<cr>
 " ===========================================================================
 " PLUGIN SETTINGS {{{
 " ===========================================================================
-
-" vim-multiple-cursors {{{
-let g:multi_cursor_use_default_mapping=0
-" Default mapping
-let g:multi_cursor_next_key='<c-f>'
-let g:multi_cursor_prev_key='<c-b>'
-let g:multi_cursor_skip_key='<c-x>'
-let g:multi_cursor_quit_key='<Esc>'
-" }}}
 
 " Fugitive {{{
 nnoremap <leader>gs :Gstatus<cr>
@@ -539,11 +529,11 @@ nnoremap <leader>r :SyntasticReset<cr>
 
 " disableitalic.vim {{{
 " no italics in any colorschemes
-augroup disableitalic
-  au!
-  au VimEnter * DisableItalic
-  au ColorScheme * DisableItalic
-augroup END
+" augroup disableitalic
+"   au!
+"   au VimEnter * silent DisableItalic
+"   au ColorScheme * silent DisableItalic
+" augroup END
 " }}}
 
 " Startify {{{
