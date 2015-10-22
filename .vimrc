@@ -469,6 +469,8 @@ let g:ctrlp_max_depth = 15
 let g:ctrlp_max_files = 30000
 " include hidden files
 let g:ctrlp_show_hidden = 1
+" open multiple files in ONE window
+let g:ctrlp_open_multiple_files = '1vr'
 " change default CtrlP mapping
 let g:ctrlp_map = '<leader>p'
 " specific directory search
