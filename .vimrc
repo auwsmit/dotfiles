@@ -72,7 +72,7 @@ Plug 'mhinz/vim-Startify'           " nice startup screen
 Plug 'Yggdroot/indentLine'          " shows indents made of spaces
 Plug 'junegunn/vim-easy-align'      " text alignment plugin
 Plug 'junegunn/goyo.vim'            " distraction free text editing
-Plug 'mattn/disableitalic-vim'      " ...disable italics
+Plug 'kkoenig/wimproved.vim'        " improvements for Windows UI
 
 " The Rest
 Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
@@ -485,6 +485,15 @@ nnoremap <leader>b :CtrlPBuffer<cr>
 let g:filebeagle_show_hidden = 1
 " }}}
 
+" wimproved.vim {{{
+" toggle fullscreen
+nnoremap <F11> :WToggleFullscreen<CR>
+augroup wimproved
+  autocmd GUIEnter * silent! WToggleClean
+  autocmd VimEnter * silent! WSetAlpha 240
+augroup END
+" }}}
+
 " Goyo {{{
 " toggle Goyo (distraction free editing)
 nnoremap <leader>G :Goyo<cr>
@@ -527,15 +536,6 @@ nnoremap <silent> <leader>l :exec lightline#toggle()<cr>
 nnoremap <leader>e :Errors<cr>
 " reset Syntastic (clears errors)
 nnoremap <leader>r :SyntasticReset<cr>
-" }}}
-
-" disableitalic.vim {{{
-" no italics in any colorschemes
-" augroup disableitalic
-"   au!
-"   au VimEnter * silent DisableItalic
-"   au ColorScheme * silent DisableItalic
-" augroup END
 " }}}
 
 " Startify {{{
