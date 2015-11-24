@@ -59,9 +59,10 @@ Plug 'tpope/vim-rsi'                " readline style insertion
 
 " Text Objects
 Plug 'kana/vim-textobj-user'        " custom text object plugin
-Plug 'kana/vim-textobj-entire'      " entire document
-Plug 'kana/vim-textobj-indent'      " indent
-Plug 'glts/vim-textobj-comment'     " comment
+Plug 'kana/vim-textobj-entire'      " entire document (ae)
+Plug 'kana/vim-textobj-indent'      " indent (ai)
+Plug 'glts/vim-textobj-comment'     " comment (ac)
+Plug 'kana/vim-textobj-function'    " function (af)
 Plug 'wellle/targets.vim'           " more extra text objects
 
 " Appearance/UI
