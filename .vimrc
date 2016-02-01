@@ -51,8 +51,6 @@ Plug 'tpope/vim-fugitive'           " Git integration
 Plug 'tpope/vim-unimpaired'         " many helpful mappings
 Plug 'tpope/vim-commentary'         " easier commenting
 Plug 'tpope/vim-speeddating'        " increment dates, times, and more
-Plug 'tpope/vim-dispatch'           " asynchronous building/testing
-Plug 'tpope/vim-abolish'            " improved search/substitute
 Plug 'tpope/vim-repeat'             " . repeat for plugins
 Plug 'tpope/vim-eunuch'             " UNIX helper commands
 Plug 'tpope/vim-rsi'                " readline style insertion
@@ -305,6 +303,9 @@ nnoremap cd :cd <c-r>=expand("%:p:h")<cr><cr>
 " quickly manage buffers
 nnoremap gb :ls<cr>:b<space>
 
+" alternate K since it's remapped
+nnoremap gK K
+
 " circular windows navigation
 nnoremap <tab>   <c-w>w
 nnoremap <s-tab> <c-w>W
@@ -330,6 +331,7 @@ nnoremap <f9> mzggg?G`z
 " This will vertically split the current buffer into two which will stay
 " scroll-bound together.  Allows you to see twice as much as before.
 " (disables the wrap setting and expands folds to work better)
+" (PS: this is kind of janky, but I like it anyway)
 nnoremap <silent> gcsb :<c-u>let @z=&so<cr>:set so=0 noscb nowrap nofen<cr>:bo vs<cr>Ljzt:setl scb<cr><c-w>p:setl scb<cr>:let &so=@z<cr>
 
 " (go search numbers) search for all numbers
@@ -382,7 +384,7 @@ function! s:helpquit()
     nnoremap <buffer> q :bd<cr>:silent! close<cr>
   endif
 endfunction
-augroup qquit
+augroup q_for_quit
   au!
   au BufReadPost quickfix nnoremap <buffer> q :bd<cr>
   au BufEnter *.txt call s:helpquit()
@@ -473,6 +475,7 @@ let g:ctrlp_show_hidden = 1
 " open multiple files in ONE window
 let g:ctrlp_open_multiple_files = '1vr'
 " change default CtrlP mapping
+" more like LeaderP amirite
 let g:ctrlp_map = '<leader>p'
 " specific directory search
 nnoremap <leader><c-p> :CtrlP<space>
