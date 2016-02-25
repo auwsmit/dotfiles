@@ -9,9 +9,13 @@
 " let s:is_cygwin = has('win32unix') || has('win64unix')
 " let s:is_mac = has('gui_macvim') || has('mac')
 let s:is_windows = has('win32') || has('win64')
+let s:is_nvim = has('nvim')
 let s:myvimdir ="~/.vim"
 if s:is_windows
   let s:myvimdir ="~/vimfiles"
+endif
+if s:is_nvim
+  let s:myvimdir ="~/.config"
 endif
 
 " use Vim settings over obsolescent Vi settings
@@ -27,6 +31,7 @@ filetype plugin indent on
 " (minimalist plugin manager)
 
 " Install Vim-Plug at startup if it isn't installed {{{
+
 if !filereadable(expand(s:myvimdir . "/autoload/plug.vim"))
   echo "Installing Vim-Plug and plugins,"
   echo "restart Vim to finish installation."
@@ -54,6 +59,7 @@ Plug 'tpope/vim-speeddating'        " increment dates, times, and more
 Plug 'tpope/vim-repeat'             " . repeat for plugins
 Plug 'tpope/vim-eunuch'             " UNIX helper commands
 Plug 'tpope/vim-rsi'                " readline style insertion
+Plug 'tpope/vim-dispatch'           " asynchronous make
 
 " Text Objects
 Plug 'kana/vim-textobj-user'        " custom text object plugin
@@ -115,6 +121,9 @@ set nrformats-=octal
 set fileformat=unix
 set virtualedit=all
 set sessionoptions-=options
+if s:is_windows
+  set makeprg=build.bat
+endif
 silent! set mouse=a
 
 " command-line completion settings
@@ -159,6 +168,7 @@ augroup END
 syntax on
 set laststatus=2
 set ruler
+set cursorline
 set guioptions=
 set t_Co=256
 set cpoptions+=$
@@ -178,9 +188,9 @@ augroup appearance
   if s:is_windows
     " maximize window in windows
     au GUIEnter * simalt ~x
-    set guifont=DejaVu_Sans_Mono:h10
+    set guifont=DejaVu_Sans_Mono:h9
   else
-    set guifont=DejaVu\ Sans\ Mono\ 10
+    set guifont=DejaVu\ Sans\ Mono\ 9
   endif
   " resize splits when the window is resized
   au VimResized * :wincmd =
@@ -215,8 +225,8 @@ augroup filetype_specific
   au FileType vim  :setlocal ts=2 sts=2 sw=2 et fdm=marker fdl=0
   au FileType sh   :setlocal ts=2 sts=2 sw=2 et
   au FileType html :setlocal ts=2 sts=2 sw=2 et
-  au FileType c    :setlocal ts=4 sts=4 sw=4 et
-  au FileType cpp  :setlocal ts=4 sts=4 sw=4 et
+  au FileType c    :setlocal ts=4 sts=4 sw=4 et cino=(0)
+  au FileType cpp  :setlocal ts=4 sts=4 sw=4 et cino=(0)
   au FileType make :setlocal ts=8 sts=8 sw=4 noet
 augroup END
 
@@ -287,12 +297,17 @@ xnoremap p p`]
 nnoremap p p`]
 
 " esc to stop inserting in Neovim terminal mode
-silent! tnoremap <Esc><Esc> <c-\><c-n>
+if s:is_nvim
+  tnoremap <Esc><Esc> <c-\><c-n>
+endif
 
 " }}}
 " ---------------------------------------------------------------------------
 " NORMAL MAPS {{{
 " ---------------------------------------------------------------------------
+
+" expand-o-brackets
+inoremap {<tab> {<cr>}<esc>O
 
 " go back to last buffer
 noremap <backspace> <c-^>
@@ -306,25 +321,30 @@ nnoremap gb :ls<cr>:b<space>
 " alternate K since it's remapped
 nnoremap gK K
 
+" jump list (previous, next)
+" (this mapping allows <tab> to be used separately,
+" since <tab> and <c-i> are linked in Normal mode)
+nnoremap <c-p> <c-o>
+nnoremap <c-n> <c-i>
+
 " circular windows navigation
 nnoremap <tab>   <c-w>w
 nnoremap <s-tab> <c-w>W
 
-" jump list (previous, next)
-nnoremap <c-p> <c-o>
-nnoremap <c-n> <c-i>
-
-" easier scrolling
+" easier scrolling (I just prefer not reaching for e and y)
 nnoremap <c-j> <c-e>
 nnoremap <c-k> <c-y>
 
-" resizing windows
-noremap <silent> <c-left>  :vertical resize -1<cr>
-noremap <silent> <c-up>    :resize   +1<cr>
-noremap <silent> <c-down>  :resize   -1<cr>
-noremap <silent> <c-right> :vertical resize +1<cr>
+" resizing windows/splits
+noremap <c-left>  <c-w><
+noremap <c-up>    <c-w>+
+noremap <c-down>  <c-w>-
+noremap <c-right> <c-w>>
 
-" panic button
+" (go search numbers) search for all numbers
+nnoremap <silent> g/# /\v\d+<cr>
+
+" panic button (mostly a novelty)
 nnoremap <f9> mzggg?G`z
 
 " Go Continuous Scroll-Binding
@@ -333,9 +353,6 @@ nnoremap <f9> mzggg?G`z
 " (disables the wrap setting and expands folds to work better)
 " (PS: this is kind of janky, but I like it anyway)
 nnoremap <silent> gcsb :<c-u>let @z=&so<cr>:set so=0 noscb nowrap nofen<cr>:bo vs<cr>Ljzt:setl scb<cr><c-w>p:setl scb<cr>:let &so=@z<cr>
-
-" (go search numbers) search for all numbers
-nnoremap <silent> g/# /\v\d+<cr>
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -351,6 +368,9 @@ nnoremap <leader>w :w<cr>
 " open vimrc
 nnoremap <leader>v :e $MYVIMRC<cr>
 nnoremap <leader>V :tabnew $MYVIMRC<cr>
+
+" open quickfix window
+nnoremap <leader>q :copen<cr>
 
 " toggle syntax highlighting
 nnoremap <silent> <leader>s :if exists("g:syntax_on") <bar> syntax off <bar> else <bar> syntax enable <bar> endif<cr>
@@ -458,6 +478,10 @@ nnoremap <leader>gw :Gwrite<cr>
 nnoremap <leader>gr :Gremove<cr>
 " }}}
 
+" Dispatch {{{
+nnoremap <leader>m :Make<cr>
+" }}}
+
 " Sayonara {{{
 " close buffer
 nnoremap gs :Sayonara<cr>
@@ -494,7 +518,6 @@ let g:filebeagle_show_hidden = 1
 nnoremap <F11> :WToggleFullscreen<CR>
 augroup wimproved
   autocmd GUIEnter * silent! WToggleClean
-  autocmd VimEnter * silent! WSetAlpha 240
 augroup END
 " }}}
 
@@ -536,6 +559,8 @@ nnoremap <silent> <leader>l :exec lightline#toggle()<cr>
 " }}}
 
 " Syntastic {{{
+" stop eating my CPU on save
+let g:syntastic_check_on_wq = 0
 " opens errors in the location list
 nnoremap <leader>e :Errors<cr>
 " reset Syntastic (clears errors)
