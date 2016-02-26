@@ -41,10 +41,7 @@ if !filereadable(expand(s:myvimdir . "/autoload/plug.vim"))
   au VimEnter * PlugInstall
 endif
 
-" also enable parallel installer for Windows GVim
-if s:is_windows
-  let g:plug_threads = 8
-endif " }}}
+" }}}
 
 call plug#begin()
 
@@ -560,7 +557,10 @@ nnoremap <silent> <leader>l :exec lightline#toggle()<cr>
 
 " Syntastic {{{
 " stop eating my CPU on save
-let g:syntastic_check_on_wq = 0
+let g:syntastic_mode_map = {
+      \ "mode": "passive",
+      \ "active_filetypes": [],
+      \ "passive_filetypes": [] }
 " opens errors in the location list
 nnoremap <leader>e :Errors<cr>
 " reset Syntastic (clears errors)
@@ -577,19 +577,24 @@ augroup startify_remap
 augroup END
 " custom header
 let g:startify_custom_header = [
-      \ '                                             ',
-      \ '       ___________________________           ',
-      \ '      /                           \          ',
-      \ '      |     VIM - Vi IMproved     |          ',
-      \ '      |    -------------------    |          ',
-      \ '      |  by Bram Moolenaar et al. |          ',
-      \ '      \_________   _______________/          ',
-      \ '                \ / ^__^                     ',
-      \ '                 \\ (oo)\_______             ',
-      \ '                    (__)\       )\/\         ',
-      \ '                        ||----w |            ',
-      \ '                        ||     ||            ',
-      \ '                                             ',
+      \ '                                                   ',
+      \ '     ___________________________                   ',
+      \ '    /                           \                  ',
+      \ '    |     VIM - Vi IMproved     |                  ',
+      \ '    |    -------------------    |                  ',
+      \ '    |  by Bram Moolenaar et al. |                  ',
+      \ '    \_________   _______________/                  ',
+      \ '              \ /        ,.                        ',
+      \ '               \\      (_|,.                       ',
+      \ '                \\    ,'' /, )_______   _          ',
+      \ '                   __j o``-''        `.''-)        ',
+      \ '                  (")                 \''          ',
+      \ '                   `-j                |            ',
+      \ '                     `-._(           /             ',
+      \ '                 hjw    |_\  |--^.  /              ',
+      \ '                       /_]''|_| /_)_/              ',
+      \ '                          /_]''  /_]''             ',
+      \ '                                                   ',
       \ ]
 " }}}
 
