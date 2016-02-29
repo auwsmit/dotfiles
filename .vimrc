@@ -84,6 +84,7 @@ Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'ctrlpvim/ctrlp.vim'           " fuzzy file/buffer search
 Plug 'ervandew/supertab'            " tab auto completion
+Plug 'AndrewRadev/switch.vim'       " toggle/switch various objects
 Plug 'szw/vim-g'                    " google search from Vim
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
 Plug 'majutsushi/Tagbar'            " view ctags easily
@@ -113,7 +114,7 @@ set backspace=indent,eol,start
 set history=10000
 set undolevels=100000
 set complete=.,w,b,t
-set synmaxcol=400
+set synmaxcol=256
 set nrformats-=octal
 set fileformat=unix
 set virtualedit=all
@@ -275,14 +276,12 @@ nnoremap U <c-r>
 " [S]plit line (sister to [J]oin lines)
 nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>$
 
-" visually select the last paste or change
-nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
+" format the last paste or change
+nnoremap g= `[v`]=
 
-" move by wrapped lines instead of line numbers
-noremap j gj
-noremap k gk
-noremap gj j
-noremap gk k
+" move by wrapped lines instead of line numbers, unless the motion is counted
+noremap <expr> j (v:count? 'j' : 'gj')
+noremap <expr> k (v:count? 'k' : 'gk')
 
 " { and } skip over closed folds
 nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
@@ -366,11 +365,48 @@ nnoremap <leader>w :w<cr>
 nnoremap <leader>v :e $MYVIMRC<cr>
 nnoremap <leader>V :tabnew $MYVIMRC<cr>
 
-" open quickfix window
-nnoremap <leader>q :copen<cr>
+" toggle syntax highlighting {{{
+function! ToggleSyntaxHightlighting()
+  if exists("g:syntax_on")
+    syntax off
+  else
+    syntax on
+  endif
+endfunction
+" }}}
+nnoremap <silent> <leader>S :call ToggleSyntaxHightlighting()<cr>
 
-" toggle syntax highlighting
-nnoremap <silent> <leader>s :if exists("g:syntax_on") <bar> syntax off <bar> else <bar> syntax enable <bar> endif<cr>
+" toggle location & quickfix lists {{{
+" (from vimwiki)
+function! GetBufferList()
+  redir =>buflist
+  silent! ls!
+  redir END
+  return buflist
+endfunction
+
+function! ToggleList(bufname, pfx)
+  let buflist = GetBufferList()
+  for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
+    if bufwinnr(bufnum) != -1
+      exec(a:pfx.'close')
+      return
+    endif
+  endfor
+  if a:pfx == 'l' && len(getloclist(0)) == 0
+      echohl ErrorMsg
+      echo "Location List is Empty."
+      return
+  endif
+  let winnr = winnr()
+  exec(a:pfx.'open')
+  if winnr() != winnr
+    wincmd p
+  endif
+endfunction
+" }}}
+nnoremap <silent> <leader>l :call ToggleList("Location List", 'l')<cr>
+nnoremap <silent> <leader>q :call ToggleList("Quickfix List", 'c')<cr>
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -394,16 +430,15 @@ cabbrev bdall 0,999bd!
 " MINI PLUGINS {{{
 " ===========================================================================
 
-" q to quit help and quickfix window{{{
+" q to quit help {{{
 " (mostly from Junegunn's vimrc)
 function! s:helpquit()
   if &buftype == 'help'
-    nnoremap <buffer> q :bd<cr>:silent! close<cr>
+    nnoremap <buffer> q :bd<cr>
   endif
 endfunction
 augroup q_for_quit
   au!
-  au BufReadPost quickfix nnoremap <buffer> q :bd<cr>
   au BufEnter *.txt call s:helpquit()
 augroup END
 " }}}
@@ -542,6 +577,10 @@ augroup aindentLine
 augroup END
 " }}}
 
+" switch.vim {{{
+let g:switch_mapping = "<leader>s"
+"}}}
+
 " Gundo {{{
 nnoremap <leader>u :GundoToggle<cr>
 " }}}
@@ -552,7 +591,7 @@ nnoremap <leader>t :TagbarToggle<cr>
 
 " lightline {{{
 " toggle lightline
-nnoremap <silent> <leader>l :exec lightline#toggle()<cr>
+nnoremap <silent> <leader>L :exec lightline#toggle()<cr>
 " }}}
 
 " Syntastic {{{
