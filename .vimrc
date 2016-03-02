@@ -77,11 +77,11 @@ Plug 'junegunn/goyo.vim'            " distraction free text editing
 Plug 'kkoenig/wimproved.vim'        " improvements for Windows UI
 
 " The Rest
-Plug 'jeetsukumaran/vim-filebeagle' " vinegar inspired file manager
+Plug 'justinmk/vim-dirvish'         " vinegar inspired file manager
+Plug 'justinmk/vim-gtfo'            " go to file manager or terminal
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'Konfekt/FastFold'             " more efficient automatic folding
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
-Plug 'scrooloose/Syntastic'         " real time error checking
 Plug 'ctrlpvim/ctrlp.vim'           " fuzzy file/buffer search
 Plug 'ervandew/supertab'            " tab auto completion
 Plug 'AndrewRadev/switch.vim'       " toggle/switch various objects
@@ -253,6 +253,7 @@ augroup END
 " disabled
 noremap  <F1> <NOP>
 inoremap <F1> <NOP>
+noremap <space> <NOP>
 
 " Enter command line mode
 noremap <cr> :
@@ -278,6 +279,10 @@ nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>$
 
 " format the last paste or change
 nnoremap g= `[v`]=
+
+" going to correct column is more useful most of the time
+nnoremap ` '
+nnoremap ' `
 
 " move by wrapped lines instead of line numbers, unless the motion is counted
 noremap <expr> j (v:count? 'j' : 'gj')
@@ -309,7 +314,7 @@ inoremap {<tab> {<cr>}<esc>O
 noremap <backspace> <c-^>
 
 " change to current buffer's directory
-nnoremap cd :cd <c-r>=expand("%:p:h")<cr><cr>
+nnoremap cd :cd<space>
 
 " quickly manage buffers
 nnoremap gb :ls<cr>:b<space>
@@ -365,6 +370,9 @@ nnoremap <leader>w :w<cr>
 nnoremap <leader>v :e $MYVIMRC<cr>
 nnoremap <leader>V :tabnew $MYVIMRC<cr>
 
+" toggle centering the cursor
+nnoremap <leader>zz :let &scrolloff=999-&scrolloff<cr>
+
 " toggle syntax highlighting {{{
 function! ToggleSyntaxHightlighting()
   if exists("g:syntax_on")
@@ -413,8 +421,10 @@ nnoremap <silent> <leader>q :call ToggleList("Quickfix List", 'c')<cr>
 " COMMAND ALIASES {{{
 " ---------------------------------------------------------------------------
 
-" expands %% to current file's directory in command-line mode
-cnoremap %% <c-r>=fnameescape(expand('%:h')).'/'<cr>
+" %% for current filename, :: for current file path
+" (credit to romainl's vimrc)
+cnoremap %% <c-r>=expand('%')<cr>
+cnoremap :: <c-r>=expand('%:p:h')<cr>/
 
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
@@ -540,14 +550,19 @@ nnoremap <leader><c-e> :CtrlPMRUFiles<cr>
 nnoremap <leader>b :CtrlPBuffer<cr>
 " }}}
 
-" FileBeagle {{{
-" show hidden files
-let g:filebeagle_show_hidden = 1
+" Dirvish {{{
+" open current file's directory
+nnoremap <silent> - :Dirvish %<cr>
+nnoremap <leader>d :Dirvish<space>
+" }}}
+
+" gtfo.vim {{{
+let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
 " }}}
 
 " wimproved.vim {{{
 " toggle fullscreen
-nnoremap <F11> :WToggleFullscreen<CR>
+nnoremap <F11> :WToggleFullscreen<cr>
 augroup wimproved
   autocmd GUIEnter * silent! WToggleClean
 augroup END
@@ -592,18 +607,6 @@ nnoremap <leader>t :TagbarToggle<cr>
 " lightline {{{
 " toggle lightline
 nnoremap <silent> <leader>L :exec lightline#toggle()<cr>
-" }}}
-
-" Syntastic {{{
-" stop eating my CPU on save
-let g:syntastic_mode_map = {
-      \ "mode": "passive",
-      \ "active_filetypes": [],
-      \ "passive_filetypes": [] }
-" opens errors in the location list
-nnoremap <leader>e :Errors<cr>
-" reset Syntastic (clears errors)
-nnoremap <leader>r :SyntasticReset<cr>
 " }}}
 
 " Startify {{{
