@@ -1,21 +1,21 @@
 @echo off
-REM Makes a symbolic link to this vimrc in your home directory
+REM Makes a symbolic link to this config in the home directory
 REM (typically C:\Users\YourUserName)
-REM Puts any old vimrcs in a folder "vimrc_backup"
+REM Puts any replaced files in a folder "dotfiles_backup"
 
-set homedir=%userprofile%
+set home_dir=%userprofile%
 REM %~dp0 expands to the full path of this file
-set vimrepo=%~dp0
+set repo_dir=%~dp0
 
 REM delete previous symbolic link if it exists
-dir "%homedir%\_vimrc" | find "<SYMLINK>" && (
-	del "%homedir%\_vimrc"
+dir "%home_dir%\vimfiles" | find "<SYMLINK>" && (
+	rmdir /s /q "%home_dir%\vimfiles"
 )
 
-REM backup the previous vimrc if it exists
-if exist { "%homedir%\_vimrc" } (
-	mkdir "%homedir%\vimrc_backup"
-	move /-y "%homedir%\_vimrc" "%homedir%\vimrc_backup"
+REM backup the previous config if it exists
+if exist { "%home_dir%\vimfiles" } (
+	mkdir "%home_dir%\dotfiles_backup"
+	move /-y "%home_dir%\vimfiles" "%home_dir%\dotfiles_backup\vimfiles"
 )
 
-mklink "%homedir%\_vimrc" "%vimrepo%\.vimrc"
+mklink /d  "%home_dir%\vimfiles" "%repo_dir%\vimconfig"
