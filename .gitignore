@@ -1,2 +1,7 @@
 # ctags
 tags
+
+# not wanted: reward -$1337
+vimconfig/plugged/
+vimconfig/session/
+vimconfig/tmp/
