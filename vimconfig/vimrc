@@ -75,10 +75,10 @@ Plug 'kkoenig/wimproved.vim'        " improvements for Windows UI
 Plug 'justinmk/vim-dirvish'         " vinegar inspired file manager
 Plug 'justinmk/vim-gtfo'            " go to file manager or terminal
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
-Plug 'Konfekt/FastFold'             " more efficient automatic folding
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'ctrlpvim/ctrlp.vim'           " fuzzy file/buffer search
-Plug 'ervandew/supertab'            " tab auto completion
+Plug 'ervandew/supertab'            " tab for auto completion
+Plug 'Konfekt/FastFold'             " more efficient automatic folding
 Plug 'AndrewRadev/switch.vim'       " toggle/switch various objects
 Plug 'szw/vim-g'                    " google search from Vim
 Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
@@ -144,6 +144,15 @@ if has('persistent_undo')
   let &undodir=s:tempdir
 endif
 
+" return to the same line when a file is reopened
+augroup line_return
+  au!
+  au BufReadPost *
+        \ if line("'\"") > 0 && line("'\"") <= line("$") |
+        \     execute 'normal! g`"zvzz' |
+        \ endif
+augroup END
+
 " }}}
 " ===========================================================================
 "  APPEARANCE/AESTHETIC {{{
@@ -195,14 +204,13 @@ augroup END
 " see: fo-table for info on flags
 set formatoptions=rq1j
 
-" default tab settings,
+" default tab settings
 set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
 set encoding=utf-8
 set autoindent
 set smartindent
 set foldmethod=syntax
-set foldlevel=99
 set textwidth=80
 set nosmarttab
 set linebreak
@@ -504,13 +512,14 @@ nnoremap <leader>m :Make<cr>
 nnoremap gs :Sayonara<cr>
 " close buffer, but not window
 nnoremap gS :Sayonara!<cr>
+" prompt to close vim when closing the last file
+let g:sayonara_confirm_quit = 1
 " }}}
 
 " CtrlP {{{
 " ignore .git folders to speed up searches
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:ctrlp_max_depth = 15
-let g:ctrlp_max_files = 30000
 " include hidden files
 let g:ctrlp_show_hidden = 1
 " open multiple files in ONE window
@@ -530,6 +539,7 @@ nnoremap <leader>b :CtrlPBuffer<cr>
 " Dirvish {{{
 " open current file's directory
 nnoremap <silent> - :Dirvish %<cr>
+" direct shortcut
 nnoremap <leader>d :Dirvish<space>
 augroup my_dirvish_events
   autocmd!
@@ -544,7 +554,7 @@ augroup my_dirvish_events
         \|xnoremap <buffer> h :call dirvish#open("split", 0)<CR>
         \|nnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
         \|xnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
-  " Map gh to hide "hidden" files.
+  " map gh to hide "hidden" files.
   autocmd FileType dirvish nnoremap <buffer> gh
         \ :g@\v/\.[^\/]+/?$@d<cr>
 augroup END
@@ -577,7 +587,7 @@ nmap ga <Plug>(EasyAlign)
 " indentLine {{{
 nnoremap <leader>i :IndentLinesToggle<cr>
 " disable by default
-let g:indentLine_enabled = 0
+let g:indentLine_enabled = 1
 " enable for certain filetypes
 let g:indentLine_fileType = ['c', 'cpp']
 " }}}
