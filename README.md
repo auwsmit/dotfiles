@@ -17,7 +17,7 @@ you.
 
 ## Installation Steps
 1. Clone the repo to wherever; `~/dotrepo`, for example.
-	* `git clone https://gitlab.com/AssailantLF/vimrc.git ~/dotrepo`
+	* `git clone https://gitlab.com/AssailantLF/dotfiles.git ~/dotrepo`
 
 2. Create symbolic link(s). This will move any potentially replaced files into
    a `~/dotfiles_backup` folder.
