@@ -58,9 +58,8 @@ Plug 'tpope/vim-dispatch'           " asynchronous make
 Plug 'kana/vim-textobj-user'        " custom text object plugin
 Plug 'kana/vim-textobj-entire'      " entire document (ae)
 Plug 'kana/vim-textobj-indent'      " indent (ai)
-Plug 'glts/vim-textobj-comment'     " comment (ac)
 Plug 'kana/vim-textobj-function'    " function (af)
-Plug 'wellle/targets.vim'           " more extra text objects
+Plug 'wellle/targets.vim'           " extended, extra text objects
 
 " Appearance/UI
 Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
@@ -144,15 +143,6 @@ if has('persistent_undo')
   set undofile
   let &undodir=s:tempdir
 endif
-
-" return to the same line when a file is reopened
-augroup line_return
-  au!
-  au BufReadPost *
-        \ if line("'\"") > 0 && line("'\"") <= line("$") |
-        \     execute 'normal! g`"zvzz' |
-        \ endif
-augroup END
 
 " }}}
 " ===========================================================================
@@ -315,6 +305,10 @@ nnoremap cd :cd<space>
 nnoremap gb :ls<cr>:b<space>
 nnoremap gB :ls!<cr>:b<space>
 
+" jump list (previous, next)
+nnoremap <c-p> <c-o>
+nnoremap <c-n> <c-i>
+
 " easier scrolling (I just prefer not reaching for e and y)
 nnoremap <c-j> <c-e>
 nnoremap <c-k> <c-y>
@@ -327,9 +321,6 @@ noremap <c-right> <c-w>>
 
 " (go search numbers) search for all numbers
 nnoremap <silent> g/# /\v\d+<cr>
-
-" panic button (mostly a novelty)
-nnoremap <f9> mzggg?G`z
 
 " q to quit help files and the quickfix menu {{{
 " (mostly from Junegunn's vimrc)
