@@ -1,4 +1,4 @@
-" a vimrc
+" vim: set foldmethod=marker foldlevel=0:
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Source: https://gitlab.com/AssailantLF/vimrc
 
@@ -13,8 +13,7 @@ let s:is_nvim = has('nvim')
 let s:myvimdir ="~/.vim"
 if s:is_windows
   let s:myvimdir ="~/vimfiles"
-endif
-if s:is_nvim
+elseif s:is_nvim
   let s:myvimdir ="~/.config"
 endif
 
@@ -30,14 +29,14 @@ filetype plugin indent on
 " ===========================================================================
 " (minimalist plugin manager)
 
-" Install Vim-Plug at startup if it isn't installed {{{
+" Install plugins at startup if they aren't installed {{{
 
-if !filereadable(expand(s:myvimdir . "/autoload/plug.vim"))
-  echo "Installing Vim-Plug and plugins,"
+if !isdirectory(expand(s:myvimdir . "/plugged"))
+  echo "Installing plugins via vim-plug,"
   echo "restart Vim to finish installation."
-  silent! call mkdir(expand(s:myvimdir . "/autoload"), 'p')
-  silent! execute "!curl -fLo ".expand(s:myvimdir . "/autoload/plug.vim")
-        \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+"  silent! call mkdir(expand(s:myvimdir . "/autoload"), 'p')
+"  silent! execute "!curl -fLo ".expand(s:myvimdir . "/autoload/plug.vim")
+"        \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   au VimEnter * PlugInstall
 endif
 
@@ -114,7 +113,7 @@ set backspace=indent,eol,start
 set history=10000
 set undolevels=100000
 set complete=.,w,b,t
-set synmaxcol=256
+set synmaxcol=1024
 set nrformats-=octal
 set fileformat=unix
 set virtualedit=all
@@ -135,18 +134,18 @@ set wildignore+=*.spl                            " compiled spelling word lists
 set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX bullshit
 
-" disable backup/swap files
-set nobackup
-set nowritebackup
-set noswapfile
-
-" set location to save undo files
+" put temporary files in the tmp folder
+let s:tempdir=expand(s:myvimdir."/tmp")
+if !isdirectory(expand(s:tempdir))
+  call mkdir(expand(s:tempdir), "p")
+endif
+set backup
+let &backupdir=s:tempdir
+set swapfile
+let &directory=s:tempdir
 if has('persistent_undo')
-  let &undodir=expand(s:myvimdir."/undodir")
-  if !isdirectory(expand(&undodir))
-    call mkdir(expand(&undodir), "p")
-  endif
   set undofile
+  let &undodir=s:tempdir
 endif
 
 " return to the same line when a file is reopened
@@ -162,6 +161,7 @@ augroup END
 " ===========================================================================
 "  APPEARANCE/AESTHETIC {{{
 " ===========================================================================
+" if you can't find something, it's probably under TEXT AND FORMATTING
 
 syntax on
 set laststatus=2
@@ -198,6 +198,18 @@ augroup END
 " ===========================================================================
 " TEXT AND FORMATTING {{{
 " ===========================================================================
+" if you can't find something, it's probably under APPEARANCE/AESTHETIC
+"
+" OR...
+"
+" for filetype specific settings, check ~/.vim/after/ftplugin/
+" (.vim on Unix, vimfiles on Windows)
+
+" see: fo-table for info on flags
+set formatoptions=rq1j
+
+" default tab settings,
+set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
 set encoding=utf-8
 set autoindent
@@ -216,23 +228,6 @@ else
   set listchars+=eol:¬
 endif
 
-set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
-
-augroup filetype_specific
-  au!
-  au FileType vim  :setlocal ts=2 sts=2 sw=2 et fdm=marker fdl=0
-  au FileType sh   :setlocal ts=2 sts=2 sw=2 et
-  au FileType html :setlocal ts=2 sts=2 sw=2 et
-  au FileType c    :setlocal ts=4 sts=4 sw=4 et cino=(0)
-  au FileType cpp  :setlocal ts=4 sts=4 sw=4 et cino=(0)
-  au FileType make :setlocal ts=8 sts=8 sw=4 noet
-augroup END
-
-augroup persistent_formatoptions
-  au!
-  au BufEnter * :set formatoptions=rq1j
-augroup END
-
 augroup no_trail_in_insert
   au!
   au InsertEnter * :set listchars-=trail:■
@@ -249,6 +244,7 @@ augroup END
 " ---------------------------------------------------------------------------
 " REMAPS OF DEFAULTS {{{
 " ---------------------------------------------------------------------------
+" it's good to remember these in case you're stuck with vanilla vi/vim
 
 " disabled
 noremap  <F1> <NOP>
@@ -264,6 +260,9 @@ augroup enter_correctly
   au CmdWinEnter * nnoremap <buffer> <cr> <cr>
 augroup END
 
+" go back to last buffer
+noremap <backspace> <c-^>
+
 " K for kill window
 noremap K <c-w>c
 
@@ -275,12 +274,23 @@ nnoremap Y y$
 nnoremap U <c-r>
 
 " [S]plit line (sister to [J]oin lines)
+" cc still changes the whole line
 nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>$
 
 " format the last paste or change
 nnoremap g= `[v`]=
 
-" going to correct column is more useful most of the time
+" jump list (previous, next)
+" (this mapping allows <tab> to be used separately,
+" since <tab> and <c-i> are linked in Normal mode)
+nnoremap <c-p> <c-o>
+nnoremap <c-n> <c-i>
+
+" circular windows navigation
+nnoremap <tab>   <c-w>w
+nnoremap <s-tab> <c-w>W
+
+" going to the exact column is more useful most of the time
 nnoremap ` '
 nnoremap ' `
 
@@ -310,27 +320,15 @@ endif
 " expand-o-brackets
 inoremap {<tab> {<cr>}<esc>O
 
-" go back to last buffer
-noremap <backspace> <c-^>
-
-" change to current buffer's directory
+" change directories (minor time saver)
 nnoremap cd :cd<space>
 
 " quickly manage buffers
 nnoremap gb :ls<cr>:b<space>
+nnoremap gB :ls!<cr>:b<space>
 
-" alternate K since it's remapped
+" alternative K since it's remapped
 nnoremap gK K
-
-" jump list (previous, next)
-" (this mapping allows <tab> to be used separately,
-" since <tab> and <c-i> are linked in Normal mode)
-nnoremap <c-p> <c-o>
-nnoremap <c-n> <c-i>
-
-" circular windows navigation
-nnoremap <tab>   <c-w>w
-nnoremap <s-tab> <c-w>W
 
 " easier scrolling (I just prefer not reaching for e and y)
 nnoremap <c-j> <c-e>
@@ -347,6 +345,71 @@ nnoremap <silent> g/# /\v\d+<cr>
 
 " panic button (mostly a novelty)
 nnoremap <f9> mzggg?G`z
+
+" q to quit help files and the quickfix menu {{{
+" (mostly from Junegunn's vimrc)
+function! s:helpquit()
+  if &buftype == 'help'
+    nnoremap <buffer> q :bd<cr>
+  endif
+endfunction
+augroup q_for_quit
+  au!
+  au BufEnter *.txt call s:helpquit()
+  au BufReadPost quickfix nnoremap <buffer> q :bd<cr>
+augroup END
+" }}}
+
+" Alternate between header and source files {{{
+" (credit to junegunn's vimrc)
+function! s:a()
+  let name = expand('%:r')
+  let ext = tolower(expand('%:e'))
+  let sources = ['c', 'cc', 'cpp', 'cxx']
+  let headers = ['h', 'hh', 'hpp', 'hxx']
+  for pair in [[sources, headers], [headers, sources]]
+    let [set1, set2] = pair
+    if index(set1, ext) >= 0
+      for h in set2
+        let aname = name.'.'.h
+        for a in [aname, toupper(aname)]
+          if filereadable(a)
+            execute 'e' a
+            return
+          end
+        endfor
+      endfor
+    endif
+  endfor
+endfunction
+command! A call s:a()
+" }}}
+nnoremap gA :A<cr>
+
+" Source vimscript operator {{{
+function! SourceVimscript(type)
+  let sel_save = &selection
+  let &selection = "inclusive"
+  let reg_save = @"
+  if a:type == 'line'
+    silent execute "normal! '[V']y"
+  elseif a:type == 'char'
+    silent execute "normal! `[v`]y"
+  elseif a:type == "visual"
+    silent execute "normal! gvy"
+  elseif a:type == "currentline"
+    silent execute "normal! yy"
+  endif
+  let @" = substitute(@", '\n\s*\\', '', 'g')
+  " source the content
+  @"
+  let &selection = sel_save
+  let @" = reg_save
+endfunction
+" }}}
+nnoremap <silent> g: :set opfunc=SourceVimscript<cr>g@
+vnoremap <silent> g: :<c-U>call SourceVimscript("visual")<cr>
+nnoremap <silent> g:: :call SourceVimscript("currentline")<cr>
 
 " Go Continuous Scroll-Binding
 " This will vertically split the current buffer into two which will stay
@@ -369,6 +432,9 @@ nnoremap <leader>w :w<cr>
 " open vimrc
 nnoremap <leader>v :e $MYVIMRC<cr>
 nnoremap <leader>V :tabnew $MYVIMRC<cr>
+
+" toggle pastemode (fits well with unimpaired.vim)
+set pastetoggle=cop
 
 " toggle centering the cursor
 nnoremap <leader>zz :let &scrolloff=999-&scrolloff<cr>
@@ -402,9 +468,9 @@ function! ToggleList(bufname, pfx)
     endif
   endfor
   if a:pfx == 'l' && len(getloclist(0)) == 0
-      echohl ErrorMsg
-      echo "Location List is Empty."
-      return
+    echohl ErrorMsg
+    echo "Location List is Empty."
+    return
   endif
   let winnr = winnr()
   exec(a:pfx.'open')
@@ -421,7 +487,8 @@ nnoremap <silent> <leader>q :call ToggleList("Quickfix List", 'c')<cr>
 " COMMAND ALIASES {{{
 " ---------------------------------------------------------------------------
 
-" %% for current filename, :: for current file path
+" %% for current buffer file name
+" :: for current buffer file path
 " (credit to romainl's vimrc)
 cnoremap %% <c-r>=expand('%')<cr>
 cnoremap :: <c-r>=expand('%:p:h')<cr>/
@@ -437,77 +504,9 @@ cabbrev bdall 0,999bd!
 
 " }}}
 " ===========================================================================
-" MINI PLUGINS {{{
-" ===========================================================================
-
-" q to quit help {{{
-" (mostly from Junegunn's vimrc)
-function! s:helpquit()
-  if &buftype == 'help'
-    nnoremap <buffer> q :bd<cr>
-  endif
-endfunction
-augroup q_for_quit
-  au!
-  au BufEnter *.txt call s:helpquit()
-augroup END
-" }}}
-
-" :A command {{{
-" Alternate between header and source files.
-" (credit to junegunn's vimrc)
-function! s:a()
-  let name = expand('%:r')
-  let ext = tolower(expand('%:e'))
-  let sources = ['c', 'cc', 'cpp', 'cxx']
-  let headers = ['h', 'hh', 'hpp', 'hxx']
-  for pair in [[sources, headers], [headers, sources]]
-    let [set1, set2] = pair
-    if index(set1, ext) >= 0
-      for h in set2
-        let aname = name.'.'.h
-        for a in [aname, toupper(aname)]
-          if filereadable(a)
-            execute 'e' a
-            return
-          end
-        endfor
-      endfor
-    endif
-  endfor
-endfunction
-command! A call s:a()
-" }}}
-
-" Source vimscript operator {{{
-function! SourceVimscript(type)
-  let sel_save = &selection
-  let &selection = "inclusive"
-  let reg_save = @"
-  if a:type == 'line'
-    silent execute "normal! '[V']y"
-  elseif a:type == 'char'
-    silent execute "normal! `[v`]y"
-  elseif a:type == "visual"
-    silent execute "normal! gvy"
-  elseif a:type == "currentline"
-    silent execute "normal! yy"
-  endif
-  let @" = substitute(@", '\n\s*\\', '', 'g')
-  " source the content
-  @"
-  let &selection = sel_save
-  let @" = reg_save
-endfunction
-nnoremap <silent> g: :set opfunc=SourceVimscript<cr>g@
-vnoremap <silent> g: :<c-U>call SourceVimscript("visual")<cr>
-nnoremap <silent> g:: :call SourceVimscript("currentline")<cr>
-" }}}
-
-" }}}
-" ===========================================================================
 " PLUGIN SETTINGS {{{
 " ===========================================================================
+" OCD's beware: arbitrarily sorted list ahead!
 
 " Fugitive {{{
 nnoremap <leader>gs :Gstatus<cr>
@@ -540,8 +539,10 @@ let g:ctrlp_max_files = 30000
 let g:ctrlp_show_hidden = 1
 " open multiple files in ONE window
 let g:ctrlp_open_multiple_files = '1vr'
+" press an extra key to specify how to open
+let g:ctrlp_arg_map = 1
 " change default CtrlP mapping
-" more like LeaderP amirite
+" more like LeaderP amirite hahahahahaHAHWDAQKAJDHKAHKDJwda.
 let g:ctrlp_map = '<leader>p'
 " specific directory search
 nnoremap <leader><c-p> :CtrlP<space>
@@ -554,6 +555,23 @@ nnoremap <leader>b :CtrlPBuffer<cr>
 " open current file's directory
 nnoremap <silent> - :Dirvish %<cr>
 nnoremap <leader>d :Dirvish<space>
+augroup my_dirvish_events
+  autocmd!
+  " I use <cr> to enter cmdline mode,
+  " so use o to open
+  autocmd FileType dirvish
+        \ nnoremap <buffer> <cr> :
+        \|xnoremap <buffer> <cr> :
+        \|nnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
+        \|xnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
+        \|nnoremap <buffer> h :call dirvish#open("split", 0)<CR>
+        \|xnoremap <buffer> h :call dirvish#open("split", 0)<CR>
+        \|nnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
+        \|xnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
+  " Map gh to hide "hidden" files.
+  autocmd FileType dirvish nnoremap <buffer> gh
+        \ :g@\v/\.[^\/]+/?$@d<cr>
+augroup END
 " }}}
 
 " gtfo.vim {{{
@@ -585,11 +603,7 @@ nnoremap <leader>i :IndentLinesToggle<cr>
 " disable by default
 let g:indentLine_enabled = 0
 " enable for certain filetypes
-augroup aindentLine
-  au!
-  au FileType c   execute 'IndentLinesEnable' | doau indentLine Syntax
-  au FileType cpp execute 'IndentLinesEnable' | doau indentLine Syntax
-augroup END
+let g:indentLine_fileType = ['c', 'cpp']
 " }}}
 
 " switch.vim {{{
