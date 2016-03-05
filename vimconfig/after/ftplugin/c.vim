@@ -1,6 +1,6 @@
 " *** THESE SETTINGS ALSO APPLY TO CPP FILES ***
 
-" continue comments in insert mode, but not from normal mode
+" see: fo-table
 setlocal formatoptions=rq1j
 
 " tab settings

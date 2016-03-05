@@ -34,9 +34,6 @@ filetype plugin indent on
 if !isdirectory(expand(s:myvimdir . "/plugged"))
   echo "Installing plugins via vim-plug,"
   echo "restart Vim to finish installation."
-"  silent! call mkdir(expand(s:myvimdir . "/autoload"), 'p')
-"  silent! execute "!curl -fLo ".expand(s:myvimdir . "/autoload/plug.vim")
-"        \ ." https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   au VimEnter * PlugInstall
 endif
 
@@ -263,9 +260,6 @@ augroup END
 " go back to last buffer
 noremap <backspace> <c-^>
 
-" K for kill window
-noremap K <c-w>c
-
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
 nnoremap Y y$
@@ -280,15 +274,9 @@ nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>$
 " format the last paste or change
 nnoremap g= `[v`]=
 
-" jump list (previous, next)
-" (this mapping allows <tab> to be used separately,
-" since <tab> and <c-i> are linked in Normal mode)
-nnoremap <c-p> <c-o>
-nnoremap <c-n> <c-i>
-
-" circular windows navigation
-nnoremap <tab>   <c-w>w
-nnoremap <s-tab> <c-w>W
+" window management
+nnoremap <tab>   <c-w>
+nnoremap <s-tab> <c-w>c
 
 " going to the exact column is more useful most of the time
 nnoremap ` '
@@ -326,9 +314,6 @@ nnoremap cd :cd<space>
 " quickly manage buffers
 nnoremap gb :ls<cr>:b<space>
 nnoremap gB :ls!<cr>:b<space>
-
-" alternative K since it's remapped
-nnoremap gK K
 
 " easier scrolling (I just prefer not reaching for e and y)
 nnoremap <c-j> <c-e>
