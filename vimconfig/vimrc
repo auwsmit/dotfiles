@@ -106,7 +106,7 @@ set lazyredraw
 set gdefault
 set showcmd
 set vb t_vb=
-set sidescroll=5
+set sidescroll=8
 set backspace=indent,eol,start
 set history=10000
 set undolevels=100000
@@ -117,6 +117,7 @@ set fileformat=unix
 set virtualedit=all
 set sessionoptions-=options
 set sessionoptions-=folds
+set path=.,**
 if s:is_windows
   set makeprg=build.bat
 endif
@@ -398,6 +399,9 @@ cnoremap :: <c-r>=expand('%:p:h')<cr>/
 " leader the easiest key to reach
 let mapleader = "\<space>"
 
+" find a file
+nnoremap <leader>f :find<space>
+
 " write file
 nnoremap <leader>w :w<cr>
 
@@ -451,14 +455,6 @@ endfunction
 nnoremap <silent> <leader>l :call ToggleList("Location List", 'l')<cr>
 nnoremap <silent> <leader>q :call ToggleList("Quickfix List", 'c')<cr>
 
-" }}}
-" ---------------------------------------------------------------------------
-
-" }}}
-" ===========================================================================
-" ABBREVIATIONS / ALIASES {{{
-" ===========================================================================
-
 " Alternate between header and source files {{{
 " (credit to junegunn's vimrc)
 function! Alternate_C_Header()
@@ -482,7 +478,15 @@ function! Alternate_C_Header()
   endfor
 endfunction
 " }}}
-cabbrev A call Alternate_C_Header()
+nnoremap <leader>A :call Alternate_C_Header()<cr>
+
+" }}}
+" ---------------------------------------------------------------------------
+
+" }}}
+" ===========================================================================
+" ABBREVIATIONS / ALIASES {{{
+" ===========================================================================
 
 " delete all buffers and open Startify {{{
 function! ResetVim()
@@ -492,13 +496,12 @@ function! ResetVim()
   endif
 endfunction
 " }}}
-cabbrev reset call ResetVim()
+cabbrev ResetVim call ResetVim()
 
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
 
 " Press \r to start rotating lines and <C-c> (Control+c) to stop. {{{
-
 function! s:RotateString(string)
   let split_string = split(a:string, '\zs')
   return join(split_string[-1:] + split_string[:-2], '')
@@ -697,14 +700,6 @@ let g:startify_custom_header = [
       \ '  /  ____  /         |     \\ ~-_/  /|- _/   .||       \ /                  ',
       \ '  |~~    ~~|--~~~~--_ \     ~==-/   | \~--===~~        .\                   ',
       \ '           ''         ~-|      /|    |-~\~~       __--~~                    ',
-      \ '                       |-~~-_/ |    |   ~\_   _-~            /\             ',
-      \ '                            /  \     \__   \/~                \__           ',
-      \ '                        _--~ _/ | .-~~____--~-/                  ~~==.      ',
-      \ '                       ((->/~   ''.|||'' -_|    ~~-/ ,              . _||   ',
-      \ '                                  -_     ~\      ~~---l__i__i__i--~~_/      ',
-      \ '                                  _-~-__   ~)  \--______________--~~        ',
-      \ '                                //.-~~~-~_--~- |-------~~~~~~~~             ',
-      \ '                                       //.-~~~--\                           ',
       \ ]
 " }}}
 
