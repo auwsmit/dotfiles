@@ -249,6 +249,7 @@ augroup END
 noremap  <F1> <NOP>
 inoremap <F1> <NOP>
 noremap <space> <NOP>
+noremap <s-cr> <NOP>
 
 " Enter command line mode
 noremap <cr> :
@@ -284,6 +285,10 @@ nnoremap <s-tab>    <c-w>c
 " going to the exact column is more useful most of the time
 nnoremap ` '
 nnoremap ' `
+
+" keep a selection highlighted while indenting
+xnoremap < <gv
+xnoremap > >gv
 
 " move by wrapped lines instead of line numbers, unless the motion is counted
 noremap <expr> j (v:count? 'j' : 'gj')
