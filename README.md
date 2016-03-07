@@ -31,7 +31,7 @@ you.
 4. Once the plugins have finished, just restart Vim to complete.
 
 ## Optimal Requirements
- * [Vim 7.4+](http://www.vim.org/) or [Neovim](https://neovim.io/) for certain features
+ * Latest version of [Vim](http://www.vim.org/) or [Neovim](https://neovim.io/) for certain features
  * [Python](https://www.python.org/downloads/), [Ruby](https://www.ruby-lang.org/en/downloads/), or [Neovim](https://neovim.io/) for faster plugin installation, nice for:
   * [vim-plug](https://github.com/junegunn/vim-plug), a minimalist plugin manager
  * [Python](https://www.python.org/downloads/) required for:
