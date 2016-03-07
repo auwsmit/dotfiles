@@ -18,5 +18,8 @@ if exist { "%home_dir%\vimfiles" } (
 	move /-y "%home_dir%\vimfiles" "%home_dir%\dotfiles_backup\vimfiles"
 )
 
+REM make symbolic links
 mklink /d  "%home_dir%\vimfiles" "%repo_dir%\vimconfig"
-%repo_dir%\RegCapsRestore.reg
+
+REM use registry to remap Caps to Escape
+%repo_dir%\RegCapsToEscape.reg
