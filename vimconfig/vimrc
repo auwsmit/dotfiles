@@ -74,6 +74,7 @@ Plug 'kkoenig/wimproved.vim'        " improvements for Windows UI
 " The Rest
 Plug 'justinmk/vim-dirvish'         " vinegar inspired file manager
 Plug 'justinmk/vim-gtfo'            " go to file manager or terminal
+Plug 'junegunn/gv.vim'              " view git commits (needs fugitive)
 Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
 Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
 Plug 'ctrlpvim/ctrlp.vim'           " fuzzy file/buffer search
@@ -259,9 +260,6 @@ augroup END
 
 " go back to last buffer
 noremap <backspace> <c-^>
-
-" this with cpoptions+=$ is nice
-nnoremap cc 0C
 
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
@@ -488,7 +486,7 @@ cabbrev A call Alternate_C_Header()
 
 " delete all buffers and open Startify {{{
 function! ResetVim()
-  exec "0,999bd!"
+  exec "0,999bd"
   if exists('g:autoloaded_startify')
     exec "Startify"
   endif
@@ -634,30 +632,30 @@ let g:startify_files_number = 5
 let g:startify_session_delete_buffers = 1
 let g:startify_session_persistence = 1
 let g:startify_custom_header = [
-      \ '                                                                          ',
-      \ '     ___________________________                                          ',
-      \ '    /                           \                                         ',
-      \ '    |     VIM - Vi IMproved     |                                         ',
-      \ '    |    -------------------    |                                         ',
-      \ '    |  by Bram Moolenaar et al. |                                         ',
-      \ '    \__________________   ______/            __----~~~~~~~~~~~------___   ',
-      \ '                       \ /        .  .   ~~//====......          __--~ ~~ ',
-      \ '                  -.    \\      \_|//     |||\\  ~~~~~~::::... /~         ',
-      \ '               ___-==_   \   _-~o~  \/    |||  \\            _/~~-        ',
-      \ '       __---~~~.==~||\=_    -_--~/_-~|-   |\\   \\        _/~             ',
-      \ '   _-~~     .=~    |  \\-_    ''-~7  /-   /  ||    \      /               ',
-      \ ' .~       .~       |   \\ -_    /  /-   /   ||      \   /                 ',
-      \ '/  ____  /         |     \\ ~-_/  /|- _/   .||       \ /                  ',
-      \ '|~~    ~~|--~~~~--_ \     ~==-/   | \~--===~~        .\                   ',
-      \ '         ''         ~-|      /|    |-~\~~       __--~~                    ',
-      \ '                     |-~~-_/ |    |   ~\_   _-~            /\             ',
-      \ '                          /  \     \__   \/~                \__           ',
-      \ '                      _--~ _/ | .-~~____--~-/                  ~~==.      ',
-      \ '                     ((->/~   ''.|||'' -_|    ~~-/ ,              . _||   ',
-      \ '                                -_     ~\      ~~---l__i__i__i--~~_/      ',
-      \ '                                _-~-__   ~)  \--______________--~~        ',
-      \ '                              //.-~~~-~_--~- |-------~~~~~~~~             ',
-      \ '                                     //.-~~~--\                           ',
+      \ '                                                                            ',
+      \ '       ___________________________                                          ',
+      \ '      /                           \                                         ',
+      \ '      |     VIM - Vi IMproved     |                                         ',
+      \ '      |    -------------------    |                                         ',
+      \ '      |  by Bram Moolenaar et al. |                                         ',
+      \ '      \__________________   ______/            __----~~~~~~~~~~~------___   ',
+      \ '                         \ /        .  .   ~~//====......          __--~ ~~ ',
+      \ '                    -.    \\      \_|//     |||\\  ~~~~~~::::... /~         ',
+      \ '                 ___-==_   \   _-~o~  \/    |||  \\            _/~~-        ',
+      \ '         __---~~~.==~||\=_    -_--~/_-~|-   |\\   \\        _/~             ',
+      \ '     _-~~     .=~    |  \\-_    ''-~7  /-   /  ||    \      /               ',
+      \ '   .~       .~       |   \\ -_    /  /-   /   ||      \   /                 ',
+      \ '  /  ____  /         |     \\ ~-_/  /|- _/   .||       \ /                  ',
+      \ '  |~~    ~~|--~~~~--_ \     ~==-/   | \~--===~~        .\                   ',
+      \ '           ''         ~-|      /|    |-~\~~       __--~~                    ',
+      \ '                       |-~~-_/ |    |   ~\_   _-~            /\             ',
+      \ '                            /  \     \__   \/~                \__           ',
+      \ '                        _--~ _/ | .-~~____--~-/                  ~~==.      ',
+      \ '                       ((->/~   ''.|||'' -_|    ~~-/ ,              . _||   ',
+      \ '                                  -_     ~\      ~~---l__i__i__i--~~_/      ',
+      \ '                                  _-~-__   ~)  \--______________--~~        ',
+      \ '                                //.-~~~-~_--~- |-------~~~~~~~~             ',
+      \ '                                       //.-~~~--\                           ',
       \ ]
 " }}}
 
