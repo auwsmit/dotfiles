@@ -1,19 +1,17 @@
 # Mah Dotfiles
-These are my dotfiles (mostly for Vim). I mostly made them by stealing
-good ideas and snippets from other people. I try to keep things commented and
-organized.
+These are my dotfiles. I mostly made them by stealing good ideas and snippets
+from other people. I try to keep things commented and organized.
 
 Regarding Vim, if  something isn't commented, it means you can probably `:help`
 that thing to figure out what it does. Vim has great built-in documentation,
 especially if you [know how to use it](http://derekwyatt.org/vim/tutorials/novice/#Help).
 
 ## Warning!
-This is my configuration, which is catered to me. Feel free to copy whatever you
-want out of it, but I would advise against installing it unless you know what
-you're doing. Instead of copying an entire config, it's much better to make your
-own from scratch. When you copy something, be sure to know what it does first.
-It'll be a learning experience, and you'll have something made specifically for
-you.
+This is my configuration, which is catered to me. Copy whatever you want out of
+it, but I would advise against installing the whole thing unless you know what
+you're doing.  It's better to make your own from scratch. Before copying
+something, be sure to know what it does first.  It'll be a learning experience,
+and you'll end up with something made specifically for you.
 
 ## Installation Steps
 1. Clone the repo to wherever; `~/dotrepo`, for example.
@@ -32,7 +30,7 @@ you.
 
 3. Startup Vim, and it should say that it's downloading all the plugins.
     * Note: Windows makes a bunch of command prompts during this process, just
-    wait for them to disappear.
+      wait for them to disappear.
 
 4. Once the plugins have finished, restart Vim to complete.
 
