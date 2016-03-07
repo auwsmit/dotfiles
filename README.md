@@ -1,5 +1,5 @@
 # Mah Dotfiles
-These are my dotfiles (currently just for Vim). I mostly made them by stealing
+These are my dotfiles (mostly for Vim). I mostly made them by stealing
 good ideas and snippets from other people. I try to keep things commented and
 organized.
 
@@ -28,8 +28,7 @@ you.
           `shell:startup`, and place a shortcut to `CapsToEscape.exe` in that
           folder.
     * If Linux/Mac, run UnixSetup.sh. Make sure it's executable.
-        * xmodremap will remap Caps Lock to Escape for your current user
-          session.
+        * xmodmap will remap Caps Lock to Escape for your current user session.
 
 3. Startup Vim, and it should say that it's downloading all the plugins.
     * Note: Windows makes a bunch of command prompts during this process, just

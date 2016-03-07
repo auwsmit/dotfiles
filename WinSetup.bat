@@ -18,5 +18,5 @@ if exist { "%home_dir%\vimfiles" } (
 :: make symbolic links
 mklink /d  "%home_dir%\vimfiles" "%repo_dir%\vimconfig"
 
-:: run portable autohotkey executable to remap Caps Lock to Escape
+:: run compiled autohotkey script to remap Caps Lock to Escape
 %repo_dir%\CapsToEscape
