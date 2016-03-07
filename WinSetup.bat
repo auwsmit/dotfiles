@@ -19,3 +19,4 @@ if exist { "%home_dir%\vimfiles" } (
 )
 
 mklink /d  "%home_dir%\vimfiles" "%repo_dir%\vimconfig"
+%repo_dir%\RegCapsRestore.reg
