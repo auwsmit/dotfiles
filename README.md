@@ -9,9 +9,9 @@ especially if you [know how to use it](http://derekwyatt.org/vim/tutorials/novic
 ## Warning!
 This is my configuration, which is catered to me. Copy whatever you want out of
 it, but I would advise against installing the whole thing unless you know what
-you're doing.  It's better to make your own from scratch. Before copying
-something, be sure to know what it does first.  It'll be a learning experience,
-and you'll end up with something made specifically for you.
+you're doing.  It's better to make your own from scratch. If you do copy
+something, be sure to know what it does.  It'll be a learning experience, and
+you'll end up with something made specifically for you.
 
 ## Installation Steps
 1. Clone the repo to wherever; `~/dotrepo`, for example.
