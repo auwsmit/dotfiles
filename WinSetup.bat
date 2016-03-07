@@ -1,25 +1,22 @@
 @echo off
-REM Makes a symbolic link to this config in the home directory
-REM (typically C:\Users\YourUserName)
-REM Puts any replaced files in a folder "dotfiles_backup"
-
+:: VARIABLES
 set home_dir=%userprofile%
-REM %~dp0 expands to the full path of this file
+:: %~dp0 expands to the full path of this file
 set repo_dir=%~dp0
 
-REM delete previous symbolic link if it exists
+:: delete previous symbolic link
 dir "%home_dir%\vimfiles" | find "<SYMLINK>" && (
 	rmdir /s /q "%home_dir%\vimfiles"
 )
 
-REM backup the previous config if it exists
+:: backup the previous config
 if exist { "%home_dir%\vimfiles" } (
 	mkdir "%home_dir%\dotfiles_backup"
 	move /-y "%home_dir%\vimfiles" "%home_dir%\dotfiles_backup\vimfiles"
 )
 
-REM make symbolic links
+:: make symbolic links
 mklink /d  "%home_dir%\vimfiles" "%repo_dir%\vimconfig"
 
-REM use registry to remap Caps to Escape
-%repo_dir%\RegCapsToEscape.reg
+:: run portable autohotkey executable to remap Caps Lock to Escape
+%repo_dir%\CapsToEscape

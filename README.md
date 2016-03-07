@@ -22,12 +22,14 @@ you.
 2. Run the setup script. This will move any potentially replaced files into
    a `~/dotfiles_backup` folder, so check there for old configs.
     * If on Windows, run WinSetup.bat with adminstrator privileges.
-        * A registry editor prompt will appear, which will remap Caps Lock to Escape
-        if you accept. Log out and back in or restart for it to take effect.
-        * Run `RegCapsRestore.reg` to restore the Caps Lock key.
+        * AutoHotKey will remap Caps Lock to Escape. This can be disabled via
+          the AHK icon (a green square with a white H) in the task bar.
+        * To automatically run the remap on startup, press `Win+R`, run
+          `shell:startup`, and place a shortcut to `CapsToEscape.exe` in that
+          folder.
     * If Linux/Mac, run UnixSetup.sh. Make sure it's executable.
-        * Be aware that Caps Lock will be remapped to Escape until your current user
-        session is over.
+        * xmodremap will remap Caps Lock to Escape for your current user
+          session.
 
 3. Startup Vim, and it should say that it's downloading all the plugins.
     * Note: Windows makes a bunch of command prompts during this process, just
