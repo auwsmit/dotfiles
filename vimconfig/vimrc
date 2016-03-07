@@ -493,16 +493,6 @@ nnoremap <leader>A :call Alternate_C_Header()<cr>
 " ABBREVIATIONS / ALIASES {{{
 " ===========================================================================
 
-" delete all buffers and open Startify {{{
-function! ResetVim()
-  exec "0,999bd"
-  if exists('g:autoloaded_startify')
-    exec "Startify"
-  endif
-endfunction
-" }}}
-cabbrev ResetVim call ResetVim()
-
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
 
