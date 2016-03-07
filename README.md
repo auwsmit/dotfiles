@@ -21,8 +21,8 @@ you.
 
 2. Create symbolic link(s). This will move any potentially replaced files into
    a `~/dotfiles_backup` folder.
-	* If on Windows, run WinSymLink.bat with adminstrator privileges.
-	* If Linux/Mac, run UnixSymLink.sh. Make sure it's executable.
+	* If on Windows, run WinSetup.bat with adminstrator privileges.
+	* If Linux/Mac, run UnixSetup.sh. Make sure it's executable.
 
 3. Startup Vim, and it should say that it's downloading all the plugins.
   * Note: Windows makes a bunch of command prompts during this process, just
