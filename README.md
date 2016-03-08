@@ -28,11 +28,13 @@ you'll end up with something made specifically for you.
     * If Linux/Mac, run UnixSetup.sh. Make sure it's executable.
         * xmodmap will remap Caps Lock to Escape for your current user session.
 
-3. Startup Vim, and it should say that it's downloading all the plugins.
-    * Note: Windows makes a bunch of command prompts during this process, just
+3. Startup Vim, and decide whether or not you want to install plugins. The
+   prompt will only appear once.
+    * Note: Windows makes a bunch of command prompts to install plugins, just
       wait for them to disappear.
 
-4. Once the plugins have finished, restart Vim to complete.
+4. If you didn't install plugins, you're done! Otherwise, once the plugins have
+   finished, restart Vim to complete.
 
 ## Optimal Requirements
 * Latest version of [Vim](http://www.vim.org/) or [Neovim](https://neovim.io/) for certain features

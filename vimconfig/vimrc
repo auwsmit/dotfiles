@@ -32,9 +32,13 @@ filetype plugin indent on
 " Install plugins at startup if they aren't installed {{{
 
 if !isdirectory(expand(s:myvimdir . "/plugged"))
-  echo "Installing plugins via vim-plug,"
-  echo "restart Vim to finish installation."
-  au VimEnter * PlugInstall
+  if !isdirectory(expand(s:myvimdir . "/autoload/vimrc_booted/"))
+    if s:is_windows
+      exec expand("!mkdir \\%userprofile\\%/vimfiles/autoload/vimrc_booted/")
+      echo "To install plugins (via vim-plug),"
+      echo "run :PlugInstall and restart Vim."
+    endif
+  endif
 endif
 
 " }}}
@@ -290,6 +294,20 @@ nnoremap ' `
 xnoremap < <gv
 xnoremap > >gv
 
+" jump list (previous, next)
+nnoremap <c-p> <c-o>
+nnoremap <c-n> <c-i>
+
+" easier scrolling (I just prefer not reaching for e and y)
+nnoremap <c-j> <c-e>
+nnoremap <c-k> <c-y>
+
+" open current file's directory
+nnoremap - :e <c-r>=expand('%:p:h')<cr>/<cr>
+
+" open current working directory
+nnoremap + :e .<cr>
+
 " move by wrapped lines instead of line numbers, unless the motion is counted
 noremap <expr> j (v:count? 'j' : 'gj')
 noremap <expr> k (v:count? 'k' : 'gk')
@@ -322,14 +340,6 @@ nnoremap cd :cd<space>
 " quickly manage buffers
 nnoremap gb :ls<cr>:b<space>
 nnoremap gB :ls!<cr>:b<space>
-
-" jump list (previous, next)
-nnoremap <c-p> <c-o>
-nnoremap <c-n> <c-i>
-
-" easier scrolling (I just prefer not reaching for e and y)
-nnoremap <c-j> <c-e>
-nnoremap <c-k> <c-y>
 
 " resizing windows
 noremap <c-left>  <c-w><
@@ -550,153 +560,160 @@ cabbrev THEBESTTHINGEVER call <SID>RotateLines()<CR>
 " ===========================================================================
 " OCD's beware: arbitrarily sorted list ahead!
 
-" Fugitive {{{
-nnoremap <leader>gs :Gstatus<cr>
-nnoremap <leader>gd :Gdiff<cr>
-nnoremap <leader>gD :Gdiff HEAD<cr>
-nnoremap <leader>gc :Gcommit<cr>
-nnoremap <leader>gl :Git log<cr>
-nnoremap <leader>gp :Git push<cr>
-nnoremap <leader>gw :Gwrite<cr>
-nnoremap <leader>gr :Gremove<cr>
-" }}}
+" don't load these settings without plugins
+if isdirectory(expand(s:myvimdir . "/plugged"))
 
-" Dispatch {{{
-nnoremap <leader>m :Make<cr>
-" }}}
+  " Fugitive {{{
+  nnoremap <leader>gs :Gstatus<cr>
+  nnoremap <leader>gd :Gdiff<cr>
+  nnoremap <leader>gD :Gdiff HEAD<cr>
+  nnoremap <leader>gc :Gcommit<cr>
+  nnoremap <leader>gl :Git log<cr>
+  nnoremap <leader>gp :Git push<cr>
+  nnoremap <leader>gw :Gwrite<cr>
+  nnoremap <leader>gr :Gremove<cr>
+  " }}}
 
-" Sayonara {{{
-" close buffer
-nnoremap gs :Sayonara<cr>
-" close buffer, but not window
-nnoremap gS :Sayonara!<cr>
-" prompt to close vim when closing the last file
-let g:sayonara_confirm_quit = 1
-" }}}
+  " Dispatch {{{
+  nnoremap <leader>m :Make<cr>
+  " }}}
 
-" CtrlP {{{
-" ignore .git folders to speed up searches
-let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
-let g:ctrlp_max_depth = 15
-" include hidden files
-let g:ctrlp_show_hidden = 1
-" open multiple files in ONE window
-let g:ctrlp_open_multiple_files = '1vr'
-" ctrl-o to open specifically
-let g:ctrlp_arg_map = 1
-" change default CtrlP mapping
-" more like LeaderP amirite hahahahahaHAHWDAQKAJDHKAHKDJwda.
-let g:ctrlp_map = '<leader>p'
-" specific directory search
-nnoremap <leader><c-p> :CtrlP<space>
-" access recent files and buffers
-nnoremap <leader><c-e> :CtrlPMRUFiles<cr>
-nnoremap <leader>b :CtrlPBuffer<cr>
-" }}}
+  " Sayonara {{{
+  " close buffer
+  nnoremap gs :Sayonara<cr>
+  " close buffer, but not window
+  nnoremap gS :Sayonara!<cr>
+  " prompt to close vim when closing the last file
+  let g:sayonara_confirm_quit = 1
+  " }}}
 
-" gtfo.vim {{{
-let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
-" }}}
+  " CtrlP {{{
+  " ignore .git folders to speed up searches
+  let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+  let g:ctrlp_max_depth = 15
+  " include hidden files
+  let g:ctrlp_show_hidden = 1
+  " open multiple files in ONE window
+  let g:ctrlp_open_multiple_files = '1vr'
+  " ctrl-o to open specifically
+  let g:ctrlp_arg_map = 1
+  " change default CtrlP mapping
+  " more like LeaderP amirite hahahahahaHAHWDAQKAJDHKAHKDJwda.
+  let g:ctrlp_map = '<leader>p'
+  " specific directory search
+  nnoremap <leader><c-p> :CtrlP<space>
+  " access recent files and buffers
+  nnoremap <leader><c-e> :CtrlPMRUFiles<cr>
+  nnoremap <leader>b :CtrlPBuffer<cr>
+  " }}}
 
-" wimproved.vim {{{
-" toggle fullscreen
-nnoremap <F11> :WToggleFullscreen<cr>
-augroup wimproved
-  autocmd GUIEnter * silent! WToggleClean
-augroup END
-" }}}
+  " gtfo.vim {{{
+  let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
+  " }}}
 
-" Goyo {{{
-" toggle Goyo (distraction free editing)
-nnoremap <leader>G :Goyo<cr>
-" }}}
+  " wimproved.vim {{{
+  " toggle fullscreen
+  nnoremap <F11> :WToggleFullscreen<cr>
+  augroup wimproved
+    autocmd GUIEnter * silent! WToggleClean
+  augroup END
+  " }}}
 
-" vim-easy-align {{{
-" Start interactive EasyAlign in visual mode (e.g. vipga)
-vmap ga <Plug>(EasyAlign)
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
-" }}}
+  " Goyo {{{
+  " toggle Goyo (distraction free editing)
+  nnoremap <leader>G :Goyo<cr>
+  " }}}
 
-" indentLine {{{
-nnoremap <leader>i :IndentLinesToggle<cr>
-" disable by default
-let g:indentLine_enabled = 1
-" enable for certain filetypes
-let g:indentLine_fileType = ['c', 'cpp']
-" }}}
+  " vim-easy-align {{{
+  " Start interactive EasyAlign in visual mode (e.g. vipga)
+  vmap ga <Plug>(EasyAlign)
+  " Start interactive EasyAlign for a motion/text object (e.g. gaip)
+  nmap ga <Plug>(EasyAlign)
+  " }}}
 
-" switch.vim {{{
-let g:switch_mapping = "<leader>s"
-"}}}
+  " indentLine {{{
+  nnoremap <leader>i :IndentLinesToggle<cr>
+  " disable by default
+  let g:indentLine_enabled = 1
+  " enable for certain filetypes
+  let g:indentLine_fileType = ['c', 'cpp']
+  " }}}
 
-" Gundo {{{
-nnoremap <leader>u :GundoToggle<cr>
-" }}}
+  " switch.vim {{{
+  let g:switch_mapping = "<leader>s"
+  "}}}
 
-" Tagbar {{{
-nnoremap <leader>t :TagbarToggle<cr>
-" }}}
+  " Gundo {{{
+  nnoremap <leader>u :GundoToggle<cr>
+  " }}}
 
-" lightline {{{
-nnoremap <silent> <leader>L :exec lightline#toggle()<cr>
-" }}}
+  " Tagbar {{{
+  nnoremap <leader>t :TagbarToggle<cr>
+  " }}}
 
-" Dirvish {{{
-" open current file's directory
-nnoremap <silent> - :Dirvish %<cr>
-" direct shortcut
-nnoremap <leader>d :Dirvish<space>
-augroup my_dirvish_events
-  autocmd!
-  " I use <cr> to enter cmdline mode,
-  " so use o to open
-  autocmd FileType dirvish
-        \ nnoremap <buffer> <cr> :
-        \|xnoremap <buffer> <cr> :
-        \|nnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
-        \|xnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
-        \|nnoremap <buffer> h :call dirvish#open("split", 0)<CR>
-        \|xnoremap <buffer> h :call dirvish#open("split", 0)<CR>
-        \|nnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
-        \|xnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
-  " map gh to hide "hidden" files.
-  autocmd FileType dirvish nnoremap <buffer> gh
-        \ :g@\v/\.[^\/]+/?$@d<cr>
-augroup END
-" }}}
+  " lightline {{{
+  nnoremap <silent> <leader>L :exec lightline#toggle()<cr>
+  " }}}
 
-" Startify {{{
-augroup startify_maps
-  au!
-  " I use <cr> to enter command line mode,
-  " so use o to open files instead.
-  au User Startified unmap <buffer> <cr>
-  au User Startified nmap <buffer> o <Plug>(startify-open-buffers)
-augroup END
-let g:ctrlp_reuse_window = 'startify'
-let g:startify_files_number = 5
-let g:startify_session_delete_buffers = 1
-let g:startify_session_persistence = 1
-let g:startify_custom_header = [
-      \ '                                                                            ',
-      \ '       ___________________________                                          ',
-      \ '      /                           \                                         ',
-      \ '      |     VIM - Vi IMproved     |                                         ',
-      \ '      |    -------------------    |                                         ',
-      \ '      |  by Bram Moolenaar et al. |                                         ',
-      \ '      \__________________   ______/            __----~~~~~~~~~~~------___   ',
-      \ '                         \ /        .  .   ~~//====......          __--~ ~~ ',
-      \ '                    -.    \\      \_|//     |||\\  ~~~~~~::::... /~         ',
-      \ '                 ___-==_   \   _-~o~  \/    |||  \\            _/~~-        ',
-      \ '         __---~~~.==~||\=_    -_--~/_-~|-   |\\   \\        _/~             ',
-      \ '     _-~~     .=~    |  \\-_    ''-~7  /-   /  ||    \      /               ',
-      \ '   .~       .~       |   \\ -_    /  /-   /   ||      \   /                 ',
-      \ '  /  ____  /         |     \\ ~-_/  /|- _/   .||       \ /                  ',
-      \ '  |~~    ~~|--~~~~--_ \     ~==-/   | \~--===~~        .\                   ',
-      \ '           ''         ~-|      /|    |-~\~~       __--~~                    ',
-      \ ]
-" }}}
+  " Dirvish {{{
+  " open current file's directory
+  nnoremap <silent> - :Dirvish %<cr>
+  " open current working directory
+  nnoremap <silent> + :Dirvish<cr>
+  " direct shortcut
+  nnoremap <leader>d :Dirvish<space>
+  augroup my_dirvish_events
+    autocmd!
+    " I use <cr> to enter cmdline mode,
+    " so use o to open
+    autocmd FileType dirvish
+          \ nnoremap <buffer> <cr> :
+          \|xnoremap <buffer> <cr> :
+          \|nnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
+          \|xnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
+          \|nnoremap <buffer> h :call dirvish#open("split", 0)<CR>
+          \|xnoremap <buffer> h :call dirvish#open("split", 0)<CR>
+          \|nnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
+          \|xnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
+    " map gh to hide "hidden" files.
+    autocmd FileType dirvish nnoremap <buffer> gh
+          \ :g@\v/\.[^\/]+/?$@d<cr>
+  augroup END
+  " }}}
+
+  " Startify {{{
+  augroup startify_maps
+    au!
+    " I use <cr> to enter command line mode,
+    " so use o to open files instead.
+    au User Startified unmap <buffer> <cr>
+    au User Startified nmap <buffer> o <Plug>(startify-open-buffers)
+  augroup END
+  let g:ctrlp_reuse_window = 'startify'
+  let g:startify_files_number = 5
+  let g:startify_session_delete_buffers = 1
+  let g:startify_session_persistence = 1
+  let g:startify_custom_header = [
+        \ '                                                                            ',
+        \ '       ___________________________                                          ',
+        \ '      /                           \                                         ',
+        \ '      |     VIM - Vi IMproved     |                                         ',
+        \ '      |    -------------------    |                                         ',
+        \ '      |  by Bram Moolenaar et al. |                                         ',
+        \ '      \__________________   ______/            __----~~~~~~~~~~~------___   ',
+        \ '                         \ /        .  .   ~~//====......          __--~ ~~ ',
+        \ '                    -.    \\      \_|//     |||\\  ~~~~~~::::... /~         ',
+        \ '                 ___-==_   \   _-~o~  \/    |||  \\            _/~~-        ',
+        \ '         __---~~~.==~||\=_    -_--~/_-~|-   |\\   \\        _/~             ',
+        \ '     _-~~     .=~    |  \\-_    ''-~7  /-   /  ||    \      /               ',
+        \ '   .~       .~       |   \\ -_    /  /-   /   ||      \   /                 ',
+        \ '  /  ____  /         |     \\ ~-_/  /|- _/   .||       \ /                  ',
+        \ '  |~~    ~~|--~~~~--_ \     ~==-/   | \~--===~~        .\                   ',
+        \ '           ''         ~-|      /|    |-~\~~       __--~~                    ',
+        \ ]
+  " }}}
+
+endif
 
 " }}}
 " ===========================================================================
