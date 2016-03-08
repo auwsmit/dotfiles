@@ -32,12 +32,15 @@ filetype plugin indent on
 " Install plugins at startup if they aren't installed {{{
 
 if !isdirectory(expand(s:myvimdir . "/plugged"))
+  " only inform once!
   if !isdirectory(expand(s:myvimdir . "/autoload/vimrc_booted/"))
     if s:is_windows
       exec expand("!mkdir \\%userprofile\\%/vimfiles/autoload/vimrc_booted/")
-      echo "To install plugins (via vim-plug),"
-      echo "run :PlugInstall and restart Vim."
+    else
+      exec expand("!mkdir " . s:myvimdir . "/autoload/vimrc_booted")
     endif
+    echo "To install plugins (via vim-plug),"
+    echo "run :PlugInstall and restart Vim."
   endif
 endif
 
@@ -585,6 +588,12 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   nnoremap gS :Sayonara!<cr>
   " prompt to close vim when closing the last file
   let g:sayonara_confirm_quit = 1
+  " see: 'q to quit' under KEY MAPPINGS/NORMAL MAPS
+  function! s:helpquit()
+    if &buftype == 'help'
+      nnoremap <buffer> q :Sayonara<cr>
+    endif
+  endfunction
   " }}}
 
   " CtrlP {{{
