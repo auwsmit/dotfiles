@@ -4,19 +4,32 @@ set home_dir=%userprofile%
 :: %~dp0 expands to the full path of this file
 set repo_dir=%~dp0
 
-:: delete previous symbolic link
+:: In this order:
+:: - Delete previous symbolic links if they exist.
+:: - Backup the previous config if it exists.
+:: - Make symbolic links.
+mkdir "%home_dir%\dotfiles_backup"
+
 dir "%home_dir%\vimfiles" | find "<SYMLINK>" && (
 	rmdir /s /q "%home_dir%\vimfiles"
 )
-
-:: backup the previous config
 if exist { "%home_dir%\vimfiles" } (
-	mkdir "%home_dir%\dotfiles_backup"
 	move /-y "%home_dir%\vimfiles" "%home_dir%\dotfiles_backup\vimfiles"
 )
-
-:: make symbolic links
 mklink /d  "%home_dir%\vimfiles" "%repo_dir%\vimconfig"
+
+:: neovim
+dir "%userprofile%\AppData\Local\nvim" | find "<SYMLINK>" && (
+	del "%userprofile%\AppData\Local\nvim"
+)
+mklink /d "%userprofile%\AppData\Local\nvim" "%repo_dir%\vimconfig"
+dir "%userprofile%\AppData\Local\nvim\init.vim" | find "<SYMLINK>" && (
+	del "%userprofile%\AppData\Local\init.vim"
+)
+if exist { "%userprofile%\AppData\Local\nvim\init.vim" } (
+	move /-y "%userprofile%\AppData\Local\nvim\init.vim" "%home_dir%\dotfiles_backup\"
+)
+mklink "%userprofile%\AppData\Local\nvim\init.vim" "%repo_dir%\vimconfig\vimrc"
 
 :: run compiled autohotkey script to remap Caps Lock to Escape
 %repo_dir%\CapsToEscape
