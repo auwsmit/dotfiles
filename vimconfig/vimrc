@@ -281,8 +281,8 @@ nnoremap U <c-r>
 " cc still changes the whole line
 nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>$
 
-" format the last paste or change
-nnoremap g= `[v`]=
+" visually select the last paste or change
+nnoremap gp `[v`]
 
 " window management
 nnoremap <tab>      <c-w>
