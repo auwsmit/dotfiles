@@ -485,9 +485,8 @@ nnoremap <leader>A :A<cr>
 
 " }}}
 " ===========================================================================
-" FUNCTIONS AND ABBREVIATIONS {{{
+" FUNCTIONS, ABBREVIATIONS, & MISC {{{
 " ===========================================================================
-" Kind of a miscellaneous category...
 
 " Reset Vim, delete all buffers and open Startify
 function! s:RestartVim()
@@ -561,6 +560,12 @@ command! TheBestThingEver call <sid>RotateLines()
 
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
+
+" ...
+augroup top_o_file
+ au!
+ au BufEnter d*_*y.txt normal! gg
+augroup END
 
 " }}}
 " ===========================================================================
