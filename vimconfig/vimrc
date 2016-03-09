@@ -207,9 +207,8 @@ colorscheme desert
 " my favicolo of all time
 silent! colorscheme badwolf
 
-" set the status line the way Derek Wyatt likes it
-" (fallback status line if Lightline isn't enabled)
-set stl=%m\ %f\ %r\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
+" fallback default status line if Lightline isn't enabled
+let &statusline='%<%f %h%m%r%=%y%-14.([%b] %l,%c%V%) %P'
 
 augroup appearance
   au!
