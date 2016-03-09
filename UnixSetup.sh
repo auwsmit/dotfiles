@@ -6,7 +6,7 @@
 # - Delete previous symbolic links if they exist.
 # - Backup the previous config if it exists.
 # - Make symbolic links.
-mkdir ~/dotfiles_backup
+mkdir -p ~/dotfiles_backup
 if [ -L ~/.vim ] ; then
   rm ~/.vim
 fi
@@ -19,7 +19,7 @@ ln -s -d $(pwd)/vimconfig ~/.vim
 if [ -e ~/.config ] ; then
   mv -i ~/.config ~/dotfiles_backup
 fi
-mkdir ~/.config
+mkdir -p ~/.config
 if [ -L ~/.config/nvim ] ; then
   rm ~/.config/nvim
 fi
@@ -27,7 +27,9 @@ ln -s -d $(pwd)/vimconfig ~/.config/nvim
 if [ -L $(pwd)/init.vim ] ; then
   rm $(pwd)/init.vim
 fi
-ln -s ~/.config/nvim/init.vim $(pwd)/vimconfig/vimrc
+if [ ! -L ~/.config/nvim/init.vim ] ; then
+  ln -s ~/.config/nvim/init.vim $(pwd)/vimconfig/vimrc
+fi
 
 if [ -L ~/.bashrc ] ; then
   rm ~/.bashrc
