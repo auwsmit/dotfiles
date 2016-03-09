@@ -7,8 +7,9 @@
 PS1='\n\[\e[7m\]\w\[\e[0m\]\n[\u@\h]\$ '
 
 # Remap caps lock to escape to save on pinky strain
-xmodmap -e "remove Lock = Caps_Lock"
-xmodmap -e "keysym Caps_Lock = Escape"
+xmodmap -e -quiet "remove Lock = Caps_Lock" 2> /dev/null
+xmodmap -e -quiet "keysym Caps_Lock = Escape" 2> /dev/null
+xmodmap -e -quiet "add Lock = Caps_Lock" 2> /dev/null
 
 # Readline only completes if it matches with the current prefix
 bind '"\e[A"':history-search-backward
