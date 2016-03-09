@@ -14,7 +14,7 @@ let s:myvimdir ="~/.vim"
 if s:is_windows
   let s:myvimdir ="~/vimfiles"
 elseif s:is_nvim
-  let s:myvimdir ="~/.config"
+  let s:myvimdir ="~/.config/nvim"
 endif
 
 " use Vim settings over obsolescent Vi settings
