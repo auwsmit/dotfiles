@@ -70,7 +70,6 @@ Plug 'wellle/targets.vim'           " extended, extra text objects
 
 " Appearance/UI
 Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
-Plug 'flazz/vim-colorschemes'       " all the colorschemes
 Plug 'itchyny/lightline.vim'        " better looking UI
 Plug 'mhinz/vim-Startify'           " nice startup screen
 Plug 'Yggdroot/indentLine'          " shows indents made of spaces
@@ -79,6 +78,7 @@ Plug 'junegunn/goyo.vim'            " distraction free text editing
 Plug 'kkoenig/wimproved.vim'        " improvements for Windows UI
 
 " The Rest
+Plug 'takac/vim-hardtime'           " stop pressing hjkl so much
 Plug 'justinmk/vim-dirvish'         " vinegar inspired file manager
 Plug 'justinmk/vim-gtfo'            " go to file manager or terminal
 Plug 'junegunn/gv.vim'              " view git commits (needs fugitive)
@@ -207,8 +207,9 @@ colorscheme desert
 " my favicolo of all time
 silent! colorscheme badwolf
 
-" fallback default status line if Lightline isn't enabled
-let &statusline='%<%f %h%m%r%=%y%-14.([%b] %l,%c%V%) %P'
+" custom status line if lightline isn't enabled
+" (pretty much the same layout as default lightline)
+set statusline=%<%f\ %h%m%r%=%y\ %P%8(%l,%v%)\|
 
 augroup appearance
   au!
@@ -576,6 +577,18 @@ augroup END
 " don't load these settings without plugins
 if isdirectory(expand(s:myvimdir . "/plugged"))
 
+  " Hardtime {{{
+  " undo special mappings for compatibility
+  noremap k gk
+  noremap j gj
+  " enabled by default
+  let g:hardtime_default_on = 1
+  " less strict plz
+  let g:hardtime_maxcount = 3
+  let g:hardtime_ignore_quickfix = 1
+  let g:list_of_insert_keys = []
+  " }}}
+
   " Fugitive {{{
   nnoremap <leader>gs :Gstatus<cr>
   nnoremap <leader>gd :Gdiff<cr>
@@ -671,7 +684,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " }}}
 
   " lightline {{{
-  nnoremap <silent> <leader>L :exec lightline#toggle()<cr>
+  nnoremap <silent> <leader>L }:exec lightline#toggle()<cr>``
   " }}}
 
   " Dirvish {{{
