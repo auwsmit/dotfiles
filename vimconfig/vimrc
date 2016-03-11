@@ -51,50 +51,51 @@ call plug#begin()
 " PLUGINS
 
 " Tim Pope
-Plug 'tpope/vim-surround'           " surroundings manipulation
-Plug 'tpope/vim-fugitive'           " Git integration
-Plug 'tpope/vim-unimpaired'         " many helpful mappings
-Plug 'tpope/vim-commentary'         " easier commenting
-Plug 'tpope/vim-speeddating'        " increment dates, times, and more
-Plug 'tpope/vim-repeat'             " . repeat for plugins
-Plug 'tpope/vim-eunuch'             " UNIX helper commands
-Plug 'tpope/vim-rsi'                " readline style insertion
-Plug 'tpope/vim-dispatch'           " asynchronous make
+Plug 'tpope/vim-surround' " ------------- surroundings manipulation
+Plug 'tpope/vim-fugitive' " ------------- Git integration
+Plug 'tpope/vim-unimpaired' " ----------- many helpful mappings
+Plug 'tpope/vim-commentary' " ----------- easier commenting
+Plug 'tpope/vim-speeddating' " ---------- increment dates, times, and more
+Plug 'tpope/vim-repeat' " --------------- . repeat for plugins
+Plug 'tpope/vim-eunuch' " --------------- UNIX helper commands
+Plug 'tpope/vim-rsi' " ------------------ readline style insertion
+Plug 'tpope/vim-dispatch' " ------------- asynchronous make
 
 " Text Objects
-Plug 'kana/vim-textobj-user'        " custom text object plugin
-Plug 'kana/vim-textobj-entire'      " entire document (ae)
-Plug 'kana/vim-textobj-indent'      " indent (ai)
-Plug 'kana/vim-textobj-function'    " function (af)
-Plug 'wellle/targets.vim'           " extended, extra text objects
+Plug 'kana/vim-textobj-user' " ---------- custom text object plugin
+Plug 'kana/vim-textobj-entire' " -------- entire document (ae)
+Plug 'kana/vim-textobj-indent' " -------- indent (ai)
+Plug 'kana/vim-textobj-function' " ------ function (af)
+Plug 'wellle/targets.vim' " ------------- extended, extra text objects
 
 " Appearance/UI
-Plug 'justinmk/vim-syntax-extra'    " improved C syntax highlighting
-Plug 'itchyny/lightline.vim'        " better looking UI
-Plug 'mhinz/vim-Startify'           " nice startup screen
-Plug 'Yggdroot/indentLine'          " shows indents made of spaces
-Plug 'junegunn/vim-easy-align'      " text alignment plugin
-Plug 'junegunn/goyo.vim'            " distraction free text editing
-Plug 'kkoenig/wimproved.vim'        " improvements for Windows UI
+Plug 'justinmk/vim-syntax-extra' " ------ improved C syntax highlighting
+Plug 'itchyny/lightline.vim' " ---------- better looking UI
+Plug 'mhinz/vim-Startify' " ------------- nice startup screen
+Plug 'Yggdroot/indentLine' " ------------ shows indents made of spaces
+Plug 'junegunn/vim-easy-align' " -------- text alignment plugin
+Plug 'junegunn/goyo.vim' " -------------- distraction free text editing
+Plug 'kkoenig/wimproved.vim' " ---------- improvements for Windows UI
+Plug 'junegunn/rainbow_parentheses.vim' " rainbow parenthesis
 
 " The Rest
-Plug 'takac/vim-hardtime'           " stop pressing hjkl so much
-Plug 'justinmk/vim-dirvish'         " vinegar inspired file manager
-Plug 'justinmk/vim-gtfo'            " go to file manager or terminal
-Plug 'junegunn/gv.vim'              " view git commits (needs fugitive)
-Plug 'tommcdo/vim-exchange'         " easy text exchange for vim
-Plug 'mhinz/vim-sayonara'           " sane buffer/window closing
-Plug 'ctrlpvim/ctrlp.vim'           " fuzzy file/buffer search
-Plug 'ervandew/supertab'            " tab for auto completion
-Plug 'Konfekt/FastFold'             " more efficient automatic folding
-Plug 'AndrewRadev/switch.vim'       " toggle/switch various objects
-Plug 'szw/vim-g'                    " google search from Vim
-Plug 'ludovicchabant/vim-gutentags' " automatic tag manager
-Plug 'majutsushi/Tagbar'            " view ctags easily
+Plug 'takac/vim-hardtime' " ------------- stop pressing hjkl so much
+Plug 'justinmk/vim-dirvish' " ----------- vinegar inspired file manager
+Plug 'justinmk/vim-gtfo' " -------------- go to file manager or terminal
+Plug 'junegunn/gv.vim' " ---------------- view git commits (needs fugitive)
+Plug 'tommcdo/vim-exchange' " ----------- easy text exchange for vim
+Plug 'mhinz/vim-sayonara' " ------------- sane buffer/window closing
+Plug 'ctrlpvim/ctrlp.vim' " ------------- fuzzy file/buffer search
+Plug 'ervandew/supertab' " -------------- tab for auto completion
+Plug 'Konfekt/FastFold' " --------------- more efficient automatic folding
+Plug 'AndrewRadev/switch.vim' " --------- toggle/switch various objects
+Plug 'szw/vim-g' " ---------------------- google search from Vim
+Plug 'ludovicchabant/vim-gutentags' " --- automatic tag manager
+Plug 'majutsushi/Tagbar' " -------------- view ctags easily
 if has('python') || has('python3')
-  Plug 'sjl/Gundo.vim'              " visual undo tree
-  Plug 'SirVer/UltiSnips'           " snippet plugin
-  Plug 'honza/vim-snippets'         " preconfigured snippet package
+  Plug 'sjl/Gundo.vim' " ---------------- visual undo tree
+  Plug 'SirVer/UltiSnips' " ------------- snippet plugin
+  Plug 'honza/vim-snippets' " ----------- preconfigured snippet package
 endif
 
 call plug#end()
@@ -416,11 +417,11 @@ nnoremap <leader>f :find<space>
 nnoremap <leader>w :w<cr>
 
 " open vimrc
-nnoremap <leader>v :e $MYVIMRC<cr>:setl nobl<cr>
-nnoremap <leader>V :tabnew $MYVIMRC<cr>:setl nobl<cr>
+nnoremap <silent> <leader>v :e $MYVIMRC<cr>:setl nobl<cr>
+nnoremap <silent> <leader>V :tabnew $MYVIMRC<cr>:setl nobl<cr>
 
 " toggle centering the cursor
-nnoremap <leader>zz :let &scrolloff=999-&scrolloff<cr>
+nnoremap <leader>zz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
 
 " toggle location & quickfix lists {{{
 " (from vimwiki)
@@ -481,12 +482,16 @@ command! A call <sid>A()
 " }}}
 nnoremap <leader>A :A<cr>
 
+" search for brackets
+noremap <leader>{ ?[{}]<cr>
+noremap <leader>} /[{}]<cr>
+
 " }}}
 " ---------------------------------------------------------------------------
 
 " }}}
 " ===========================================================================
-" FUNCTIONS, ABBREVIATIONS, & MISC {{{
+" FUNCTIONS, ABBREVIATIONS, MISC {{{
 " ===========================================================================
 
 " Reset Vim, delete all buffers and open Startify
@@ -576,18 +581,6 @@ augroup END
 
 " don't load these settings without plugins
 if isdirectory(expand(s:myvimdir . "/plugged"))
-
-  " Hardtime {{{
-  " undo special mappings for compatibility
-  noremap k gk
-  noremap j gj
-  " enabled by default
-  let g:hardtime_default_on = 1
-  " less strict plz
-  let g:hardtime_maxcount = 3
-  let g:hardtime_ignore_quickfix = 1
-  let g:list_of_insert_keys = []
-  " }}}
 
   " Fugitive {{{
   nnoremap <leader>gs :Gstatus<cr>
@@ -687,6 +680,21 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   nnoremap <silent> <leader>L }:exec lightline#toggle()<cr>``
   " }}}
 
+  " Hardtime {{{
+  " undo special mappings for compatibility
+  noremap k gk
+  noremap j gj
+  " enabled by default
+  let g:hardtime_default_on = 1
+  " longer timeout
+  let g:hardtime_timeout = 2000
+  " more like Mediumtime HAHJWJAHAHAHAHadwljknadwakjlnkillme
+  let g:hardtime_maxcount = 2
+  let g:hardtime_allow_different_key = 1
+  let g:hardtime_ignore_quickfix = 1
+  let g:list_of_insert_keys = []
+  " }}}
+
   " Dirvish {{{
   " open current file's directory
   nnoremap <silent> - :Dirvish %<cr>
@@ -710,6 +718,14 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     " map gh to hide "hidden" files.
     autocmd FileType dirvish nnoremap <buffer> gh
           \ :g@\v/\.[^\/]+/?$@d<cr>
+  augroup END
+  " }}}
+
+  " Rainbow Parenthesis {{{
+  " always on; annoyance pending
+  augroup rainbow_lisp
+    autocmd!
+    autocmd FileType * RainbowParentheses
   augroup END
   " }}}
 
