@@ -692,6 +692,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   let g:hardtime_maxcount = 2
   let g:hardtime_allow_different_key = 1
   let g:hardtime_ignore_quickfix = 1
+  let g:list_of_normal_keys = ["h", "j", "k", "l", "<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
   let g:list_of_insert_keys = []
   " }}}
 
@@ -722,10 +723,10 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " }}}
 
   " Rainbow Parenthesis {{{
-  " always on; annoyance pending
-  augroup rainbow_lisp
+  " filetypes will be added and removed as needed
+  augroup rainbow_filetypes
     autocmd!
-    autocmd FileType * RainbowParentheses
+    autocmd FileType c,cpp,vim,sh,dosbatch RainbowParentheses
   augroup END
   " }}}
 
