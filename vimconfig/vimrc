@@ -73,13 +73,12 @@ Plug 'justinmk/vim-syntax-extra' " ------ improved C syntax highlighting
 Plug 'itchyny/lightline.vim' " ---------- better looking UI
 Plug 'mhinz/vim-Startify' " ------------- nice startup screen
 Plug 'Yggdroot/indentLine' " ------------ shows indents made of spaces
+Plug 'kkoenig/wimproved.vim' " ---------- improvements for Windows UI
 Plug 'junegunn/vim-easy-align' " -------- text alignment plugin
 Plug 'junegunn/goyo.vim' " -------------- distraction free text editing
-Plug 'kkoenig/wimproved.vim' " ---------- improvements for Windows UI
 Plug 'junegunn/rainbow_parentheses.vim' " rainbow parenthesis
 
 " The Rest
-Plug 'takac/vim-hardtime' " ------------- stop pressing hjkl so much
 Plug 'justinmk/vim-dirvish' " ----------- vinegar inspired file manager
 Plug 'justinmk/vim-gtfo' " -------------- go to file manager or terminal
 Plug 'junegunn/gv.vim' " ---------------- view git commits (needs fugitive)
@@ -170,12 +169,6 @@ augroup END
 "  APPEARANCE AND FORMATTING {{{
 " ===========================================================================
 
-" see: fo-table for info on flags
-set formatoptions=rq1j
-
-" default tab settings
-set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
-
 syntax on
 set laststatus=2
 set ruler
@@ -196,7 +189,7 @@ set linebreak
 set listchars=tab:▸\ ,trail:■,extends:»,precedes:«
 set list
 if has('linebreak')
-  set showbreak=+↪
+  set showbreak=↪
   silent! set breakindent
 else
   set listchars+=eol:¬
@@ -206,11 +199,19 @@ endif
 colorscheme desert
 
 " my favicolo of all time
+ let g:badwolf_darkgutter = 1
 silent! colorscheme badwolf
 
-" custom status line if lightline isn't enabled
+" fallback status line if lightline isn't enabled
 " (pretty much the same layout as default lightline)
 set statusline=%<%f\ %h%m%r%=%y\ %P%8(%l,%v%)\|
+
+" default format options
+" see: fo-table for info on flags
+set formatoptions=rq1j
+
+" default tab settings
+set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
 augroup appearance
   au!
@@ -223,6 +224,15 @@ augroup appearance
   endif
   " resize windows/splits when the window is resized
   au VimResized * :wincmd =
+augroup END
+
+" show numbers in the active buffer/window
+augroup vis_relative_numbers
+  au!
+  au BufEnter * :setlocal number relativenumber
+  au WinEnter * :setlocal number relativenumber
+  au BufLeave * :setlocal nonumber norelativenumber
+  au WinLeave * :setlocal nonumber norelativenumber
 augroup END
 
 " this makes the trailing space indicator invisible
@@ -277,11 +287,6 @@ nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>$
 " visually select the last paste or change
 nnoremap gp `[v`]
 
-" window management
-nnoremap <tab>      <c-w>
-nnoremap <tab><tab> <c-w><c-w>
-nnoremap <s-tab>    <c-w>c
-
 " going to the exact column is more useful most of the time
 nnoremap ` '
 nnoremap ' `
@@ -293,6 +298,11 @@ xnoremap > >gv
 " jump list (previous, next)
 nnoremap <c-p> <c-o>
 nnoremap <c-n> <c-i>
+
+" window management
+nnoremap <tab>      <c-w>
+nnoremap <tab><tab> <c-w><c-w>
+nnoremap <s-tab>    <c-w>c
 
 " easier scrolling (I just prefer not reaching for e and y)
 nnoremap <c-j> <c-e>
@@ -414,11 +424,15 @@ let mapleader = "\<space>"
 nnoremap <leader>f :find<space>
 
 " write file
-nnoremap <leader>w :w<cr>
+nnoremap <leader>w :update<cr>
 
 " open vimrc
-nnoremap <silent> <leader>v :e $MYVIMRC<cr>:setl nobl<cr>
+nnoremap <silent> <leader>v :edit $MYVIMRC<cr>:setl nobl<cr>
 nnoremap <silent> <leader>V :tabnew $MYVIMRC<cr>:setl nobl<cr>
+
+" search for brackets
+noremap <leader>{ ?[{}]<cr>
+noremap <leader>} /[{}]<cr>
 
 " toggle centering the cursor
 nnoremap <leader>zz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
@@ -482,10 +496,15 @@ command! A call <sid>A()
 " }}}
 nnoremap <leader>A :A<cr>
 
-" search for brackets
-noremap <leader>{ ?[{}]<cr>
-noremap <leader>} /[{}]<cr>
-
+" Show syntax highlighting groups for word under cursor {{{
+function! <SID>SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
+" }}}
+noremap <leader><leader> :call <sid>synstack()<cr>
 " }}}
 " ---------------------------------------------------------------------------
 
@@ -493,6 +512,7 @@ noremap <leader>} /[{}]<cr>
 " ===========================================================================
 " FUNCTIONS, ABBREVIATIONS, MISC {{{
 " ===========================================================================
+" Dunno where else to put these..
 
 " Reset Vim, delete all buffers and open Startify
 function! s:RestartVim()
@@ -640,6 +660,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " toggle fullscreen
   nnoremap <F11> :WToggleFullscreen<cr>
   augroup wimproved
+    au!
     autocmd GUIEnter * silent! WToggleClean
   augroup END
   " }}}
@@ -674,26 +695,6 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
 
   " Tagbar {{{
   nnoremap <leader>t :TagbarToggle<cr>
-  " }}}
-
-  " lightline {{{
-  nnoremap <silent> <leader>L }:exec lightline#toggle()<cr>``
-  " }}}
-
-  " Hardtime {{{
-  " undo special mappings for compatibility
-  noremap k gk
-  noremap j gj
-  " enabled by default
-  let g:hardtime_default_on = 1
-  " longer timeout
-  let g:hardtime_timeout = 2000
-  " more like Mediumtime HAHJWJAHAHAHAHadwljknadwakjlnkillme
-  let g:hardtime_maxcount = 2
-  let g:hardtime_allow_different_key = 1
-  let g:hardtime_ignore_quickfix = 1
-  let g:list_of_normal_keys = ["h", "j", "k", "l", "<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
-  let g:list_of_insert_keys = []
   " }}}
 
   " Dirvish {{{
@@ -760,6 +761,123 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
         \ '  |~~    ~~|--~~~~--_ \     ~==-/   | \~--===~~        .\                   ',
         \ '           ''         ~-|      /|    |-~\~~       __--~~                    ',
         \ ] " Thanks http://www.asciiworld.com
+  " }}}
+
+  " lightline {{{
+  nnoremap <silent> <leader>L }:exec lightline#toggle()<cr>``
+  " compatibility with other plugins {{{
+  let g:lightline = {
+        \ 'colorscheme': 'powerline',
+        \ 'active': {
+        \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
+        \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+        \ },
+        \ 'component_function': {
+        \   'fugitive': 'LightLineFugitive',
+        \   'filename': 'LightLineFilename',
+        \   'fileformat': 'LightLineFileformat',
+        \   'filetype': 'LightLineFiletype',
+        \   'fileencoding': 'LightLineFileencoding',
+        \   'mode': 'LightLineMode',
+        \   'ctrlpmark': 'CtrlPMark',
+        \ },
+        \ 'component_expand': {
+        \   'syntastic': 'SyntasticStatuslineFlag',
+        \ },
+        \ 'component_type': {
+        \   'syntastic': 'error',
+        \ },
+        \ 'subseparator': { 'left': '|', 'right': '|' }
+        \ }
+
+  function! LightLineModified()
+    return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+  endfunction
+
+  function! LightLineReadonly()
+    return &ft !~? 'help' && &readonly ? 'RO' : ''
+  endfunction
+
+  function! LightLineFilename()
+    let fname = expand('%:t')
+    return fname == 'ControlP' ? g:lightline.ctrlp_item :
+          \ fname == '__Tagbar__' ? g:lightline.fname :
+          \ fname =~ '__Gundo\|NERD_tree' ? '' :
+          \ &ft == 'vimfiler' ? vimfiler#get_status_string() :
+          \ &ft == 'unite' ? unite#get_status_string() :
+          \ &ft == 'vimshell' ? vimshell#get_status_string() :
+          \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
+          \ ('' != fname ? fname : '[No Name]') .
+          \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
+  endfunction
+
+  function! LightLineFugitive()
+    try
+      if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
+        let mark = ''  " edit here for cool mark
+        let _ = fugitive#head()
+        return strlen(_) ? mark._ : ''
+      endif
+    catch
+    endtry
+    return ''
+  endfunction
+
+  function! LightLineFileformat()
+    return winwidth(0) > 70 ? &fileformat : ''
+  endfunction
+
+  function! LightLineFiletype()
+    return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
+  endfunction
+
+  function! LightLineFileencoding()
+    return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+  endfunction
+
+  function! LightLineMode()
+    let fname = expand('%:t')
+    return fname == '__Tagbar__' ? 'Tagbar' :
+          \ fname == 'ControlP' ? 'CtrlP' :
+          \ fname == '__Gundo__' ? 'Gundo' :
+          \ fname == '__Gundo_Preview__' ? 'Gundo Preview' :
+          \ winwidth(0) > 60 ? lightline#mode() : ''
+  endfunction
+
+  function! CtrlPMark()
+    if expand('%:t') =~ 'ControlP'
+      call lightline#link('iR'[g:lightline.ctrlp_regex])
+      return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
+            \ , g:lightline.ctrlp_next], 0)
+    else
+      return ''
+    endif
+  endfunction
+
+  let g:ctrlp_status_func = {
+        \ 'main': 'CtrlPStatusFunc_1',
+        \ 'prog': 'CtrlPStatusFunc_2',
+        \ }
+
+  function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
+    let g:lightline.ctrlp_regex = a:regex
+    let g:lightline.ctrlp_prev = a:prev
+    let g:lightline.ctrlp_item = a:item
+    let g:lightline.ctrlp_next = a:next
+    return lightline#statusline(0)
+  endfunction
+
+  function! CtrlPStatusFunc_2(str)
+    return lightline#statusline(0)
+  endfunction
+
+  let g:tagbar_status_func = 'TagbarStatusFunc'
+
+  function! TagbarStatusFunc(current, sort, fname, ...) abort
+    let g:lightline.fname = a:fname
+    return lightline#statusline(0)
+  endfunction
+  " }}}}
   " }}}
 
 endif
