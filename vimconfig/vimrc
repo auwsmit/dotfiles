@@ -496,15 +496,6 @@ command! A call <sid>A()
 " }}}
 nnoremap <leader>A :A<cr>
 
-" Show syntax highlighting groups for word under cursor {{{
-function! <SID>SynStack()
-  if !exists("*synstack")
-    return
-  endif
-  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-endfunc
-" }}}
-noremap <leader><leader> :call <sid>synstack()<cr>
 " }}}
 " ---------------------------------------------------------------------------
 
@@ -512,7 +503,7 @@ noremap <leader><leader> :call <sid>synstack()<cr>
 " ===========================================================================
 " FUNCTIONS, ABBREVIATIONS, MISC {{{
 " ===========================================================================
-" Dunno where else to put these..
+" mostly miscellaneous
 
 " Reset Vim, delete all buffers and open Startify
 function! s:RestartVim()
