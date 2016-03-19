@@ -35,7 +35,7 @@ if !isdirectory(expand(s:myvimdir . "/plugged"))
   " only inform once!
   if !isdirectory(expand(s:myvimdir . "/autoload/vimrc_booted/"))
     if s:is_windows
-      exec expand("!mkdir \\%userprofile\\%/vimfiles/autoload/vimrc_booted/")
+      silent exec expand("!mkdir \\%userprofile\\%/vimfiles/autoload/vimrc_booted/")
     else
       exec expand("!mkdir " . s:myvimdir . "/autoload/vimrc_booted")
     endif
