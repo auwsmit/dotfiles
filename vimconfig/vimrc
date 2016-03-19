@@ -70,7 +70,7 @@ Plug 'wellle/targets.vim' " ------------- extended, extra text objects
 
 " Appearance/UI
 Plug 'justinmk/vim-syntax-extra' " ------ improved C syntax highlighting
-Plug 'itchyny/lightline.vim' " ---------- better looking UI
+Plug 'itchyny/lightline.vim' " ---------- fancy status line
 Plug 'mhinz/vim-Startify' " ------------- nice startup screen
 Plug 'Yggdroot/indentLine' " ------------ shows indents made of spaces
 Plug 'kkoenig/wimproved.vim' " ---------- improvements for Windows UI
@@ -199,7 +199,7 @@ endif
 colorscheme desert
 
 " my favicolo of all time
- let g:badwolf_darkgutter = 1
+let g:badwolf_darkgutter = 1
 silent! colorscheme badwolf
 
 " fallback status line if lightline isn't enabled
@@ -280,9 +280,17 @@ nnoremap Y y$
 " U as a more sensible redo
 nnoremap U <c-r>
 
-" [S]plit line (sister to [J]oin lines)
+" [S]plit line (sister to [J]oin lines) {{{
 " cc still changes the whole line
-nnoremap S i<cr><esc>^mwgk:silent! s/\v +$//<cr>:noh<cr>$
+function! s:SplitLine()
+  normal i^gk
+  silent! substitute/\v +$//
+  silent! nohlsearch
+  call histdel("search", -1)
+  normal $
+endfunction
+" }}}
+nnoremap S :call <sid>SplitLine()<cr>
 
 " visually select the last paste or change
 nnoremap gp `[v`]
@@ -301,8 +309,8 @@ nnoremap <c-n> <c-i>
 
 " window management
 nnoremap <tab>      <c-w>
-nnoremap <tab><tab> <c-w><c-w>
 nnoremap <s-tab>    <c-w>c
+nnoremap <tab><tab> <c-w><c-p>
 
 " easier scrolling (I just prefer not reaching for e and y)
 nnoremap <c-j> <c-e>
@@ -424,7 +432,7 @@ let mapleader = "\<space>"
 nnoremap <leader>f :find<space>
 
 " write file
-nnoremap <leader>w :update<cr>
+nnoremap <leader>w :write<cr>
 
 " open vimrc
 nnoremap <silent> <leader>v :edit $MYVIMRC<cr>:setl nobl<cr>
@@ -507,9 +515,10 @@ nnoremap <leader>A :A<cr>
 
 " Reset Vim, delete all buffers and open Startify
 function! s:RestartVim()
-  %bdelete
   if exists('g:loaded_startify')
-    Startify
+    SClose
+  else
+    %bdelete
   endif
 endfunction
 command! RestartVim call <sid>RestartVim()
@@ -636,10 +645,10 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " change default CtrlP mapping
   " more like LeaderP amirite hahahahahaHAHWDAQKAJDHKAHKDJwda.
   let g:ctrlp_map = '<leader>p'
-  " specific directory search
+  " shortcuts
   nnoremap <leader><c-p> :CtrlP<space>
-  " access recent files and buffers
   nnoremap <leader><c-e> :CtrlPMRUFiles<cr>
+  nnoremap <leader><c-l> :CtrlPLine<cr>
   nnoremap <leader>b :CtrlPBuffer<cr>
   " }}}
 
@@ -729,6 +738,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     " so use o to open files instead.
     au User Startified unmap <buffer> <cr>
     au User Startified nmap <buffer> o <Plug>(startify-open-buffers)
+    au User Startified setlocal relativenumber number
   augroup END
   let g:ctrlp_reuse_window = 'startify'
   let g:startify_files_number = 5
