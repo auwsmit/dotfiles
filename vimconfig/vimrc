@@ -60,6 +60,7 @@ Plug 'tpope/vim-repeat' " --------------- . repeat for plugins
 Plug 'tpope/vim-eunuch' " --------------- UNIX helper commands
 Plug 'tpope/vim-rsi' " ------------------ readline style insertion
 Plug 'tpope/vim-dispatch' " ------------- asynchronous make
+Plug 'tpope/vim-vinegar' " -------------- minor netrw enhancements
 
 " Text Objects
 Plug 'kana/vim-textobj-user' " ---------- custom text object plugin
@@ -89,7 +90,7 @@ Plug 'ervandew/supertab' " -------------- tab for auto completion
 Plug 'Konfekt/FastFold' " --------------- more efficient automatic folding
 Plug 'AndrewRadev/switch.vim' " --------- toggle/switch various objects
 Plug 'szw/vim-g' " ---------------------- google search from Vim
-Plug 'ludovicchabant/vim-gutentags' " --- automatic tag manager
+" Plug 'ludovicchabant/vim-gutentags' " --- automatic tag manager
 Plug 'majutsushi/Tagbar' " -------------- view ctags easily
 if has('python') || has('python3')
   Plug 'sjl/Gundo.vim' " ---------------- visual undo tree
@@ -317,7 +318,9 @@ nnoremap <c-j> <c-e>
 nnoremap <c-k> <c-y>
 
 " open current file's directory
-nnoremap - :e <c-r>=expand('%:p:h')<cr>/<cr>
+if !exists("g:loaded_vinegar")
+  nnoremap - :e <c-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
+endif
 
 " open current working directory
 nnoremap + :e .<cr>
@@ -364,7 +367,7 @@ noremap <c-right> <c-w>>
 " (go search numbers) search for all numbers
 nnoremap <silent> g/# /\v\d+<cr>
 
-" q to quit help files and the quickfix menu {{{
+" q to quit various things {{{
 " (mostly from Junegunn's vimrc)
 function! s:helpquit()
   if &buftype == 'help'
@@ -375,6 +378,7 @@ augroup q_for_quit
   au!
   au BufEnter *.txt call s:helpquit()
   au BufReadPost quickfix nnoremap <buffer> q :bd<cr>
+  au FileType netrw nnoremap <buffer> qq :b#<cr>
 augroup END
 " }}}
 
@@ -417,8 +421,8 @@ nnoremap <silent> gcsb :<c-u>let @z=&so<cr>:set so=0 noscb nowrap nofen<cr>:bo v
 " %% for current buffer file name
 " :: for current buffer file path
 " (credit to romainl's vimrc)
-cnoremap %% <c-r>=expand('%')<cr>
-cnoremap :: <c-r>=expand('%:p:h')<cr>/
+cnoremap %% <c-r>=fnameescape(expand('%'))<cr>
+cnoremap :: <c-r>=fnameescape(expand('%:p:h'))<cr>/
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -630,6 +634,12 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
       nnoremap <buffer> q :Sayonara<cr>
     endif
   endfunction
+  augroup q_for_quit
+    au!
+    au BufEnter *.txt call s:helpquit()
+    au BufReadPost quickfix nnoremap <buffer> q :Sayonara<cr>
+    au FileType netrw nnoremap <buffer> qq :Sayonara!<cr>
+  augroup END
   " }}}
 
   " CtrlP {{{
@@ -698,6 +708,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " }}}
 
   " Dirvish {{{
+  let g:dirvish_hijack_netrw = 0
   " open current file's directory
   nnoremap <silent> - :Dirvish %<cr>
   " open current working directory
