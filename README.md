@@ -39,7 +39,7 @@ you'll end up with something made specifically for you.
 ## Optimal Requirements
 * Latest version of [Vim](http://www.vim.org/) or [Neovim](https://neovim.io/) for certain features
 * [Python](https://www.python.org/downloads/), [Ruby](https://www.ruby-lang.org/en/downloads/), or [Neovim](https://neovim.io/) for faster plugin installation, nice for:
-* [vim-plug](https://github.com/junegunn/vim-plug), a minimalist plugin manager
+    * [vim-plug](https://github.com/junegunn/vim-plug), a minimalist plugin manager
 * [Python](https://www.python.org/downloads/) required for:
-* [UltiSnips](https://github.com/SirVer/ultisnips), a snippets plugin
-* [Gundo](https://github.com/sjl/gundo.vim), a visual undo tree plugin
+    * [UltiSnips](https://github.com/SirVer/ultisnips), a snippets plugin
+    * [Gundo](https://github.com/sjl/gundo.vim), a visual undo tree plugin
