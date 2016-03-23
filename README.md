@@ -26,7 +26,9 @@ you'll end up with something made specifically for you.
           `shell:startup`, and place a shortcut to `CapsToEscape.exe` in that
           folder.
     * If Linux/Mac, run UnixSetup.sh. Make sure it's executable.
-        * xmodmap will remap Caps Lock to Escape for your current user session.
+        * xmodmap will remap Caps Lock to Escape for your current user session
+        * `source` .bashrc for immediate bash settings, or else restart the
+          terminal
 
 3. Startup Vim, and decide whether or not you want to install plugins. The
    prompt will only appear once.
