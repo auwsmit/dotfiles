@@ -42,4 +42,3 @@ you'll end up with something made specifically for you.
     * [vim-plug](https://github.com/junegunn/vim-plug), a minimalist plugin manager
 * [Python](https://www.python.org/downloads/) required for:
     * [UltiSnips](https://github.com/SirVer/ultisnips), a snippets plugin
-    * [Gundo](https://github.com/sjl/gundo.vim), a visual undo tree plugin
