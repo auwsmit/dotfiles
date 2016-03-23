@@ -80,6 +80,7 @@ Plug 'junegunn/goyo.vim' " -------------- distraction free text editing
 Plug 'junegunn/rainbow_parentheses.vim' " rainbow parenthesis
 
 " The Rest
+Plug 'mbbill/undotree' " ---------------- visual undo tree
 Plug 'justinmk/vim-dirvish' " ----------- vinegar inspired file manager
 Plug 'justinmk/vim-gtfo' " -------------- go to file manager or terminal
 Plug 'junegunn/gv.vim' " ---------------- view git commits (needs fugitive)
@@ -93,7 +94,6 @@ Plug 'szw/vim-g' " ---------------------- google search from Vim
 " Plug 'ludovicchabant/vim-gutentags' " --- automatic tag manager
 Plug 'majutsushi/Tagbar' " -------------- view ctags easily
 if has('python') || has('python3')
-  Plug 'sjl/Gundo.vim' " ---------------- visual undo tree
   Plug 'SirVer/UltiSnips' " ------------- snippet plugin
   Plug 'honza/vim-snippets' " ----------- preconfigured snippet package
 endif
@@ -173,7 +173,7 @@ augroup END
 syntax on
 set laststatus=2
 set ruler
-set cursorline
+" set cursorline
 set guioptions=
 set t_Co=256
 set cpoptions+=$
@@ -227,13 +227,17 @@ augroup appearance
   au VimResized * :wincmd =
 augroup END
 
-" show numbers in the active buffer/window
-augroup vis_relative_numbers
+" only show in the active buffer/window
+augroup active_elements
   au!
-  au BufEnter * :setlocal number relativenumber
-  au WinEnter * :setlocal number relativenumber
-  au BufLeave * :setlocal nonumber norelativenumber
-  au WinLeave * :setlocal nonumber norelativenumber
+  au WinEnter * set cursorline number relativenumber
+  au WinLeave * set nocursorline nonumber norelativenumber
+  au BufEnter * set cursorline number relativenumber
+  au BufLeave * set nocursorline nonumber norelativenumber
+augroup END
+
+augroup active_cursorline
+  au!
 augroup END
 
 " this makes the trailing space indicator invisible
@@ -299,10 +303,6 @@ nnoremap gp `[v`]
 " going to the exact column is more useful most of the time
 nnoremap ` '
 nnoremap ' `
-
-" keep a selection highlighted while indenting
-xnoremap < <gv
-xnoremap > >gv
 
 " jump list (previous, next)
 nnoremap <c-p> <c-o>
@@ -474,7 +474,7 @@ function! ToggleList(bufname, pfx)
   let winnr = winnr()
   exec(a:pfx.'open')
   if winnr() != winnr
-    wincmd p
+    " wincmd p
   endif
 endfunction
 " }}}
@@ -699,8 +699,11 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   let g:switch_mapping = "<leader>s"
   "}}}
 
-  " Gundo {{{
-  nnoremap <leader>u :GundoToggle<cr>
+  " undotree {{{
+  nnoremap <leader>u :UndotreeToggle<cr>
+  function g:Undotree_CustomMap()
+    nunmap <buffer> <Tab>
+  endfunc
   " }}}
 
   " Tagbar {{{
