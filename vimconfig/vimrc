@@ -60,7 +60,6 @@ Plug 'tpope/vim-repeat' " --------------- . repeat for plugins
 Plug 'tpope/vim-eunuch' " --------------- UNIX helper commands
 Plug 'tpope/vim-rsi' " ------------------ readline style insertion
 Plug 'tpope/vim-dispatch' " ------------- asynchronous make
-Plug 'tpope/vim-vinegar' " -------------- minor netrw enhancements
 
 " Text Objects
 Plug 'kana/vim-textobj-user' " ---------- custom text object plugin
@@ -199,9 +198,8 @@ endif
 " fallback default colorscheme
 colorscheme desert
 
-" my favicolo of all time
-let g:badwolf_darkgutter = 1
-silent! colorscheme badwolf
+" my 'modifed' version of Bad Wolf
+silent! colorscheme badwolf_flattened
 
 " fallback status line if lightline isn't enabled
 " (pretty much the same layout as default lightline)
@@ -227,17 +225,13 @@ augroup appearance
   au VimResized * :wincmd =
 augroup END
 
-" only show in the active buffer/window
+" only show these in the active buffer/window
 augroup active_elements
   au!
   au WinEnter * set cursorline number relativenumber
   au WinLeave * set nocursorline nonumber norelativenumber
   au BufEnter * set cursorline number relativenumber
   au BufLeave * set nocursorline nonumber norelativenumber
-augroup END
-
-augroup active_cursorline
-  au!
 augroup END
 
 " this makes the trailing space indicator invisible
@@ -284,6 +278,10 @@ nnoremap Y y$
 
 " U as a more sensible redo
 nnoremap U <c-r>
+
+" Q to replay the q register
+" I have never wanted to use Ex mode.
+nnoremap Q @q
 
 " [S]plit line (sister to [J]oin lines) {{{
 " cc still changes the whole line
@@ -378,7 +376,6 @@ augroup q_for_quit
   au!
   au BufEnter *.txt call s:helpquit()
   au BufReadPost quickfix nnoremap <buffer> q :bd<cr>
-  au FileType netrw nnoremap <buffer> qq :b#<cr>
 augroup END
 " }}}
 
@@ -638,7 +635,6 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     au!
     au BufEnter *.txt call s:helpquit()
     au BufReadPost quickfix nnoremap <buffer> q :Sayonara<cr>
-    au FileType netrw nnoremap <buffer> qq :Sayonara!<cr>
   augroup END
   " }}}
 
@@ -711,13 +707,13 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " }}}
 
   " Dirvish {{{
-  let g:dirvish_hijack_netrw = 0
+  " disable netrw
+  let g:loaded_netrw = 1
+  let g:loaded_netrwPlugin = 1
   " open current file's directory
   nnoremap <silent> - :Dirvish %<cr>
   " open current working directory
   nnoremap <silent> + :Dirvish<cr>
-  " direct shortcut
-  nnoremap <leader>d :Dirvish<space>
   augroup my_dirvish_events
     autocmd!
     " I use <cr> to enter cmdline mode,
@@ -731,7 +727,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
           \|xnoremap <buffer> h :call dirvish#open("split", 0)<CR>
           \|nnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
           \|xnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
-    " map gh to hide "hidden" files.
+    " map gh to hide "hidden" files. (Unix only)
     autocmd FileType dirvish nnoremap <buffer> gh
           \ :g@\v/\.[^\/]+/?$@d<cr>
   augroup END
