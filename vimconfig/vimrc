@@ -175,7 +175,8 @@ augroup END
 " see: filetype-indent-on & ftplugins
 
 " default tab settings
-set tabstop=4 shiftwidth=4 expandtab smarttab
+set smarttab
+set shiftwidth=4 expandtab
 
 " indenting/formatting
 set autoindent
@@ -748,7 +749,6 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     " map gh to hide "hidden" files. (Unix only)
     autocmd FileType dirvish nnoremap <buffer> gh
           \ :g@\v/\.[^\/]+/?$@d<cr>
-    autocmd FileType dirvish setl bufhidden=unload
   augroup END
   " }}}
 
