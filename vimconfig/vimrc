@@ -60,6 +60,7 @@ Plug 'tpope/vim-repeat' " --------------- . repeat for plugins
 Plug 'tpope/vim-eunuch' " --------------- UNIX helper commands
 Plug 'tpope/vim-rsi' " ------------------ readline style insertion
 Plug 'tpope/vim-dispatch' " ------------- asynchronous make
+Plug 'tpope/vim-sleuth' " --------------- auto detect indent settings
 
 " Text Objects
 Plug 'kana/vim-textobj-user' " ---------- custom text object plugin
@@ -122,6 +123,7 @@ set synmaxcol=1024
 set nrformats-=octal
 set fileformat=unix
 set virtualedit=all
+set nostartofline
 set sessionoptions-=options
 set sessionoptions-=folds
 set path=.,**
@@ -141,7 +143,7 @@ set wildignore+=*.spl                            " compiled spelling word lists
 set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX garbage
 
-" put this useful, ugly junk in a folder
+" backups, swaps, & undofiles in one folder
 let s:tempdir=expand(s:myvimdir."/stuff")
 if !isdirectory(expand(s:tempdir))
   call mkdir(expand(s:tempdir), "p")
@@ -172,7 +174,6 @@ augroup END
 syntax on
 set laststatus=2
 set ruler
-" set cursorline
 set guioptions=
 set t_Co=256
 set cpoptions+=$
@@ -184,16 +185,21 @@ set smartindent
 set foldmethod=syntax
 set foldlevel=999
 set textwidth=80
-set nosmarttab
 set linebreak
 set listchars=tab:▸\ ,trail:■,extends:»,precedes:«
 set list
+set smarttab
 if has('linebreak')
   set showbreak=↪
   silent! set breakindent
 else
   set listchars+=eol:¬
 endif
+
+" default tab length.. 8 is a bit archaic
+" overwritten by indent/ftplugin files
+" see: filetype-indent-on & ftplugins
+set tabstop=4 shiftwidth=4
 
 " fallback default colorscheme
 colorscheme desert
@@ -208,9 +214,6 @@ set statusline=%<%f\ %h%m%r%=%y\ %P%8(%l,%v%)\|
 " default format options
 " see: fo-table for info on flags
 set formatoptions=rq1j
-
-" default tab settings
-set tabstop=4 softtabstop=0 shiftwidth=4 expandtab
 
 augroup appearance
   au!
@@ -346,8 +349,12 @@ endif
 " NORMAL MAPS {{{
 " ---------------------------------------------------------------------------
 
+" actually a tab
+inoremap <s-tab> <c-v><tab>
+
 " expand-o-brackets
 inoremap {<tab> {<cr>}<esc>O
+inoremap {; {<cr>};<esc>O
 
 " change directories (minor time saver)
 nnoremap cd :cd<space>
@@ -365,8 +372,8 @@ noremap <c-right> <c-w>>
 " (go search numbers) search for all numbers
 nnoremap <silent> g/# /\v\d+<cr>
 
-" q to quit various things {{{
-" (mostly from Junegunn's vimrc)
+" q to quit help {{{
+" (from Junegunn's vimrc)
 function! s:helpquit()
   if &buftype == 'help'
     nnoremap <buffer> q :bd<cr>
@@ -375,7 +382,6 @@ endfunction
 augroup q_for_quit
   au!
   au BufEnter *.txt call s:helpquit()
-  au BufReadPost quickfix nnoremap <buffer> q :bd<cr>
 augroup END
 " }}}
 
@@ -625,7 +631,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   nnoremap gS :Sayonara!<cr>
   " prompt to close vim when closing the last file
   let g:sayonara_confirm_quit = 1
-  " see: 'q to quit' under KEY MAPPINGS/NORMAL MAPS
+  " see: 'q to quit help' under KEY MAPPINGS/NORMAL MAPS
   function! s:helpquit()
     if &buftype == 'help'
       nnoremap <buffer> q :Sayonara<cr>
@@ -634,7 +640,6 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   augroup q_for_quit
     au!
     au BufEnter *.txt call s:helpquit()
-    au BufReadPost quickfix nnoremap <buffer> q :Sayonara<cr>
   augroup END
   " }}}
 
@@ -730,6 +735,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     " map gh to hide "hidden" files. (Unix only)
     autocmd FileType dirvish nnoremap <buffer> gh
           \ :g@\v/\.[^\/]+/?$@d<cr>
+    autocmd FileType dirvish setl bufhidden=unload
   augroup END
   " }}}
 
