@@ -72,7 +72,7 @@ Plug 'wellle/targets.vim' " ------------- extended, extra text objects
 
 " Appearance/UI
 Plug 'justinmk/vim-syntax-extra' " ------ improved C syntax highlighting
-Plug 'itchyny/lightline.vim' " ---------- fancy status line
+Plug 'itchyny/lightline.vim' " ---------- (not too) fancy status line
 Plug 'mhinz/vim-Startify' " ------------- nice startup screen
 Plug 'Yggdroot/indentLine' " ------------ shows indents made of spaces
 Plug 'kkoenig/wimproved.vim' " ---------- improvements for Windows UI
@@ -144,7 +144,7 @@ set wildignore+=*.spl                            " compiled spelling word lists
 set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX garbage
 
-" backups, swaps, & undofiles in one folder
+" backups, swapfiles, & undofiles in one folder
 let s:tempdir=expand(s:myvimdir."/stuff")
 if !isdirectory(expand(s:tempdir))
   call mkdir(expand(s:tempdir), "p")
@@ -171,7 +171,7 @@ augroup END
 " ===========================================================================
 "  APPEARANCE AND FORMATTING {{{
 " ===========================================================================
-" some settings will be overwritten for filetype specific settings
+" some settings will be overwritten when certain filetypes are detected
 " see: filetype-indent-on & ftplugins
 
 " default tab settings
@@ -188,7 +188,6 @@ set encoding=utf-8
 set formatoptions=rq1j
 
 " mostly aesthetic options
-syntax on
 set laststatus=2
 set ruler
 set guioptions=
@@ -214,7 +213,7 @@ colorscheme desert
 " my 'modifed' version of Bad Wolf
 silent! colorscheme badwolf_flattened
 
-" fallback status line if lightline isn't enabled
+" standard status line if lightline isn't enabled
 " (pretty much the same layout as default lightline)
 set statusline=%<%f\ %h%m%r%=%y\ %P%8(%l,%v%)\|
 
@@ -522,8 +521,7 @@ function! s:RestartVim()
     SClose
   else
     %bdelete
-    setl buftype=nofile
-    setl bufhidden=wipe
+    setl buftype=nofile bufhidden=wipe
   endif
 endfunction "}}}
 command! RestartVim call <sid>RestartVim()
@@ -538,14 +536,13 @@ function! s:ToggleSyntaxHighlighting()
   endif
   let &foldlevel=s:folds
 endfunction "}}}
-command! ToggleSyntaxHighlighting call <sid>ToggleSyntaxHighlighting()
+command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
 
 " DoubleView {{{
 " Vertically split the current buffer into two windows which will stay
 " scroll-bound together.  Allows you to see twice as much as before!
 " (disables the wrap setting and expands folds to work better)
 " (PS: this is kind of janky, but I like it anyway)
-" TODO: Turn into a function
 function! s:DoubleView()
   let @z=&so
   set scrolloff=0 noscrollbind nowrap nofoldenable
@@ -559,6 +556,7 @@ endfunction }}}
 command! DoubleView call <sid>DoubleView()
 
 " Vim 'screensaver' by kssmbi {{{
+" (PS: this is pointless, but I like it anyway)
 function! s:RotateString(string)
   let split_string = split(a:string, '\zs')
   return join(split_string[-1:] + split_string[:-2], '')
@@ -604,15 +602,15 @@ function! s:RotateLines()
   endtry
 endfunction
 " }}}
-command! TheBestThingEver call <sid>RotateLines()
+command! ScreenSaver call <sid>RotateLines()
 
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
 
 " ...
 augroup top_o_file
- au!
- au BufEnter d*_*y.txt normal! gg
+  au!
+  au BufEnter d*_*y.txt normal! gg
 augroup END
 
 " }}}
