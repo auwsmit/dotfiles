@@ -1,7 +1,10 @@
 " vim: set foldmethod=marker foldlevel=0:
 " Name: badwolf_flattened
-"
-" Explanation:
+" Author: Austin Smith <AssailantLF@gmail.com>
+" Bad Wolf Original: http://stevelosh.com/projects/badwolf/
+" Flattened Idea Inspiration: https://github.com/romainl/flattened
+
+" Explanation: {{{
 " This colorscheme was made by Steve Losh.  I 'flattened' the original into
 " what you see here, because it was over 800 lines, and it used some neat
 " functions to make the colorscheme easier to create and modify.  I simply
@@ -11,12 +14,34 @@
 " ...unless he updates it...
 "
 " I'm really happy with Bad Wolf, and don't plan on modifying it, so I'd rather
-" just have this minimal, low-complexity version to keep in my dotfiles.
+" just have this minimal, low-complexity version to keep in my dotfiles. }}}
+
+" LICENSE: {{{
+" Copyright (C) 2012 Steve Losh and Contributors
 "
-" Bad Wolf Original: http://stevelosh.com/projects/badwolf/
-" Flattened Idea Inspiration: https://github.com/romainl/flattened
+" Permission is hereby granted, free of charge, to any person obtaining a copy of
+" this software and associated documentation files (the "Software"), to deal in
+" the Software without restriction, including without limitation the rights to
+" use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+" the Software, and to permit persons to whom the Software is furnished to do so,
+" subject to the following conditions:
+"
+" The above copyright notice and this permission notice shall be included in all
+" copies or substantial portions of the Software.
+"
+" THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+" IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+" FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+" COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+" IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+" CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. }}}
 
 " Preamble {{{
+" needs at least 256 colors
+if !&t_Co >= 256 && !has("gui_running")
+  finish
+endif
+
 set background=dark
 
 hi clear
