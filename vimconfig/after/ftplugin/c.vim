@@ -3,6 +3,8 @@
 " see: fo-table
 setlocal formatoptions=rq1j
 
+setlocal foldmethod=syntax
+
 " If a parenthesis is open and a new line is made below,
 " indent that line up to the last open parenthesis.
 "

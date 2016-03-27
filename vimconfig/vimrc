@@ -18,6 +18,7 @@ elseif s:is_nvim
 endif
 
 " use Vim settings over obsolescent Vi settings
+" probably not necessary, but w/e
 set nocompatible
 
 " enables filetype detection, ftplugins, and indent files
@@ -91,8 +92,8 @@ Plug 'ervandew/supertab' " -------------- tab for auto completion
 Plug 'Konfekt/FastFold' " --------------- more efficient automatic folding
 Plug 'AndrewRadev/switch.vim' " --------- toggle/switch various objects
 Plug 'szw/vim-g' " ---------------------- google search from Vim
-" Plug 'ludovicchabant/vim-gutentags' " --- automatic tag manager
 Plug 'majutsushi/Tagbar' " -------------- view ctags easily
+" Plug 'ludovicchabant/vim-gutentags' " --- automatic ctag manager
 if has('python') || has('python3')
   Plug 'SirVer/UltiSnips' " ------------- snippet plugin
   Plug 'honza/vim-snippets' " ----------- preconfigured snippet package
@@ -170,7 +171,23 @@ augroup END
 " ===========================================================================
 "  APPEARANCE AND FORMATTING {{{
 " ===========================================================================
+" some settings will be overwritten for filetype specific settings
+" see: filetype-indent-on & ftplugins
 
+" default tab settings
+set tabstop=4 shiftwidth=4 expandtab smarttab
+
+" indenting/formatting
+set autoindent
+set smartindent
+set textwidth=80
+set encoding=utf-8
+
+" default format options
+" see: fo-table for info on flags
+set formatoptions=rq1j
+
+" mostly aesthetic options
 syntax on
 set laststatus=2
 set ruler
@@ -179,27 +196,17 @@ set t_Co=256
 set cpoptions+=$
 set splitright
 set numberwidth=1
-set encoding=utf-8
-set autoindent
-set smartindent
-set foldmethod=syntax
+set foldmethod=indent
 set foldlevel=999
-set textwidth=80
 set linebreak
 set listchars=tab:▸\ ,trail:■,extends:»,precedes:«
 set list
-set smarttab
 if has('linebreak')
   set showbreak=↪
   silent! set breakindent
 else
   set listchars+=eol:¬
 endif
-
-" default tab length.. 8 is a bit archaic
-" overwritten by indent/ftplugin files
-" see: filetype-indent-on & ftplugins
-set tabstop=4 shiftwidth=4
 
 " fallback default colorscheme
 colorscheme desert
@@ -210,10 +217,6 @@ silent! colorscheme badwolf_flattened
 " fallback status line if lightline isn't enabled
 " (pretty much the same layout as default lightline)
 set statusline=%<%f\ %h%m%r%=%y\ %P%8(%l,%v%)\|
-
-" default format options
-" see: fo-table for info on flags
-set formatoptions=rq1j
 
 augroup appearance
   au!
@@ -414,13 +417,6 @@ nnoremap <silent> g:: :call SourceVimscript("currentline")<cr>
 " toggle pastemode (fits well with unimpaired.vim)
 set pastetoggle=cop
 
-" Go Continuous Scroll-Binding
-" Vertically split the current buffer into two windows which will stay
-" scroll-bound together.  Allows you to see twice as much as before!
-" (disables the wrap setting and expands folds to work better)
-" (PS: this is kind of janky, but I like it anyway)
-nnoremap <silent> gcsb :<c-u>let @z=&so<cr>:set so=0 noscb nowrap nofen<cr>:bo vs<cr>Ljzt:setl scb<cr><c-w>p:setl scb<cr>:let &so=@z<cr>
-
 " %% for current buffer file name
 " :: for current buffer file path
 " (credit to romainl's vimrc)
@@ -520,14 +516,16 @@ nnoremap <leader>A :A<cr>
 " ===========================================================================
 " mostly miscellaneous
 
-" Reset Vim, delete all buffers and open Startify
+" delete all buffers and open Startify (if possible){{{
 function! s:RestartVim()
   if exists('g:loaded_startify')
     SClose
   else
     %bdelete
+    setl buftype=nofile
+    setl bufhidden=wipe
   endif
-endfunction
+endfunction "}}}
 command! RestartVim call <sid>RestartVim()
 
 " toggle syntax highlighting {{{
@@ -539,9 +537,26 @@ function! s:ToggleSyntaxHighlighting()
     syntax on
   endif
   let &foldlevel=s:folds
-endfunction
+endfunction "}}}
 command! ToggleSyntaxHighlighting call <sid>ToggleSyntaxHighlighting()
-" }}}
+
+" DoubleView {{{
+" Vertically split the current buffer into two windows which will stay
+" scroll-bound together.  Allows you to see twice as much as before!
+" (disables the wrap setting and expands folds to work better)
+" (PS: this is kind of janky, but I like it anyway)
+" TODO: Turn into a function
+function! s:DoubleView()
+  let @z=&so
+  set scrolloff=0 noscrollbind nowrap nofoldenable
+  botright vsplit
+  normal! Ljzt
+  setl scb
+  wincmd p
+  setl scb
+  let &so=@z
+endfunction }}}
+command! DoubleView call <sid>DoubleView()
 
 " Vim 'screensaver' by kssmbi {{{
 function! s:RotateString(string)
