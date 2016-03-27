@@ -11,4 +11,4 @@ setlocal foldmethod=syntax
 " example:
 " function foo(int arg1, int arg2
 "              int arg3)
-setlocal cino=(0,l1
+setlocal cino=(0,l1,t0
