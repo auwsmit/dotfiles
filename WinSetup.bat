@@ -18,6 +18,7 @@ mkdir "%home_dir%\dotfiles_backup"
 
 :: Regular Vim
 dir "%home_dir%\vimfiles" | find "<SYMLINK>" && (
+	echo what
         rmdir "%home_dir%\vimfiles"
         )
 if exist { "%home_dir%\vimfiles" } (
