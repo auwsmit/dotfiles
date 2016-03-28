@@ -55,13 +55,14 @@ call plug#begin()
 Plug 'tpope/vim-surround' " ------------- surroundings manipulation
 Plug 'tpope/vim-fugitive' " ------------- Git integration
 Plug 'tpope/vim-unimpaired' " ----------- many helpful mappings
-Plug 'tpope/vim-commentary' " ----------- easier commenting
 Plug 'tpope/vim-speeddating' " ---------- increment dates, times, and more
 Plug 'tpope/vim-repeat' " --------------- . repeat for plugins
 Plug 'tpope/vim-eunuch' " --------------- UNIX helper commands
 Plug 'tpope/vim-rsi' " ------------------ readline style insertion
 Plug 'tpope/vim-dispatch' " ------------- asynchronous make
 Plug 'tpope/vim-sleuth' " --------------- auto detect indent settings
+Plug 'tpope/vim-commentary',    { 'on': '<Plug>Commentary' }
+" ^-------------------------------------^ easier commenting
 
 " Text Objects
 Plug 'kana/vim-textobj-user' " ---------- custom text object plugin
@@ -74,27 +75,36 @@ Plug 'wellle/targets.vim' " ------------- extended, extra text objects
 Plug 'justinmk/vim-syntax-extra' " ------ improved C syntax highlighting
 Plug 'itchyny/lightline.vim' " ---------- (not too) fancy status line
 Plug 'mhinz/vim-Startify' " ------------- nice startup screen
-Plug 'Yggdroot/indentLine' " ------------ shows indents made of spaces
 Plug 'kkoenig/wimproved.vim' " ---------- improvements for Windows UI
-Plug 'junegunn/vim-easy-align' " -------- text alignment plugin
-Plug 'junegunn/goyo.vim' " -------------- distraction free text editing
-Plug 'junegunn/rainbow_parentheses.vim' " rainbow parenthesis
+Plug 'Yggdroot/indentLine' " ------------ shows indents made of spaces
+Plug 'junegunn/vim-easy-align', { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
+" ^-------------------------------------^ text alignment plugin
+Plug 'junegunn/goyo.vim',       { 'on': 'Goyo' }
+" ^-------------------------------------^ distraction free text editing
+Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
+" ^-------------------------------------^ rainbow parenthesis
 
 " The Rest
-Plug 'mbbill/undotree' " ---------------- visual undo tree
 Plug 'justinmk/vim-dirvish' " ----------- vinegar inspired file manager
 Plug 'justinmk/vim-gtfo' " -------------- go to file manager or terminal
-Plug 'junegunn/gv.vim' " ---------------- view git commits (needs fugitive)
-Plug 'tommcdo/vim-exchange' " ----------- easy text exchange for vim
-Plug 'mhinz/vim-sayonara' " ------------- sane buffer/window closing
-Plug 'ctrlpvim/ctrlp.vim' " ------------- fuzzy file/buffer search
 Plug 'ervandew/supertab' " -------------- tab for auto completion
-Plug 'Konfekt/FastFold' " --------------- more efficient automatic folding
+Plug 'tommcdo/vim-exchange' " ----------- easy text exchange for vim
 Plug 'AndrewRadev/switch.vim' " --------- toggle/switch various objects
-Plug 'szw/vim-g' " ---------------------- google search from Vim
+Plug 'Konfekt/FastFold' " --------------- more efficient automatic folding
 Plug 'SirVer/UltiSnips' " --------------- snippet plugin
-Plug 'majutsushi/Tagbar' " -------------- view ctags easily
 " Plug 'ludovicchabant/vim-gutentags' " --- automatic ctag manager
+Plug 'majutsushi/Tagbar',      { 'on': 'TagbarToggle' }
+" ^-------------------------------------^ view ctags easily
+Plug 'mbbill/undotree',        { 'on': 'UndotreeToggle' }
+" ^-------------------------------------^ visual undo tree
+Plug 'mhinz/vim-sayonara',     { 'on': 'Sayonara' }
+" ^-------------------------------------^ sane buffer/window closing
+Plug 'ctrlpvim/ctrlp.vim',     { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
+" ^-------------------------------------^ fuzzy file/buffer search
+Plug 'junegunn/gv.vim',        { 'on': 'GV' }
+" ^-------------------------------------^ view git commits (needs fugitive)
+Plug 'szw/vim-g',              { 'on': 'Google' }
+" ^-------------------------------------^ google search from Vim
 
 call plug#end()
 
@@ -637,6 +647,11 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   nnoremap <Leader>gr :Gremove<CR>
   " }}}
 
+  " vim-commentary {{{
+  map gc <Plug>Commentary
+  nmap gcc <Plug>CommentaryLine
+  " }}}
+
   " Dispatch {{{
   nnoremap <Leader>m :Make<CR>
   " }}}
@@ -671,11 +686,13 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " ctrl-o to open specifically
   let g:ctrlp_arg_map = 1
   " change default CtrlP mapping
-  " more like LeaderP amirite hahahahahaHAHWDAQKAJDHKAHKDJwda.
   let g:ctrlp_map = '<Leader>p'
+  nnoremap <Leader>p :CtrlP<CR>
+  " fall back on cwd if there's no .git directory
+  " let g:ctrlp_working_path_mode = 'raw'
   " shortcuts
   nnoremap <Leader><C-P> :CtrlP<Space>
-  nnoremap <Leader><C-E> :CtrlPMRUFiles<CR>
+  nnoremap <Leader><C-E> :CtrlPMRU<CR>
   nnoremap <Leader><C-L> :CtrlPLine<CR>
   nnoremap <Leader>b :CtrlPBuffer<CR>
   " }}}
