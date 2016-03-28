@@ -39,4 +39,6 @@ if exist { "%userprofile%\AppData\Local\nvim\init.vim" } (
 mklink "%userprofile%\AppData\Local\nvim\init.vim" "%repo_dir%\vimconfig\vimrc"
 
 :: run compiled autohotkey script to remap Caps Lock to Escape
-"%repo_dir%\CapsToEscape"
+start "" "%repo_dir%\CapsToEscape.exe"
+
+exit 0
