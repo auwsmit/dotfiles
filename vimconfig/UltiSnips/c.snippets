@@ -23,11 +23,11 @@ endsnippet
 # Preprocessor ============================================================{{{
 
 snippet inc "#include standard header"
-	#include <${1:stdio}.h>
+#include <${1:stdio}.h>
 endsnippet
 
 snippet Inc "#include local header"
-	#include "${1:`!p snip.rv = snip.basename`.h}"
+#include "${1:`!p snip.rv = snip.basename`.h}"
 endsnippet
 
 snippet def "#define ..." b
