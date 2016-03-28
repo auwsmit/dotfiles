@@ -2,7 +2,6 @@ tags
 tags.*
 
 vimconfig/.netrwhist
-vimconfig/plugged/
 vimconfig/bundle/
 vimconfig/session/
 vimconfig/tmp/
