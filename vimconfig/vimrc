@@ -96,6 +96,7 @@ Plug 'majutsushi/Tagbar' " -------------- view ctags easily
 " Plug 'ludovicchabant/vim-gutentags' " --- automatic ctag manager
 if has('python') || has('python3')
   Plug 'SirVer/UltiSnips' " ------------- snippet plugin
+  Plug 'honza/vim-snippets' " ----------- preconfigured snippet package
 endif
 
 call plug#end()
@@ -291,11 +292,11 @@ nnoremap Q @q
 " [S]plit line (sister to [J]oin lines) {{{
 " cc still changes the whole line
 function! s:SplitLine()
-  normal! i^gk
+  normal i^gk
   silent! substitute/\v +$//
   silent! nohlsearch
   call histdel("search", -1)
-  normal! $
+  normal $
 endfunction
 " }}}
 nnoremap S :call <SID>SplitLine()<CR>
