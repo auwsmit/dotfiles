@@ -94,14 +94,15 @@ Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
 Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
 Plug 'junegunn/gv.vim',    { 'on': 'GV' }
 Plug 'szw/vim-g',          { 'on': 'Google' }
-Plug 'ervandew/supertab',  { 'on': [] }
-Plug 'SirVer/UltiSnips',   { 'on': [] }
+Plug 'ervandew/supertab',  "{ 'on': [] }
+Plug 'SirVer/UltiSnips',   "{ 'on': [] }
 
-augroup plug_lazy_load
-  autocmd!
-  autocmd InsertEnter * call plug#load('supertab', 'UltiSnips')
-        \| exec 'norm! zz' | au! plug_lazy_load
-augroup END
+" TODO: Report issue on cursor position moving
+" augroup plug_lazy_load
+"   autocmd!
+"   autocmd InsertEnter * call plug#load('supertab', 'UltiSnips')
+"         \| exec 'norm! zz' | au! plug_lazy_load
+" augroup END
 
 call plug#end()
 
@@ -637,9 +638,13 @@ if s:is_windows
         let substr = '.*<SYMLINK..\s\+' . expand(lit.':t') . ' \[\(.\{-}\)\].*'
         let fpath = substitute(system('dir ' . fpath . '*'), substr, '\1', "")
         " figure out current file's path
-        let resolvedfile = filereadable(fpath) ?
-              \fpath : findfile(expand('%:t'), fpath, '**')
-        exec 'file ' . resolvedfile . ' | w! | doautocmd BufReadPost'
+        let resolvedfile = filereadable(fpath) ?  fpath :
+              \ matchstr(expand(lit), '..').findfile(expand('%:t'), fpath, '**')
+        if bufexists(resolvedfile)
+          exec 'buffer ' . resolvedfile
+        else
+          exec 'file ' . resolvedfile . ' | w! | doautocmd BufRead'
+        endif
       endif
     endfunction
   " autocmd BufReadPost * call MyFollowSymlink('<afile>:p')
@@ -700,7 +705,9 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   "}}}
 
   " UltiSnips {{{
-  let g:UltiSnipsListSnippets='ZX_DISABLED'
+  " disable this in favor of Supertab's 'tab literal'
+  " it's <C-Tab> by default
+  let g:UltiSnipsListSnippets='<C-}>'
   " }}}
 
   " Goyo {{{
@@ -758,6 +765,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     " map gh to hide "hidden" files. (Unix only)
     autocmd FileType dirvish nnoremap <buffer> gh
           \ :g@\v/\.[^\/]+/?$@d<CR>
+    autocmd FileType dirvish set nobuflisted
   augroup END
   " }}}
 
@@ -777,14 +785,12 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   let g:ctrlp_arg_map = 1
   " change default CtrlP mapping
   let g:ctrlp_map = '<Leader>p'
-  nnoremap <Leader>p :CtrlP<CR>
-  " fall back on cwd if there's no .git directory
-  " let g:ctrlp_working_path_mode = 'raw'
   " shortcuts
-  nnoremap <Leader><C-P> :CtrlP<Space>
+  nnoremap <Leader>p :CtrlP<CR>
+  nnoremap <Leader>b :CtrlPBuffer<CR>
   nnoremap <Leader><C-E> :CtrlPMRU<CR>
   nnoremap <Leader><C-L> :CtrlPLine<CR>
-  nnoremap <Leader>b :CtrlPBuffer<CR>
+  nnoremap <Leader><C-P> :CtrlP<Space>
   " }}}
 
   " undotree {{{
@@ -799,23 +805,23 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   nnoremap <F11> :WToggleFullscreen<CR>
   augroup wimproved
     autocmd!
+    " make Windows less ugly
     autocmd GUIEnter * silent! WToggleClean
   augroup END
   " }}}
 
   " indentLine {{{
   nnoremap <Leader>i :IndentLinesToggle<CR>
+  " let g:indentLine_fileType = ['c', 'cpp']
   " use custom filetype detection for vim-plug compatibility
   let g:indentLine_enabled = 0
   augroup ft_indentLine
     autocmd!
     autocmd FileType c,cpp IndentLinesEnable
   augroup END
-  " let g:indentLine_fileType = ['c', 'cpp']
   " }}}
 
   " Rainbow Parenthesis {{{
-  " filetypes will be added and removed as needed
   augroup rainbow_filetypes
     autocmd!
     autocmd FileType c,cpp,vim,sh,dosbatch RainbowParentheses
@@ -832,7 +838,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     autocmd User Startified setlocal relativenumber number
   augroup END
   let g:ctrlp_reuse_window = 'startify'
-  let g:startify_files_number = 5
+  let g:startify_files_number = 6
   let g:startify_session_delete_buffers = 1
   let g:startify_session_persistence = 1
   let g:startify_custom_header = [
