@@ -1,4 +1,4 @@
-" vim: set foldmethod=marker foldlevel=0:
+" vim: set foldmethod=marker:
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Source: https://gitlab.com/AssailantLF/dotfiles
 
@@ -87,6 +87,7 @@ Plug 'justinmk/vim-gtfo'
 Plug 'tommcdo/vim-exchange'
 Plug 'AndrewRadev/switch.vim'
 Plug 'Konfekt/FastFold'
+Plug 'ludovicchabant/vim-gutentags'
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
 Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
@@ -361,9 +362,6 @@ endif
 " NORMAL MAPS {{{
 " ---------------------------------------------------------------------------
 
-" actually a tab
-inoremap <C-Tab> <Tab>
-
 " expand-o-brackets
 inoremap {<Tab> {<CR>}<Esc>O
 inoremap {; {<CR>};<Esc>O
@@ -447,8 +445,8 @@ nnoremap <Leader>f :find<Space>
 nnoremap <Leader>w :write<CR>
 
 " open vimrc
-nnoremap <silent> <Leader>v :edit $MYVIMRC<CR>:setl bh=delete<CR>
-nnoremap <silent> <Leader>V :tabnew $MYVIMRC<CR>:setl bh=delete<CR>
+nnoremap <silent> <Leader>v :edit $MYVIMRC<CR>:FollowSymlink<CR>
+nnoremap <silent> <Leader>V :tabnew $MYVIMRC<CR>:FollowSymlink<CR>
 
 " search for brackets
 noremap <Leader>{ ?[{}]<CR>
@@ -489,7 +487,7 @@ endfunction
 nnoremap <silent> <Leader>l :call ToggleList("Location List", 'l')<CR>
 nnoremap <silent> <Leader>q :call ToggleList("Quickfix List", 'c')<CR>
 
-" Alternate between header and source files {{{
+" alternate between header and source files {{{
 " <Leader>A or :A
 " (credit to junegunn's vimrc)
 function! s:A()
@@ -516,14 +514,17 @@ command! A call <SID>A()
 " }}}
 nnoremap <Leader>A :A<CR>
 
+" Quick scratch buffer
+nnoremap <Leader>S :enew<CR>:f scratch<CR>:setl bt=nofile bh=delete<CR>:set ft=
+
 " }}}
 " ---------------------------------------------------------------------------
 
 " }}}
 " ===========================================================================
-" FUNCTIONS, ABBREVIATIONS, MISC {{{
+" FUNCTIONS, COMMANDS, MISC {{{
 " ===========================================================================
-" mostly miscellaneous
+" everything else goes here
 
 " delete all buffers and open Startify (if possible){{{
 function! s:RestartVim()
@@ -614,6 +615,49 @@ endfunction
 " }}}
 command! ScreenSaver call <SID>RotateLines()
 
+" Follow symlinks when opening a file {{{
+" Sources:
+"  - https://github.com/tpope/vim-fugitive/issues/147#issuecomment-7572351
+"  - http://www.reddit.com/r/vim/comments/yhsn6/is_it_possible_to_work_around_the_symlink_bug/c5w91qw
+if s:is_windows
+    function! MyFollowSymlink(...)
+      let lit = a:0 ? a:1 : '%:p'
+      let fpath = expand(lit)
+      let recur = a:0 > 1 ? a:2 : 10
+      if !recur
+        return
+      endif
+      let matstr = '<SYMLINK..\s\+' . expand(lit.':t') . ' ['
+      " check if it's a symlink
+      if (match(system('dir ' . fpath . '*'), matstr) == -1)
+        " check if parent dir is symlink
+        call MyFollowSymlink(lit.':h', recur-1)
+      else
+        " extract symlink path
+        let substr = '.*<SYMLINK..\s\+' . expand(lit.':t') . ' \[\(.\{-}\)\].*'
+        let fpath = substitute(system('dir ' . fpath . '*'), substr, '\1', "")
+        " figure out current file's path
+        let resolvedfile = filereadable(fpath) ?
+              \fpath : findfile(expand('%:t'), fpath, '**')
+        exec 'file ' . resolvedfile . ' | w! | doautocmd BufReadPost'
+      endif
+    endfunction
+  " autocmd BufReadPost * call MyFollowSymlink('<afile>:p')
+else
+  function! MyFollowSymlink(...)
+    let fname = a:0 ? a:1 : expand('%')
+    if getftype(fname) != 'link'
+      return
+    endif
+    let resolvedfile = fnameescape(resolve(fname))
+    exec 'echo ' . resolvedfile
+  endfunction
+  " autocmd BufReadPost * call MyFollowSymlink('<afile>')
+endif
+" }}}
+command! FollowSymlink call MyFollowSymlink()
+
+
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
 
@@ -647,6 +691,30 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   nnoremap <Leader>m :Make<CR>
   " }}}
 
+  " Tagbar {{{
+  nnoremap <Leader>t :TagbarToggle<CR>
+  " }}}
+
+  " switch.vim {{{
+  let g:switch_mapping = "<Leader>s"
+  "}}}
+
+  " UltiSnips {{{
+  let g:UltiSnipsListSnippets='ZX_DISABLED'
+  " }}}
+
+  " Goyo {{{
+  " toggle Goyo (distraction free editing)
+  nnoremap <Leader>G :Goyo<CR>
+  " }}}
+
+  " vim-easy-align {{{
+  " Start interactive EasyAlign in visual mode (e.g. vipga)
+  vmap ga <Plug>(EasyAlign)
+  " Start interactive EasyAlign for a motion/text object (e.g. gaip)
+  nmap ga <Plug>(EasyAlign)
+  " }}}
+
   " Sayonara {{{
   " close buffer
   nnoremap gs :Sayonara<CR>
@@ -664,79 +732,6 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     autocmd!
     autocmd BufEnter *.txt call s:helpquit()
   augroup END
-  " }}}
-
-  " CtrlP {{{
-  " ignore .git folders to speed up searches
-  let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
-  let g:ctrlp_max_depth = 15
-  " include hidden files
-  let g:ctrlp_show_hidden = 1
-  " open multiple files in ONE window
-  let g:ctrlp_open_multiple_files = '1vr'
-  " ctrl-o to open specifically
-  let g:ctrlp_arg_map = 1
-  " change default CtrlP mapping
-  let g:ctrlp_map = '<Leader>p'
-  nnoremap <Leader>p :CtrlP<CR>
-  " fall back on cwd if there's no .git directory
-  " let g:ctrlp_working_path_mode = 'raw'
-  " shortcuts
-  nnoremap <Leader><C-P> :CtrlP<Space>
-  nnoremap <Leader><C-E> :CtrlPMRU<CR>
-  nnoremap <Leader><C-L> :CtrlPLine<CR>
-  nnoremap <Leader>b :CtrlPBuffer<CR>
-  " }}}
-
-  " gtfo.vim {{{
-  let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
-  " }}}
-
-  " wimproved.vim {{{
-  " toggle fullscreen
-  nnoremap <F11> :WToggleFullscreen<CR>
-  augroup wimproved
-    autocmd!
-    autocmd GUIEnter * silent! WToggleClean
-  augroup END
-  " }}}
-
-  " Goyo {{{
-  " toggle Goyo (distraction free editing)
-  nnoremap <Leader>G :Goyo<CR>
-  " }}}
-
-  " vim-easy-align {{{
-  " Start interactive EasyAlign in visual mode (e.g. vipga)
-  vmap ga <Plug>(EasyAlign)
-  " Start interactive EasyAlign for a motion/text object (e.g. gaip)
-  nmap ga <Plug>(EasyAlign)
-  " }}}
-
-  " indentLine {{{
-  nnoremap <Leader>i :IndentLinesToggle<CR>
-  " use custom filetype detection for vim-plug compatibility
-  let g:indentLine_enabled = 0
-  augroup ft_indentLine
-    autocmd!
-    autocmd FileType c,cpp IndentLinesEnable
-  augroup END
-  " let g:indentLine_fileType = ['c', 'cpp']
-  " }}}
-
-  " switch.vim {{{
-  let g:switch_mapping = "<Leader>s"
-  "}}}
-
-  " undotree {{{
-  nnoremap <Leader>u :UndotreeToggle<CR>
-  function g:Undotree_CustomMap()
-    nunmap <buffer> <Tab>
-  endfunc
-  " }}}
-
-  " Tagbar {{{
-  nnoremap <Leader>t :TagbarToggle<CR>
   " }}}
 
   " Dirvish {{{
@@ -764,6 +759,59 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     autocmd FileType dirvish nnoremap <buffer> gh
           \ :g@\v/\.[^\/]+/?$@d<CR>
   augroup END
+  " }}}
+
+  " gtfo.vim {{{
+  let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
+  " }}}
+
+  " CtrlP {{{
+  " ignore .git folders to speed up searches
+  let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+  let g:ctrlp_max_depth = 15
+  " include hidden files
+  let g:ctrlp_show_hidden = 1
+  " open multiple files in ONE window
+  let g:ctrlp_open_multiple_files = '1vr'
+  " ctrl-o to open specifically
+  let g:ctrlp_arg_map = 1
+  " change default CtrlP mapping
+  let g:ctrlp_map = '<Leader>p'
+  nnoremap <Leader>p :CtrlP<CR>
+  " fall back on cwd if there's no .git directory
+  " let g:ctrlp_working_path_mode = 'raw'
+  " shortcuts
+  nnoremap <Leader><C-P> :CtrlP<Space>
+  nnoremap <Leader><C-E> :CtrlPMRU<CR>
+  nnoremap <Leader><C-L> :CtrlPLine<CR>
+  nnoremap <Leader>b :CtrlPBuffer<CR>
+  " }}}
+
+  " undotree {{{
+  nnoremap <Leader>u :UndotreeToggle<CR>
+  function g:Undotree_CustomMap()
+    nunmap <buffer> <Tab>
+  endfunc
+  " }}}
+
+  " wimproved.vim {{{
+  " toggle fullscreen
+  nnoremap <F11> :WToggleFullscreen<CR>
+  augroup wimproved
+    autocmd!
+    autocmd GUIEnter * silent! WToggleClean
+  augroup END
+  " }}}
+
+  " indentLine {{{
+  nnoremap <Leader>i :IndentLinesToggle<CR>
+  " use custom filetype detection for vim-plug compatibility
+  let g:indentLine_enabled = 0
+  augroup ft_indentLine
+    autocmd!
+    autocmd FileType c,cpp IndentLinesEnable
+  augroup END
+  " let g:indentLine_fileType = ['c', 'cpp']
   " }}}
 
   " Rainbow Parenthesis {{{
