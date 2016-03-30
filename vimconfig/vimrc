@@ -40,7 +40,7 @@ if !isdirectory(expand(s:myvimdir . "/plugged"))
       exec expand("!mkdir " . s:myvimdir . "/autoload/vimrc_booted")
     endif
     echo "To install plugins (via vim-plug),"
-    echo "run ':PlugInstall | qa'"
+    echo "run :PlugInstall | qa"
   endif
 endif
 
@@ -70,14 +70,16 @@ Plug 'kana/vim-textobj-function'
 Plug 'wellle/targets.vim'
 
 " Appearance/UI
-Plug 'itchyny/lightline.vim'
 Plug 'mhinz/vim-Startify'
+Plug 'itchyny/lightline.vim'
 Plug 'kkoenig/wimproved.vim'
-Plug 'Yggdroot/indentLine'
-Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
+Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
 Plug 'junegunn/goyo.vim',         { 'on': 'Goyo' }
-Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
+Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
+Plug 'Yggdroot/indentLine',       { 'on': 'IndentLinesEnable' }
+autocmd! User indentLine doautocmd indentLine Syntax | autocmd BufRead * IndentLinesReset
+" ^ this is a fix for lazy loading + indentLine ^
 
 " The Rest
 Plug 'justinmk/vim-dirvish'
@@ -91,14 +93,14 @@ Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
 Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
 Plug 'junegunn/gv.vim',    { 'on': 'GV' }
 Plug 'szw/vim-g',          { 'on': 'Google' }
-Plug 'ervandew/supertab',  "{ 'on': [] }
-Plug 'SirVer/UltiSnips',   "{ 'on': [] }
+Plug 'ervandew/supertab',  { 'on': [] }
+Plug 'SirVer/UltiSnips',   { 'on': [] }
 
-" augroup plug_lazy_load
-"   autocmd!
-"   autocmd InsertEnter * call plug#load('supertab', 'UltiSnips')
-"         \| exec 'norm! zz' | au! plug_lazy_load
-" augroup END
+augroup plug_lazy_load
+  autocmd!
+  autocmd InsertEnter * call plug#load('supertab', 'UltiSnips')
+        \| exec 'norm! zz' | au! plug_lazy_load
+augroup END
 
 call plug#end()
 
@@ -177,7 +179,7 @@ augroup END
 
 " default tab settings
 set smarttab
-set shiftwidth=4 expandtab
+set shiftwidth=4 softtabstop=-1 expandtab
 
 " indenting/formatting
 set autoindent
@@ -360,7 +362,7 @@ endif
 " ---------------------------------------------------------------------------
 
 " actually a tab
-inoremap <S-Tab> <Tab>
+inoremap <C-Tab> <Tab>
 
 " expand-o-brackets
 inoremap {<Tab> {<CR>}<Esc>O
@@ -713,11 +715,13 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
 
   " indentLine {{{
   nnoremap <Leader>i :IndentLinesToggle<CR>
-  " augroup ft_indentLine
-  "   autocmd!
-  "   autocmd FileType c,cpp IndentLinesEnable
-  " augroup END
-  let g:indentLine_fileType = ['c', 'cpp']
+  " use custom filetype detection for vim-plug compatibility
+  let g:indentLine_enabled = 0
+  augroup ft_indentLine
+    autocmd!
+    autocmd FileType c,cpp IndentLinesEnable
+  augroup END
+  " let g:indentLine_fileType = ['c', 'cpp']
   " }}}
 
   " switch.vim {{{
