@@ -621,32 +621,32 @@ command! ScreenSaver call <SID>RotateLines()
 "  - https://github.com/tpope/vim-fugitive/issues/147#issuecomment-7572351
 "  - http://www.reddit.com/r/vim/comments/yhsn6/is_it_possible_to_work_around_the_symlink_bug/c5w91qw
 if s:is_windows
-    function! MyFollowSymlink(...)
-      let lit = a:0 ? a:1 : '%:p'
-      let fpath = expand(lit)
-      let recur = a:0 > 1 ? a:2 : 10
-      if !recur
-        return
-      endif
-      let matstr = '<SYMLINK..\s\+' . expand(lit.':t') . ' ['
-      " check if it's a symlink
-      if (match(system('dir ' . fpath . '*'), matstr) == -1)
-        " check if parent dir is symlink
-        call MyFollowSymlink(lit.':h', recur-1)
+  function! MyFollowSymlink(...)
+    let lit = a:0 ? a:1 : '%:p'
+    let fpath = expand(lit)
+    let recur = a:0 > 1 ? a:2 : 10
+    if !recur
+      return
+    endif
+    let matstr = '<SYMLINK..\s\+' . expand(lit.':t') . ' ['
+    " check if it's a symlink
+    if (match(system('dir ' . fpath . '*'), matstr) == -1)
+      " check if parent dir is symlink
+      call MyFollowSymlink(lit.':h', recur-1)
+    else
+      " extract symlink path
+      let substr = '.*<SYMLINK..\s\+' . expand(lit.':t') . ' \[\(.\{-}\)\].*'
+      let fpath = substitute(system('dir ' . fpath . '*'), substr, '\1', "")
+      " figure out current file's path
+      let resolvedfile = filereadable(fpath) ?  fpath :
+            \ matchstr(expand(lit), '..').findfile(expand('%:t'), fpath, '**')
+      if bufexists(resolvedfile)
+        exec 'buffer ' . resolvedfile
       else
-        " extract symlink path
-        let substr = '.*<SYMLINK..\s\+' . expand(lit.':t') . ' \[\(.\{-}\)\].*'
-        let fpath = substitute(system('dir ' . fpath . '*'), substr, '\1', "")
-        " figure out current file's path
-        let resolvedfile = filereadable(fpath) ?  fpath :
-              \ matchstr(expand(lit), '..').findfile(expand('%:t'), fpath, '**')
-        if bufexists(resolvedfile)
-          exec 'buffer ' . resolvedfile
-        else
-          exec 'file ' . resolvedfile . ' | w! | doautocmd BufRead'
-        endif
+        exec 'file ' . resolvedfile . ' | w! | doautocmd BufRead'
       endif
-    endfunction
+    endif
+  endfunction
   " autocmd BufReadPost * call MyFollowSymlink('<afile>:p')
 else
   function! MyFollowSymlink(...)
@@ -661,7 +661,6 @@ else
 endif
 " }}}
 command! FollowSymlink call MyFollowSymlink()
-
 
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
