@@ -149,8 +149,8 @@ set wildignore+=*.spl                            " compiled spelling word lists
 set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX garbage
 
-" backups, swapfiles, & undofiles in one folder
-let s:tempdir=expand(s:myvimdir."/stuff")
+" backups, swapfiles, & undofiles in one place
+let s:tempdir=expand(s:myvimdir."/temp")
 if !isdirectory(expand(s:tempdir))
   call mkdir(expand(s:tempdir), "p")
 endif
@@ -170,6 +170,20 @@ augroup line_return
         \ if line("'\"") > 0 && line("'\"") <= line("$") |
         \     execute 'normal! g`"zvzz' |
         \ endif
+augroup END
+
+" make 'nobuflisted' persist when editing a file
+function! s:PersistNobl()
+  if exists('b:persist_nobl')
+    setl nobuflisted
+  elseif !&buflisted
+    let b:persist_nobl = 1
+  endif
+endfunction
+augroup persist_nobuflisted
+  autocmd!
+  autocmd OptionSet buflisted call <SID>PersistNobl()
+  autocmd BufEnter * call <SID>PersistNobl()
 augroup END
 
 " }}}
@@ -213,11 +227,14 @@ else
   set listchars+=eol:¬
 endif
 
-" fallback default colorscheme
-colorscheme desert
-
 " my 'modifed' version of Bad Wolf
 silent! colorscheme badwolf_flattened
+
+" fallback default colorscheme
+if !exists('g:colors_name')
+  colorscheme desert
+endif
+
 
 " standard status line if lightline isn't enabled
 " (pretty much the same layout as default lightline)
@@ -305,12 +322,6 @@ function! s:SplitLine()
 endfunction
 " }}}
 nnoremap S :call <SID>SplitLine()<CR>
-
-" swap H/L with ^/$
-noremap H ^
-noremap L g_
-noremap ^ H
-noremap $ L
 
 " visually select the last paste or change
 nnoremap gp `[v`]
@@ -640,10 +651,11 @@ if s:is_windows
       " figure out current file's path
       let resolvedfile = filereadable(fpath) ?  fpath :
             \ matchstr(expand(lit), '..').findfile(expand('%:t'), fpath, '**')
+      " 'follow' the symlink
       if bufexists(resolvedfile)
-        exec 'buffer ' . resolvedfile
+        exec 'buffer ' . resolvedfile . ' | bw '.expand(lit)
       else
-        exec 'file ' . resolvedfile . ' | w! | doautocmd BufRead'
+        exec 'file ' . resolvedfile . ' | w! | doautocmd BufRead | bw '.expand(lit)
       endif
     endif
   endfunction
