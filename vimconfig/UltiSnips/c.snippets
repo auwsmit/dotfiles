@@ -188,10 +188,17 @@ snippet fprintf "fprintf ..."
 fprintf(${1:stderr}, "${2:%s}\n"${2/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$3${2/([^%]|%%)*(%.)?.*/(?2:\);)/}${0}
 endsnippet
 
+snippet fscanf "fscanf ..."
+fscanf(${1:stderr}, "${2:%s}"${2/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$3${2/([^%]|%%)*(%.)?.*/(?2:\);)/}${0}
+endsnippet
+
 snippet printf "printf .. (printf)"
 printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}${0}
 endsnippet
 
+snippet scanf "scanf .. (scanf)"
+scanf("${1:%s}"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}${0}
+endsnippet
 # }}}
 
 # vim:ft=snippets foldmethod=marker:

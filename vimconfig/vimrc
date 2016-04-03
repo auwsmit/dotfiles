@@ -78,8 +78,8 @@ Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
 Plug 'junegunn/goyo.vim',         { 'on': 'Goyo' }
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
 Plug 'Yggdroot/indentLine',       { 'on': 'IndentLinesEnable' }
-autocmd! User indentLine doautocmd indentLine Syntax | autocmd BufRead * IndentLinesReset
-" ^ this is a fix for lazy loading + indentLine ^
+au! User indentLine doau indentLine Syntax | au BufRead * IndentLinesReset
+" ^ this is a fix for lazy loading with indentLine ^
 
 " The Rest
 Plug 'justinmk/vim-dirvish'
@@ -99,8 +99,8 @@ Plug 'SirVer/UltiSnips',   "{ 'on': [] }
 
 " TODO: Report issue on cursor position moving
 " augroup plug_lazy_load
-"   autocmd!
-"   autocmd InsertEnter * call plug#load('supertab', 'UltiSnips')
+"   au!
+"   au InsertEnter * call plug#load('supertab', 'UltiSnips')
 "         \| exec 'norm! zz' | au! plug_lazy_load
 " augroup END
 
@@ -150,7 +150,7 @@ set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX garbage
 
 " backups, swapfiles, & undofiles in one place
-let s:tempdir=expand(s:myvimdir."/temp")
+let s:tempdir=expand(s:myvimdir."/tmp")
 if !isdirectory(expand(s:tempdir))
   call mkdir(expand(s:tempdir), "p")
 endif
@@ -163,27 +163,39 @@ if has('persistent_undo')
   let &undodir=s:tempdir
 endif
 
-" return to the same line when a file is reopened
-augroup line_return
-  autocmd!
-  autocmd BufReadPost *
-        \ if line("'\"") > 0 && line("'\"") <= line("$") |
-        \     execute 'normal! g`"zvzz' |
-        \ endif
-augroup END
+" autocmds
+augroup vimrc_general
+  au!
 
-" make 'nobuflisted' persist when editing a file
-function! s:PersistNobl()
-  if exists('b:persist_nobl')
-    setl nobuflisted
-  elseif !&buflisted
-    let b:persist_nobl = 1
-  endif
-endfunction
-augroup persist_nobuflisted
-  autocmd!
-  autocmd OptionSet buflisted call <SID>PersistNobl()
-  autocmd BufEnter * call <SID>PersistNobl()
+  " return to the same line when a file is reopened
+  function! AutojumpLastPosition()
+    if ! exists('b:autojumped_init')
+      let b:autojumped_init = 1
+      if &ft != 'gitcommit' && &ft != 'diff' && ! &diff && line("'\"") <= line("$") && line("'\"") > 0
+        " NOTE: `zv` is ignored with foldlevel in modeline.
+        exe 'normal! g`"zv'
+      endif
+    endif
+  endfunction
+  au BufReadPost * call AutojumpLastPosition()
+
+  " make 'nobuflisted' persist when editing a file
+  function! s:PersistNobl(type)
+    if a:type == 'option'
+      if &buflisted && exists('b:persist_nobl')
+        unlet b:persist_nobl
+      else
+        let b:persist_nobl = 1
+      endif
+    elseif exists('b:persist_nobl')
+      if b:persist_nobl
+        setl nobuflisted
+      endif
+    endif
+  endfunction
+  au OptionSet buflisted call <SID>PersistNobl('option')
+  au BufEnter * call <SID>PersistNobl('buf')
+
 augroup END
 
 " }}}
@@ -202,10 +214,6 @@ set autoindent
 set smartindent
 set textwidth=80
 set encoding=utf-8
-
-" default format options
-" see: fo-table for info on flags
-set formatoptions=rq1j
 
 " mostly aesthetic options
 set laststatus=2
@@ -235,39 +243,40 @@ if !exists('g:colors_name')
   colorscheme desert
 endif
 
-
 " standard status line if lightline isn't enabled
 " (pretty much the same layout as default lightline)
 set statusline=%<%f\ %h%m%r%=%y\ %P%8(%l,%v%)\|
 
-augroup appearance
-  autocmd!
+" autocmds
+augroup vimrc_appearance_and_formatting
+  au!
+
+  " I want these format options everywhere
+  au FileType * set formatoptions=rq1j
+
+  " maximize window in Windows
+  " also fonts
   if s:is_windows
-    " maximize window in windows
-    autocmd GUIEnter * simalt ~x
+    au GUIEnter * simalt ~x
     set guifont=DejaVu_Sans_Mono:h9
   else
     set guifont=DejaVu\ Sans\ Mono\ 9
   endif
-  " resize windows/splits when the window is resized
-  autocmd VimResized * :wincmd =
-augroup END
 
-" only show these in the active buffer/window
-augroup active_elements
-  autocmd!
-  autocmd WinEnter * set cursorline number relativenumber
-  autocmd WinLeave * set nocursorline nonumber norelativenumber
-  autocmd BufEnter * set cursorline number relativenumber
-  autocmd BufLeave * set nocursorline nonumber norelativenumber
-augroup END
+  " resize vim-windows when program window is resized
+  au VimResized * :wincmd =
 
-" this makes the trailing space indicator invisible
-" while typing, otherwise it would drive me crazy
-augroup no_trail_in_insert
-  autocmd!
-  autocmd InsertEnter * :set listchars-=trail:■
-  autocmd InsertLeave * :set listchars+=trail:■
+  " only show numbers in the active buffer/window
+  au WinEnter * set cursorline number relativenumber
+  au WinLeave * set nocursorline nonumber norelativenumber
+  au BufEnter * set cursorline number relativenumber
+  au BufLeave * set nocursorline nonumber norelativenumber
+
+  " this makes the trailing space indicator invisible
+  " while typing, otherwise it would drive me crazy
+  au InsertEnter * :set listchars-=trail:■
+  au InsertLeave * :set listchars+=trail:■
+
 augroup END
 
 " }}}
@@ -292,9 +301,9 @@ noremap  <S-CR>  <Nop>
 noremap <CR> :
 " make Enter/CR work normally in quickfix and command-window
 augroup enter_correctly
-  autocmd!
-  autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
-  autocmd CmdWinEnter * nnoremap <buffer> <CR> <CR>
+  au!
+  au BufReadPost quickfix nnoremap <buffer> <CR> <CR>
+  au CmdWinEnter * nnoremap <buffer> <CR> <CR>
 augroup END
 
 " go back to last buffer
@@ -323,25 +332,21 @@ endfunction
 " }}}
 nnoremap S :call <SID>SplitLine()<CR>
 
-" visually select the last paste or change
-nnoremap gp `[v`]
-
-" going to the exact column is more useful most of the time
-nnoremap ` '
-nnoremap ' `
-
 " jump list (previous, next)
 nnoremap <C-P> <C-O>
 nnoremap <C-N> <C-I>
 
 " window management
-nnoremap <Tab>      <C-W>
-nnoremap <S-Tab>    <C-W>c
-nnoremap <Tab><Tab> <C-W><C-P>
+nnoremap <Tab>   <C-W>
+nnoremap <S-Tab> <C-W>c
 
 " easier scrolling (I just prefer not reaching for e and y)
 nnoremap <C-J> <C-E>
 nnoremap <C-K> <C-Y>
+
+" going to the exact column is more useful most of the time
+nnoremap ` '
+nnoremap ' `
 
 " open current file's directory
 if !exists("g:loaded_vinegar")
@@ -363,6 +368,9 @@ nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
 " useful for pasting multi-lines of text
 xnoremap p p`]
 nnoremap p p`]
+
+" visually select the last paste or change
+nnoremap gp `[v`]
 
 " esc to stop inserting in Neovim terminal mode
 if s:is_nvim
@@ -402,14 +410,14 @@ function! s:helpquit()
   endif
 endfunction
 augroup q_for_quit
-  autocmd!
-  autocmd BufEnter *.txt call s:helpquit()
+  au!
+  au BufEnter *.txt call s:helpquit()
 augroup END
 " }}}
 
 " Source vimscript operator {{{
 " Nice for quick vimscript testing.
-function! SourceVimscript(type)
+function! s:SourceVimscript(type)
   let sel_save = &selection
   let &selection = "inclusive"
   let reg_save = @"
@@ -429,18 +437,18 @@ function! SourceVimscript(type)
   let @" = reg_save
 endfunction
 " }}}
-nnoremap <silent> g: :set opfunc=SourceVimscript<CR>g@
-vnoremap <silent> g: :<C-U>call SourceVimscript("visual")<CR>
-nnoremap <silent> g:: :call SourceVimscript("currentline")<CR>
-
-" toggle pastemode (fits well with unimpaired.vim)
-set pastetoggle=cop
+nnoremap <silent> g: :set opfunc=<SID>SourceVimscript<CR>g@
+vnoremap <silent> g: :<C-U>call <SID>SourceVimscript("visual")<CR>
+nnoremap <silent> g:: :call <SID>SourceVimscript("currentline")<CR>
 
 " %% for current buffer file name
 " :: for current buffer file path
 " (credit to romainl's vimrc)
 cnoremap %% <C-R>=fnameescape(expand('%'))<CR>
 cnoremap :: <C-R>=fnameescape(expand('%:p:h'))<CR>/
+
+" toggle pastemode (fits well with unimpaired.vim)
+set pastetoggle=cop
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -457,8 +465,8 @@ nnoremap <Leader>f :find<Space>
 nnoremap <Leader>w :write<CR>
 
 " open vimrc
-nnoremap <silent> <Leader>v :edit $MYVIMRC<CR>:FollowSymlink<CR>
-nnoremap <silent> <Leader>V :tabnew $MYVIMRC<CR>:FollowSymlink<CR>
+nnoremap <silent> <Leader>v :edit $MYVIMRC<CR>
+nnoremap <silent> <Leader>V :tabnew $MYVIMRC<CR>
 
 " search for brackets
 noremap <Leader>{ ?[{}]<CR>
@@ -492,7 +500,7 @@ function! ToggleList(bufname, pfx)
   let winnr = winnr()
   exec(a:pfx.'open')
   if winnr() != winnr
-    " wincmd p
+    wincmd p
   endif
 endfunction
 " }}}
@@ -526,8 +534,11 @@ command! A call <SID>A()
 " }}}
 nnoremap <Leader>A :A<CR>
 
-" Quick scratch buffer
-nnoremap <Leader>S :enew<CR>:f scratch<CR>:setl bt=nofile bh=delete<CR>:set ft=
+" quick scratch buffer
+nnoremap <Leader>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
+
+" copy all to system clipboard
+nnoremap \y ggVG"+y
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -578,98 +589,71 @@ function! s:DoubleView()
 endfunction }}}
 command! DoubleView call <SID>DoubleView()
 
-" Vim 'screensaver' by kssmbi {{{
-" (PS: this is pointless, but I like it anyway)
-function! s:RotateString(string)
-  let split_string = split(a:string, '\zs')
-  return join(split_string[-1:] + split_string[:-2], '')
-endfunction
-
-function! s:RotateLine(line, leading_whitespace, trailing_whitespace)
-  return substitute(
-        \ a:line,
-        \ '^\(' . a:leading_whitespace . '\)\(.\{-}\)\(' . a:trailing_whitespace . '\)$',
-        \ '\=submatch(1) . <SID>RotateString(submatch(2)) . submatch(3)',
-        \ ''
-        \ )
-endfunction
-
-function! s:RotateLines()
-  let saved_view = winsaveview()
-  let first_visible_line = line('w0')
-  let last_visible_line = line('w$')
-  let lines = getline(first_visible_line, last_visible_line)
-  let leading_whitespace = map(
-        \ range(len(lines)),
-        \ 'matchstr(lines[v:val], ''^\s*'')'
-        \ )
-  let trailing_whitespace = map(
-        \ range(len(lines)),
-        \ 'matchstr(lines[v:val], ''\s*$'')'
-        \ )
-  try
-    while 1 " <C-c> to exit
-      let lines = map(
-            \ range(len(lines)),
-            \ '<SID>RotateLine(lines[v:val], leading_whitespace[v:val], trailing_whitespace[v:val])'
-            \ )
-      call setline(first_visible_line, lines)
-      redraw
-      sleep 50m
-    endwhile
-  finally
-    if &modified
-      silent undo
-    endif
-    call winrestview(saved_view)
-  endtry
-endfunction
-" }}}
-command! ScreenSaver call <SID>RotateLines()
-
-" Follow symlinks when opening a file {{{
+" Follow symlinks {{{
 " Sources:
 "  - https://github.com/tpope/vim-fugitive/issues/147#issuecomment-7572351
 "  - http://www.reddit.com/r/vim/comments/yhsn6/is_it_possible_to_work_around_the_symlink_bug/c5w91qw
 if s:is_windows
-  function! MyFollowSymlink(...)
-    let lit = a:0 ? a:1 : '%:p'
-    let fpath = expand(lit)
-    let recur = a:0 > 1 ? a:2 : 10
-    if !recur
-      return
-    endif
-    let matstr = '<SYMLINK..\s\+' . expand(lit.':t') . ' ['
-    " check if it's a symlink
-    if (match(system('dir ' . fpath . '*'), matstr) == -1)
-      " check if parent dir is symlink
-      call MyFollowSymlink(lit.':h', recur-1)
-    else
-      " extract symlink path
-      let substr = '.*<SYMLINK..\s\+' . expand(lit.':t') . ' \[\(.\{-}\)\].*'
-      let fpath = substitute(system('dir ' . fpath . '*'), substr, '\1', "")
-      " figure out current file's path
-      let resolvedfile = filereadable(fpath) ?  fpath :
-            \ matchstr(expand(lit), '..').findfile(expand('%:t'), fpath, '**')
-      " 'follow' the symlink
-      if bufexists(resolvedfile)
-        exec 'buffer ' . resolvedfile . ' | bw '.expand(lit)
-      else
-        exec 'file ' . resolvedfile . ' | w! | doautocmd BufRead | bw '.expand(lit)
+    function! MyFollowSymlink(...)
+      let lit = a:0 ? a:1 : '%:p'
+      let recur = a:0 > 1 ? a:2 : 10
+      if !recur
+        return
       endif
-    endif
-  endfunction
-  " autocmd BufReadPost * call MyFollowSymlink('<afile>:p')
+      let fpath = expand(lit)
+      let ftail = expand(lit.':t')
+      let dirstr = system('dir ' . fpath . '*')
+
+      " check if current argument is a symlink
+      if (match(dirstr, '<SYMLINK..\s\+' . ftail . ' [') == -1)
+        " if not, check if parent dir is symlink, up to $recur directories
+        call MyFollowSymlink(lit . ':h', recur-1)
+      else
+        " extract symlink path
+        let substr = '.*<SYMLINK..\s\+' . ftail . ' \[\(.\{-}\)\].*'
+        let sympath = substitute(dirstr, substr, '\1', "")
+        " figure out current file's path
+        let resolvedfile = filereadable(sympath) ?  sympath :
+              \ findfile(expand('%:t'), sympath, '**')
+        let drive = matchstr(sympath, '..')
+
+        " 'follow' the symlink
+        if bufexists(resolvedfile)
+          exec 'buffer ' . resolvedfile . ' | bw '.fpath
+        else
+          silent exec 'file ' . resolvedfile . ' | bw '.fpath
+          exec 'file ' . expand('%:p') . ' | w! | doau BufRead'
+        endif
+      endif
+    endfunction
+  " au BufReadPost * call MyFollowSymlink('<afile>:p')
 else
   function! MyFollowSymlink(...)
     let fname = a:0 ? a:1 : expand('%')
-    if getftype(fname) != 'link'
+    if fname =~ '^\w\+:/'
+      " Do not mess with 'fugitive://' etc.
       return
     endif
-    let resolvedfile = fnameescape(resolve(fname))
-    exec 'echo ' . resolvedfile
+    let fname = simplify(fname)
+    let resolvedfile = resolve(fname)
+    if resolvedfile == fname
+      return
+    endif
+    let resolvedfile = fnameescape(resolvedfile)
+    let sshm = &shm
+    set shortmess+=A  " silence ATTENTION message about swap file (would get displayed twice)
+    exec 'file ' . resolvedfile
+    let &shm=sshm
+
+    " Re-init fugitive.
+    call fugitive#detect(resolvedfile)
+    if &modifiable
+      " Only display a note when editing a file, especially not for `:help`.
+      redraw  " Redraw now, to avoid hit-enter prompt.
+      echomsg 'Resolved symlink: =>' resolvedfile
+    endif
   endfunction
-  " autocmd BufReadPost * call MyFollowSymlink('<afile>')
+  " au BufReadPost * call MyFollowSymlink('<afile>')
 endif
 " }}}
 command! FollowSymlink call MyFollowSymlink()
@@ -679,8 +663,8 @@ cabbrev ctw s/\s\+$//e
 
 " ...
 augroup top_o_file
-  autocmd!
-  autocmd BufEnter d*_*y.txt normal! gg
+  au!
+  au BufEnter d*_*y.txt normal! gg
 augroup END
 
 " }}}
@@ -701,6 +685,10 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   nnoremap <Leader>gp :Git push<CR>
   nnoremap <Leader>gw :Gwrite<CR>
   nnoremap <Leader>gr :Gremove<CR>
+  augroup vimrc_fugitive
+    au!
+    au BufReadPost fugitive://* set bufhidden=delete
+  augroup END
   " }}}
 
   " Dispatch {{{
@@ -747,8 +735,8 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     endif
   endfunction
   augroup q_for_quit
-    autocmd!
-    autocmd BufEnter *.txt call s:helpquit()
+    au!
+    au BufEnter *.txt call s:helpquit()
   augroup END
   " }}}
 
@@ -761,10 +749,10 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " open current working directory
   nnoremap <silent> + :Dirvish<CR>
   augroup my_dirvish_events
-    autocmd!
+    au!
     " I use <CR> to enter cmdline mode,
     " so use o to open
-    autocmd FileType dirvish
+    au FileType dirvish
           \ nnoremap <buffer> <CR> :
           \|xnoremap <buffer> <CR> :
           \|nnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
@@ -774,9 +762,9 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
           \|nnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
           \|xnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
     " map gh to hide "hidden" files. (Unix only)
-    autocmd FileType dirvish nnoremap <buffer> gh
+    au FileType dirvish nnoremap <buffer> gh
           \ :g@\v/\.[^\/]+/?$@d<CR>
-    autocmd FileType dirvish set nobuflisted
+    au FileType dirvish set nobuflisted
   augroup END
   " }}}
 
@@ -815,61 +803,43 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " toggle fullscreen
   nnoremap <F11> :WToggleFullscreen<CR>
   augroup wimproved
-    autocmd!
+    au!
     " make Windows less ugly
-    autocmd GUIEnter * silent! WToggleClean
+    au GUIEnter * silent! WToggleClean
   augroup END
   " }}}
 
   " indentLine {{{
   nnoremap <Leader>i :IndentLinesToggle<CR>
-  " let g:indentLine_fileType = ['c', 'cpp']
-  " use custom filetype detection for vim-plug compatibility
+  " use custom filetype detection for better vim-plug compatibility
+  let g:indentLine_fileType = ['LetVimPlugHandleIt']
   let g:indentLine_enabled = 0
   augroup ft_indentLine
-    autocmd!
-    autocmd FileType c,cpp IndentLinesEnable
+    au!
+    au FileType c,cpp IndentLinesEnable
   augroup END
   " }}}
 
   " Rainbow Parenthesis {{{
   augroup rainbow_filetypes
-    autocmd!
-    autocmd FileType c,cpp,vim,sh,dosbatch RainbowParentheses
+    au!
+    au FileType c,cpp,vim,sh,dosbatch RainbowParentheses
   augroup END
   " }}}
 
   " Startify {{{
   augroup startify_maps
-    autocmd!
+    au!
     " I use <CR> to enter command line mode,
     " so use o to open files instead.
-    autocmd User Startified unmap <buffer> <CR>
-    autocmd User Startified nmap <buffer> o <Plug>(startify-open-buffers)
-    autocmd User Startified setlocal relativenumber number
+    au User Startified unmap <buffer> <CR>
+    au User Startified nmap <buffer> o <Plug>(startify-open-buffers)
+    au User Startified setlocal relativenumber number
   augroup END
   let g:ctrlp_reuse_window = 'startify'
   let g:startify_files_number = 6
   let g:startify_session_delete_buffers = 1
   let g:startify_session_persistence = 1
-  let g:startify_custom_header = [
-        \ '                                                                            ',
-        \ '       ___________________________                                          ',
-        \ '      /                           \                                         ',
-        \ '      |     VIM - Vi IMproved     |                                         ',
-        \ '      |    -------------------    |                                         ',
-        \ '      |  by Bram Moolenaar et al. |                                         ',
-        \ '      \__________________   ______/            __----~~~~~~~~~~~------___   ',
-        \ '                         \ /        .  .   ~~//====......          __--~ ~~ ',
-        \ '                    -.    \\      \_|//     |||\\  ~~~~~~::::... /~         ',
-        \ '                 ___-==_   \   _-~o~  \/    |||  \\            _/~~-        ',
-        \ '         __---~~~.==~||\=_    -_--~/_-~|-   |\\   \\        _/~             ',
-        \ '     _-~~     .=~    |  \\-_    ''-~7  /-   /  ||    \      /               ',
-        \ '   .~       .~       |   \\ -_    /  /-   /   ||      \   /                 ',
-        \ '  /  ____  /         |     \\ ~-_/  /|- _/   .||       \ /                  ',
-        \ '  |~~    ~~|--~~~~--_ \     ~==-/   | \~--===~~        .\                   ',
-        \ '           ''         ~-|      /|    |-~\~~       __--~~                    ',
-        \ ] " Thanks http://www.asciiworld.com
   " }}}
 
   " lightline {{{

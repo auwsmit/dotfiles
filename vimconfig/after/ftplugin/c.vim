@@ -1,8 +1,5 @@
 " *** THESE SETTINGS ALSO APPLY TO CPP FILES ***
 
-" see: fo-table
-setlocal formatoptions=rq1j
-
 setlocal foldmethod=syntax
 
 " If a parenthesis is open and a new line is made below,
