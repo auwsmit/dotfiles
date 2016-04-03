@@ -1,3 +1,2 @@
 * eol=lf
-*.exe eol=crlf
 *.bat eol=crlf

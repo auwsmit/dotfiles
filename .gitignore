@@ -10,3 +10,7 @@ vimconfig/tmp/
 vimconfig/stuff/
 vimconfig/plugged
 init.vim
+
+# binary files
+*.exe
+*.elf
