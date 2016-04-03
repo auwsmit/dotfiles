@@ -62,14 +62,14 @@ if [ -e ~/.profile ] ; then
 fi
 ln -s $(pwd)/.bashrc ~/.profile
 
-# .CapsToControl
-if [ -L ~/.CapsToControl ] ; then
-  rm ~/.CapsToControl
+# .CapsToCtrl
+if [ -L ~/.CapsToCtrl ] ; then
+  rm ~/.CapsToCtrl
 fi
-if [ -e ~/.CapsToControl ] ; then
-  mv -i ~/.CapsToControl ~/dotfiles_backup
+if [ -e ~/.CapsToCtrl ] ; then
+  mv -i ~/.CapsToCtrl ~/dotfiles_backup
 fi
-ln -s $(pwd)/.CapsToControl ~/.CapsToControl
+ln -s $(pwd)/.CapsToCtrl ~/.CapsToCtrl
 
 # check for stray vimrc
 if [ -e ~/.vimrc ] ; then
@@ -77,4 +77,4 @@ if [ -e ~/.vimrc ] ; then
 fi
 
 # Remap Caps to Control
-xmodmap ~/.CapsToControl 2> /dev/null
+xmodmap ~/.CapsToCtrl 2> /dev/null
