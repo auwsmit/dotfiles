@@ -20,13 +20,13 @@ you'll end up with something made specifically for you.
 2. Run the setup script. This will move any potentially replaced files into
    a `~/dotfiles_backup` folder, so check there for old configs.
     * If on Windows, run WinSetup.bat with adminstrator privileges.
-        * AutoHotKey will remap Caps Lock to Escape. This can be disabled via
+        * AutoHotKey will remap Caps Lock to Control. This can be disabled via
           the AHK icon (a green square with a white H) in the task bar.
         * To automatically run the remap on startup, press `Win+R`, run
-          `shell:startup`, and place a shortcut to `CapsToEscape.exe` in that
+          `shell:startup`, and place a shortcut to `CapsToControl.exe` in that
           folder.
     * If Linux/Mac, run UnixSetup.sh. Make sure it's executable.
-        * xmodmap will remap Caps Lock to Escape for your current user session
+        * xmodmap will remap Caps Lock to Control for your current user session
         * `source` .bashrc for immediate bash settings, or else restart the
           terminal
 

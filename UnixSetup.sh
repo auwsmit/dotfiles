@@ -62,19 +62,19 @@ if [ -e ~/.profile ] ; then
 fi
 ln -s $(pwd)/.bashrc ~/.profile
 
-# .CapsToEscape
-if [ -L ~/.CapsToEscape ] ; then
-  rm ~/.CapsToEscape
+# .CapsToControl
+if [ -L ~/.CapsToControl ] ; then
+  rm ~/.CapsToControl
 fi
-if [ -e ~/.CapsToEscape ] ; then
-  mv -i ~/.CapsToEscape ~/dotfiles_backup
+if [ -e ~/.CapsToControl ] ; then
+  mv -i ~/.CapsToControl ~/dotfiles_backup
 fi
-ln -s $(pwd)/.CapsToEscape ~/.CapsToEscape
+ln -s $(pwd)/.CapsToControl ~/.CapsToControl
 
 # check for stray vimrc
 if [ -e ~/.vimrc ] ; then
   mv -i ~/.vimrc ~/dotfiles_backup
 fi
 
-# Remap Caps to Escape
-xmodmap ~/.CapsToEscape 2> /dev/null
+# Remap Caps to Control
+xmodmap ~/.CapsToControl 2> /dev/null
