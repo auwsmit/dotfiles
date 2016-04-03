@@ -2,19 +2,19 @@
 " Name: badwolf_flattened
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Bad Wolf Original: http://stevelosh.com/projects/badwolf/
-" Flattened Idea Inspiration: https://github.com/romainl/flattened
+" Flattened Idea Inspiration: https://github.com/romainl/flattened/
 
 " Explanation: {{{
 " This colorscheme was made by Steve Losh.  I 'flattened' the original into
 " what you see here, because it was over 800 lines, and it used some neat
 " functions to make the colorscheme easier to create and modify.  I simply
-" echoed the output of those functions into a register, and pasted that into
+" echo'd the output of those functions into a register, and pasted that into
 " this file.  So there should be no visible differences at all between this
 " and the original.
-" ...unless he updates it...
+"                      ...unless he updates it...
 "
 " I'm really happy with Bad Wolf, and don't plan on modifying it, so I'd rather
-" just have this minimal, low-complexity version to keep in my dotfiles. }}}
+" just have this minimal, flattened version to keep in my dotfiles. }}}
 
 " LICENSE: {{{
 " Copyright (C) 2012 Steve Losh and Contributors
@@ -37,7 +37,7 @@
 " CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. }}}
 
 " Preamble {{{
-" needs at least 256 colors
+" needs at least 256 colors (hopefully...)
 if !&t_Co >= 256 && !has("gui_running")
   finish
 endif
