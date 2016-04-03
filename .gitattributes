@@ -1,2 +1,3 @@
 * eol=lf
-WinSetup.bat eol=crlf
+*.exe eol=crlf
+*.bat eol=crlf
