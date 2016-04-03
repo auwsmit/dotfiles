@@ -1,9 +1,10 @@
 @echo off
 
 :: VARIABLES
-set home_dir=%userprofile%
 :: %~dp0 expands to the full path of this file
+:: also ends with a \ unlike environment variables...
 set repo_dir=%~dp0
+set home_dir=%userprofile%\
 
 :: In this order:
 :: 1. Delete previous symbolic link if it exists.
@@ -26,19 +27,20 @@ if exist { "%home_dir%vimfiles" } (
 mklink /d  "%home_dir%vimfiles" "%repo_dir%vimconfig"
 
 :: Neovim
-dir "%userprofile%AppData\Local\nvim*" | find "<SYMLINKD>" && (
-    rmdir "%userprofile%AppData\Local\nvim"
+dir "%home_dir%AppData\Local\nvim*" | find "<SYMLINKD>" && (
+    rmdir "%home_dir%AppData\Local\nvim"
 )
-mklink /d "%userprofile%AppData\Local\nvim" "%repo_dir%vimconfig"
-dir "%userprofile%AppData\Local\nvim\init.vim" | find "<SYMLINK>" && (
-    del "%userprofile%AppData\Local\nvim\init.vim"
+mklink /d "%home_dir%AppData\Local\nvim" "%repo_dir%vimconfig"
+dir "%home_dir%AppData\Local\nvim\init.vim" | find "<SYMLINK>" && (
+    del "%home_dir%AppData\Local\nvim\init.vim"
 )
-if exist { "%userprofile%AppData\Local\nvim\init.vim" } (
-    move /-y "%userprofile%AppData\Local\nvim\init.vim" "%home_dir%dotfiles_backup\"
+if exist { "%home_dir%AppData\Local\nvim\init.vim" } (
+    move /-y "%home_dir%AppData\Local\nvim\init.vim" "%home_dir%dotfiles_backup\"
 )
-mklink "%userprofile%AppData\Local\nvim\init.vim" "%repo_dir%vimconfig\vimrc"
+mklink "%home_dir%AppData\Local\nvim\init.vim" "%repo_dir%vimconfig\vimrc"
 
 :: run compiled autohotkey script to remap Caps Lock to Control
+:: see https://redd.it/4d6iym
 start "" "%repo_dir%CapsToCtrl.exe"
 
 exit 0
