@@ -1,4 +1,4 @@
-" vim: set foldmethod=marker:
+" vim: set foldmethod=marker foldlevel=0:
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Source: https://gitlab.com/AssailantLF/dotfiles
 
@@ -87,6 +87,7 @@ Plug 'justinmk/vim-gtfo'
 Plug 'tommcdo/vim-exchange'
 Plug 'AndrewRadev/switch.vim'
 Plug 'haya14busa/incsearch.vim'
+Plug 'dietsche/vim-lastplace'
 Plug 'Konfekt/FastFold'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
@@ -95,15 +96,26 @@ Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
 Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
 Plug 'junegunn/gv.vim',    { 'on': 'GV' }
 Plug 'szw/vim-g',          { 'on': 'Google' }
-Plug 'ervandew/supertab',  "{ 'on': [] }
-Plug 'SirVer/UltiSnips',   "{ 'on': [] }
+Plug 'ervandew/supertab',  { 'on': [] }
+Plug 'SirVer/UltiSnips',   { 'on': [] }
 
-" TODO: Report issue on cursor position moving
-" augroup plug_lazy_load
-"   au!
-"   au InsertEnter * call plug#load('supertab', 'UltiSnips')
-"         \| exec 'norm! zz' | au! plug_lazy_load
-" augroup END
+" Lazy load with autocmds {{{
+augroup plug_lazy_load
+  au!
+  " this function prevents the view from
+  " being altered by plug#load() firing BufRead
+  function s:InsertLazyLoad()
+    let modeline_before = &modeline
+    set nomodeline
+    noa call plug#load('supertab', 'UltiSnips')
+    doau FileType
+    if modeline_before == 1
+      set modeline
+    endif
+  endfunction
+  au InsertEnter * call <SID>InsertLazyLoad()
+        \| au! plug_lazy_load
+augroup END "}}}
 
 call plug#end()
 
@@ -164,21 +176,9 @@ if has('persistent_undo')
   let &undodir=s:tempdir
 endif
 
-" autocmds {{{
+" autocmds
 augroup vimrc_general
   au!
-
-  " return to the same line when a file is reopened
-  function! AutojumpLastPosition()
-    if ! exists('b:autojumped_init')
-      let b:autojumped_init = 1
-      if &ft != 'gitcommit' && &ft != 'diff' && ! &diff && line("'\"") <= line("$") && line("'\"") > 0
-        " NOTE: `zv` is ignored with foldlevel in modeline.
-        exe 'normal! g`"zv'
-      endif
-    endif
-  endfunction
-  au BufReadPost * call AutojumpLastPosition()
 
   " make 'nobuflisted' persist when editing a file
   if (v:version > 704) || (v:version == 704 && has('patch786'))
@@ -199,7 +199,7 @@ augroup vimrc_general
     au BufEnter * call <SID>PersistNobl('buf')
   endif
 
-augroup END " }}}
+augroup END
 
 " }}}
 " ===========================================================================
@@ -250,7 +250,6 @@ endif
 " (pretty much the same layout as default lightline)
 set statusline=%<%f\ %h%m%r%=%y\ %P%8(%l,%v%)\|
 
-" autocmds {{{
 augroup vimrc_appearance_and_formatting
   au!
 
@@ -280,7 +279,7 @@ augroup vimrc_appearance_and_formatting
   au InsertEnter * :set listchars-=trail:■
   au InsertLeave * :set listchars+=trail:■
 
-augroup END " }}}
+augroup END
 
 " }}}
 " ===========================================================================
@@ -556,7 +555,7 @@ nnoremap \y ggVG"+y
 " ===========================================================================
 " everything else goes here
 
-" delete all buffers and open Startify (if possible) {{{
+" delete all buffers and open Startify (if possible)
 function! s:RestartVim()
   if exists('g:loaded_startify')
     SClose
@@ -564,19 +563,16 @@ function! s:RestartVim()
     %bdelete
     setl buftype=nofile bufhidden=wipe
   endif
-endfunction "}}}
+endfunction
 command! RestartVim call <SID>RestartVim()
 
-" toggle syntax highlighting {{{
+" toggle syntax highlighting
+" useful when Vim is crippled by its inefficient highlighting
 function! s:ToggleSyntaxHighlighting()
   let s:folds = &foldlevel
-  if exists("g:syntax_on")
-    syntax off
-  else
-    syntax on
-  endif
+  exec 'syntax '.(exists("g:syntax_on") ? 'off' : 'on')
   let &foldlevel=s:folds
-endfunction "}}}
+endfunction
 command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
 
 " DoubleView {{{
@@ -663,6 +659,16 @@ else
 endif
 " }}}
 command! FollowSymlink call MyFollowSymlink()
+
+" custom text objects
+let s:separators = exists('g:loaded_targets') ? [ '`', '%']
+      \ : [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', '`' ]
+for char in s:separators
+  execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+  execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+  execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+  execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+endfor
 
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
@@ -965,7 +971,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " }}}
 
   " UltiSnips {{{
-  " disable this in favor of Supertab's 'tab literal'
+  " disable ListSnippits in favor of Supertab's 'tab literal'
   " it's <C-Tab> by default
   let g:UltiSnipsListSnippets='<C-}>'
   " }}}
