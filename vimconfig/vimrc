@@ -63,23 +63,25 @@ Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-commentary'
 
 " Text Objects
-Plug 'kana/vim-textobj-user'
-Plug 'kana/vim-textobj-entire'
-Plug 'kana/vim-textobj-indent'
-Plug 'kana/vim-textobj-function'
+Plug 'kana/vim-textobj-user' |
+      \ Plug 'kana/vim-textobj-entire' |
+      \ Plug 'kana/vim-textobj-indent' |
+      \ Plug 'kana/vim-textobj-function'
 Plug 'wellle/targets.vim'
 
 " Appearance/UI
 Plug 'mhinz/vim-Startify'
 Plug 'itchyny/lightline.vim'
 Plug 'kkoenig/wimproved.vim'
+Plug 'AssailantLF/vim-active-numbers'
+" Plug 'myusuf3/numbers.vim'
 Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
 Plug 'junegunn/goyo.vim',         { 'on': 'Goyo' }
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
 Plug 'Yggdroot/indentLine',       { 'on': 'IndentLinesEnable' }
 au! User indentLine doau indentLine Syntax | au BufRead * IndentLinesReset
-" ^ this is a fix for lazy loading with indentLine ^
+" ^ fix for lazy loading with indentLine ^
 
 " The Rest
 Plug 'justinmk/vim-dirvish'
@@ -96,26 +98,8 @@ Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
 Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
 Plug 'junegunn/gv.vim',    { 'on': 'GV' }
 Plug 'szw/vim-g',          { 'on': 'Google' }
-Plug 'ervandew/supertab',  { 'on': [] }
-Plug 'SirVer/UltiSnips',   { 'on': [] }
-
-" Lazy load with autocmds {{{
-augroup plug_lazy_load
-  au!
-  " this function prevents the view from
-  " being altered by plug#load() firing BufRead
-  function s:InsertLazyLoad()
-    let modeline_before = &modeline
-    set nomodeline
-    noa call plug#load('supertab', 'UltiSnips')
-    doau FileType
-    if modeline_before == 1
-      set modeline
-    endif
-  endfunction
-  au InsertEnter * call <SID>InsertLazyLoad()
-        \| au! plug_lazy_load
-augroup END "}}}
+Plug 'ervandew/supertab'
+Plug 'SirVer/UltiSnips'
 
 call plug#end()
 
@@ -221,6 +205,7 @@ set encoding=utf-8
 " mostly aesthetic options
 set laststatus=2
 set ruler
+set number relativenumber
 set guioptions=
 set t_Co=256
 set cpoptions+=$
@@ -267,12 +252,6 @@ augroup vimrc_appearance_and_formatting
 
   " resize vim-windows when program window is resized
   au VimResized * :wincmd =
-
-  " only show numbers in the active buffer/window
-  au WinEnter * set cursorline number relativenumber
-  au WinLeave * set nocursorline nonumber norelativenumber
-  au BufEnter * set cursorline number relativenumber
-  au BufLeave * set nocursorline nonumber norelativenumber
 
   " this makes the trailing space indicator invisible
   " while typing, otherwise it would drive me crazy
@@ -471,7 +450,7 @@ nnoremap <silent> <Leader>v :edit $MYVIMRC<CR>
 nnoremap <silent> <Leader>V :tabnew $MYVIMRC<CR>
 
 " populate the location list with last search results
-" useful for knowing the number of matches
+" useful for seeing the number of matches
 nnoremap <Leader>/ :lvim // %<CR>
 
 " search for all numbers
@@ -589,7 +568,7 @@ function! s:DoubleView()
   wincmd p
   setl scrollbind
   let &scrolloff=s:DV_so
-endfunction }}}
+endfunction " }}}
 command! DoubleView call <SID>DoubleView()
 
 " Follow symlinks {{{
@@ -870,8 +849,8 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " indentLine {{{
   nnoremap <Leader>i :IndentLinesToggle<CR>
   " use custom filetype detection for better vim-plug compatibility
-  let g:indentLine_fileType = ['LetVimPlugHandleIt']
   let g:indentLine_enabled = 0
+  let g:indentLine_fileType = ['']
   augroup ft_indentLine
     au!
     au FileType c,cpp IndentLinesEnable
@@ -926,7 +905,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
 
   " undotree {{{
   nnoremap <Leader>u :UndotreeToggle<CR>
-  function g:Undotree_CustomMap()
+  function! g:Undotree_CustomMap()
     nunmap <buffer> <Tab>
   endfunc
   " }}}
