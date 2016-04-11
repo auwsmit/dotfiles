@@ -84,22 +84,22 @@ au! User indentLine doau indentLine Syntax | au BufRead * IndentLinesReset
 " ^ fix for lazy loading with indentLine ^
 
 " The Rest
-Plug 'justinmk/vim-dirvish'
-Plug 'justinmk/vim-gtfo'
 Plug 'tommcdo/vim-exchange'
 Plug 'AndrewRadev/switch.vim'
-Plug 'haya14busa/incsearch.vim'
 Plug 'dietsche/vim-lastplace'
 Plug 'Konfekt/FastFold'
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
-Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
-Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
-Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
-Plug 'junegunn/gv.vim',    { 'on': 'GV' }
-Plug 'szw/vim-g',          { 'on': 'Google' }
 Plug 'ervandew/supertab'
 Plug 'SirVer/UltiSnips'
+Plug 'justinmk/vim-dirvish'
+Plug 'justinmk/vim-gtfo'
+Plug 'junegunn/vim-pseudocl' | Plug 'junegunn/vim-oblique'
+Plug 'junegunn/gv.vim',    { 'on': 'GV' }
+Plug 'szw/vim-g',          { 'on': 'Google' }
+Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
+Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
+Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
+Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
 
 call plug#end()
 
@@ -667,6 +667,7 @@ augroup END
 if isdirectory(expand(s:myvimdir . "/plugged"))
 
   " Fugitive {{{
+  " TODO: Read docs on other Fugitive functions and use them
   nnoremap <Leader>gs :Gstatus<CR>
   nnoremap <Leader>gd :Gdiff<CR>
   nnoremap <Leader>gD :Gdiff HEAD<CR>
@@ -892,12 +893,6 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " switch.vim {{{
   let g:switch_mapping = "<Leader>s"
   "}}}
-
-  " incsearch.vim {{{
-  map /  <Plug>(incsearch-forward)
-  map ?  <Plug>(incsearch-backward)
-  map g/ <Plug>(incsearch-stay)
-  " }}}
 
   " Tagbar {{{
   nnoremap <Leader>t :TagbarToggle<CR>
