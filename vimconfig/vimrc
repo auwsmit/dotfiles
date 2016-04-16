@@ -386,6 +386,18 @@ augroup q_for_quit
 augroup END
 " }}}
 
+" \\ to split lines (sibling to [J]oin line) {{{
+" cc still changes the whole line
+function! s:SplitLine()
+  normal! i^gk
+  silent! substitute/\v +$//
+  silent! nohlsearch
+  call histdel("search", -1)
+  normal! $
+endfunction
+" }}}
+nnoremap \\ :call <SID>SplitLine()<CR>
+
 " Source vimscript operator {{{
 " Nice for quick vimscript testing.
 function! s:SourceVimscript(type)
@@ -452,18 +464,6 @@ nnoremap <Leader># /\v\d+<CR>
 " search for all brackets
 noremap <Leader>{ ?[{}]<CR>
 noremap <Leader>} /[{}]<CR>
-
-" [S]plit line (sister to [J]oin lines) {{{
-" cc still changes the whole line
-function! s:SplitLine()
-  normal! i^gk
-  silent! substitute/\v +$//
-  silent! nohlsearch
-  call histdel("search", -1)
-  normal! $
-endfunction
-" }}}
-nnoremap <Leader>S :call <SID>SplitLine()<CR>
 
 " toggle location & quickfix lists {{{
 " (from vimwiki)
