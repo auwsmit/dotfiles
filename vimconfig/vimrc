@@ -50,6 +50,31 @@ call plug#begin()
 
 " PLUGINS
 
+" Convenience/Miscellaneous
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-eunuch'
+Plug 'tpope/vim-rsi'
+Plug 'tpope/vim-dispatch'
+Plug 'tpope/vim-sleuth'
+Plug 'tpope/vim-speeddating'
+Plug 'tpope/vim-endwise',
+      \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
+Plug 'justinmk/vim-gtfo'
+Plug 'justinmk/vim-dirvish'
+Plug 'dietsche/vim-lastplace'
+Plug 'ervandew/supertab'
+Plug 'Konfekt/FastFold'
+Plug 'SirVer/UltiSnips'
+Plug 'ludovicchabant/vim-gutentags'
+Plug 'AndrewRadev/switch.vim'
+Plug 'AndrewRadev/splitjoin.vim',
+      \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'python', 'ruby', 'go' ] }
+Plug 'junegunn/gv.vim',    { 'on': 'GV' }
+Plug 'szw/vim-g',          { 'on': 'Google' }
+Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
+
 " Text Objects
 Plug 'kana/vim-textobj-user' |
       \ Plug 'kana/vim-textobj-entire' |
@@ -67,11 +92,17 @@ Plug 'justinmk/vim-ipmotion'
 Plug 'justinmk/vim-sneak'
 Plug 'junegunn/vim-pseudocl' | Plug 'junegunn/vim-oblique'
 
+" Panels/Toggleable
+Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
+Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
+Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
+
 " Appearance/UI
 Plug 'mhinz/vim-Startify'
 Plug 'itchyny/lightline.vim'
 Plug 'kkoenig/wimproved.vim'
 Plug 'AssailantLF/vim-active-numbers'
+Plug 'gcavallanti/vim-noscrollbar'
 Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
 Plug 'junegunn/goyo.vim',         { 'on': 'Goyo' }
@@ -79,32 +110,6 @@ Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
 Plug 'Yggdroot/indentLine',       { 'on': 'IndentLinesEnable' }
 au! User indentLine doau indentLine Syntax | au BufRead * IndentLinesReset
 " ^ fix for lazy loading with indentLine ^
-
-" Panels/Toggleable
-Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
-Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
-Plug 'ctrlpvim/ctrlp.vim', { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
-
-" Convenience/Miscellaneous
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-unimpaired'
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-eunuch'
-Plug 'tpope/vim-rsi'
-Plug 'tpope/vim-dispatch'
-Plug 'tpope/vim-sleuth'
-Plug 'tpope/vim-speeddating'
-Plug 'justinmk/vim-gtfo'
-Plug 'justinmk/vim-dirvish'
-Plug 'dietsche/vim-lastplace'
-Plug 'AndrewRadev/switch.vim'
-Plug 'ervandew/supertab'
-Plug 'Konfekt/FastFold'
-Plug 'SirVer/UltiSnips'
-Plug 'ludovicchabant/vim-gutentags'
-Plug 'junegunn/gv.vim',    { 'on': 'GV' }
-Plug 'szw/vim-g',          { 'on': 'Google' }
-Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
 
 call plug#end()
 
@@ -238,7 +243,13 @@ endif
 
 " standard status line if lightline isn't enabled
 " (pretty much the same layout as default lightline)
-set statusline=%<%f\ %h%m%r%=%y\ %P%8(%l,%v%)\|
+set statusline=%<%f\ %h%m%r%=%y
+if exists('g:noscrollbar_loaded')
+  set statusline+=\ %P
+else
+  set statusline+=\ %{noscrollbar#statusline()}
+endif
+set statusline+=%8(%l,%v%)\|
 
 augroup vimrc_appearance_and_formatting
   au!
@@ -306,9 +317,16 @@ nnoremap U <C-R>
 " I have never wanted to use Ex mode.
 nnoremap Q @q
 
-" jump list (previous, next)
-nnoremap <C-P> <C-O>
-nnoremap <C-N> <C-I>
+" jump list (previous, next) {{{
+function! s:Center()
+  let prev_so = &scrolloff
+  set scrolloff=999
+  redraw
+  let &scrolloff = prev_so
+endfunction
+" }}}
+nnoremap <silent> <C-P> <C-O>:call <SID>Center()<CR>
+nnoremap <silent> <C-N> <C-I>:call <SID>Center()<CR>
 
 " window management
 nnoremap <Tab>   <C-W>
@@ -733,6 +751,8 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
         \ 'subseparator': { 'left': '|', 'right': '|' }
         \ }
 
+  let g:lightline.component = { 'percent': '%{noscrollbar#statusline()}' }
+
   function! LightLineModified()
     return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
   endfunction
@@ -820,6 +840,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     let g:lightline.fname = a:fname
     return lightline#statusline(0)
   endfunction
+
   " }}}}
   " }}}
 
@@ -917,9 +938,9 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
 
   " Sayonara {{{
   " close buffer
-  nnoremap gs :Sayonara<CR>
-  " close buffer, but not window
-  nnoremap gS :Sayonara!<CR>
+  nnoremap <leader>x :Sayonara<CR>
+  " close buffer, don't close window
+  nnoremap <leader>X :Sayonara!<CR>
   " prompt to close vim when closing the last file
   let g:sayonara_confirm_quit = 1
   " see: 'q to quit help' under KEY MAPPINGS/NORMAL MAPS
@@ -964,5 +985,3 @@ endif
 
 " }}}
 " ===========================================================================
-
-" TODO: make a function to automatically make C function prototypes
