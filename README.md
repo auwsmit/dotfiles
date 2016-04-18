@@ -10,11 +10,11 @@ it](http://derekwyatt.org/vim/tutorials/novice/#Help).
 
 ## Warning!
 
-This is my configuration, which is catered to me. Copy whatever you want out of
+This is my configuration, and is catered to me. Copy whatever you want out of
 it, but I would advise against installing the whole thing unless you know what
 you're doing.  It's better to make your own from scratch. If you do copy
 something, be sure to know what it does.  It'll be a learning experience, and
-you'll end up with something made specifically for you.
+you'll end up with something made for you that you can fully utilize.
 
 ## Installation Steps
 
@@ -39,7 +39,7 @@ a `~/dotfiles_backup` folder, so check there for old configs.
 3. Startup Vim, and decide whether or not you want to install plugins. The
 prompt will only ever appear once.
 
-4. If you didn't install plugins, you're done! Otherwise, once the plugins have
+4. If you didn't install plugins, you're done! Otherwise, once vim-plug has
 finished, restart Vim to complete.
 
 ## Optimal Requirements
@@ -53,4 +53,4 @@ finished, restart Vim to complete.
     * [vim-plug](https://github.com/junegunn/vim-plug), a minimalist plugin
       manager
 * [Python](https://www.python.org/downloads/) required for:
-    * [UltiSnips](https://github.com/SirVer/ultisnips), a snippets plugin
+    * [UltiSnips](https://github.com/SirVer/ultisnips), a vim snippets plugin
