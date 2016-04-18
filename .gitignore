@@ -4,9 +4,7 @@ tags.*
 
 # local files
 vimconfig/.netrwhist
-vimconfig/bundle/
 vimconfig/session/
 vimconfig/tmp/
-vimconfig/stuff/
 vimconfig/plugged
 init.vim
