@@ -80,16 +80,16 @@ Plug 'kana/vim-textobj-user' |
       \ Plug 'kana/vim-textobj-entire' |
       \ Plug 'kana/vim-textobj-indent' |
       \ Plug 'kana/vim-textobj-function'
-Plug 'wellle/targets.vim'
+"Plug 'wellle/targets.vim'
 
 " Operators
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'tommcdo/vim-exchange'
+Plug 'chaoren/vim-wordmotion'
 
 " Motions/Movement
 Plug 'justinmk/vim-ipmotion'
-Plug 'justinmk/vim-sneak'
 Plug 'junegunn/vim-pseudocl' | Plug 'junegunn/vim-oblique'
 
 " Panels/Toggleable
@@ -102,6 +102,7 @@ Plug 'mhinz/vim-Startify'
 Plug 'itchyny/lightline.vim'
 Plug 'kkoenig/wimproved.vim'
 Plug 'AssailantLF/vim-active-numbers'
+" Plug 'C:\Git\vim-active-numbers'
 Plug 'gcavallanti/vim-noscrollbar'
 Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
@@ -233,6 +234,8 @@ else
   set listchars+=eol:¬
 endif
 
+syntax on
+
 " my 'modifed' version of Bad Wolf
 silent! colorscheme badwolf_flattened
 
@@ -245,11 +248,11 @@ endif
 " (pretty much the same layout as default lightline)
 set statusline=%<%f\ %h%m%r%=%y
 if exists('g:noscrollbar_loaded')
-  set statusline+=\ %P
-else
   set statusline+=\ %{noscrollbar#statusline()}
+else
+  set statusline+=\ %P
 endif
-set statusline+=%8(%l,%v%)\|
+set statusline+=%8(%l,%v%)\ 
 
 augroup vimrc_appearance_and_formatting
   au!
@@ -264,6 +267,12 @@ augroup vimrc_appearance_and_formatting
     set guifont=DejaVu_Sans_Mono:h9
   else
     set guifont=DejaVu\ Sans\ Mono\ 9
+  endif
+  if s:is_nvim
+    " Neovim-qt Guifont command
+    command -nargs=? Guifont call rpcnotify(0, 'Gui', 'SetFont', "<args>") | let g:Guifont="<args>"
+    " Set font
+    Guifont DejaVu Sans Mono:h9
   endif
 
   " resize vim-windows when program window is resized
@@ -293,15 +302,16 @@ noremap  <F1>    <Nop>
 inoremap <F1>    <Nop>
 noremap  <Space> <Nop>
 noremap  <S-CR>  <Nop>
+noremap  <CR>  <Nop>
 
-" Enter command line mode
-noremap <CR> :
-" make Enter/CR work normally in quickfix and command-window
-augroup enter_correctly
-  au!
-  au BufReadPost quickfix nnoremap <buffer> <CR> <CR>
-  au CmdWinEnter * nnoremap <buffer> <CR> <CR>
-augroup END
+" " Enter command line mode
+" noremap <CR> :
+" " make Enter/CR work normally in quickfix and command-window
+" augroup enter_correctly
+"   au!
+"   au BufReadPost quickfix nnoremap <buffer> <CR> <CR>
+"   au CmdWinEnter * nnoremap <buffer> <CR> <CR>
+" augroup END
 
 " go back to last buffer
 noremap <Backspace> <C-^>
@@ -317,7 +327,19 @@ nnoremap U <C-R>
 " I have never wanted to use Ex mode.
 nnoremap Q @q
 
-" jump list (previous, next) {{{
+" [S]plit lines (sister to [J]oin line) {{{
+" cc still changes the whole line
+function! s:SplitLine()
+  normal! i^gk
+  silent! substitute/\v +$//
+  silent! nohlsearch
+  call histdel("search", -1)
+  normal! $
+endfunction
+" }}}
+nnoremap S :call <SID>SplitLine()<CR>
+
+" center when jumping {{{
 function! s:Center()
   let prev_so = &scrolloff
   set scrolloff=999
@@ -325,14 +347,14 @@ function! s:Center()
   let &scrolloff = prev_so
 endfunction
 " }}}
-nnoremap <silent> <C-P> <C-O>:call <SID>Center()<CR>
-nnoremap <silent> <C-N> <C-I>:call <SID>Center()<CR>
+nnoremap <silent> <C-O> <C-O>:call <SID>Center()<CR>
+nnoremap <silent> <C-I> <C-I>:call <SID>Center()<CR>
 
-" window management
-nnoremap <Tab>   <C-W>
-nnoremap <S-Tab> <C-W>c
+" " window management
+" nnoremap <Tab>   <C-W>
+" nnoremap <S-Tab> <C-W>c
 
-" easier scrolling (I just prefer not reaching for e and y)
+" easier precision scrolling (I just prefer not reaching for e and y)
 nnoremap <C-J> <C-E>
 nnoremap <C-K> <C-Y>
 
@@ -349,12 +371,9 @@ endif
 nnoremap + :e .<CR>
 
 " move by wrapped lines instead of line numbers, unless the motion is counted
-noremap <expr> j (v:count? 'j' : 'gj')
-noremap <expr> k (v:count? 'k' : 'gk')
-
-" { and } skip over closed folds
-" nnoremap <expr> } foldclosed(search('^$', 'Wn')) == -1 ? "}" : "}j}"
-" nnoremap <expr> { foldclosed(search('^$', 'Wnb')) == -1 ? "{" : "{k{"
+" also set a mark for movements across 5 lines or more
+nnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
+nnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
 
 " automatically jump to the end of pasted text
 " useful for pasting multi-lines of text
@@ -373,6 +392,15 @@ endif
 " ---------------------------------------------------------------------------
 " NORMAL MAPS {{{
 " ---------------------------------------------------------------------------
+
+" Emacs cancel blasphemy
+inoremap <C-G> <Esc>
+cnoremap <C-G> <C-C>
+xnoremap <C-G> <Esc>
+
+" from tpope's rsi
+inoremap <C-A> <C-O>^
+inoremap <expr> <C-E> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<Lt>C-E>":"\<Lt>End>"
 
 " expand-o-brackets
 inoremap {<Tab> {<CR>}<Esc>O
@@ -404,18 +432,6 @@ augroup q_for_quit
 augroup END
 " }}}
 
-" \\ to split lines (sibling to [J]oin line) {{{
-" cc still changes the whole line
-function! s:SplitLine()
-  normal! i^gk
-  silent! substitute/\v +$//
-  silent! nohlsearch
-  call histdel("search", -1)
-  normal! $
-endfunction
-" }}}
-nnoremap \\ :call <SID>SplitLine()<CR>
-
 " Source vimscript operator {{{
 " Nice for quick vimscript testing.
 function! s:SourceVimscript(type)
@@ -444,7 +460,6 @@ nnoremap <silent> g:: :call <SID>SourceVimscript("currentline")<CR>
 
 " %% for current buffer file name
 " :: for current buffer file path
-" (credit to romainl's vimrc)
 cnoremap %% <C-R>=fnameescape(expand('%'))<CR>
 cnoremap :: <C-R>=fnameescape(expand('%:p:h'))<CR>/
 
@@ -462,6 +477,9 @@ nnoremap coz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>
 " leader the easiest key to reach
 let mapleader = "\<Space>"
 
+" space makes the world go round?
+nnoremap <Leader><Space> <C-W>w
+
 " find a file
 nnoremap <Leader>f :find<Space>
 
@@ -473,8 +491,8 @@ nnoremap <silent> <Leader>v :edit $MYVIMRC<CR>
 nnoremap <silent> <Leader>V :tabnew $MYVIMRC<CR>
 
 " populate the location list with last search results
-" useful for seeing the number of matches
-nnoremap <Leader>/ :lvim // %<CR>
+" useful for seeing the exact number of matches
+nnoremap <Leader>/ :lvim //g %<CR>
 
 " search for all numbers
 nnoremap <Leader># /\v\d+<CR>
@@ -566,7 +584,7 @@ function! s:RestartVim()
     setl buftype=nofile bufhidden=wipe
   endif
 endfunction
-command! RestartVim call <SID>RestartVim()
+command! -bar RestartVim call <SID>RestartVim()
 
 " toggle syntax highlighting
 " useful when Vim is crippled by its inefficient highlighting
@@ -699,6 +717,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   nnoremap <Leader>gp :Git push<CR>
   nnoremap <Leader>gw :Gwrite<CR>
   nnoremap <Leader>gr :Gremove<CR>
+  " hide fugitive buffers to reduce buffer list clutter
   augroup vimrc_fugitive
     au!
     au BufReadPost fugitive://* set bufhidden=delete
@@ -712,10 +731,10 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " Startify {{{
   augroup startify_maps
     au!
-    " I use <CR> to enter command line mode,
-    " so use o to open files instead.
-    au User Startified unmap <buffer> <CR>
-    au User Startified nmap <buffer> o <Plug>(startify-open-buffers)
+    " " I use <CR> to enter command line mode,
+    " " so use o to open files instead.
+    " au User Startified unmap <buffer> <CR>
+    " au User Startified nmap <buffer> o <Plug>(startify-open-buffers)
     au User Startified setlocal relativenumber number
   augroup END
   let g:ctrlp_reuse_window = 'startify'
@@ -857,7 +876,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " Rainbow Parenthesis {{{
   augroup rainbow_filetypes
     au!
-    au FileType c,cpp,vim,sh,dosbatch RainbowParentheses
+    au FileType c,cpp,vim,sh,dosbatch,lisp RainbowParentheses
   augroup END
   " }}}
 
@@ -889,6 +908,24 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   let g:ip_skipfold = 1
   "}}}
 
+  " vim-wordmotion {{{
+  " I use this plugin to make Vim treat words
+  " more similarly to Evil mode for Emacs
+
+  " original text objects, think 'object' or 'original'
+  onoremap io iw
+  onoremap ao aw
+  " }}}
+
+  " vim-oblique {{{
+  augroup ObliqueVimrc
+    au!
+    au User Oblique       normal! zz
+    au User ObliqueStar   normal! zz
+    au User ObliqueRepeat normal! zz
+  augroup END
+  " }}}
+
   " Dirvish {{{
   " disable netrw
   let g:loaded_netrw = 1
@@ -899,17 +936,17 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   nnoremap <silent> + :Dirvish<CR>
   augroup my_dirvish_events
     au!
-    " I use <CR> to enter cmdline mode,
-    " so use o to open
-    au FileType dirvish
-          \ nnoremap <buffer> <CR> :
-          \|xnoremap <buffer> <CR> :
-          \|nnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
-          \|xnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
-          \|nnoremap <buffer> h :call dirvish#open("split", 0)<CR>
-          \|xnoremap <buffer> h :call dirvish#open("split", 0)<CR>
-          \|nnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
-          \|xnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
+    " " I use <CR> to enter cmdline mode,
+    " " so use o to open
+    " au FileType dirvish
+    "       \ nnoremap <buffer> <CR> :
+    "       \|xnoremap <buffer> <CR> :
+    "       \|nnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
+    "       \|xnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
+    "       \|nnoremap <buffer> h :call dirvish#open("split", 0)<CR>
+    "       \|xnoremap <buffer> h :call dirvish#open("split", 0)<CR>
+    "       \|nnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
+    "       \|xnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
     " map gh to hide "hidden" files. (Unix only)
     au FileType dirvish nnoremap <buffer> gh
           \ :g@\v/\.[^\/]+/?$@d<CR>
