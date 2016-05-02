@@ -1,4 +1,4 @@
-" vim: set foldmethod=marker foldlevel=0:
+" vim: set foldmethod=marker:
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Source: https://gitlab.com/AssailantLF/dotfiles
 
@@ -219,7 +219,7 @@ set encoding=utf-8
 " mostly aesthetic options
 set laststatus=2
 set ruler
-set number relativenumber
+"set number relativenumber
 set guioptions=
 set t_Co=256
 set cpoptions+=$
@@ -743,6 +743,13 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     au VimEnter * iunmap <C-G>s
     au VimEnter * iunmap <C-G>S
   augroup END
+  " }}}
+
+  " vim-exchange {{{
+  " nnoremap gxx <Plug>(ExchangeLine)
+  " nnoremap gX <Plug>(ExchangeClear)
+  " nnoremap gx  <Plug>(Exchange)
+  " xnoremap gx  <Plug>(Exchange)
   " }}}
 
   " lightline {{{

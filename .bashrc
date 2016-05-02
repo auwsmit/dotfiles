@@ -4,8 +4,9 @@
 # do not continue if we are not running interactively
 [ -z "$PS1" ] && return
 
-# minimal but extremely useful prompt for long scroll histories
-PS1='\n\[\e[7m\]\w\[\e[0m\]\n[\u@\h]\$ '
+# minimal prompt:
+#   current directory name and shell level (when > 1)
+PS1=' \W $(((SHLVL>1)) && echo "["$SHLVL"] ")$\[\e[0m\] '
 
 # Readline only completes if it matches with the current prefix
 bind '"\e[A"':history-search-backward 2> /dev/null
