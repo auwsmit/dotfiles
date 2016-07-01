@@ -39,8 +39,13 @@ if exist { "%home_dir%AppData\Local\nvim\init.vim" } (
 )
 mklink "%home_dir%AppData\Local\nvim\init.vim" "%repo_dir%vimconfig\vimrc"
 
-:: run compiled autohotkey script to remap Caps Lock to Control
+:: Remap CapsLock to Ctrl
 :: see https://redd.it/4d6iym
-start "" "%repo_dir%CapsToCtrl.exe"
+::
+:: Create task via task scheduler to run with administrator privileges,
+:: because I don't know any other way to do that. This allows AHK to be
+:: active under *most* circumstances, mainly higher privilege programs.
+schtasks /create /sc onlogon /tn CapsToCtrl /rl highest /tr "%repo_dir%CapsToCtrl.exe"
+:: start "" "%repo_dir%CapsToCtrl.exe"
 
 exit 0

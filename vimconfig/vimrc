@@ -68,7 +68,8 @@ Plug 'ervandew/supertab'
 Plug 'Konfekt/FastFold'
 Plug 'SirVer/UltiSnips'
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'AndrewRadev/switch.vim'
+Plug 'vim-orgmode'
+" Plug 'AndrewRadev/switch.vim'
 Plug 'AndrewRadev/splitjoin.vim',
       \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'python', 'ruby', 'go' ] }
 Plug 'junegunn/gv.vim',    { 'on': 'GV' }
@@ -77,9 +78,10 @@ Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
 
 " Text Objects
 Plug 'kana/vim-textobj-user' |
-      \ Plug 'kana/vim-textobj-entire' |
-      \ Plug 'kana/vim-textobj-indent' |
-      \ Plug 'kana/vim-textobj-function'
+      \ Plug 'kana/vim-textobj-entire'   |
+      \ Plug 'kana/vim-textobj-indent'   |
+      \ Plug 'kana/vim-textobj-function' |
+      \ Plug 'reedes/vim-textobj-sentence'
 Plug 'wellle/targets.vim'
 
 " Operators
@@ -219,7 +221,7 @@ set encoding=utf-8
 " mostly aesthetic options
 set laststatus=2
 set ruler
-"set number relativenumber
+set number relativenumber
 set guioptions=
 set t_Co=256
 set cpoptions+=$
@@ -228,7 +230,7 @@ set numberwidth=1
 set foldmethod=indent
 set foldlevel=999
 set linebreak
-set listchars=tab:▸\ ,trail:■,extends:»,precedes:«
+set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
 set list
 if has('linebreak')
   set showbreak=↪
@@ -277,7 +279,6 @@ augroup vimrc_appearance_and_formatting
     " Set font
     Guifont DejaVu Sans Mono:h9
   endif
-
   " resize vim-windows when program window is resized
   au VimResized * :wincmd =
 
@@ -305,7 +306,7 @@ noremap  <F1>    <Nop>
 inoremap <F1>    <Nop>
 noremap  <Space> <Nop>
 noremap  <S-CR>  <Nop>
-noremap  <CR>  <Nop>
+noremap  <CR>    <Nop>
 
 " go back to last buffer
 noremap <Backspace> <C-^>
@@ -341,16 +342,17 @@ function! s:Center()
   let &scrolloff = prev_so
 endfunction
 " }}}
-nnoremap <silent> <C-O> <C-O>:call <SID>Center()<CR>
-nnoremap <silent> <C-I> <C-I>:call <SID>Center()<CR>
+" new jump list mnemonic: previous, next
+nnoremap <silent> <C-P> <C-O>:call <SID>Center()<CR>
+nnoremap <silent> <C-N> <C-I>:call <SID>Center()<CR>
 
-" " window management
-" nnoremap <Tab>   <C-W>
-" nnoremap <S-Tab> <C-W>c
+" easier scrolling
+nnoremap <C-J> <C-D>
+nnoremap <C-K> <C-U>
 
-" easier precision scrolling (I just prefer not reaching for e and y)
-nnoremap <C-J> <C-E>
-nnoremap <C-K> <C-Y>
+" easier fold managing
+nnoremap <Tab> za
+nnoremap <S-Tab> zM
 
 " going to the exact column is more useful most of the time
 nnoremap ` '
@@ -364,10 +366,15 @@ endif
 " open current working directory
 nnoremap + :e .<CR>
 
+nnoremap <expr><silent> \| !v:count ? "<C-W>v<C-W><Right>" : '\|'
+nnoremap <expr><silent> _  !v:count ? "<C-W>s<C-W><Down>"  : '_'
+
 " move by wrapped lines instead of line numbers, unless the motion is counted
 " also set a mark for movements across 5 lines or more
 nnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
 nnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
+vnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
+vnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
 
 " automatically jump to the end of pasted text
 " useful for pasting multi-lines of text
@@ -470,19 +477,23 @@ nnoremap coz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>
 
 " leader the easiest key to reach
 let mapleader = "\<Space>"
+let maplocalleader = "\\"
 
-" space makes the world go round?
-nnoremap <Leader><Space> <C-W>w
-
-" find a file
-nnoremap <Leader>f :find<Space>
-
-" write file
-nnoremap <Leader>w :write<CR>
-
-" open vimrc
+" edit vimrc
 nnoremap <silent> <Leader>v :edit $MYVIMRC<CR>
 nnoremap <silent> <Leader>V :tabnew $MYVIMRC<CR>
+
+" shortcuts
+nnoremap <Leader>f :find<Space>
+nnoremap <Leader>s :write<CR>
+nnoremap <Leader>h :help<Space>
+
+" save my pinky some stress
+nnoremap <Leader><Space> :
+nnoremap <Leader>w <C-w>
+
+" circular windows
+nnoremap <Leader><Tab> <C-W>w
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches
@@ -711,6 +722,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   nnoremap <Leader>gp :Git push<CR>
   nnoremap <Leader>gw :Gwrite<CR>
   nnoremap <Leader>gr :Gremove<CR>
+  nnoremap <Leader>gg :Ggrep<Space>
   " hide fugitive buffers to reduce buffer list clutter
   augroup vimrc_fugitive
     au!
@@ -922,11 +934,16 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " more similarly to Evil mode for Emacs
 
   " original text objects, think 'object' or 'original'
-  onoremap io iw
-  onoremap ao aw
+  xnoremap io iW
+  xnoremap ao aW
+  onoremap io iW
+  onoremap ao aW
   " }}}
 
   " targets.vim {{{
+  xmap a" A"
+  xmap a' A'
+  xmap a` A`
   omap a" A"
   omap a' A'
   omap a` A`
@@ -973,9 +990,9 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
   " }}}
 
-  " switch.vim {{{
-  let g:switch_mapping = "<Leader>s"
-  "}}}
+  " " switch.vim {{{
+  " let g:switch_mapping = "<Leader>s"
+  " "}}}
 
   " Tagbar {{{
   nnoremap <Leader>t :TagbarToggle<CR>
