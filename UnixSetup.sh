@@ -20,12 +20,13 @@ fi
 ln -s -d $(pwd)/vimconfig ~/.vim
 
 # nvim
-if [ -e ~/.config ] ; then
-  mv -i ~/.config ~/dotfiles_backup
-fi
 mkdir -p ~/.config
 if [ -L ~/.config/nvim ] ; then
   rm ~/.config/nvim
+fi
+if [ -e ~/.config/nvim ] ; then
+  mkdir -p ~/dotfiles_backup/.config
+  mv -i ~/.config/nvim ~/dotfiles_backup
 fi
 ln -s -d $(pwd)/vimconfig ~/.config/nvim
 if [ -L $(pwd)/init.vim ] ; then
