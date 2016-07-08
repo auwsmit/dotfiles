@@ -77,4 +77,6 @@ if [ -e ~/.vimrc ] ; then
 fi
 
 # Remap Caps to Control
-xmodmap ~/.CapsToCtrl 2> /dev/null
+xmodmap -e 'keycode 66 = Control_L' 2> /dev/null
+xmodmap -e 'clear Lock' 2> /dev/null
+xmodmap -e 'add Control = Control_L' 2> /dev/null

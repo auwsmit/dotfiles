@@ -12,6 +12,8 @@ PS1=' \W $(((SHLVL>1)) && echo "["$SHLVL"] ")$\[\e[0m\] '
 bind '"\e[A"':history-search-backward 2> /dev/null
 bind '"\e[B"':history-search-forward 2> /dev/null
 
-# Remap caps lock to escape.
+# Remap caps lock to control.
 # Some day I'll figure out how to run this consistently at startup without running the terminal
-xmodmap .CapsToEscape 2> /dev/null
+xmodmap -e 'keycode 66 = Control_L' 2> /dev/null
+xmodmap -e 'clear Lock' 2> /dev/null
+xmodmap -e 'add Control = Control_L' 2> /dev/null
