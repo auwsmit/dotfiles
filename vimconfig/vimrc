@@ -221,7 +221,7 @@ set encoding=utf-8
 " mostly aesthetic options
 set laststatus=2
 set ruler
-set number relativenumber
+set nonumber relativenumber
 set guioptions=
 set t_Co=256
 set cpoptions+=$
