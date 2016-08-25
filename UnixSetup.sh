@@ -8,14 +8,14 @@
 # - Make symbolic links.
 # TODO: make this^ into a function
 
-mkdir -p ~/dotfiles_backup
+mkdir -p ~/.dotfiles_backup
 
 # vim
 if [ -L ~/.vim ] ; then
   rm ~/.vim
 fi
 if [ -e ~/.vim ] ; then
-  mv -i ~/.vim ~/dotfiles_backup
+  mv -i ~/.vim ~/.dotfiles_backup
 fi
 ln -s -d $(pwd)/vimconfig ~/.vim
 
@@ -25,8 +25,8 @@ if [ -L ~/.config/nvim ] ; then
   rm ~/.config/nvim
 fi
 if [ -e ~/.config/nvim ] ; then
-  mkdir -p ~/dotfiles_backup/.config
-  mv -i ~/.config/nvim ~/dotfiles_backup
+  mkdir -p ~/.dotfiles_backup/.config
+  mv -i ~/.config/nvim ~/.dotfiles_backup
 fi
 ln -s -d $(pwd)/vimconfig ~/.config/nvim
 if [ -L $(pwd)/init.vim ] ; then
@@ -41,7 +41,7 @@ if [ -L ~/.bashrc ] ; then
   rm ~/.bashrc
 fi
 if [ -e ~/.bashrc ] ; then
-  mv -i ~/.bashrc ~/dotfiles_backup
+  mv -i ~/.bashrc ~/.dotfiles_backup
 fi
 ln -s $(pwd)/.bashrc ~/.bashrc
 
@@ -50,7 +50,7 @@ if [ -L ~/.bash_profile ] ; then
   rm ~/.bash_profile
 fi
 if [ -e ~/.bash_profile ] ; then
-  mv -i ~/.bash_profile ~/dotfiles_backup
+  mv -i ~/.bash_profile ~/.dotfiles_backup
 fi
 ln -s $(pwd)/.bashrc ~/.bash_profile
 
@@ -59,7 +59,7 @@ if [ -L ~/.profile ] ; then
   rm ~/.profile
 fi
 if [ -e ~/.profile ] ; then
-  mv -i ~/.profile ~/dotfiles_backup
+  mv -i ~/.profile ~/.dotfiles_backup
 fi
 ln -s $(pwd)/.bashrc ~/.profile
 
@@ -68,13 +68,13 @@ if [ -L ~/.CapsToCtrl ] ; then
   rm ~/.CapsToCtrl
 fi
 if [ -e ~/.CapsToCtrl ] ; then
-  mv -i ~/.CapsToCtrl ~/dotfiles_backup
+  mv -i ~/.CapsToCtrl ~/.dotfiles_backup
 fi
 ln -s $(pwd)/.CapsToCtrl ~/.CapsToCtrl
 
 # check for stray vimrc
 if [ -e ~/.vimrc ] ; then
-  mv -i ~/.vimrc ~/dotfiles_backup
+  mv -i ~/.vimrc ~/.dotfiles_backup
 fi
 
 # Remap Caps to Control
