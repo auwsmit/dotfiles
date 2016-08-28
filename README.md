@@ -26,8 +26,8 @@ a `~/dotfiles_backup` folder, so check there for old configs.
     * If on Windows, run `WinSetup.bat` with adminstrator privileges.
         * AutoHotKey will remap Caps Lock to Control. This can be disabled via
           the AHK icon (a green square with a white H) in the task bar.
-    * If on Linux/Mac, run `UnixSetup.sh.` Make sure it's executable.
-        * xmodmap will remap Caps Lock to Control for your current user session
+    * If on Linux/Mac, run `UnixSetup.sh.` Make sure it's executable, you have
+      root privileges, and you're using your environment (use sudo -E to be safe)
         * `source` .bashrc for immediate bash settings, or else restart the
           terminal
 
