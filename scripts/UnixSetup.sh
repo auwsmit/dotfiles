@@ -1,64 +1,53 @@
 #!/bin/bash
-# A dotfiles setup script. Also not pretty.
-# Backups of any potentially replaced files are located at ~/dotfiles_backup
+# A dotfiles setup script.
 
-# In this order:
-# - Delete previous symbolic links if they exist.
-# - Backup the previous config if it exists.
-# - Make symbolic links.
-# TODO: make this^ into a function
-
-repo_dir=$(cd .. && pwd)
+# Any of your previous config
+# files should be found here.
+#  (if you run the script)
+#           V  V  V  V  V  V
 backup_dir=~/.dotfiles_backup
-
+repo_dir=$(cd .. && pwd)
 mkdir -p $backup_dir
 
-# vim
-if [ -L ~/.vim ] ; then
-  rm ~/.vim
-fi
-if [ -e ~/.vim ] ; then
-  mv -i ~/.vim $backup_dir
-fi
-ln -s -d $repo_dir/vimconfig ~/.vim
+# $1 thing to backup,
+# $2 path/name of file to link,
+# $3 path for backup
+make_link_and_backup () {
+  # delete previous symbolic link if it exists
+  if [ -L $1 ]; then rm $1; fi
+  # backup the previous file/folder if it exists
+  if [ -e $1 ]; then mv -i $1 $3; fi
+  # make symbolic link
+  # for folder
+  if [ -d $1 ]; then ln -s -d $2 $1; fi
+  # for file
+  if [ ! -d $1 ]; then ln -s $2 $1; fi
+}
 
-# nvim
-mkdir -p ~/.config
-if [ -L ~/.config/nvim ] ; then
-  rm ~/.config/nvim
-fi
-if [ -e ~/.config/nvim ] ; then
-  mkdir -p $backup_dir/.config
-  mv -i ~/.config/nvim $backup_dir
-fi
-ln -s -d $repo_dir/vimconfig ~/.config/nvim
-if [ -L $repo_dir/init.vim ] ; then
-  rm $repo_dir/init.vim
-fi
-if [ ! -e ~/.config/nvim/init.vim ] ; then
-  ln -s $repo_dir/vimconfig/vimrc ~/.config/nvim/init.vim
-fi
+# vim
+make_link_and_backup \
+  ~/.vim $repo_dir/vimconfig $backup_dir
 
 # .bashrc
-if [ -L ~/.bashrc ] ; then
-  rm ~/.bashrc
-fi
-if [ -e ~/.bashrc ] ; then
-  mv -i ~/.bashrc $backup_dir
-fi
-ln -s $repo_dir/.bashrc ~/.bashrc
+make_link_and_backup \
+  ~/.bashrc $repo_dir/.bashrc $backup_dir
 
 # .bash_profile redirects to .bashrc
-if [ -L ~/.bash_profile ] ; then
-  rm ~/.bash_profile
+make_link_and_backup \
+  ~/.bash_profile $repo_dir/.bash_profile $backup_dir
+
+# neovim
+mkdir -p ~/.config
+if [ -e ~/.config/nvim ]; then
+  mkdir -p $backup_dir/.config
 fi
-if [ -e ~/.bash_profile ] ; then
-  mv -i ~/.bash_profile $backup_dir
-fi
-ln -s $repo_dir/.bashrc ~/.bash_profile
+make_link_and_backup \
+  ~/.config/nvim $repo_dir/vimconfig $backup_dir/.config
+make_link_and_backup \
+  $repo_dir/init.vim ~/.config/nvim/init.vim $backup_dir
 
 # check for stray vimrc
-if [ -e ~/.vimrc ] ; then
+if [ -e ~/.vimrc ]; then
   mv -i ~/.vimrc $backup_dir
 fi
 
