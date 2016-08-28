@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# self explanatory function
+run_if_command_exists () {
+  if type "$1" >> /dev/null 2>&1 ; then
+    $@ &
+  fi
+}
+
+# Disable annoying setting for lilyterm:
+if [ -f ~/.config/lilyterm/default.conf ] ; then
+    cd ~/.config/lilyterm
+    cp default.conf hold.conf
+    cat hold.conf | sed 's/^\(confirm_to_execute_command = \)./\10/g' > default.conf
+    rm hold.conf
+    cd ~
+fi
+
+# start some applications
+run_if_command_exists lilyterm
+run_if_command_exists lilyterm -T htop -s -e htop
+run_if_command_exists emacs
+run_if_command_exists firefox
