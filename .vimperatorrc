@@ -11,7 +11,7 @@ inoremap <C-G> <Esc>
 cnoremap <C-G> <Esc>
 
 " normal ctrl+t in insert mode
-inoremap <C-T> i<C-T>
+inoremap <C-T> <Esc><C-T>
 
 " Quicker scrolling
 noremap j 6j
