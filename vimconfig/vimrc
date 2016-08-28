@@ -1,3 +1,4 @@
+
 " vim: set foldmethod=marker:
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Source: https://gitlab.com/AssailantLF/dotfiles
@@ -6,6 +7,7 @@
 " STARTUP {{{
 " ===========================================================================
 
+redir @v
 " let s:is_cygwin = has('win32unix') || has('win64unix')
 " let s:is_mac = has('gui_macvim') || has('mac')
 let s:is_windows = has('win32') || has('win64')
@@ -1056,3 +1058,4 @@ endif
 
 " }}}
 " ===========================================================================
+redir END

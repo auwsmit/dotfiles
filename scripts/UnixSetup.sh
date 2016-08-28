@@ -8,16 +8,19 @@
 # - Make symbolic links.
 # TODO: make this^ into a function
 
-mkdir -p ~/.dotfiles_backup
+repo_dir=$(cd .. && pwd)
+backup_dir=~/.dotfiles_backup
+
+mkdir -p $backup_dir
 
 # vim
 if [ -L ~/.vim ] ; then
   rm ~/.vim
 fi
 if [ -e ~/.vim ] ; then
-  mv -i ~/.vim ~/.dotfiles_backup
+  mv -i ~/.vim $backup_dir
 fi
-ln -s -d $(pwd)/vimconfig ~/.vim
+ln -s -d $repo_dir/vimconfig ~/.vim
 
 # nvim
 mkdir -p ~/.config
@@ -25,15 +28,15 @@ if [ -L ~/.config/nvim ] ; then
   rm ~/.config/nvim
 fi
 if [ -e ~/.config/nvim ] ; then
-  mkdir -p ~/.dotfiles_backup/.config
-  mv -i ~/.config/nvim ~/.dotfiles_backup
+  mkdir -p $backup_dir/.config
+  mv -i ~/.config/nvim $backup_dir
 fi
-ln -s -d $(pwd)/vimconfig ~/.config/nvim
-if [ -L $(pwd)/init.vim ] ; then
-  rm $(pwd)/init.vim
+ln -s -d $repo_dir/vimconfig ~/.config/nvim
+if [ -L $repo_dir/init.vim ] ; then
+  rm $repo_dir/init.vim
 fi
 if [ ! -e ~/.config/nvim/init.vim ] ; then
-  ln -s $(pwd)/vimconfig/vimrc ~/.config/nvim/init.vim
+  ln -s $repo_dir/vimconfig/vimrc ~/.config/nvim/init.vim
 fi
 
 # .bashrc
@@ -41,43 +44,24 @@ if [ -L ~/.bashrc ] ; then
   rm ~/.bashrc
 fi
 if [ -e ~/.bashrc ] ; then
-  mv -i ~/.bashrc ~/.dotfiles_backup
+  mv -i ~/.bashrc $backup_dir
 fi
-ln -s $(pwd)/.bashrc ~/.bashrc
+ln -s $repo_dir/.bashrc ~/.bashrc
 
 # .bash_profile redirects to .bashrc
 if [ -L ~/.bash_profile ] ; then
   rm ~/.bash_profile
 fi
 if [ -e ~/.bash_profile ] ; then
-  mv -i ~/.bash_profile ~/.dotfiles_backup
+  mv -i ~/.bash_profile $backup_dir
 fi
-ln -s $(pwd)/.bashrc ~/.bash_profile
-
-# .profile redirects to .bashrc
-if [ -L ~/.profile ] ; then
-  rm ~/.profile
-fi
-if [ -e ~/.profile ] ; then
-  mv -i ~/.profile ~/.dotfiles_backup
-fi
-ln -s $(pwd)/.bashrc ~/.profile
-
-# .CapsToCtrl
-if [ -L ~/.CapsToCtrl ] ; then
-  rm ~/.CapsToCtrl
-fi
-if [ -e ~/.CapsToCtrl ] ; then
-  mv -i ~/.CapsToCtrl ~/.dotfiles_backup
-fi
-ln -s $(pwd)/.CapsToCtrl ~/.CapsToCtrl
+ln -s $repo_dir/.bashrc ~/.bash_profile
 
 # check for stray vimrc
 if [ -e ~/.vimrc ] ; then
-  mv -i ~/.vimrc ~/.dotfiles_backup
+  mv -i ~/.vimrc $backup_dir
 fi
 
-# Remap Caps to Control
-xmodmap -e 'keycode 66 = Control_L' 2> /dev/null
-xmodmap -e 'clear Lock' 2> /dev/null
-xmodmap -e 'add Control = Control_L' 2> /dev/null
+# Disable pcspkr module (the horrid beeping)
+rmmod -s pcspkr >> /dev/null 2>&1
+echo 'install pcspkr /bin/false' > /etc/modprobe.d/aws_nobeep

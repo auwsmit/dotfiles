@@ -20,9 +20,6 @@ aptmeta () {
 
 ## SETTINGS ##
 
-# Disable beeping
-#rmmod -s pcspkr >> /dev/null 2>&1
-
 # Minimal prompt:
 PS1=' \W $ '
 
@@ -41,11 +38,6 @@ shopt -s checkwinsize
 bind '"\e[A"':history-search-backward 2> /dev/null
 bind '"\e[B"':history-search-forward 2> /dev/null
 
-# Remap caps lock to control
-xmodmap -e 'keycode 66 = Control_L' 2> /dev/null
-xmodmap -e 'clear Lock' 2> /dev/null
-xmodmap -e 'add Control = Control_L' 2> /dev/null
-
 ## ALIASES ##
 
 alias battery='acpi'
@@ -56,7 +48,7 @@ alias root='sudo'
 alias fucking='sudo'
 
 # one instance of emacs/vim
-# and single letter shortcuts are cool
+# and single letter shortcuts are cool too
 alias e='emacsclient -n'
 alias v='vim --remote-silent'
 
@@ -75,7 +67,7 @@ fi
 ## XINIT/STARTX ##
 
 # Auto-run startx on virtual terminal 1, since it's the default VT
-# (for systemd, which is currently most prevalent)
+# (for use with systemd)
 if [[ ! ${DISPLAY} && ${XDG_VTNR} == 1 ]]; then
   if command_exists startx ; then
     exec startx

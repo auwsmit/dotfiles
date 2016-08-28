@@ -26,11 +26,6 @@ a `~/dotfiles_backup` folder, so check there for old configs.
     * If on Windows, run `WinSetup.bat` with adminstrator privileges.
         * AutoHotKey will remap Caps Lock to Control. This can be disabled via
           the AHK icon (a green square with a white H) in the task bar.
-        * To automatically run the remap on startup, press `Win+R`, run
-          `shell:startup`, and place a shortcut to `CapsToControl.exe` in that
-          folder. Also be sure to check *'run this program as an administrator'*
-          under the shortcut properties, so that it can remap properly for
-          certain things.
     * If on Linux/Mac, run `UnixSetup.sh.` Make sure it's executable.
         * xmodmap will remap Caps Lock to Control for your current user session
         * `source` .bashrc for immediate bash settings, or else restart the
@@ -50,7 +45,7 @@ finished, restart Vim to complete.
   [Ruby](https://www.ruby-lang.org/en/downloads/), or
   [Neovim](https://neovim.io/) for faster plugin installation, which is nice
   for:
-    * [vim-plug](https://github.com/junegunn/vim-plug), a minimalist plugin
+    * [vim-plug](https://github.com/junegunn/vim-plug), a minimalish plugin
       manager
 * [Python](https://www.python.org/downloads/) required for:
     * [UltiSnips](https://github.com/SirVer/ultisnips), a vim snippets plugin

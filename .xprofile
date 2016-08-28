@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# self explanatory function
+# WHAT THIS SCRIPT DOES:
+# Runs things that need to be done once per boot-up.
+
+# Self explanatory function
 run_if_command_exists () {
   if type "$1" >> /dev/null 2>&1 ; then
     $@ &
@@ -16,8 +19,13 @@ if [ -f ~/.config/lilyterm/default.conf ] ; then
     cd ~
 fi
 
-# start some applications
+# Start some applications
 run_if_command_exists lilyterm
 run_if_command_exists lilyterm -T htop -s -e htop
 run_if_command_exists emacs
 run_if_command_exists firefox
+
+# Remap caps lock to control
+xmodmap -e 'keycode 66 = Control_L' 2> /dev/null
+xmodmap -e 'clear Lock' 2> /dev/null
+xmodmap -e 'add Control = Control_L' 2> /dev/null
