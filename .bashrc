@@ -6,18 +6,25 @@ case $- in
       *) return;;
 esac
 
-## FUNCTIONS
+## FUNCTIONS ##
 
 # Check if a command exists
 command_exists () {
-  type "$1" 1> /dev/null ;
+  type "$1" >> /dev/null 2>&1 ;
 }
 
-## SETTINGS
+# Actually remove/purge apt metapackages
+aptmeta () {
+  sudo apt-get $1 --auto-remove  $(apt-cache depends $2 | cut -f 2 -d ':' | grep -v \< | tr '\n' ' ') ;
+}
+
+## SETTINGS ##
+
+# Disable beeping
+#rmmod -s pcspkr >> /dev/null 2>&1
 
 # Minimal prompt:
-#   Current directory name and shell level (when shlvl > 1)
-PS1=' \W $(((SHLVL>1)) && echo "["$SHLVL"] ")$\[\e[0m\] '
+PS1=' \W $ '
 
 # Don't put duplicate lines in history
 HISTCONTROL=ignoredups
@@ -48,12 +55,29 @@ alias sudo='sudo -E'
 alias root='sudo'
 alias fucking='sudo'
 
+# one instance of emacs/vim
+# and single letter shortcuts are cool
+alias e='emacsclient -n'
+alias v='vim --remote-silent'
+
+alias battery='acpi'
+
 # Package management
 if command_exists apt ; then
   alias update='sudo apt update'
   alias install='sudo apt update && sudo apt install'
-  alias uninstall='sudo apt remove'
-  alias purge='sudo apt purge'
+  alias uninstall='sudo apt remove --autoremove'
+  alias purge='sudo apt purge --autoremove'
   alias search='apt-cache search'
   alias full-upgrade='sudo apt update && sudo apt full-upgrade'
+fi
+
+## XINIT/STARTX ##
+
+# Auto-run startx on virtual terminal 1, since it's the default VT
+# (for systemd, which is currently most prevalent)
+if [[ ! ${DISPLAY} && ${XDG_VTNR} == 1 ]]; then
+  if command_exists startx ; then
+    exec startx
+  fi
 fi
