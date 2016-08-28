@@ -43,8 +43,12 @@ if [ -e ~/.config/nvim ]; then
 fi
 make_link_and_backup \
   ~/.config/nvim $repo_dir/vimconfig $backup_dir/.config
-make_link_and_backup \
-  $repo_dir/init.vim ~/.config/nvim/init.vim $backup_dir
+if [ -L $repo_dir/init.vim ] ; then
+  rm $repo_dir/init.vim
+fi
+if [ ! -e ~/.config/nvim/init.vim ] ; then
+  ln -s $repo_dir/vimconfig/vimrc ~/.config/nvim/init.vim
+fi
 
 # check for stray vimrc
 if [ -e ~/.vimrc ]; then
