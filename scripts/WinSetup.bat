@@ -15,14 +15,14 @@ set home_dir=%userprofile%\
 :: 3. Make symbolic links.
 
 :: Backup folder
-mkdir "%home_dir%dotfiles_backup"
+mkdir "%home_dir%old_dotfiles"
 
 :: Regular Vim
 dir "%home_dir%vimfiles*" | find "<SYMLINKD>" && (
     rmdir "%home_dir%vimfiles"
 )
 if exist { "%home_dir%vimfiles" } (
-    move /-y "%home_dir%vimfiles" "%home_dir%dotfiles_backup\vimfiles"
+    move /-y "%home_dir%vimfiles" "%home_dir%old_dotfiles\vimfiles"
 )
 mklink /d  "%home_dir%vimfiles" "%repo_dir%vimconfig"
 
@@ -35,7 +35,7 @@ dir "%home_dir%AppData\Local\nvim\init.vim" | find "<SYMLINK>" && (
     del "%home_dir%AppData\Local\nvim\init.vim"
 )
 if exist { "%home_dir%AppData\Local\nvim\init.vim" } (
-    move /-y "%home_dir%AppData\Local\nvim\init.vim" "%home_dir%dotfiles_backup\"
+    move /-y "%home_dir%AppData\Local\nvim\init.vim" "%home_dir%old_dotfiles\"
 )
 mklink "%home_dir%AppData\Local\nvim\init.vim" "%repo_dir%vimconfig\vimrc"
 
@@ -45,8 +45,9 @@ mklink "%home_dir%AppData\Local\nvim\init.vim" "%repo_dir%vimconfig\vimrc"
 :: Create a task via task scheduler to run with administrator privileges,
 :: because I don't know any other way to do that. This allows AHK to be
 :: active under *most* circumstances, mainly higher privilege programs.
-:: TODO: Fix this for laptops on battery power
+::
+:: TODO: Fix the issue where AHK closes when on battery/not plugged in.
 schtasks /create /sc onlogon /tn CapsToCtrl /rl highest /tr "X:\Git\dotfiles\CapsToCtrl.exe" /f
-:: start "" "X:\Git\dotfiles\CapsToCtrl.exe"
+start "" "X:\Git\dotfiles\CapsToCtrl.exe"
 
 :: exit 0
