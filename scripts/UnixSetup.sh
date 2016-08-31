@@ -14,6 +14,12 @@ repo_dir=$(cd .. && pwd)
 
 # === FUNCTIONS ==================
 
+# without this, folders would be owned by root
+my_mkdir() {
+    mkdir -p $1
+    chown $username:$username $1
+}
+
 # $1 thing to backup,
 # $2 path/name of file to link,
 # $3 path for backup
@@ -21,17 +27,15 @@ make_link_and_backup () {
   # delete previous symbolic link if it exists
   if [ -L $1 ]; then rm $1; fi
   # backup the previous file/folder if it exists
-  if [ -e $1 ]; then mv -i $1 $3; fi
+  if [ -e $1 ]; then
+      my_mkdir $3
+      mv -i $1 $3
+  fi
   # make symbolic link
   # for folder
   if [ -d $1 ]; then ln -s -d $2 $1; fi
   # for file
   if [ ! -d $1 ]; then ln -s $2 $1; fi
-}
-
-my_mkdir() {
-    mkdir -p $1
-    chown $username:$username $1
 }
 
 # === MAIN CODE ==================
@@ -45,9 +49,6 @@ make_link_and_backup \
 
 # neovim
 my_mkdir ~/.config
-if [ -e ~/.config/nvim ]; then
-  my_mkdir $backup_dir/.config
-fi
 make_link_and_backup \
   ~/.config/nvim $repo_dir/vimconfig $backup_dir/.config
 if [ -L $repo_dir/init.vim ] ; then
@@ -72,6 +73,11 @@ make_link_and_backup \
 # .xprofile
 make_link_and_backup \
   ~/.xprofile $repo_dir/.xprofile $backup_dir
+
+# lilyterm
+my_mkdir ~/.config/lilyterm
+make_link_and_backup \
+  ~/.config/lilyterm/default.conf $repo_dir/lilyterm.conf $backup_dir/lilyterm
 
 # check for stray vimrc
 if [ -e ~/.vimrc ]; then
