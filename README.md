@@ -16,26 +16,37 @@ you're doing.  It's better to make your own from scratch. If you do copy
 something, be sure to know what it does.  It'll be a learning experience, and
 you'll end up with something made for you that you can fully utilize.
 
+## Super Warning!!
+
+I make mistakes, and sometimes those mistakes can be big. For example, my Unix
+setup script used to archive/move the entire `~/.config` folder (which contains
+user preferences for a myriad of programs) until I noticed and fixed it.
+
+Seriously, just be careful and don't blindly run scripts made by strangers. At
+the very least, skim through them.
+
 ## Installation Steps
 
 1. Clone the repo to wherever and call it whatever
     * `git clone https://gitlab.com/AssailantLF/dotfiles.git ~/dotrepo`
 
-2. Run the setup script. This will move any potentially replaced files into
-a `~/dotfiles_backup` folder, so check there for old configs.
+2. Read the setup script (under `scripts/`), and modify variables if needed.
+
+3. Run the setup script. This will move any potentially replaced files into a
+`~/old_dotfiles` folder, so check there for old configs.
     * If on Windows, run `WinSetup.bat` with adminstrator privileges.
         * AutoHotKey will remap Caps Lock to Control. This can be disabled via
           the AHK icon (a green square with a white H) in the task bar.
-    * If on Linux/Mac, run `UnixSetup.sh.` Make sure it's executable, you have
-      root privileges, and you're using your environment (use sudo -E to be safe)
+    * If on Linux/Mac, run `UnixSetup.sh` **from within the scripts directory.**
+      Make sure it's executable, and that you have root privileges.
         * `source` .bashrc for immediate bash settings, or else restart the
           terminal
 
-3. Startup Vim, and decide whether or not you want to install plugins. The
-prompt will only ever appear once.
+4. Startup Vim, and decide whether or not you want to install plugins via
+`:PlugInstall | qa`. The prompt will only ever appear once.
 
-4. If you didn't install plugins, you're done! Otherwise, once vim-plug has
-finished, restart Vim to complete.
+5. Everything should work fine, and if not please post an issue and I can
+probably help and/or fix it.
 
 ## Optimal Requirements
 
