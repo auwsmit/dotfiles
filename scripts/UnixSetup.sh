@@ -11,8 +11,6 @@ username=aws
 #           V  V  V  V  V  V
 backup_dir=~/.old_dotfiles
 repo_dir=$(cd .. && pwd)
-mkdir -p $backup_dir
-chown $username:$username $backup_dir
 
 # === FUNCTIONS ==================
 
@@ -31,18 +29,24 @@ make_link_and_backup () {
   if [ ! -d $1 ]; then ln -s $2 $1; fi
 }
 
+my_mkdir() {
+    mkdir -p $1
+    chown $username:$username $1
+}
+
 # === MAIN CODE ==================
+
+# make backup/old config directory
+my_mkdir $backup_dir
 
 # vim
 make_link_and_backup \
   ~/.vim $repo_dir/vimconfig $backup_dir
 
 # neovim
-mkdir -p ~/.config
-chown $username:$username ~/.config
+my_mkdir ~/.config
 if [ -e ~/.config/nvim ]; then
-  mkdir -p $backup_dir/.config
-  chown $username:$username $backup_dir/.config
+  my_mkdir $backup_dir/.config
 fi
 make_link_and_backup \
   ~/.config/nvim $repo_dir/vimconfig $backup_dir/.config
