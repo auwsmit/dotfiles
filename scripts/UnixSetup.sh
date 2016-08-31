@@ -1,13 +1,20 @@
 #!/bin/bash
 # A dotfiles setup script.
 
-# Any of your previous config
-# files should be found here.
-#  (if you run the script)
+# === VARIABLES ==================
+
+# YOUR USERNAME GOES HERE:
+username=aws
+# (if you don't know, run whoami in the terminal)
+
+# Any of your previous config files will be found here.
 #           V  V  V  V  V  V
-backup_dir=~/.dotfiles_backup
+backup_dir=~/.old_dotfiles
 repo_dir=$(cd .. && pwd)
 mkdir -p $backup_dir
+chown $username:$username $backup_dir
+
+# === FUNCTIONS ==================
 
 # $1 thing to backup,
 # $2 path/name of file to link,
@@ -24,14 +31,18 @@ make_link_and_backup () {
   if [ ! -d $1 ]; then ln -s $2 $1; fi
 }
 
+# === MAIN CODE ==================
+
 # vim
 make_link_and_backup \
   ~/.vim $repo_dir/vimconfig $backup_dir
 
 # neovim
 mkdir -p ~/.config
+chown $username:$username ~/.config
 if [ -e ~/.config/nvim ]; then
   mkdir -p $backup_dir/.config
+  chown $username:$username $backup_dir/.config
 fi
 make_link_and_backup \
   ~/.config/nvim $repo_dir/vimconfig $backup_dir/.config
