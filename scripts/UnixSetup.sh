@@ -28,14 +28,6 @@ make_link_and_backup () {
 make_link_and_backup \
   ~/.vim $repo_dir/vimconfig $backup_dir
 
-# .bashrc
-make_link_and_backup \
-  ~/.bashrc $repo_dir/.bashrc $backup_dir
-
-# .bash_profile redirects to .bashrc
-make_link_and_backup \
-  ~/.bash_profile $repo_dir/.bash_profile $backup_dir
-
 # neovim
 mkdir -p ~/.config
 if [ -e ~/.config/nvim ]; then
@@ -49,6 +41,22 @@ fi
 if [ ! -e ~/.config/nvim/init.vim ] ; then
   ln -s $repo_dir/vimconfig/vimrc ~/.config/nvim/init.vim
 fi
+
+# .bashrc
+make_link_and_backup \
+  ~/.bashrc $repo_dir/.bashrc $backup_dir
+
+# .bash_profile redirects to .bashrc
+make_link_and_backup \
+  ~/.bash_profile $repo_dir/.bashrc $backup_dir
+
+# .xinitrc
+make_link_and_backup \
+  ~/.xinitrc $repo_dir/.xinitrc $backup_dir
+
+# .xprofile
+make_link_and_backup \
+  ~/.xprofile $repo_dir/.xprofile $backup_dir
 
 # check for stray vimrc
 if [ -e ~/.vimrc ]; then
