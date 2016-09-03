@@ -18,6 +18,16 @@ aptmeta () {
   sudo apt-get $1 --auto-remove  $(apt-cache depends $2 | cut -f 2 -d ':' | grep -v \< | tr '\n' ' ') ;
 }
 
+# Ask for confirmation to startx
+confirm_startx () {
+  echo
+  read -p "Start X Server? (y or n) " -n 1 -r
+  case "$REPLY" in
+    y|Y ) exec startx;;
+    * ) echo;;
+  esac
+}
+
 ## SETTINGS ##
 
 # Minimal prompt:
@@ -52,14 +62,15 @@ alias fucking='sudo'
 alias e='emacsclient -n'
 alias v='vim --remote-silent'
 
+# Battery info
 alias battery='acpi'
 
 # Package management
 if command_exists apt ; then
   alias update='sudo apt update'
-  alias install='sudo apt update && sudo apt install'
-  alias uninstall='sudo apt remove --autoremove'
-  alias purge='sudo apt purge --autoremove'
+  alias install='sudo apt update && sudo apt install --auto-remove'
+  alias uninstall='sudo apt remove --auto-remove'
+  alias purge='sudo apt purge --auto-remove'
   alias search='apt-cache search'
   alias full-upgrade='sudo apt update && sudo apt full-upgrade'
 fi
@@ -67,9 +78,13 @@ fi
 ## XINIT/STARTX ##
 
 # Auto-run startx on virtual terminal 1, since it's the default VT
-# (for use with systemd)
-if [[ ! ${DISPLAY} && ${XDG_VTNR} == 1 ]]; then
-  if command_exists startx ; then
-    exec startx
+if command_exists startx ; then
+  # for systemd:
+  if [[ ! ${DISPLAY} && ${XDG_VTNR} == 1 ]]; then
+    confirm_startx
+  fi
+  # for non-systemd:
+  if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+    confirm_startx
   fi
 fi
