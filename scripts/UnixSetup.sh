@@ -36,6 +36,7 @@ make_link_and_backup () {
   if [ -d $1 ]; then ln -s -d $2 $1; fi
   # for file
   if [ ! -d $1 ]; then ln -s $2 $1; fi
+  chown -h $username:$username $1
 }
 
 # === MAIN CODE ==================
