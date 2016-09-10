@@ -19,4 +19,5 @@ while true; do
   sleep 5
 done &
 
-exec dwm
+exec awesome
+# exec mate-session
