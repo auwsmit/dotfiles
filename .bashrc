@@ -45,8 +45,10 @@ HISTFILESIZE=
 shopt -s checkwinsize
 
 # Readline completes if it matches with the current prefix
-bind '"\e[A"':history-search-backward 2> /dev/null
-bind '"\e[B"':history-search-forward 2> /dev/null
+# bind '"\e[A"':history-search-backward 2> /dev/null
+# bind '"\e[B"':history-search-forward 2> /dev/null
+bind '"\e[A"':history-search-backward
+bind '"\e[B"':history-search-forward
 
 ## ALIASES ##
 
@@ -67,24 +69,25 @@ alias battery='acpi'
 
 # Package management
 if command_exists apt ; then
-  alias update='sudo apt update'
-  alias install='sudo apt update && sudo apt install --auto-remove'
-  alias uninstall='sudo apt remove --auto-remove'
-  alias purge='sudo apt purge --auto-remove'
-  alias search='apt-cache search'
-  alias full-upgrade='sudo apt update && sudo apt full-upgrade'
+  alias p-u='sudo apt update'
+  alias p-i='sudo apt update && sudo apt install --auto-remove'
+  alias p-r='sudo apt remove --auto-remove'
+  alias p-p='sudo apt purge --auto-remove'
+  alias p-s='apt-cache search'
+  alias p-fu='sudo apt update && sudo apt full-upgrade'
 fi
 
 ## XINIT/STARTX ##
 
-# Auto-run startx on virtual terminal 1, since it's the default VT
-if command_exists startx ; then
-  # for systemd:
-  if [[ ! ${DISPLAY} && ${XDG_VTNR} == 1 ]]; then
-    confirm_startx
-  fi
-  # for non-systemd:
-  if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
-    confirm_startx
-  fi
-fi
+# # Auto-run startx on virtual terminal 1, since it's the default VT
+# (disabled for now)
+# if command_exists startx ; then
+#   # for systemd:
+#   if [[ ! ${DISPLAY} && ${XDG_VTNR} == 1 ]]; then
+#     confirm_startx
+#   fi
+#   # for non-systemd:
+#   if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+#     confirm_startx
+#   fi
+# fi
