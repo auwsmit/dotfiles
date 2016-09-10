@@ -3,7 +3,7 @@
 :: VARIABLES
 :: %~dp0 expands to the full path of this file
 :: also ends with a \ unlike environment variables...
-set repo_dir=%~dp0
+set repo_dir=%~dp0..\
 set home_dir=%userprofile%\
 
 :: In this order:
