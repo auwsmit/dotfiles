@@ -1,4 +1,3 @@
-
 " vim: set foldmethod=marker:
 " Author: Austin Smith <AssailantLF@gmail.com>
 " Source: https://gitlab.com/AssailantLF/dotfiles
@@ -7,7 +6,6 @@
 " STARTUP {{{
 " ===========================================================================
 
-redir @v
 " let s:is_cygwin = has('win32unix') || has('win64unix')
 " let s:is_mac = has('gui_macvim') || has('mac')
 let s:is_windows = has('win32') || has('win64')
@@ -18,10 +16,6 @@ if s:is_windows
 elseif s:is_nvim
   let s:myvimdir ="~/.config/nvim"
 endif
-
-" use Vim settings over obsolescent Vi settings
-" probably not necessary, but w/e
-set nocompatible
 
 " enables filetype detection, ftplugins, and indent files
 filetype plugin indent on
@@ -106,7 +100,6 @@ Plug 'mhinz/vim-Startify'
 Plug 'itchyny/lightline.vim'
 Plug 'kkoenig/wimproved.vim'
 Plug 'AssailantLF/vim-active-numbers'
-" Plug 'C:\Git\vim-active-numbers'
 Plug 'gcavallanti/vim-noscrollbar'
 Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
@@ -123,12 +116,13 @@ call plug#end()
 "  GENERAL SETTINGS {{{
 " ===========================================================================
 
+" sensible options for me
 set hidden
 set incsearch
 set ignorecase
 set smartcase
 set autoread
-set lazyredraw
+set nolazyredraw
 set gdefault
 set showcmd
 set vb t_vb=
@@ -144,14 +138,16 @@ set virtualedit=all
 set nostartofline
 set sessionoptions-=options
 set sessionoptions-=folds
-set path=.,**
+set path+=**
+set modeline
 if s:is_windows
   set makeprg=build.bat
 endif
 silent! set mouse=a
 
-" system clipboard uses the unnamed register
-set clipboard=unnamed,unnamedplus
+" system clipboard uses the unnamedplus register
+set clipboard^=unnamedplus,unnamed
+
 
 " command-line completion settings
 set wildmenu
@@ -260,6 +256,12 @@ else
   set statusline+=\ %P
 endif
 set statusline+=%8(%l,%v%)\ 
+
+" Disable Background Color Erase (BCE) so that color schemes
+" render properly when inside 256-color tmux and GNU screen.
+if &term =~ '256color'
+  set t_ut=
+endif
 
 augroup vimrc_appearance_and_formatting
   au!
@@ -489,6 +491,8 @@ nnoremap <silent> <Leader>V :tabnew $MYVIMRC<CR>
 nnoremap <Leader>f :find<Space>
 nnoremap <Leader>s :write<CR>
 nnoremap <Leader>h :help<Space>
+" :help on the word under the cursor
+nnoremap <Leader>H :help <C-R><C-W><CR>
 
 " save my pinky some stress
 nnoremap <Leader><Space> :
@@ -699,12 +703,6 @@ endfor
 
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
-
-" ...
-augroup top_o_file
-  au!
-  au BufEnter d*_*y.txt normal! gg
-augroup END
 
 " }}}
 " ===========================================================================
@@ -1051,6 +1049,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " UltiSnips {{{
   " disable ListSnippits in favor of Supertab's 'tab literal'
   " it's <C-Tab> by default
+  let g:UltiSnipsExpandTrigger='<C-{>'
   let g:UltiSnipsListSnippets='<C-}>'
   " }}}
 
@@ -1058,4 +1057,3 @@ endif
 
 " }}}
 " ===========================================================================
-redir END
