@@ -88,7 +88,9 @@ Plug 'chaoren/vim-wordmotion'
 
 " Motions/Movement
 Plug 'justinmk/vim-ipmotion'
-Plug 'junegunn/vim-pseudocl' | Plug 'junegunn/vim-oblique'
+" Plug 'junegunn/vim-pseudocl' | Plug 'junegunn/vim-oblique'
+" trying slash in favor of oblique
+Plug 'junegunn/vim-slash'
 
 " Panels/Toggleable
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
@@ -217,19 +219,19 @@ set textwidth=80
 set encoding=utf-8
 
 " mostly aesthetic options
-set laststatus=2
-set ruler
-set nonumber relativenumber
-set guioptions=
-set t_Co=256
 set cpoptions+=$
-set splitright
-set numberwidth=1
-set foldmethod=indent
 set foldlevel=999
+set foldmethod=indent
+set guioptions=
+set laststatus=2
 set linebreak
-set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
 set list
+set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
+set nonumber relativenumber
+set numberwidth=1
+set ruler
+set splitright
+set t_Co=256
 if has('linebreak')
   set showbreak=↪
   silent! set breakindent
@@ -949,13 +951,17 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   omap a` A`
   " }}}
 
-  " vim-oblique {{{
-  augroup ObliqueVimrc
-    au!
-    au User Oblique       normal! zz
-    au User ObliqueStar   normal! zz
-    au User ObliqueRepeat normal! zz
-  augroup END
+  " vim-slash {{{
+  " flash after search to show point of interest
+  function! s:flash()
+    set cursorline!
+    redraw
+    sleep 20m
+    set cursorline!
+    return ''
+  endfunction
+
+  noremap <expr> <plug>(slash-after) <sid>flash()
   " }}}
 
   " Dirvish {{{
@@ -1006,6 +1012,10 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " }}}
 
   " Sayonara {{{
+  " close buffer
+  nnoremap gs :Sayonara<CR>
+  " close buffer, don't close window
+  nnoremap gS :Sayonara!<CR>
   " close buffer
   nnoremap gs :Sayonara<CR>
   " close buffer, don't close window
