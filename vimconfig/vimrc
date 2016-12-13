@@ -88,9 +88,7 @@ Plug 'chaoren/vim-wordmotion'
 
 " Motions/Movement
 Plug 'justinmk/vim-ipmotion'
-" Plug 'junegunn/vim-pseudocl' | Plug 'junegunn/vim-oblique'
-" trying slash in favor of oblique
-Plug 'junegunn/vim-slash'
+Plug 'junegunn/vim-pseudocl' | Plug 'junegunn/vim-oblique'
 
 " Panels/Toggleable
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
@@ -951,18 +949,13 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   omap a` A`
   " }}}
 
-  " vim-slash {{{
-  " flash after search to show point of interest
-  function! s:flash()
-    set cursorline!
-    redraw
-    sleep 20m
-    set cursorline!
-    return ''
-  endfunction
-
-  noremap <expr> <plug>(slash-after) <sid>flash()
-  " }}}
+  " vim-oblique {{{
+  augroup ObliqueVimrc
+    au!
+    au User Oblique       normal! zz
+    au User ObliqueStar   normal! zz
+    au User ObliqueRepeat normal! zz
+  augroup END
 
   " Dirvish {{{
   " disable netrw
