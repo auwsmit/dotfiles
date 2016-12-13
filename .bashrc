@@ -14,6 +14,7 @@ command_exists () {
 }
 
 # Actually remove/purge apt metapackages
+# (buggy)
 aptmeta () {
   sudo apt-get $1 --auto-remove  $(apt-cache depends $2 | cut -f 2 -d ':' | grep -v \< | tr '\n' ' ') ;
 }
@@ -30,8 +31,12 @@ confirm_startx () {
 
 ## SETTINGS ##
 
-# Minimal prompt:
-PS1=' \W $ '
+# Minimal prompt
+if [ "$(whoami)" = "root" ]; then
+  PS1=' \W # '
+else
+  PS1=' \W $ '
+fi
 
 # Don't put duplicate lines in history
 HISTCONTROL=ignoredups
@@ -43,6 +48,9 @@ HISTFILESIZE=
 # Check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
+
+# Automatically change directories if a directory is the sole argument
+shopt -s autocd
 
 # Readline completes if it matches with the current prefix
 # bind '"\e[A"':history-search-backward 2> /dev/null
@@ -57,24 +65,35 @@ alias battery='acpi'
 # Run personal enviro. by default
 alias sudo='sudo -E'
 alias root='sudo'
-alias fucking='sudo'
+
+# sudo the last command
+alias fuck='sudo $(history -p \!\!)'
 
 # one instance of emacs/vim
 # and single letter shortcuts are cool too
 alias e='emacsclient -n'
 alias v='vim --remote-silent'
 
+# Brightness adjustment
+# (bl for BackLight)
+sys_backlight=/sys/class/backlight/*
+max_bright=$(cat $sys_backlight/max_brightness)
+alias bl_max="sudo bash -c \"echo $max_bright > $sys_backlight/brightness\""
+alias bl_mid="sudo bash -c \"echo $(($max_bright/2)) > $sys_backlight/brightness\""
+alias bl_low="sudo bash -c \"echo $(($max_bright/10)) > $sys_backlight/brightness\""
+alias bl_lower="sudo bash -c \"echo $(($max_bright/15)) > $sys_backlight/brightness\""
+
 # Battery info
 alias battery='acpi'
 
 # Package management
 if command_exists apt ; then
-  alias update='sudo apt update'
-  alias install='sudo apt update && sudo apt install --auto-remove'
-  alias uninstall='sudo apt remove --auto-remove'
-  alias purge='sudo apt purge --auto-remove'
-  alias search='apt-cache search'
-  alias full-upgrade='sudo apt update && sudo apt full-upgrade'
+  alias pacu='sudo apt update'
+  alias paci='sudo apt update; sudo apt install --auto-remove'
+  alias pacr='sudo apt remove --auto-remove'
+  alias pacp='sudo apt purge --auto-remove'
+  alias pacs='apt-cache search'
+  alias pacfu='sudo apt update; sudo apt full-upgrade; sudo apt -y autoremove'
 fi
 
 ## XINIT/STARTX ##
