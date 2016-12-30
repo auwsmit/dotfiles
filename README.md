@@ -1,6 +1,6 @@
-# Mah Dotfiles
+# README
 
-These are my dotfiles. I mostly made them by stealing good ideas and snippets
+These are my dotfiles. Primarily made by stealing good ideas and snippets
 from other people. I try to keep things commented and organized.
 
 Regarding Vim, if  something isn't commented, it means you can probably `:help`
@@ -13,8 +13,8 @@ it](http://derekwyatt.org/vim/tutorials/novice/#Help).
 This is my configuration, and is catered to me. Copy whatever you want out of
 it, but I would advise against installing the whole thing unless you know what
 you're doing.  It's better to make your own from scratch. If you do copy
-something, be sure to know what it does.  It'll be a learning experience, and
-you'll end up with something made for you that you can fully utilize.
+something, be sure to know what it does. The installation instructions below are
+intended for me, in case I forget a step or detail.
 
 ## Super Warning!!
 
@@ -23,7 +23,7 @@ setup script used to archive/move the entire `~/.config` folder (which contains
 user preferences for a myriad of programs) until I noticed and fixed it.
 
 Seriously, just be careful and don't blindly run scripts made by strangers. At
-the very least, skim through them.
+the very least, skim through them first.
 
 ## Installation Steps
 
@@ -42,11 +42,15 @@ the very least, skim through them.
         * `source` .bashrc for immediate bash settings, or else restart the
           terminal
 
-4. Startup Vim, and decide whether or not you want to install plugins via
-`:PlugInstall | qa`. The prompt will only ever appear once.
-
-5. Everything should work fine, and if not please post an issue and I can
-probably help and/or fix it.
+4. Fix Windows AutoHotKey task scheduler startup nonsense. The schtasks command
+on Windows is unable to make tasks that start programs when the computer is
+unplugged (running on battery life). The only way to make such a task is to use
+the graphical interface, clearly the intended way, or to follow these steps:
+    * `schtasks /query /tn CapsToCtrl /xml ONE > task.xml`
+    * Change 2 battery settings to false. I intend on automating this step,
+      but Windows has very few options for built in commands to edit text.
+    * `schtasks /delete /tn CapsToCtrl`
+    * `schtasks /create /xml task.xml /tn CapsToCtrl`
 
 ## Optimal Requirements
 
