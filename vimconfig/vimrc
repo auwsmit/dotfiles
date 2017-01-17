@@ -66,8 +66,8 @@ Plug 'SirVer/UltiSnips'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'vim-orgmode'
 " Plug 'AndrewRadev/switch.vim'
-Plug 'AndrewRadev/splitjoin.vim',
-      \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'python', 'ruby', 'go' ] }
+" Plug 'AndrewRadev/splitjoin.vim',
+"       \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'python', 'ruby', 'go' ] }
 Plug 'junegunn/gv.vim',    { 'on': 'GV' }
 Plug 'szw/vim-g',          { 'on': 'Google' }
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
@@ -239,8 +239,8 @@ endif
 
 syntax on
 
-" my 'modifed' version of Bad Wolf
-silent! colorscheme badwolf_flattened
+" my 'modifed' version of Good Wolf
+silent! colorscheme goodwolf_flattened
 
 " fallback default colorscheme
 if !exists('g:colors_name')
@@ -737,10 +737,6 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   " Startify {{{
   augroup startify_maps
     au!
-    " " I use <CR> to enter command line mode,
-    " " so use o to open files instead.
-    " au User Startified unmap <buffer> <CR>
-    " au User Startified nmap <buffer> o <Plug>(startify-open-buffers)
     au User Startified setlocal relativenumber number
   augroup END
   let g:ctrlp_reuse_window = 'startify'
@@ -956,6 +952,7 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
     au User ObliqueStar   normal! zz
     au User ObliqueRepeat normal! zz
   augroup END
+  " }}}
 
   " Dirvish {{{
   " disable netrw
