@@ -71,6 +71,7 @@ Plug 'vim-orgmode'
 Plug 'junegunn/gv.vim',    { 'on': 'GV' }
 Plug 'szw/vim-g',          { 'on': 'Google' }
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
+Plug 'mhinz/vim-grepper'
 
 " Text Objects
 Plug 'kana/vim-textobj-user' |
@@ -79,6 +80,7 @@ Plug 'kana/vim-textobj-user' |
       \ Plug 'kana/vim-textobj-function' |
       \ Plug 'reedes/vim-textobj-sentence'
 Plug 'wellle/targets.vim'
+Plug 'coderifous/textobj-word-column.vim'
 
 " Operators
 Plug 'tpope/vim-surround'
@@ -108,6 +110,7 @@ Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
 Plug 'Yggdroot/indentLine',       { 'on': 'IndentLinesEnable' }
 au! User indentLine doau indentLine Syntax | au BufRead * IndentLinesReset
 " ^ fix for lazy loading with indentLine ^
+Plug 'altercation/vim-colors-solarized'
 
 call plug#end()
 
@@ -148,7 +151,6 @@ silent! set mouse=a
 " system clipboard uses the unnamedplus register
 set clipboard^=unnamedplus,unnamed
 
-
 " command-line completion settings
 set wildmenu
 set wildmode=full
@@ -172,6 +174,10 @@ let &directory=s:tempdir
 if has('persistent_undo')
   set undofile
   let &undodir=s:tempdir
+endif
+
+if s:is_windows && executable('grep')
+  set grepprg=grep\ -n
 endif
 
 " autocmds
@@ -231,7 +237,7 @@ set ruler
 set splitright
 set t_Co=256
 if has('linebreak')
-  set showbreak=↪
+  set showbreak=«
   silent! set breakindent
 else
   set listchars+=eol:¬
@@ -240,7 +246,7 @@ endif
 syntax on
 
 " my 'modifed' version of Good Wolf
-silent! colorscheme goodwolf_flattened
+silent! colorscheme badwolf_flattened
 
 " fallback default colorscheme
 if !exists('g:colors_name')
