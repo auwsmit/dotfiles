@@ -110,6 +110,7 @@ Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
 Plug 'Yggdroot/indentLine',       { 'on': 'IndentLinesEnable' }
 au! User indentLine doau indentLine Syntax | au BufRead * IndentLinesReset
 " ^ fix for lazy loading with indentLine ^
+Plug 'altercation/vim-colors-solarized'
 
 call plug#end()
 
