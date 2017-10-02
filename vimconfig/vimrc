@@ -140,7 +140,7 @@ if s:is_windows
 endif
 silent! set mouse=a
 set vb t_vb=
-if (v:version > 704) || (v:version == 704 && has('patch786'))
+if exists('&belloff')
   set belloff=all
 endif
 
@@ -603,7 +603,7 @@ command! -bar RestartVim call <SID>RestartVim()
 " useful when Vim is crippled by its inefficient highlighting
 function! s:ToggleSyntaxHighlighting()
   let s:folds = &foldlevel
-  exec 'syntax '.(exists("g:syntax_on") ? 'off' : 'on')
+  exec 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
   let &foldlevel=s:folds
 endfunction
 command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
