@@ -27,11 +27,7 @@ endif
 
 if !isdirectory(expand(s:myvimdir . "/plugged"))
   if !isdirectory(expand(s:myvimdir . "/autoload/vimrc_booted/"))
-    if s:is_windows
-      silent exec expand("!mkdir \\%userprofile\\%/vimfiles/autoload/vimrc_booted/")
-    else
-      exec expand("!mkdir " . s:myvimdir . "/autoload/vimrc_booted")
-    endif
+    call mkdir(expand(s:myvimdir . "/autoload/vimrc_booted/"), "p")
     echo "To install plugins (via vim-plug),"
     echo "run :PlugInstall | qa"
   endif
