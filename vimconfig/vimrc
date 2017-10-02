@@ -17,9 +17,6 @@ elseif s:is_nvim
   let s:myvimdir ="~/.config/nvim"
 endif
 
-" enables filetype detection, ftplugins, and indent files
-filetype plugin indent on
-
 " }}}
 " ===========================================================================
 " VIM-PLUG {{{
@@ -128,7 +125,6 @@ set autoread
 set nolazyredraw
 set gdefault
 set showcmd
-set vb t_vb=
 set sidescroll=8
 set backspace=indent,eol,start
 set history=10000
@@ -147,6 +143,10 @@ if s:is_windows
   set makeprg=build.bat
 endif
 silent! set mouse=a
+set vb t_vb=
+if (v:version > 704) || (v:version == 704 && has('patch786'))
+  set belloff=all
+endif
 
 " system clipboard uses the unnamedplus register
 set clipboard^=unnamedplus,unnamed
@@ -335,7 +335,7 @@ nnoremap Q @q
 " [S]plit lines (sister to [J]oin line) {{{
 " cc still changes the whole line
 function! s:SplitLine()
-  normal! i^gk
+  exe "normal! i\<CR>\<Esc>^gk"
   silent! substitute/\v +$//
   silent! nohlsearch
   call histdel("search", -1)
