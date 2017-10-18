@@ -57,7 +57,7 @@ Plug 'ervandew/supertab'
 Plug 'Konfekt/FastFold'
 Plug 'SirVer/UltiSnips'
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'vim-orgmode'
+" Plug 'vim-orgmode'
 " Plug 'AndrewRadev/switch.vim'
 " Plug 'AndrewRadev/splitjoin.vim',
 "       \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'python', 'ruby', 'go' ] }
@@ -68,6 +68,7 @@ Plug 'mhinz/vim-grepper'
 
 " Text Objects
 Plug 'kana/vim-textobj-user' |
+      \ Plug 'kana/vim-textobj-line' |
       \ Plug 'kana/vim-textobj-entire'   |
       \ Plug 'kana/vim-textobj-indent'   |
       \ Plug 'kana/vim-textobj-function' |
@@ -83,7 +84,7 @@ Plug 'chaoren/vim-wordmotion'
 
 " Motions/Movement
 Plug 'justinmk/vim-ipmotion'
-Plug 'junegunn/vim-pseudocl' | Plug 'junegunn/vim-oblique'
+Plug 'junegunn/vim-slash'
 
 " Panels/Toggleable
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
@@ -947,13 +948,9 @@ if isdirectory(expand(s:myvimdir . "/plugged"))
   omap a` A`
   " }}}
 
-  " vim-oblique {{{
-  augroup ObliqueVimrc
-    au!
-    au User Oblique       normal! zz
-    au User ObliqueStar   normal! zz
-    au User ObliqueRepeat normal! zz
-  augroup END
+  " vim-slash {{{
+  " center search results
+  noremap <plug>(slash-after) zz
   " }}}
 
   " Dirvish {{{
