@@ -129,10 +129,6 @@ Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
 nnoremap gs :Sayonara<CR>
 " close buffer, don't close window
 nnoremap gS :Sayonara!<CR>
-" close buffer
-nnoremap gs :Sayonara<CR>
-" close buffer, don't close window
-nnoremap gS :Sayonara!<CR>
 " prompt to close vim when closing the last file
 let g:sayonara_confirm_quit = 1
 " see: 'q to quit help' under KEY MAPPINGS/NORMAL MAPS
@@ -182,8 +178,8 @@ let g:ip_skipfold = 1
 "}}}
 Plug 'junegunn/vim-slash'
 " vim-slash Settings {{{
-" center search results
-noremap <plug>(slash-after) zz
+" center search results and open folds after search
+noremap <plug>(slash-after) zzzv
 " }}}
 " }}}
 
