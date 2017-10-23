@@ -174,8 +174,7 @@ Plug 'kana/vim-textobj-user' |
 " OPERATORS " {{{
 " ---------------------------------------------------------------------------
 
-" repeated because sandwich contains operators
-" Plug 'machakann/vim-sandwich'
+" Plug 'machakann/vim-sandwich' " repeated because sandwich has operators
 
 Plug 'tpope/vim-commentary'
 
@@ -387,16 +386,20 @@ endfunction
 " }}}}
 " }}}
 
-Plug 'kkoenig/wimproved.vim'
+Plug 'kkoenig/wimproved.vim' " Windows only
 " wimproved.vim Settings {{{
-" toggle fullscreen
-nnoremap <F11> :WToggleFullscreen<CR>
+if s:is_windows
+  " toggle fullscreen
+  nnoremap <F11> :WToggleFullscreen<CR>
+  " fix maximized borders, if they're cut off
+  nnoremap <Leader>W :WToggleClean<CR>:WToggleClean<CR>
 
-augroup wimproved
-  au!
-  " make Windows less ugly
-  au GUIEnter * silent! WToggleClean
-augroup END
+  augroup wimproved
+    au!
+    " Maximize & fix cut off borders
+    au GUIEnter * simalt ~x | WToggleClean
+  augroup END
+endif
 " }}}
 
 Plug 'AssailantLF/vim-active-numbers' " My plugin <3
@@ -612,10 +615,8 @@ augroup vimrc_appearance_and_formatting
   " I want these format options everywhere
   au FileType * set formatoptions=rq1j
 
-  " maximize window in Windows
   " also fonts
   if s:is_windows
-    au GUIEnter * simalt ~x
     set guifont=Consolas:h9
   else
     set guifont=DejaVu\ Sans\ Mono\ 9
