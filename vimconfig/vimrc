@@ -207,12 +207,12 @@ map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
 " auto nohlsearch
 let g:incsearch#auto_nohlsearch = 1
-map n  <Plug>(incsearch-nohl-n)zz
-map N  <Plug>(incsearch-nohl-N)zz
-map *  <Plug>(incsearch-nohl-*)zz
-map #  <Plug>(incsearch-nohl-#)zz
-map g* <Plug>(incsearch-nohl-g*)zz
-map g# <Plug>(incsearch-nohl-g#)zz
+map n  <Plug>(incsearch-nohl-n)zzzv
+map N  <Plug>(incsearch-nohl-N)zzzv
+map *  <Plug>(incsearch-nohl-*)zzzv
+map #  <Plug>(incsearch-nohl-#)zzzv
+map g* <Plug>(incsearch-nohl-g*)zzzv
+map g# <Plug>(incsearch-nohl-g#)zzzv
 augroup incsearch-keymap
   autocmd!
   autocmd VimEnter * IncSearchNoreMap <CR> <CR>zz
