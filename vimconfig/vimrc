@@ -7,8 +7,9 @@
 " STARTUP {{{
 " ===========================================================================
 
-" let s:is_cygwin = has('win32unix') || has('win64unix')
-" let s:is_mac = has('gui_macvim') || has('mac')
+" Detect OS
+let s:is_cygwin = has('win32unix') || has('win64unix')
+let s:is_mac = has('gui_macvim') || has('mac')
 let s:is_windows = has('win32') || has('win64')
 let s:is_nvim = has('nvim')
 let s:myvimdir ="~/.vim"
@@ -18,18 +19,19 @@ elseif s:is_nvim
   let s:myvimdir ="~/.config/nvim"
 endif
 
-" leader the easiest key to reach
+" Space is best leader
 let mapleader = "\<Space>"
+" in case a plugin uses localleader
 let maplocalleader = "\\"
 
 " }}}
 " ===========================================================================
-" PLUGINS & SETTINGS {{{
+" PLUGINS {{{
 " ===========================================================================
 " vim-plug is the package manager,
 " everything is hosted on GitHub
 
-" First time startup prompt {{{
+" First time plugin setup {{{
 
 if !isdirectory(expand(s:myvimdir . "/plugged"))
   if !isdirectory(expand(s:myvimdir . "/autoload/vimrc_booted/"))
@@ -43,10 +45,12 @@ endif
 
 call plug#begin()
 
-" Convenience/Miscellaneous " {{{
-Plug 'tpope/vim-fugitive'
+" ---------------------------------------------------------------------------
+" CONVENIENCE/MISCELLANEOUS " {{{
+" ---------------------------------------------------------------------------
+
+Plug 'tpope/vim-fugitive' " TODO: read README
 " Fugitive Settings {{{
-" TODO: Read docs on other Fugitive functions and use them
 nnoremap <Leader>gs :Gstatus<CR>
 nnoremap <Leader>gd :Gdiff<CR>
 nnoremap <Leader>gD :Gdiff HEAD<CR>
@@ -62,67 +66,67 @@ augroup vimrc_fugitive
   au BufReadPost fugitive://* set bufhidden=delete
 augroup END
 " }}}
+
 Plug 'tpope/vim-unimpaired'
+
 Plug 'tpope/vim-repeat'
+
 Plug 'tpope/vim-eunuch'
+
 Plug 'tpope/vim-rsi'
-Plug 'tpope/vim-dispatch'
-" Dispatch Settings {{{
-nnoremap <Leader>m :Make<CR>
-" }}}
+
 Plug 'tpope/vim-sleuth'
+
 Plug 'tpope/vim-speeddating'
+
 Plug 'tpope/vim-endwise',
       \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
-Plug 'justinmk/vim-gtfo'
+
+Plug 'justinmk/vim-gtfo' " TODO: read README
 " gtfo.vim Settings {{{
 let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
 " }}}
+
 Plug 'justinmk/vim-dirvish'
 " Dirvish Settings {{{
+
 " disable netrw
 let g:loaded_netrw = 1
 let g:loaded_netrwPlugin = 1
+
 " open current file's directory
 nnoremap <silent> - :Dirvish %<CR>
 " open current working directory
 nnoremap <silent> + :Dirvish<CR>
 augroup my_dirvish_events
   au!
-  " " I use <CR> to enter cmdline mode,
-  " " so use o to open
-  " au FileType dirvish
-  "       \ nnoremap <buffer> <CR> :
-  "       \|xnoremap <buffer> <CR> :
-  "       \|nnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
-  "       \|xnoremap <buffer> o :call dirvish#open("edit", 0)<CR>
-  "       \|nnoremap <buffer> h :call dirvish#open("split", 0)<CR>
-  "       \|xnoremap <buffer> h :call dirvish#open("split", 0)<CR>
-  "       \|nnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
-  "       \|xnoremap <buffer> l :call dirvish#open("vsplit", 0)<CR>
   " map gh to hide "hidden" files. (Unix only)
   au FileType dirvish nnoremap <buffer> gh
         \ :g@\v/\.[^\/]+/?$@d<CR>
   au FileType dirvish set nobuflisted
 augroup END
 " }}}
+
 Plug 'dietsche/vim-lastplace'
+
 Plug 'ervandew/supertab'
-Plug 'Konfekt/FastFold'
+
 Plug 'SirVer/UltiSnips'
-" UltiSnips Settings {{{
-" disable ListSnippets in favor of Supertab's 'tab literal'
-" it's <C-Tab> by default
-let g:UltiSnipsExpandTrigger='<C-{>'
-let g:UltiSnipsListSnippets='<C-}>'
-" }}}
+
+Plug 'Konfekt/FastFold'
+
 Plug 'ludovicchabant/vim-gutentags'
-" Plug 'vim-orgmode'
+
 " Plug 'AndrewRadev/switch.vim'
+
 " Plug 'AndrewRadev/splitjoin.vim',
 "       \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'python', 'ruby', 'go' ] }
+
+" TODO: read README
 Plug 'junegunn/gv.vim',    { 'on': 'GV' }
+
 Plug 'szw/vim-g',          { 'on': 'Google' }
+
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
 " Sayonara Settings {{{
 " close buffer
@@ -142,10 +146,22 @@ augroup q_for_quit
   au BufEnter *.txt call s:helpquit()
 augroup END
 " }}}
+
 Plug 'mhinz/vim-grepper'
+
+" }}}
+" ---------------------------------------------------------------------------
+" TEXT OBJECTS " {{{
+" ---------------------------------------------------------------------------
+
+Plug 'machakann/vim-sandwich' " (surround alternative)
+" vim-sandwich Settings {{{
+" mappings like the surround plugin
+let g:sandwich_no_default_key_mappings = 1
+let g:operator_sandwich_no_default_key_mappings = 1
+au! VimEnter * runtime macros/sandwich/keymap/surround.vim
 " }}}
 
-" Text Objects " {{{
 Plug 'kana/vim-textobj-user' |
       \ Plug 'kana/vim-textobj-line' |
       \ Plug 'kana/vim-textobj-entire'   |
@@ -153,41 +169,55 @@ Plug 'kana/vim-textobj-user' |
       \ Plug 'kana/vim-textobj-function' |
       \ Plug 'reedes/vim-textobj-sentence' |
       \ Plug 'coderifous/textobj-word-column.vim'
-Plug 'wellle/targets.vim'
-" }}}
 
-" Operators " {{{
-Plug 'machakann/vim-sandwich'
+" }}}
+" ---------------------------------------------------------------------------
+" OPERATORS " {{{
+" ---------------------------------------------------------------------------
+
+" repeated because sandwich contains operators
+" Plug 'machakann/vim-sandwich'
+
 Plug 'tpope/vim-commentary'
+
 Plug 'tommcdo/vim-exchange'
 " vim-exchange Settings {{{
 " evil-exchange bindings
-" nnoremap gxx <Plug>(ExchangeLine)
-" nnoremap gX <Plug>(ExchangeClear)
-" nnoremap gx  <Plug>(Exchange)
-" xnoremap gx  <Plug>(Exchange)
-" }}}
-Plug 'chaoren/vim-wordmotion'
+nmap gxx <Plug>(ExchangeLine)
+nmap gX  <Plug>(ExchangeClear)
+nmap gx  <Plug>(Exchange)
+xmap gx  <Plug>(Exchange)
 " }}}
 
-" Motions/Movement " {{{
+Plug 'chaoren/vim-wordmotion'
+
+" }}}
+" ---------------------------------------------------------------------------
+" MOTIONS/MOVEMENT " {{{
+" ---------------------------------------------------------------------------
+
 Plug 'justinmk/vim-ipmotion'
 " ipmotion Settings {{{
 " Skip over closed folds with { and }
 let g:ip_skipfold = 1
 "}}}
+
 Plug 'junegunn/vim-slash'
 " vim-slash Settings {{{
-" center search results and open folds after search
+" center and open folds after search
 noremap <plug>(slash-after) zzzv
 " }}}
-" }}}
 
-" Panels/Toggleable " {{{
+" }}}
+" ---------------------------------------------------------------------------
+" PANELS/TOGGLEABLE " {{{
+" ---------------------------------------------------------------------------
+
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
 " Tagbar Settings {{{
 nnoremap <Leader>t :TagbarToggle<CR>
 " }}}
+
 Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
 " undotree Settings {{{
 nnoremap <Leader>u :UndotreeToggle<CR>
@@ -195,6 +225,7 @@ function! g:Undotree_CustomMap()
   nunmap <buffer> <Tab>
 endfunc
 " }}}
+
 Plug 'ctrlpvim/ctrlp.vim' ", { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
 " CtrlP Settings {{{
 " ignore .git folders to speed up searches
@@ -217,9 +248,12 @@ nnoremap <Leader><C-R> :CtrlPMRU<CR>
 nnoremap <Leader><C-L> :CtrlPLine<CR>
 nnoremap <Leader><C-P> :CtrlP<Space>
 " }}}
-" }}}
 
-" Appearance/UI {{{
+" }}}
+" ---------------------------------------------------------------------------
+" APPEARANCE/UI {{{
+" ---------------------------------------------------------------------------
+
 Plug 'mhinz/vim-Startify'
 " Startify Settings {{{
 augroup startify_maps
@@ -231,6 +265,7 @@ let g:startify_files_number = 6
 let g:startify_session_delete_buffers = 1
 let g:startify_session_persistence = 1
 " }}}
+
 Plug 'itchyny/lightline.vim'
 " lightline Settings {{{
 nnoremap <silent> <Leader>L }:exec lightline#toggle()<CR>``
@@ -351,6 +386,7 @@ endfunction
 
 " }}}}
 " }}}
+
 Plug 'kkoenig/wimproved.vim'
 " wimproved.vim Settings {{{
 " toggle fullscreen
@@ -362,8 +398,11 @@ augroup wimproved
   au GUIEnter * silent! WToggleClean
 augroup END
 " }}}
-Plug 'AssailantLF/vim-active-numbers'
+
+Plug 'AssailantLF/vim-active-numbers' " My plugin <3
+
 Plug 'gcavallanti/vim-noscrollbar'
+
 Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
 " Rainbow Parenthesis Settings {{{
 augroup rainbow_filetypes
@@ -371,6 +410,7 @@ augroup rainbow_filetypes
   au FileType c,cpp,vim,sh,dosbatch,lisp RainbowParentheses
 augroup END
 " }}}
+
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
 " vim-easy-align Settings {{{
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -378,12 +418,15 @@ vmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 " }}}
+
 Plug 'junegunn/goyo.vim',         { 'on': 'Goyo' }
 " Goyo Settings {{{
 " toggle Goyo (distraction free editing)
 nnoremap <Leader>G :Goyo<CR>
 " }}}
+
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
+
 Plug 'Yggdroot/indentLine',       { 'on': 'IndentLinesEnable' }
 " indentLine Settings {{{
 " fix for lazy loading
@@ -399,7 +442,9 @@ augroup ft_indentLine
   au FileType c,cpp IndentLinesEnable
 augroup END
 " }}}
+
 " }}}
+" ---------------------------------------------------------------------------
 
 call plug#end()
 
