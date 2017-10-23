@@ -200,11 +200,23 @@ Plug 'justinmk/vim-ipmotion'
 let g:ip_skipfold = 1
 "}}}
 
-Plug 'junegunn/vim-slash'
-" vim-slash Settings {{{
-" center and open folds after search
-noremap <Plug>(slash-after) zzzv
-" }}}
+Plug 'haya14busa/incsearch.vim'
+" default mappings
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-stay)
+" auto nohlsearch
+let g:incsearch#auto_nohlsearch = 1
+map n  <Plug>(incsearch-nohl-n)zz
+map N  <Plug>(incsearch-nohl-N)zz
+map *  <Plug>(incsearch-nohl-*)zz
+map #  <Plug>(incsearch-nohl-#)zz
+map g* <Plug>(incsearch-nohl-g*)zz
+map g# <Plug>(incsearch-nohl-g#)zz
+augroup incsearch-keymap
+  autocmd!
+  autocmd VimEnter * IncSearchNoreMap <CR> <CR>zz
+augroup END
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -563,6 +575,7 @@ set textwidth=80
 set encoding=utf-8
 
 " mostly aesthetic options
+set hlsearch
 set cpoptions+=$
 set foldlevel=999
 set foldmethod=indent
@@ -860,8 +873,7 @@ endf
 " }}}
 nnoremap <silent> dr  :<C-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<CR>g@
 nnoremap <silent> drr :<C-u>call <sid>set_reg(v:register)<cr>0:<C-u>set opfunc=<sid>replace_without_yank<CR>g@$
-" silly 1-key-saver
-xnoremap dr "0p
+xnoremap R "0p
 
 " }}}
 " ---------------------------------------------------------------------------
