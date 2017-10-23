@@ -122,8 +122,7 @@ Plug 'ludovicchabant/vim-gutentags'
 " Plug 'AndrewRadev/splitjoin.vim',
 "       \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'python', 'ruby', 'go' ] }
 
-" TODO: read README
-Plug 'junegunn/gv.vim',    { 'on': 'GV' }
+Plug 'junegunn/gv.vim',    { 'on': 'GV' } " TODO: read README
 
 Plug 'szw/vim-g',          { 'on': 'Google' }
 
@@ -154,9 +153,9 @@ Plug 'mhinz/vim-grepper'
 " TEXT OBJECTS " {{{
 " ---------------------------------------------------------------------------
 
-Plug 'machakann/vim-sandwich' " (surround alternative)
+Plug 'machakann/vim-sandwich' " (tpope surround alternative)
 " vim-sandwich Settings {{{
-" mappings like the surround plugin
+" mappings like tpope's surround plugin
 let g:sandwich_no_default_key_mappings = 1
 let g:operator_sandwich_no_default_key_mappings = 1
 au! VimEnter * runtime macros/sandwich/keymap/surround.vim
@@ -205,7 +204,7 @@ let g:ip_skipfold = 1
 Plug 'junegunn/vim-slash'
 " vim-slash Settings {{{
 " center and open folds after search
-noremap <plug>(slash-after) zzzv
+noremap <Plug>(slash-after) zzzv
 " }}}
 
 " }}}
@@ -269,6 +268,7 @@ let g:startify_session_persistence = 1
 Plug 'itchyny/lightline.vim'
 " lightline Settings {{{
 nnoremap <silent> <Leader>L }:exec lightline#toggle()<CR>``
+
 " compatibility with other plugins {{{
 let g:lightline = {
       \ 'colorscheme': 'powerline',
@@ -697,7 +697,7 @@ nnoremap <silent> <C-N> <C-I>:call <SID>Center()<CR>
 nnoremap <C-J> <C-D>
 nnoremap <C-K> <C-U>
 
-" easier fold managing
+" org-style fold viewing
 nnoremap <Tab> za
 nnoremap <S-Tab> zM
 
@@ -706,9 +706,7 @@ nnoremap ` '
 nnoremap ' `
 
 " open current file's directory
-if !exists("g:loaded_vinegar")
-  nnoremap - :e <C-R>=fnameescape(expand('%:p:h'))<CR>/<CR>
-endif
+nnoremap - :e <C-R>=fnameescape(expand('%:p:h'))<CR>/<CR>
 
 " open current working directory
 nnoremap + :e .<CR>
@@ -816,6 +814,53 @@ cnoremap :: <C-R>=fnameescape(expand('%:p:h'))<CR>/
 set pastetoggle=cop
 " toggle centering the cursor
 nnoremap coz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>
+
+" Delete & Replace operator {{{
+" (credit to justinmk's init.vim)
+" why?
+" - repeatable
+" - faster/more convenient than visual-replace
+" - does not modify ' mark
+" - DWIM behavior for linewise => characterwise
+func! s:trimws_ml(s) abort "trim whitespace across multiple lines
+  return substitute(a:s, '^\_s*\(.\{-}\)\_s*$', '\1', '')
+endf
+let s:rr_reg = '"'
+func! s:set_reg(reg_name) abort
+  let s:rr_reg = a:reg_name
+endf
+func! s:replace_without_yank(type) abort
+  let rr_orig = getreg(s:rr_reg, 1) "save registers and types to restore later.
+  let rr_type = getregtype(s:rr_reg)
+  let ur_orig = getreg('"', 1)
+  let ur_type = getregtype('"')
+  let sel_save = &selection
+  let &selection = "inclusive"
+  let replace_curlin = (1==col("'[") && (col('$')==1 || col('$')==(col("']")+1)) && line("'[")==line("']"))
+
+  if a:type ==? 'line' || replace_curlin
+    exe "keepjumps normal! '[V']\"".s:rr_reg."p"
+  elseif a:type ==? 'block'
+    exe "keepjumps normal! `[\<C-V>`]\"".s:rr_reg."p"
+  else
+    "DWIM: if pasting linewise contents in a _characterwise_ motion, trim
+    "      surrounding whitespace from the content to be pasted.
+    if rr_type ==# "V"
+      call setreg(s:rr_reg, s:trimws_ml(rr_orig), "v")
+    endif
+    exe "keepjumps normal! `[v`]\"".s:rr_reg."p"
+  endif
+
+  let &selection = sel_save
+  call setreg('"',      ur_orig, ur_type)
+  call setreg(s:rr_reg, rr_orig, rr_type)
+endf
+
+" }}}
+nnoremap <silent> dr  :<C-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<CR>g@
+nnoremap <silent> drr :<C-u>call <sid>set_reg(v:register)<cr>0:<C-u>set opfunc=<sid>replace_without_yank<CR>g@$
+" silly 1-key-saver
+xnoremap dr "0p
 
 " }}}
 " ---------------------------------------------------------------------------
