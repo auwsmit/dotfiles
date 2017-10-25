@@ -12,8 +12,8 @@ let s:is_cygwin = has('win32unix') || has('win64unix')
 let s:is_mac = has('gui_macvim') || has('mac')
 let s:is_windows = has('win32') || has('win64')
 let s:is_nvim = has('nvim')
-let s:myvimdir ="~/.vim"
 
+let s:myvimdir ="~/.vim"
 if s:is_windows
   let s:myvimdir ="~/vimfiles"
 elseif s:is_nvim
@@ -184,24 +184,29 @@ Plug 'justinmk/vim-ipmotion'
 let g:ip_skipfold = 1
 "}}}
 
-Plug 'haya14busa/incsearch.vim'
-" incsearch.vim Settings {{{
-" default mappings
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
-" auto nohlsearch
-let g:incsearch#auto_nohlsearch = 1
-map n  <Plug>(incsearch-nohl-n)zzzv
-map N  <Plug>(incsearch-nohl-N)zzzv
-map *  <Plug>(incsearch-nohl-*)zzzv
-map #  <Plug>(incsearch-nohl-#)zzzv
-map g* <Plug>(incsearch-nohl-g*)zzzv
-map g# <Plug>(incsearch-nohl-g#)zzzv
-augroup incsearch-keymap
-  autocmd!
-  autocmd VimEnter * IncSearchNoreMap <CR> <CR>zz
-augroup END
+" Plug 'haya14busa/incsearch.vim'
+" " incsearch.vim Settings {{{
+" " default mappings
+" map /  <Plug>(incsearch-forward)
+" map ?  <Plug>(incsearch-backward)
+" map g/ <Plug>(incsearch-stay)
+" " auto nohlsearch
+" let g:incsearch#auto_nohlsearch = 1
+" map n  <Plug>(incsearch-nohl-n)zzzv
+" map N  <Plug>(incsearch-nohl-N)zzzv
+" map *  <Plug>(incsearch-nohl-*)zzzv
+" map #  <Plug>(incsearch-nohl-#)zzzv
+" map g* <Plug>(incsearch-nohl-g*)zzzv
+" map g# <Plug>(incsearch-nohl-g#)zzzv
+" augroup incsearch-keymap
+"   autocmd!
+"   autocmd VimEnter * IncSearchNoreMap <CR> <CR>zz
+" augroup END
+" " }}}
+
+Plug 'junegunn/vim-slash'
+" vim-slash Settings {{{
+noremap <Plug>(slash-after) zzzv
 " }}}
 
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
@@ -246,18 +251,6 @@ nmap ga <Plug>(EasyAlign)
 Plug 'gcavallanti/vim-noscrollbar'
 
 Plug 'AssailantLF/vim-active-numbers' " My plugin <3
-
-Plug 'mhinz/vim-Startify'
-" Startify Settings {{{
-augroup startify_maps
-  au!
-  au User Startified setlocal relativenumber number
-augroup END
-let g:ctrlp_reuse_window = 'startify'
-let g:startify_files_number = 6
-let g:startify_session_delete_buffers = 1
-let g:startify_session_persistence = 1
-" }}}
 
 Plug 'itchyny/lightline.vim'
 " lightline Settings {{{
@@ -413,7 +406,8 @@ if s:is_windows
   nnoremap <F11> :WToggleFullscreen<CR>
   " Fix GVim's ugly window border
   augroup Wimproved
-    au! GUIEnter * WToggleClean
+    au!
+    au GUIEnter * WToggleClean
   augroup END
 endif
 " }}}
@@ -422,14 +416,6 @@ endif
 " ---------------------------------------------------------------------------
 " CONVENIENCE/MISC PLUGS " {{{
 " ---------------------------------------------------------------------------
-
-Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
-" undotree Settings {{{
-nnoremap <Leader>u :UndotreeToggle<CR>
-function! g:Undotree_CustomMap()
-  nunmap <buffer> <Tab>
-endfunc
-" }}}
 
 Plug 'tpope/vim-rsi'
 
@@ -444,6 +430,26 @@ Plug 'Konfekt/FastFold'
 Plug 'dietsche/vim-lastplace'
 
 Plug 'ludovicchabant/vim-gutentags'
+
+Plug 'mhinz/vim-Startify'
+" Startify Settings {{{
+augroup startify_maps
+  au!
+  au User Startified setlocal relativenumber number
+augroup END
+let g:ctrlp_reuse_window = 'startify'
+let g:startify_files_number = 6
+let g:startify_session_delete_buffers = 1
+let g:startify_session_persistence = 1
+" }}}
+
+Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
+" undotree Settings {{{
+nnoremap <Leader>u :UndotreeToggle<CR>
+function! g:Undotree_CustomMap()
+  nunmap <buffer> <Tab>
+endfunction
+" }}}
 
 " Plug 'AndrewRadev/switch.vim'
 
@@ -982,7 +988,7 @@ nnoremap \y ggVG"+y
 
 " }}}
 " ===========================================================================
-" FUNCTIONS, COMMANDS, MISC {{{
+" MISC FUNCTIONS, COMMANDS, ETC. {{{
 " ===========================================================================
 " everything else goes here at the tail-end
 
