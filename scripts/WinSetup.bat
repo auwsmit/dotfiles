@@ -38,16 +38,3 @@ if exist { "%home_dir%AppData\Local\nvim\init.vim" } (
     move /-y "%home_dir%AppData\Local\nvim\init.vim" "%home_dir%old_dotfiles\"
 )
 mklink "%home_dir%AppData\Local\nvim\init.vim" "%repo_dir%vimconfig\vimrc"
-
-:: Remap CapsLock to Ctrl
-:: see https://redd.it/4d6iym
-::
-:: Create a task via task scheduler to run with administrator privileges,
-:: because I don't know any other way to do that. This allows AHK to be
-:: active under *most* circumstances, mainly higher privilege programs.
-::
-:: TODO: Fix the issue where AHK closes when on battery/not plugged in.
-schtasks /create /sc onlogon /tn CapsToCtrl /rl highest /tr "X:\Git\dotfiles\CapsToCtrl.exe" /f
-start "" "X:\Git\dotfiles\CapsToCtrl.exe"
-
-:: exit 0
