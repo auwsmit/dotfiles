@@ -7,19 +7,19 @@
 " STARTUP {{{
 " ===========================================================================
 
-" Detect OS
+" Detect OS for OS-specific options
 let s:is_cygwin = has('win32unix') || has('win64unix')
 let s:is_mac = has('gui_macvim') || has('mac')
 let s:is_windows = has('win32') || has('win64')
 let s:is_nvim = has('nvim')
 let s:myvimdir ="~/.vim"
+
 if s:is_windows
   let s:myvimdir ="~/vimfiles"
 elseif s:is_nvim
   let s:myvimdir ="~/.config/nvim"
 endif
 
-" Space is best leader
 let mapleader = "\<Space>"
 " in case a plugin uses localleader
 let maplocalleader = "\\"
@@ -28,28 +28,17 @@ let maplocalleader = "\\"
 " ===========================================================================
 " PLUGINS {{{
 " ===========================================================================
-" vim-plug is the package manager,
-" everything is hosted on GitHub
-
-" First time plugin setup {{{
-
-if !isdirectory(expand(s:myvimdir . "/plugged"))
-  if !isdirectory(expand(s:myvimdir . "/autoload/vimrc_booted/"))
-    call mkdir(expand(s:myvimdir . "/autoload/vimrc_booted/"), "p")
-    echo "To install plugins (via vim-plug),"
-    echo "run :PlugInstall | qa"
-  endif
-endif
-
-" }}}
+" vim-plug is the package manager
 
 call plug#begin()
 
 " ---------------------------------------------------------------------------
-" CONVENIENCE/MISCELLANEOUS " {{{
+" FILE/BUFFER PLUGS {{{
 " ---------------------------------------------------------------------------
 
-Plug 'tpope/vim-fugitive' " TODO: read README
+Plug 'tpope/vim-eunuch'
+
+Plug 'tpope/vim-fugitive'
 " Fugitive Settings {{{
 nnoremap <Leader>gs :Gstatus<CR>
 nnoremap <Leader>gd :Gdiff<CR>
@@ -58,8 +47,8 @@ nnoremap <Leader>gc :Gcommit<CR>
 nnoremap <Leader>gl :Git log<CR>
 nnoremap <Leader>gp :Git push<CR>
 nnoremap <Leader>gw :Gwrite<CR>
-nnoremap <Leader>gr :Gremove<CR>
 nnoremap <Leader>gg :Ggrep<Space>
+
 " hide fugitive buffers to reduce buffer list clutter
 augroup vimrc_fugitive
   au!
@@ -67,22 +56,7 @@ augroup vimrc_fugitive
 augroup END
 " }}}
 
-Plug 'tpope/vim-unimpaired'
-
-Plug 'tpope/vim-repeat'
-
-Plug 'tpope/vim-eunuch'
-
-Plug 'tpope/vim-rsi'
-
-Plug 'tpope/vim-sleuth'
-
-Plug 'tpope/vim-speeddating'
-
-Plug 'tpope/vim-endwise',
-      \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
-
-Plug 'justinmk/vim-gtfo' " TODO: read README
+Plug 'justinmk/vim-gtfo'
 " gtfo.vim Settings {{{
 let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
 " }}}
@@ -107,24 +81,35 @@ augroup my_dirvish_events
 augroup END
 " }}}
 
-Plug 'dietsche/vim-lastplace'
+Plug 'ctrlpvim/ctrlp.vim' ", { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
+" CtrlP Settings {{{
 
-Plug 'ervandew/supertab'
+" ignore .git folders to speed up searches
+let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+let g:ctrlp_max_depth = 15
+" include hidden files
+let g:ctrlp_show_hidden = 1
+" open multiple files in ONE window
+let g:ctrlp_open_multiple_files = '1vr'
+" ctrl-o to open specifically
+let g:ctrlp_arg_map = 1
+" change default CtrlP mapping
+let g:ctrlp_map = '<Leader>p'
 
-Plug 'SirVer/UltiSnips'
+" free <Space> in operator mode
+augroup CtrlPLeader
+  au! VimEnter * ounmap <Leader>p
+augroup END
 
-Plug 'Konfekt/FastFold'
-
-Plug 'ludovicchabant/vim-gutentags'
-
-" Plug 'AndrewRadev/switch.vim'
-
-" Plug 'AndrewRadev/splitjoin.vim',
-"       \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'python', 'ruby', 'go' ] }
-
-Plug 'junegunn/gv.vim',    { 'on': 'GV' } " TODO: read README
-
-Plug 'szw/vim-g',          { 'on': 'Google' }
+" shortcuts
+nnoremap <Leader>p :CtrlP<CR>
+nnoremap <Leader>b :CtrlPBuffer<CR>
+nnoremap <Leader>- :CtrlPCurFile<CR>
+nnoremap <Leader>+ :CtrlPCurWD<CR>
+nnoremap <Leader><C-R> :CtrlPMRU<CR>
+nnoremap <Leader><C-L> :CtrlPLine<CR>
+nnoremap <Leader><C-P> :CtrlP<Space>
+" }}}
 
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
 " Sayonara Settings {{{
@@ -146,37 +131,22 @@ augroup q_for_quit
 augroup END
 " }}}
 
-Plug 'mhinz/vim-grepper'
-
 " }}}
 " ---------------------------------------------------------------------------
-" TEXT OBJECTS " {{{
+" OPERATOR PLUGS {{{
 " ---------------------------------------------------------------------------
+
+Plug 'tpope/vim-commentary'
 
 Plug 'machakann/vim-sandwich' " (tpope surround alternative)
 " vim-sandwich Settings {{{
 " mappings like tpope's surround plugin
 let g:sandwich_no_default_key_mappings = 1
 let g:operator_sandwich_no_default_key_mappings = 1
-au! VimEnter * runtime macros/sandwich/keymap/surround.vim
+augroup SandwichSurround
+  au! VimEnter * runtime macros/sandwich/keymap/surround.vim
+augroup END
 " }}}
-
-Plug 'kana/vim-textobj-user' |
-      \ Plug 'kana/vim-textobj-line' |
-      \ Plug 'kana/vim-textobj-entire'   |
-      \ Plug 'kana/vim-textobj-indent'   |
-      \ Plug 'kana/vim-textobj-function' |
-      \ Plug 'reedes/vim-textobj-sentence' |
-      \ Plug 'coderifous/textobj-word-column.vim'
-
-" }}}
-" ---------------------------------------------------------------------------
-" OPERATORS " {{{
-" ---------------------------------------------------------------------------
-
-" Plug 'machakann/vim-sandwich' " repeated because sandwich has operators
-
-Plug 'tpope/vim-commentary'
 
 Plug 'tommcdo/vim-exchange'
 " vim-exchange Settings {{{
@@ -187,12 +157,26 @@ nmap gx  <Plug>(Exchange)
 xmap gx  <Plug>(Exchange)
 " }}}
 
-Plug 'chaoren/vim-wordmotion'
+" }}}
+" ---------------------------------------------------------------------------
+" TEXT OBJECT PLUGS {{{
+" ---------------------------------------------------------------------------
+
+"Plug 'machakann/vim-sandwich' " repeated because sandwich has text objects
+
+Plug 'kana/vim-textobj-user' |
+      \ Plug 'kana/vim-textobj-line' |
+      \ Plug 'kana/vim-textobj-entire'   |
+      \ Plug 'kana/vim-textobj-indent'   |
+      \ Plug 'kana/vim-textobj-function' |
+      \ Plug 'coderifous/textobj-word-column.vim'
 
 " }}}
 " ---------------------------------------------------------------------------
-" MOTIONS/MOVEMENT " {{{
+" MOTION/NAVIGATION PLUGS {{{
 " ---------------------------------------------------------------------------
+
+Plug 'chaoren/vim-wordmotion'
 
 Plug 'justinmk/vim-ipmotion'
 " ipmotion Settings {{{
@@ -201,6 +185,7 @@ let g:ip_skipfold = 1
 "}}}
 
 Plug 'haya14busa/incsearch.vim'
+" incsearch.vim Settings {{{
 " default mappings
 map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
@@ -217,52 +202,50 @@ augroup incsearch-keymap
   autocmd!
   autocmd VimEnter * IncSearchNoreMap <CR> <CR>zz
 augroup END
-
 " }}}
-" ---------------------------------------------------------------------------
-" PANELS/TOGGLEABLE " {{{
-" ---------------------------------------------------------------------------
 
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
 " Tagbar Settings {{{
 nnoremap <Leader>t :TagbarToggle<CR>
 " }}}
 
-Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
-" undotree Settings {{{
-nnoremap <Leader>u :UndotreeToggle<CR>
-function! g:Undotree_CustomMap()
-  nunmap <buffer> <Tab>
-endfunc
 " }}}
+" ---------------------------------------------------------------------------
+" SNIPPET/COMPLETION PLUGS {{{
+" ---------------------------------------------------------------------------
 
-Plug 'ctrlpvim/ctrlp.vim' ", { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
-" CtrlP Settings {{{
-" ignore .git folders to speed up searches
-let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
-let g:ctrlp_max_depth = 15
-" include hidden files
-let g:ctrlp_show_hidden = 1
-" open multiple files in ONE window
-let g:ctrlp_open_multiple_files = '1vr'
-" ctrl-o to open specifically
-let g:ctrlp_arg_map = 1
-" change default CtrlP mapping
-let g:ctrlp_map = '<Leader>p'
-" shortcuts
-nnoremap <Leader>p :CtrlP<CR>
-nnoremap <Leader>b :CtrlPBuffer<CR>
-nnoremap <Leader>- :CtrlPCurFile<CR>
-nnoremap <Leader>+ :CtrlPCurWD<CR>
-nnoremap <Leader><C-R> :CtrlPMRU<CR>
-nnoremap <Leader><C-L> :CtrlPLine<CR>
-nnoremap <Leader><C-P> :CtrlP<Space>
+Plug 'SirVer/UltiSnips'
+
+Plug 'ervandew/supertab'
+
+Plug 'tpope/vim-endwise',
+      \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
+
+" }}}
+" ---------------------------------------------------------------------------
+" FORMAT/SYNTAX PLUGS {{{
+" ---------------------------------------------------------------------------
+
+Plug 'junegunn/gv.vim',    { 'on': 'GV' }
+
+Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
+
+Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
+" vim-easy-align Settings {{{
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+vmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
 " }}}
 
 " }}}
 " ---------------------------------------------------------------------------
-" APPEARANCE/UI {{{
+" APPEARANCE/UI PLUGS {{{
 " ---------------------------------------------------------------------------
+
+Plug 'gcavallanti/vim-noscrollbar'
+
+Plug 'AssailantLF/vim-active-numbers' " My plugin <3
 
 Plug 'mhinz/vim-Startify'
 " Startify Settings {{{
@@ -394,29 +377,14 @@ function! TagbarStatusFunc(current, sort, fname, ...) abort
   let g:lightline.fname = a:fname
   return lightline#statusline(0)
 endfunction
-
 " }}}}
 " }}}
 
-Plug 'kkoenig/wimproved.vim' " Windows only
-" wimproved.vim Settings {{{
-if s:is_windows
-  " toggle fullscreen
-  nnoremap <F11> :WToggleFullscreen<CR>
-  " fix maximized borders, if they're cut off
-  nnoremap <Leader>W :WToggleClean<CR>:WToggleClean<CR>
-
-  augroup wimproved
-    au!
-    " Maximize & fix cut off borders
-    au GUIEnter * simalt ~x | WToggleClean
-  augroup END
-endif
+Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' }
+" Goyo Settings {{{
+" toggle Goyo (distraction free editing)
+nnoremap <Leader>G :Goyo<CR>
 " }}}
-
-Plug 'AssailantLF/vim-active-numbers' " My plugin <3
-
-Plug 'gcavallanti/vim-noscrollbar'
 
 Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
 " Rainbow Parenthesis Settings {{{
@@ -426,29 +394,9 @@ augroup rainbow_filetypes
 augroup END
 " }}}
 
-Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
-" vim-easy-align Settings {{{
-" Start interactive EasyAlign in visual mode (e.g. vipga)
-vmap ga <Plug>(EasyAlign)
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
-" }}}
-
-Plug 'junegunn/goyo.vim',         { 'on': 'Goyo' }
-" Goyo Settings {{{
-" toggle Goyo (distraction free editing)
-nnoremap <Leader>G :Goyo<CR>
-" }}}
-
-Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
-
-Plug 'Yggdroot/indentLine',       { 'on': 'IndentLinesEnable' }
+Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' }
 " indentLine Settings {{{
-" fix for lazy loading
-au! User indentLine doau indentLine Syntax | au BufRead * IndentLinesReset
-
 nnoremap <Leader>i :IndentLinesToggle<CR>
-
 " use custom filetype detection for better vim-plug compatibility
 let g:indentLine_enabled = 0
 let g:indentLine_fileType = ['']
@@ -457,6 +405,52 @@ augroup ft_indentLine
   au FileType c,cpp IndentLinesEnable
 augroup END
 " }}}
+
+if s:is_windows
+  Plug 'kkoenig/wimproved.vim'
+  " wimproved.vim Settings {{{
+  " toggle fullscreen
+  nnoremap <F11> :WToggleFullscreen<CR>
+  " Fix GVim's ugly window border
+  augroup Wimproved
+    au! GUIEnter * WToggleClean
+  augroup END
+endif
+" }}}
+
+" }}}
+" ---------------------------------------------------------------------------
+" CONVENIENCE/MISC PLUGS " {{{
+" ---------------------------------------------------------------------------
+
+Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
+" undotree Settings {{{
+nnoremap <Leader>u :UndotreeToggle<CR>
+function! g:Undotree_CustomMap()
+  nunmap <buffer> <Tab>
+endfunc
+" }}}
+
+Plug 'tpope/vim-rsi'
+
+Plug 'tpope/vim-repeat'
+
+Plug 'tpope/vim-sleuth'
+
+Plug 'tpope/vim-unimpaired'
+
+Plug 'Konfekt/FastFold'
+
+Plug 'dietsche/vim-lastplace'
+
+Plug 'ludovicchabant/vim-gutentags'
+
+" Plug 'AndrewRadev/switch.vim'
+
+" Plug 'AndrewRadev/splitjoin.vim',
+"       \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'python', 'ruby', 'go' ] }
+
+" Plug 'mhinz/vim-grepper'
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -480,7 +474,7 @@ set showcmd
 set sidescroll=8
 set backspace=indent,eol,start
 set history=10000
-set undolevels=100000
+set undolevels=10000
 set complete=.,w,b,t
 set synmaxcol=1024
 set nrformats-=octal
@@ -500,7 +494,7 @@ if exists('&belloff')
   set belloff=all
 endif
 
-" system clipboard uses the unnamedplus register
+" use + register in place of unnamed, & * reg for yanked text
 set clipboard^=unnamedplus,unnamed
 
 " command-line completion settings
@@ -570,7 +564,7 @@ set shiftwidth=4 softtabstop=-1 expandtab
 
 " indenting/formatting
 set autoindent
-set smartindent
+set smartindent " TODO: try cindent
 set textwidth=80
 set encoding=utf-8
 
@@ -614,7 +608,7 @@ if exists('g:noscrollbar_loaded')
 else
   set statusline+=\ %P
 endif
-set statusline+=%8(%l,%v%)\ 
+exe 'set statusline+=%8(%l,%v%)\ '
 
 " Disable Background Color Erase (BCE) so that color schemes
 " render properly when inside 256-color tmux and GNU screen.
@@ -625,21 +619,27 @@ endif
 augroup vimrc_appearance_and_formatting
   au!
 
-  " I want these format options everywhere
+  " I want these format options by default
   au FileType * set formatoptions=rq1j
 
-  " also fonts
   if s:is_windows
-    set guifont=Consolas:h9
+    " Maximize window
+    au GUIEnter * simalt ~x
+    " Fonts: glorious notepad default
+    if s:is_nvim
+      GuiFont Consolas:h9
+    else
+      set guifont=Consolas:h9
+    endif
   else
-    set guifont=DejaVu\ Sans\ Mono\ 9
+    " Unix deserves a nicer font
+    if s:is_nvim
+      GuiFont DejaVu Sans Mono:h9
+    else
+      set guifont=DejaVu\ Sans\ Mono\ 9
+    endif
   endif
-  if s:is_nvim
-    " Neovim-qt Guifont command
-    command -nargs=? Guifont call rpcnotify(0, 'Gui', 'SetFont', "<args>") | let g:Guifont="<args>"
-    " Set font
-    Guifont DejaVu Sans Mono:h9
-  endif
+
   " resize vim-windows when program window is resized
   au VimResized * :wincmd =
 
@@ -665,9 +665,10 @@ augroup END
 " disabled
 noremap  <F1>    <Nop>
 inoremap <F1>    <Nop>
-noremap  <Space> <Nop>
 noremap  <S-CR>  <Nop>
-noremap  <CR>    <Nop>
+noremap  <Space> <Nop>
+" for c<Space>
+ounmap <Space>
 
 " go back to last buffer
 noremap <Backspace> <C-^>
@@ -725,6 +726,7 @@ nnoremap - :e <C-R>=fnameescape(expand('%:p:h'))<CR>/<CR>
 " open current working directory
 nnoremap + :e .<CR>
 
+" | and _ for split windows
 nnoremap <expr><silent> \| !v:count ? "<C-W>v<C-W><Right>" : '\|'
 nnoremap <expr><silent> _  !v:count ? "<C-W>s<C-W><Down>"  : '_'
 
@@ -740,13 +742,11 @@ vnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
 xnoremap p p`]
 nnoremap p p`]
 
-" visually select the last paste or change
+" visually select the last change or yank
 nnoremap gp `[v`]
 
-" esc to stop inserting in Neovim terminal mode
-if s:is_nvim
-  tnoremap <Esc><Esc> <C-\><C-N>
-endif
+" i_CTRL-[ finger slip
+inoremap <C-]> <Esc>
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -873,6 +873,7 @@ endf
 " }}}
 nnoremap <silent> dr  :<C-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<CR>g@
 nnoremap <silent> drr :<C-u>call <sid>set_reg(v:register)<cr>0:<C-u>set opfunc=<sid>replace_without_yank<CR>g@$
+" slightly related key-press-saver
 xnoremap R "0p
 
 " }}}
@@ -909,6 +910,8 @@ nnoremap <Leader># /\v\d+<CR>
 " search for all brackets
 noremap <Leader>{ ?[{}]<CR>
 noremap <Leader>} /[{}]<CR>
+ounmap <Leader>{
+ounmap <Leader>}
 
 " toggle location & quickfix lists {{{
 " (from vimwiki)
@@ -943,7 +946,6 @@ nnoremap <silent> <Leader>l :call ToggleList("Location List", 'l')<CR>
 nnoremap <silent> <Leader>q :call ToggleList("Quickfix List", 'c')<CR>
 
 " alternate between header and source files {{{
-" <Leader>A or :A
 " (credit to junegunn's vimrc)
 function! s:A()
   let name = expand('%:r')
@@ -984,7 +986,7 @@ nnoremap \y ggVG"+y
 " ===========================================================================
 " everything else goes here at the tail-end
 
-" delete all buffers and open Startify (if possible)
+" delete all buffers and open Startify
 function! s:RestartVim()
   if exists('g:loaded_startify')
     SClose
@@ -1020,74 +1022,6 @@ function! s:DoubleView()
   let &scrolloff=s:DV_so
 endfunction " }}}
 command! DoubleView call <SID>DoubleView()
-
-" Follow symlinks {{{
-" Sources:
-"  - https://github.com/tpope/vim-fugitive/issues/147#issuecomment-7572351
-"  - http://www.reddit.com/r/vim/comments/yhsn6/is_it_possible_to_work_around_the_symlink_bug/c5w91qw
-if s:is_windows
-  function! MyFollowSymlink(...)
-    let lit = a:0 ? a:1 : '%:p'
-    let recur = a:0 > 1 ? a:2 : 10
-    if !recur
-      return
-    endif
-    let fpath = expand(lit)
-    let ftail = expand(lit.':t')
-    let dirstr = system('dir ' . fpath . '*')
-
-    " check if current argument is a symlink
-    if (match(dirstr, '<SYMLINK..\s\+' . ftail . ' [') == -1)
-      " if not, check if parent dir is symlink, up to $recur directories
-      call MyFollowSymlink(lit . ':h', recur-1)
-    else
-      " extract symlink path
-      let substr = '.*<SYMLINK..\s\+' . ftail . ' \[\(.\{-}\)\].*'
-      let sympath = substitute(dirstr, substr, '\1', "")
-      " figure out current file's path
-      let resolvedfile = filereadable(sympath) ?  sympath :
-            \ findfile(expand('%:t'), sympath, '**')
-
-      " 'follow' the symlink
-      if bufexists(resolvedfile)
-        exec 'buffer ' . resolvedfile . ' | bw '.fpath
-      else
-        silent exec 'file ' . resolvedfile . ' | bw '.fpath
-        exec 'file ' . expand('%:p') . ' | w! | doau BufRead'
-      endif
-    endif
-  endfunction
-  " au BufReadPost * call MyFollowSymlink('<afile>:p')
-else
-  function! MyFollowSymlink(...)
-    let fname = a:0 ? a:1 : expand('%')
-    if fname =~ '^\w\+:/'
-      " Do not mess with 'fugitive://' etc.
-      return
-    endif
-    let fname = simplify(fname)
-    let resolvedfile = resolve(fname)
-    if resolvedfile == fname
-      return
-    endif
-    let resolvedfile = fnameescape(resolvedfile)
-    let sshm = &shm
-    set shortmess+=A  " silence ATTENTION message about swap file (would get displayed twice)
-    exec 'file ' . resolvedfile
-    let &shm=sshm
-
-    " Re-init fugitive.
-    call fugitive#detect(resolvedfile)
-    if &modifiable
-      " Only display a note when editing a file, especially not for `:help`.
-      redraw  " Redraw now, to avoid hit-enter prompt.
-      echomsg 'Resolved symlink: =>' resolvedfile
-    endif
-  endfunction
-  " au BufReadPost * call MyFollowSymlink('<afile>')
-endif
-" }}}
-command! FollowSymlink call MyFollowSymlink()
 
 " custom text objects
 let s:separators = exists('g:loaded_targets') ? [ '`', '%']
