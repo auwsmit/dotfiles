@@ -225,7 +225,14 @@ nnoremap <Leader>t :TagbarToggle<CR>
 " SNIPPET/COMPLETION PLUGINS {{{
 " ---------------------------------------------------------------------------
 
-Plug 'SirVer/UltiSnips'
+Plug 'SirVer/UltiSnips', { 'on': 'UltiSnipsLoad' }
+" UltiSnips Settings {{{
+" this seems to somehow decrease load time
+" idk maybe it's magic
+augroup UltiSnipsAutoload
+  au! VimEnter * silent! UltiSnipsLoad
+augroup END
+" }}}
 
 Plug 'ervandew/supertab'
 
@@ -445,6 +452,9 @@ Plug 'Konfekt/FastFold'
 Plug 'dietsche/vim-lastplace'
 
 Plug 'ludovicchabant/vim-gutentags'
+" gutentags Settings {{{
+let g:gutentags_enabled = 0
+" }}}
 
 Plug 'mhinz/vim-Startify'
 " Startify Settings {{{
@@ -492,6 +502,9 @@ set autoread
 set nolazyredraw
 set gdefault
 set showcmd
+set nostartofline
+set path+=**
+set modeline
 set sidescroll=8
 set backspace=indent,eol,start
 set history=10000
@@ -501,11 +514,9 @@ set synmaxcol=1024
 set nrformats-=octal
 set fileformat=unix
 set virtualedit=all
-set nostartofline
 set sessionoptions-=options
 set sessionoptions-=folds
-set path+=**
-set modeline
+set clipboard^=unnamedplus,unnamed
 if s:is_windows
   set makeprg=build.bat
 endif
@@ -514,9 +525,6 @@ set vb t_vb=
 if exists('&belloff')
   set belloff=all
 endif
-
-" use + register in place of unnamed, & * reg for yanked text
-set clipboard^=unnamedplus,unnamed
 
 " command-line completion settings
 set wildmenu
@@ -654,11 +662,7 @@ augroup vimrc_appearance_and_formatting
     endif
   else
     " Unix deserves a nicer font
-    if s:is_nvim
-      GuiFont DejaVu Sans Mono:h9
-    else
-      set guifont=DejaVu\ Sans\ Mono\ 9
-    endif
+    set guifont=DejaVu\ Sans\ Mono\ 9
   endif
 
   " resize vim-windows when program window is resized
