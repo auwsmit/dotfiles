@@ -33,7 +33,7 @@ let maplocalleader = "\\"
 call plug#begin()
 
 " ---------------------------------------------------------------------------
-" FILE/BUFFER PLUGS {{{
+" FILE/BUFFER PLUGINS {{{
 " ---------------------------------------------------------------------------
 
 Plug 'tpope/vim-eunuch'
@@ -133,7 +133,7 @@ augroup END
 
 " }}}
 " ---------------------------------------------------------------------------
-" OPERATOR PLUGS {{{
+" OPERATOR PLUGINS {{{
 " ---------------------------------------------------------------------------
 
 Plug 'tpope/vim-commentary'
@@ -159,10 +159,10 @@ xmap gx  <Plug>(Exchange)
 
 " }}}
 " ---------------------------------------------------------------------------
-" TEXT OBJECT PLUGS {{{
+" TEXT OBJECT PLUGINS {{{
 " ---------------------------------------------------------------------------
 
-"Plug 'machakann/vim-sandwich' " repeated because sandwich has text objects
+"Plug 'machakann/vim-sandwich' " repeated: sandwich also has text objects
 
 Plug 'kana/vim-textobj-user' |
       \ Plug 'kana/vim-textobj-line' |
@@ -173,7 +173,7 @@ Plug 'kana/vim-textobj-user' |
 
 " }}}
 " ---------------------------------------------------------------------------
-" MOTION/NAVIGATION PLUGS {{{
+" MOTION/NAVIGATION PLUGINS {{{
 " ---------------------------------------------------------------------------
 
 Plug 'chaoren/vim-wordmotion'
@@ -206,7 +206,7 @@ let g:ip_skipfold = 1
 
 Plug 'junegunn/vim-slash'
 " vim-slash Settings {{{
-noremap <Plug>(slash-after) zzzv
+noremap <Plug>(slash-after) zz
 " }}}
 
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
@@ -216,7 +216,7 @@ nnoremap <Leader>t :TagbarToggle<CR>
 
 " }}}
 " ---------------------------------------------------------------------------
-" SNIPPET/COMPLETION PLUGS {{{
+" SNIPPET/COMPLETION PLUGINS {{{
 " ---------------------------------------------------------------------------
 
 Plug 'SirVer/UltiSnips'
@@ -228,7 +228,7 @@ Plug 'tpope/vim-endwise',
 
 " }}}
 " ---------------------------------------------------------------------------
-" FORMAT/SYNTAX PLUGS {{{
+" FORMAT/SYNTAX PLUGINS {{{
 " ---------------------------------------------------------------------------
 
 Plug 'junegunn/gv.vim',    { 'on': 'GV' }
@@ -245,7 +245,7 @@ nmap ga <Plug>(EasyAlign)
 
 " }}}
 " ---------------------------------------------------------------------------
-" APPEARANCE/UI PLUGS {{{
+" APPEARANCE/UI PLUGINS {{{
 " ---------------------------------------------------------------------------
 
 Plug 'gcavallanti/vim-noscrollbar'
@@ -414,7 +414,7 @@ endif
 
 " }}}
 " ---------------------------------------------------------------------------
-" CONVENIENCE/MISC PLUGS " {{{
+" CONVENIENCE/MISC PLUGINS " {{{
 " ---------------------------------------------------------------------------
 
 Plug 'tpope/vim-rsi'
@@ -430,6 +430,15 @@ Plug 'Konfekt/FastFold'
 Plug 'dietsche/vim-lastplace'
 
 Plug 'ludovicchabant/vim-gutentags'
+
+Plug 'machakann/vim-highlightedyank'
+" vim-highlightedyank Settings {{{
+map y <Plug>(highlightedyank)
+" colorscheme independent highlight
+augroup CustomHighlightYankRegion
+  au! VimEnter * hi HighlightedyankRegion cterm=reverse gui=reverse
+augroup END
+" }}}
 
 Plug 'mhinz/vim-Startify'
 " Startify Settings {{{
@@ -681,7 +690,7 @@ noremap <Backspace> <C-^>
 
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
-nnoremap Y y$
+nmap Y y$
 
 " U as a more sensible redo
 nnoremap U <C-R>
