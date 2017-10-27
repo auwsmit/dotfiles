@@ -235,7 +235,6 @@ augroup UltiSnipsAutoload
   au!
   au VimEnter * silent! UltiSnipsLoad
 augroup END
-lorem
 " }}}
 
 Plug 'ervandew/supertab'
