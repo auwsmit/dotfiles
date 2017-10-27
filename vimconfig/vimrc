@@ -13,6 +13,7 @@ let s:is_mac = has('gui_macvim') || has('mac')
 let s:is_windows = has('win32') || has('win64')
 let s:is_nvim = has('nvim')
 
+" detect .vim directory
 let s:myvimdir ="~/.vim"
 if s:is_windows
   let s:myvimdir ="~/vimfiles"
@@ -21,7 +22,6 @@ elseif s:is_nvim
 endif
 
 let mapleader = "\<Space>"
-" in case a plugin uses localleader
 let maplocalleader = "\\"
 
 " }}}
@@ -186,11 +186,13 @@ let g:ip_skipfold = 1
 
 " Plug 'haya14busa/incsearch.vim'
 " " incsearch.vim Settings {{{
+
 " " default mappings
 " map /  <Plug>(incsearch-forward)
 " map ?  <Plug>(incsearch-backward)
 " map g/ <Plug>(incsearch-stay)
-" " auto nohlsearch
+
+" " auto nohlsearch (also center and open folds)
 " let g:incsearch#auto_nohlsearch = 1
 " map n  <Plug>(incsearch-nohl-n)zzzv
 " map N  <Plug>(incsearch-nohl-N)zzzv
@@ -205,14 +207,11 @@ let g:ip_skipfold = 1
 " " }}}
 
 Plug 'junegunn/vim-slash' | Plug 'henrik/vim-indexed-search'
-" vim-slash Settings {{{
-noremap <Plug>(slash-after) zz
-" }}}
 " vim-indexed-search Settings {{{
 " no mappings
 let g:indexed_search_mappings = 0
 " vim-slash and indexed-search: UNITE!!!
-noremap <Plug>(slash-after) zz:ShowSearchIndex<CR>
+noremap <Plug>(slash-after) :ShowSearchIndex<CR>
 " }}}
 
 
@@ -1004,9 +1003,10 @@ nnoremap \y ggVG"+y
 
 " }}}
 " ===========================================================================
-" MISC FUNCTIONS, COMMANDS, ETC. {{{
+" MISCELLANEOUS {{{
 " ===========================================================================
-" everything else goes here at the tail-end
+" Other functions, commands, settings,
+" etc.  that don't fit elsewhere go here
 
 " delete all buffers and open Startify
 function! s:RestartVim()
