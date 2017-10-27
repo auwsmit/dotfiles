@@ -204,10 +204,17 @@ let g:ip_skipfold = 1
 " augroup END
 " " }}}
 
-Plug 'junegunn/vim-slash'
+Plug 'junegunn/vim-slash' | Plug 'henrik/vim-indexed-search'
 " vim-slash Settings {{{
 noremap <Plug>(slash-after) zz
 " }}}
+" vim-indexed-search Settings {{{
+" no mappings
+let g:indexed_search_mappings = 0
+" vim-slash and indexed-search: UNITE!!!
+noremap <Plug>(slash-after) zz:ShowSearchIndex<CR>
+" }}}
+
 
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
 " Tagbar Settings {{{
@@ -251,6 +258,15 @@ nmap ga <Plug>(EasyAlign)
 Plug 'gcavallanti/vim-noscrollbar'
 
 Plug 'AssailantLF/vim-active-numbers' " My plugin <3
+
+Plug 'machakann/vim-highlightedyank'
+" vim-highlightedyank Settings {{{
+map y <Plug>(highlightedyank)
+" colorscheme independent highlight
+augroup CustomHighlightYankRegion
+  au! VimEnter * hi HighlightedyankRegion cterm=reverse gui=reverse
+augroup END
+" }}}
 
 Plug 'itchyny/lightline.vim'
 " lightline Settings {{{
@@ -430,15 +446,6 @@ Plug 'Konfekt/FastFold'
 Plug 'dietsche/vim-lastplace'
 
 Plug 'ludovicchabant/vim-gutentags'
-
-Plug 'machakann/vim-highlightedyank'
-" vim-highlightedyank Settings {{{
-map y <Plug>(highlightedyank)
-" colorscheme independent highlight
-augroup CustomHighlightYankRegion
-  au! VimEnter * hi HighlightedyankRegion cterm=reverse gui=reverse
-augroup END
-" }}}
 
 Plug 'mhinz/vim-Startify'
 " Startify Settings {{{
