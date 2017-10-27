@@ -98,7 +98,8 @@ let g:ctrlp_map = '<Leader>p'
 
 " free <Space> in operator mode
 augroup CtrlPLeader
-  au! VimEnter * ounmap <Leader>p
+  au!
+  au VimEnter * ounmap <Leader>p
 augroup END
 
 " shortcuts
@@ -144,7 +145,8 @@ Plug 'machakann/vim-sandwich' " (tpope surround alternative)
 let g:sandwich_no_default_key_mappings = 1
 let g:operator_sandwich_no_default_key_mappings = 1
 augroup SandwichSurround
-  au! VimEnter * runtime macros/sandwich/keymap/surround.vim
+  au!
+  au VimEnter * runtime macros/sandwich/keymap/surround.vim
 augroup END
 " }}}
 
@@ -230,8 +232,10 @@ Plug 'SirVer/UltiSnips', { 'on': 'UltiSnipsLoad' }
 " this seems to somehow decrease load time
 " idk maybe it's magic
 augroup UltiSnipsAutoload
-  au! VimEnter * silent! UltiSnipsLoad
+  au!
+  au VimEnter * silent! UltiSnipsLoad
 augroup END
+lorem
 " }}}
 
 Plug 'ervandew/supertab'
@@ -270,7 +274,8 @@ Plug 'machakann/vim-highlightedyank'
 map y <Plug>(highlightedyank)
 " colorscheme independent highlight
 augroup CustomHighlightYankRegion
-  au! VimEnter * hi HighlightedyankRegion cterm=reverse gui=reverse
+  au!
+  au VimEnter * hi HighlightedyankRegion cterm=reverse gui=reverse
 augroup END
 " }}}
 
