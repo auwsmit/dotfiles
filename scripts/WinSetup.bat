@@ -14,10 +14,12 @@ set home_dir=%userprofile%\
 :: 2. Backup the previous config if it exists.
 :: 3. Make symbolic links.
 
+:: TODO: make a function to make this easier to modify
+
 :: Backup folder
 mkdir "%home_dir%old_dotfiles"
 
-:: Regular Vim
+:: Regular vim
 dir "%home_dir%vimfiles*" | find "<SYMLINKD>" && (
     rmdir "%home_dir%vimfiles"
 )
