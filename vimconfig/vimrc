@@ -11,13 +11,12 @@
 let s:is_cygwin = has('win32unix') || has('win64unix')
 let s:is_mac = has('gui_macvim') || has('mac')
 let s:is_windows = has('win32') || has('win64')
-let s:is_nvim = has('nvim')
 
 " detect .vim directory
 let s:myvimdir ="~/.vim"
 if s:is_windows
   let s:myvimdir ="~/vimfiles"
-elseif s:is_nvim
+elseif has('nvim')
   let s:myvimdir ="~/.config/nvim"
 endif
 
@@ -186,36 +185,13 @@ Plug 'justinmk/vim-ipmotion'
 let g:ip_skipfold = 1
 "}}}
 
-" Plug 'haya14busa/incsearch.vim'
-" " incsearch.vim Settings {{{
-
-" " default mappings
-" map /  <Plug>(incsearch-forward)
-" map ?  <Plug>(incsearch-backward)
-" map g/ <Plug>(incsearch-stay)
-
-" " auto nohlsearch (also center and open folds)
-" let g:incsearch#auto_nohlsearch = 1
-" map n  <Plug>(incsearch-nohl-n)zzzv
-" map N  <Plug>(incsearch-nohl-N)zzzv
-" map *  <Plug>(incsearch-nohl-*)zzzv
-" map #  <Plug>(incsearch-nohl-#)zzzv
-" map g* <Plug>(incsearch-nohl-g*)zzzv
-" map g# <Plug>(incsearch-nohl-g#)zzzv
-" augroup incsearch-keymap
-"   autocmd!
-"   autocmd VimEnter * IncSearchNoreMap <CR> <CR>zz
-" augroup END
-" " }}}
-
 Plug 'junegunn/vim-slash' | Plug 'henrik/vim-indexed-search'
 " vim-indexed-search Settings {{{
 " no mappings
 let g:indexed_search_mappings = 0
 " vim-slash and indexed-search: UNITE!!!
-noremap <Plug>(slash-after) :ShowSearchIndex<CR>
+noremap <silent> <Plug>(slash-after) :ShowSearchIndex<CR>
 " }}}
-
 
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
 " Tagbar Settings {{{
@@ -227,15 +203,7 @@ nnoremap <Leader>t :TagbarToggle<CR>
 " SNIPPET/COMPLETION PLUGINS {{{
 " ---------------------------------------------------------------------------
 
-Plug 'SirVer/UltiSnips', { 'on': 'UltiSnipsLoad' }
-" UltiSnips Settings {{{
-" this seems to somehow decrease load time
-" idk maybe it's magic
-augroup UltiSnipsAutoload
-  au!
-  au VimEnter * silent! UltiSnipsLoad
-augroup END
-" }}}
+Plug 'SirVer/UltiSnips'
 
 Plug 'ervandew/supertab'
 
@@ -462,10 +430,10 @@ let g:gutentags_enabled = 0
 
 Plug 'mhinz/vim-Startify'
 " Startify Settings {{{
-augroup startify_maps
-  au!
-  au User Startified setlocal relativenumber number
-augroup END
+" augroup startify_numbers
+"   au!
+"   au User Startified setlocal relativenumber number
+" augroup END
 let g:ctrlp_reuse_window = 'startify'
 let g:startify_files_number = 6
 let g:startify_session_delete_buffers = 1
@@ -659,8 +627,8 @@ augroup vimrc_appearance_and_formatting
     " Maximize window
     au GUIEnter * simalt ~x
     " Fonts: glorious notepad default
-    if s:is_nvim
-      GuiFont Consolas:h9
+    if has('nvim')
+      " GuiFont Consolas:h9
     else
       set guifont=Consolas:h9
     endif
