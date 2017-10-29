@@ -92,8 +92,7 @@ augroup vimrc_general
   au!
 
   " more accurate syntax highlighting
-  let g:vimsyn_maxlines = 400
-  au BufEnter * syntax sync maxlines=400
+  au BufEnter * syntax sync fromstart
 
   " make 'nobuflisted' persist when editing a file
   if (v:version > 704) || (v:version == 704 && has('patch786'))
@@ -110,8 +109,8 @@ augroup vimrc_general
         endif
       endif
     endfunction
-    au OptionSet buflisted call <SID>PersistNobl('option')
-    au BufEnter * call <SID>PersistNobl('buf')
+    au OptionSet buflisted call <sid>PersistNobl('option')
+    au BufEnter * call <sid>PersistNobl('buf')
   endif
 
 augroup END
@@ -173,7 +172,7 @@ if exists('g:noscrollbar_loaded')
 else
   set statusline+=\ %P
 endif
-exe 'set statusline+=%8(%l,%v%)\ '
+execute 'set statusline+=%8(%l,%v%)\ '
 
 " Disable Background Color Erase (BCE) so that color schemes
 " render properly when inside 256-color tmux and GNU screen.
@@ -224,22 +223,22 @@ augroup END
 " it's good to remember these in case I'm stuck with vanilla vi/vim
 
 " disabled
-noremap  <F1>    <Nop>
-inoremap <F1>    <Nop>
-noremap  <S-CR>  <Nop>
-noremap  <Space> <Nop>
-" for c<Space>
-ounmap <Space>
+noremap  <f1>    <nop>
+inoremap <f1>    <nop>
+noremap  <s-cr>  <nop>
+noremap  <space> <nop>
+" for c<space>
+ounmap <space>
 
 " go back to last buffer
-noremap <Backspace> <C-^>
+noremap <backspace> <c-^>
 
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
 nmap Y y$
 
 " U as a more sensible redo
-nnoremap U <C-R>
+nnoremap U <c-r>
 
 " Q to replay the q register
 " I have never wanted to use Ex mode.
@@ -248,14 +247,14 @@ nnoremap Q @q
 " [S]plit lines (sister to [J]oin line) {{{
 " cc still changes the whole line
 function! s:SplitLine()
-  exe "normal! i\<CR>\<Esc>^gk"
+  exe "normal! i\<cr>\<esc>^gk"
   silent! substitute/\v +$//
   silent! nohlsearch
   call histdel("search", -1)
   normal! $
 endfunction
 " }}}
-nnoremap S :call <SID>SplitLine()<CR>
+nnoremap S :call <sid>SplitLine()<cr>
 
 " center when jumping {{{
 function! s:Center()
@@ -266,26 +265,26 @@ function! s:Center()
 endfunction
 " }}}
 " new jump list mnemonic: previous, next
-nnoremap <silent> <C-P> <C-O>:call <SID>Center()<CR>
-nnoremap <silent> <C-N> <C-I>:call <SID>Center()<CR>
+nnoremap <silent> <c-p> <c-o>:call <sid>Center()<cr>
+nnoremap <silent> <c-n> <c-i>:call <sid>Center()<cr>
 
 " easier scrolling
-nnoremap <C-J> <C-D>
-nnoremap <C-K> <C-U>
+nnoremap <c-j> <c-d>
+nnoremap <c-k> <c-u>
 
 " org-style fold viewing
-nnoremap <Tab> za
-nnoremap <S-Tab> zM
+nnoremap <tab> za
+nnoremap <s-tab> zM
 
 " open current file's directory
-nnoremap - :e <C-R>=fnameescape(expand('%:p:h'))<CR>/<CR>
+nnoremap - :e <c-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
 
 " open current working directory
-nnoremap + :e .<CR>
+nnoremap + :e .<cr>
 
 " | and _ for split windows
-nnoremap <expr><silent> \| !v:count ? "<C-W>v<C-W><Right>" : '\|'
-nnoremap <expr><silent> _  !v:count ? "<C-W>s<C-W><Down>"  : '_'
+nnoremap <expr><silent> \| !v:count ? "<c-w>v<c-w><right>" : '\|'
+nnoremap <expr><silent> _  !v:count ? "<c-w>s<c-w><down>"  : '_'
 
 " move by wrapped lines instead of line numbers, unless the motion is counted
 " also set a mark for movements across 5 lines or more
@@ -303,7 +302,7 @@ nnoremap p p`]
 nnoremap gp `[v`]
 
 " i_CTRL-[ finger slip
-inoremap <C-]> <Esc>
+inoremap <c-]> <esc>
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -311,36 +310,36 @@ inoremap <C-]> <Esc>
 " ---------------------------------------------------------------------------
 
 " Emacs cancel blasphemy
-inoremap <C-G> <Esc>
-cnoremap <C-G> <C-C>
-xnoremap <C-G> <Esc>
+inoremap <c-g> <esc>
+cnoremap <c-g> <c-c>
+xnoremap <c-g> <esc>
 
 " from tpope's rsi
-inoremap <C-A> <C-O>^
-inoremap <expr> <C-E> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<Lt>C-E>":"\<Lt>End>"
+inoremap <c-a> <c-o>^
+inoremap <expr> <c-e> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<lt>C-E>":"\<lt>End>"
 
 " expand-o-brackets
-inoremap {<Tab> {<CR>}<Esc>O
-inoremap {; {<CR>};<Esc>O
+inoremap {<tab> {<cr>}<esc>O
+inoremap {; {<cr>};<esc>O
 
 " change directories (minor time saver)
-nnoremap cd :cd<Space>
+nnoremap cd :cd<space>
 
 " quickly manage buffers
-nnoremap gb :ls<CR>:b<Space>
-nnoremap gB :ls!<CR>:b<Space>
+nnoremap gb :ls<cr>:b<space>
+nnoremap gB :ls!<cr>:b<space>
 
 " resizing windows
-noremap <C-Left>  <C-W><
-noremap <C-Up>    <C-W>+
-noremap <C-Down>  <C-W>-
-noremap <C-Right> <C-W>>
+noremap <c-left>  <c-w><
+noremap <c-up>    <c-w>+
+noremap <c-down>  <c-w>-
+noremap <c-right> <c-w>>
 
 " q to quit help {{{
 " (from Junegunn's vimrc)
 function! s:helpquit()
   if &buftype == 'help'
-    nnoremap <buffer> q :bd<CR>
+    nnoremap <buffer> q :bd<cr>
   endif
 endfunction
 augroup q_for_quit
@@ -371,20 +370,20 @@ function! s:SourceVimscript(type)
   let @" = reg_save
 endfunction
 " }}}
-nnoremap <silent> g: :set opfunc=<SID>SourceVimscript<CR>g@
-vnoremap <silent> g: :<C-U>call <SID>SourceVimscript("visual")<CR>
-nnoremap <silent> g:: :call <SID>SourceVimscript("currentline")<CR>
+nnoremap <silent> g: :set opfunc=<sid>SourceVimscript<cr>g@
+vnoremap <silent> g: :<c-u>call <sid>SourceVimscript("visual")<cr>
+nnoremap <silent> g:: :call <sid>SourceVimscript("currentline")<cr>
 
 " %% for current buffer file name
 " :: for current buffer file path
-cnoremap %% <C-R>=fnameescape(expand('%'))<CR>
-cnoremap :: <C-R>=fnameescape(expand('%:p:h'))<CR>/
+cnoremap %% <c-r>=fnameescape(expand('%'))<cr>
+cnoremap :: <c-r>=fnameescape(expand('%:p:h'))<cr>/
 
 " unimpaired.vim inspired
 " toggle pastemode
 set pastetoggle=cop
 " toggle centering the cursor
-nnoremap coz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>
+nnoremap coz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
 
 " Delete & Replace operator {{{
 " (credit to justinmk's init.vim)
@@ -412,7 +411,7 @@ func! s:replace_without_yank(type) abort
   if a:type ==? 'line' || replace_curlin
     exe "keepjumps normal! '[V']\"".s:rr_reg."p"
   elseif a:type ==? 'block'
-    exe "keepjumps normal! `[\<C-V>`]\"".s:rr_reg."p"
+    exe "keepjumps normal! `[\<c-v>`]\"".s:rr_reg."p"
   else
     "DWIM: if pasting linewise contents in a _characterwise_ motion, trim
     "      surrounding whitespace from the content to be pasted.
@@ -428,8 +427,8 @@ func! s:replace_without_yank(type) abort
 endf
 
 " }}}
-nnoremap <silent> dr  :<C-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<CR>g@
-nnoremap <silent> drr :<C-u>call <sid>set_reg(v:register)<cr>0:<C-u>set opfunc=<sid>replace_without_yank<CR>g@$
+nnoremap <silent> dr  :<c-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<cr>g@
+nnoremap <silent> drr :<c-u>call <sid>set_reg(v:register)<cr>0:<c-u>set opfunc=<sid>replace_without_yank<cr>g@$
 " slightly related key-press-saver
 xnoremap R "0p
 
@@ -438,39 +437,39 @@ xnoremap R "0p
 " LEADER MAPS {{{
 " ---------------------------------------------------------------------------
 
-let mapleader = "\<Space>"
+let mapleader = "\<space>"
 let maplocalleader = "\\"
 
 " edit vimrc
-nnoremap <silent> <Leader>v :edit $MYVIMRC<CR>
-nnoremap <silent> <Leader>V :tabnew $MYVIMRC<CR>
+nnoremap <silent> <leader>v :edit $MYVIMRC<cr>
+nnoremap <silent> <leader>V :tabnew $MYVIMRC<cr>
 
 " shortcuts
-nnoremap <Leader>f :find<Space>
-nnoremap <Leader>s :write<CR>
-nnoremap <Leader>h :help<Space>
+nnoremap <leader>f :find<space>
+nnoremap <leader>s :write<cr>
+nnoremap <leader>h :help<space>
 " :help on the word under the cursor
-nnoremap <Leader>H :help <C-R><C-W><CR>
+nnoremap <leader>H :help <c-r><c-w><cr>
 
 " save my pinky some stress
-nnoremap <Leader><Space> :
-nnoremap <Leader>w <C-w>
+nnoremap <leader><space> :
+nnoremap <leader>w <c-w>
 
 " circular windows
-nnoremap <Leader><Tab> <C-W>w
+nnoremap <leader><tab> <c-w>w
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches
-nnoremap <Leader>/ :lvim //g %<CR>
+nnoremap <leader>/ :lvim //g %<cr>
 
 " search for all numbers
-nnoremap <Leader># /\v\d+<CR>
+nnoremap <leader># /\v\d+<cr>
 
 " search for all brackets
-noremap <Leader>{ ?[{}]<CR>
-noremap <Leader>} /[{}]<CR>
-ounmap <Leader>{
-ounmap <Leader>}
+noremap <leader>{ ?[{}]<cr>
+noremap <leader>} /[{}]<cr>
+ounmap <leader>{
+ounmap <leader>}
 
 " toggle location & quickfix lists {{{
 " (from vimwiki)
@@ -501,8 +500,8 @@ function! ToggleList(bufname, pfx)
   endif
 endfunction
 " }}}
-nnoremap <silent> <Leader>l :call ToggleList("Location List", 'l')<CR>
-nnoremap <silent> <Leader>q :call ToggleList("Quickfix List", 'c')<CR>
+nnoremap <silent> <leader>l :call ToggleList("Location List", 'l')<cr>
+nnoremap <silent> <leader>q :call ToggleList("Quickfix List", 'c')<cr>
 
 " alternate between header and source files {{{
 " (credit to junegunn's vimrc)
@@ -526,12 +525,12 @@ function! s:A()
     endif
   endfor
 endfunction
-command! A call <SID>A()
+command! A call <sid>A()
 " }}}
-nnoremap <Leader>A :A<CR>
+nnoremap <leader>A :A<cr>
 
 " quick scratch buffer
-nnoremap <Leader>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
+nnoremap <leader>S :enew<cr>:setl bt=nofile bh=hide noswf<cr>:set ft=
 
 " copy all to system clipboard
 nnoremap \y ggVG"+y
@@ -555,7 +554,7 @@ function! s:RestartVim()
     setl buftype=nofile bufhidden=wipe
   endif
 endfunction
-command! -bar RestartVim call <SID>RestartVim()
+command! -bar RestartVim call <sid>RestartVim()
 
 " toggle syntax highlighting
 " useful when Vim is crippled by its inefficient highlighting
@@ -564,7 +563,7 @@ function! s:ToggleSyntaxHighlighting()
   exec 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
   let &foldlevel=s:folds
 endfunction
-command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
+command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
 
 " DoubleView {{{
 " Vertically split the current buffer into two windows which will stay
@@ -581,16 +580,16 @@ function! s:DoubleView()
   setl scrollbind
   let &scrolloff=s:DV_so
 endfunction " }}}
-command! DoubleView call <SID>DoubleView()
+command! DoubleView call <sid>DoubleView()
 
 " custom text objects
 let s:separators = exists('g:loaded_targets') ? [ '`', '%']
       \ : [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', '`' ]
 for char in s:separators
-  execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
-  execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
-  execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
-  execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+  execute 'xnoremap i' . char . ' :<c-u>normal! T' . char . 'vt' . char . '<cr>'
+  execute 'onoremap i' . char . ' :normal vi' . char . '<cr>'
+  execute 'xnoremap a' . char . ' :<c-u>normal! F' . char . 'vf' . char . '<cr>'
+  execute 'onoremap a' . char . ' :normal va' . char . '<cr>'
 endfor
 
 " Clear Trailing White spaces
@@ -614,14 +613,14 @@ augroup vimrc_plugin_config
 
   Plug 'tpope/vim-eunuch'
   Plug 'tpope/vim-fugitive' " {{{
-  nnoremap <Leader>gs :Gstatus<CR>
-  nnoremap <Leader>gd :Gdiff<CR>
-  nnoremap <Leader>gD :Gdiff HEAD<CR>
-  nnoremap <Leader>gc :Gcommit<CR>
-  nnoremap <Leader>gl :Git log<CR>
-  nnoremap <Leader>gp :Git push<CR>
-  nnoremap <Leader>gw :Gwrite<CR>
-  nnoremap <Leader>gg :Ggrep<Space>
+  nnoremap <leader>gs :Gstatus<cr>
+  nnoremap <leader>gd :Gdiff<cr>
+  nnoremap <leader>gD :Gdiff HEAD<cr>
+  nnoremap <leader>gc :Gcommit<cr>
+  nnoremap <leader>gl :Git log<cr>
+  nnoremap <leader>gp :Git push<cr>
+  nnoremap <leader>gw :Gwrite<cr>
+  nnoremap <leader>gg :Ggrep<space>
 
   " hide fugitive buffers to reduce buffer list clutter
   au BufReadPost fugitive://* set bufhidden=delete
@@ -636,12 +635,12 @@ augroup vimrc_plugin_config
   let g:loaded_netrwPlugin = 1
 
   " open current file's directory
-  nnoremap <silent> - :Dirvish %<CR>
+  nnoremap <silent> - :Dirvish %<cr>
   " open current working directory
-  nnoremap <silent> + :Dirvish<CR>
+  nnoremap <silent> + :Dirvish<cr>
   " map gh to hide "hidden" files. (Unix only)
   au FileType dirvish nnoremap <buffer> gh
-        \ :g@\v/\.[^\/]+/?$@d<CR>
+        \ :g@\v/\.[^\/]+/?$@d<cr>
   au FileType dirvish set nobuflisted
   " }}}
   Plug 'ctrlpvim/ctrlp.vim' " {{{
@@ -656,31 +655,31 @@ augroup vimrc_plugin_config
   " ctrl-o to open specifically
   let g:ctrlp_arg_map = 1
   " change default CtrlP mapping
-  let g:ctrlp_map = '<Leader>p'
+  let g:ctrlp_map = '<leader>p'
 
-  " free <Space> in operator mode
-  au VimEnter * ounmap <Leader>p
+  " free <space> in operator mode
+  au VimEnter * ounmap <leader>p
 
   " shortcuts
-  nnoremap <Leader>p :CtrlP<CR>
-  nnoremap <Leader>b :CtrlPBuffer<CR>
-  nnoremap <Leader>- :CtrlPCurFile<CR>
-  nnoremap <Leader>+ :CtrlPCurWD<CR>
-  nnoremap <Leader><C-R> :CtrlPMRU<CR>
-  nnoremap <Leader><C-L> :CtrlPLine<CR>
-  nnoremap <Leader><C-P> :CtrlP<Space>
+  nnoremap <leader>p :CtrlP<cr>
+  nnoremap <leader>b :CtrlPBuffer<cr>
+  nnoremap <leader>- :CtrlPCurFile<cr>
+  nnoremap <leader>+ :CtrlPCurWD<cr>
+  nnoremap <leader><c-r> :CtrlPMRU<cr>
+  nnoremap <leader><c-l> :CtrlPLine<cr>
+  nnoremap <leader><c-p> :CtrlP<space>
   " }}}
   Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " {{{
   " close buffer
-  nnoremap gs :Sayonara<CR>
+  nnoremap gs :Sayonara<cr>
   " close buffer, don't close window
-  nnoremap gS :Sayonara!<CR>
+  nnoremap gS :Sayonara!<cr>
   " prompt to close vim when closing the last file
   let g:sayonara_confirm_quit = 1
   " see: 'q to quit help' under KEY MAPPINGS/NORMAL MAPS
   function! s:helpquit()
     if &buftype == 'help'
-      nnoremap <buffer> q :Sayonara<CR>
+      nnoremap <buffer> q :Sayonara<cr>
     endif
   endfunction
   au BufEnter *.txt call s:helpquit()
@@ -726,6 +725,7 @@ augroup vimrc_plugin_config
   " ---------------------------------------------------------------------------
   " MOTION/NAVIGATION PLUGINS {{{
   " ---------------------------------------------------------------------------
+
   Plug 'chaoren/vim-wordmotion'
   Plug 'justinmk/vim-ipmotion' " {{{
   " Skip over closed folds with { and }
@@ -735,17 +735,18 @@ augroup vimrc_plugin_config
   " no mappings
   let g:indexed_search_mappings = 0
   " vim-slash and indexed-search: UNITE!!!
-  noremap <silent> <Plug>(slash-after) :<C-u>ShowSearchIndex<CR>
+  noremap <silent> <Plug>(slash-after) :<c-u>ShowSearchIndex<cr>
   xunmap <Plug>(slash-after)
   " }}}
   Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " {{{
-  nnoremap <Leader>t :TagbarToggle<CR>
+  nnoremap <leader>t :TagbarToggle<cr>
   " }}}
 
   " }}}
   " ---------------------------------------------------------------------------
   " SNIPPET/COMPLETION PLUGINS {{{
   " ---------------------------------------------------------------------------
+
   Plug 'SirVer/UltiSnips'
   Plug 'ervandew/supertab'
   Plug 'tpope/vim-endwise',
@@ -772,12 +773,13 @@ augroup vimrc_plugin_config
   Plug 'gcavallanti/vim-noscrollbar'
   Plug 'AssailantLF/vim-active-numbers' " My plugin <3
   Plug 'machakann/vim-highlightedyank' " {{{
-  map y <Plug>(highlightedyank)
+  nmap y <Plug>(highlightedyank)
+  xmap y <Plug>(highlightedyank)
   " colorscheme independent highlight
   au VimEnter * hi HighlightedyankRegion cterm=reverse gui=reverse
   " }}}
   Plug 'itchyny/lightline.vim' " {{{
-  nnoremap <silent> <Leader>L }:exec lightline#toggle()<CR>``
+  nnoremap <silent> <leader>L }:exec lightline#toggle()<cr>``
 
   " compatibility with other plugins {{{
   let g:lightline = {
@@ -907,26 +909,26 @@ augroup vimrc_plugin_config
   " }}}
   Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' } " {{{
   " toggle Goyo (distraction free editing)
-  nnoremap <Leader>G :Goyo<CR>
+  nnoremap <leader>G :Goyo<cr>
   " }}}
   Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' } " {{{
   au FileType c,cpp,vim,sh,dosbatch,lisp RainbowParentheses
   " }}}
   Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' } " {{{
-  nnoremap <Leader>i :IndentLinesToggle<CR>
+  nnoremap <leader>i :IndentLinesToggle<cr>
   " use custom filetype detection for better vim-plug compatibility
   let g:indentLine_enabled = 0
   let g:indentLine_fileType = ['']
   au FileType c,cpp IndentLinesEnable
   " }}}
-    if s:is_windows
+  if s:is_windows
     Plug 'kkoenig/wimproved.vim' " {{{
-      " toggle fullscreen
-      nnoremap <F11> :WToggleFullscreen<CR>
-      " Fix GVim's ugly window border
-      au GUIEnter * WToggleClean
-  " }}}
-    endif
+    " toggle fullscreen
+    nnoremap <F11> :WToggleFullscreen<cr>
+    " Fix GVim's ugly window border
+    au GUIEnter * WToggleClean
+    " }}}
+  endif
 
   " }}}
   " ---------------------------------------------------------------------------
@@ -950,9 +952,9 @@ augroup vimrc_plugin_config
   let g:startify_session_persistence = 1
   " }}}
   Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' } " {{{
-  nnoremap <Leader>u :UndotreeToggle<CR>
+  nnoremap <leader>u :UndotreeToggle<cr>
   function! g:Undotree_CustomMap()
-    nunmap <buffer> <Tab>
+    nunmap <buffer> <tab>
   endfunction
   " }}}
 
