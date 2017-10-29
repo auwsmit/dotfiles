@@ -20,8 +20,581 @@ elseif has('nvim')
   let s:myvimdir ="~/.config/nvim"
 endif
 
+" }}}
+" ===========================================================================
+" GENERAL SETTINGS {{{
+" ===========================================================================
+
+" sensible options for me
+set hidden
+set incsearch
+set ignorecase
+set smartcase
+set autoread
+set nolazyredraw
+set gdefault
+set showcmd
+set nostartofline
+set path+=**
+set modeline
+set sidescroll=8
+set backspace=indent,eol,start
+set history=10000
+set undolevels=10000
+set complete=.,w,b,t
+set synmaxcol=1024
+set nrformats-=octal
+set fileformat=unix
+set virtualedit=all
+set sessionoptions-=options
+set sessionoptions-=folds
+set clipboard^=unnamedplus,unnamed
+if s:is_windows
+  set makeprg=build.bat
+endif
+silent! set mouse=a
+set vb t_vb=
+if exists('&belloff')
+  set belloff=all
+endif
+
+" command-line completion settings
+set wildmenu
+set wildmode=full
+set wildignore+=.hg,.git,.svn                    " Version control
+set wildignore+=*.aux,*.out,*.toc                " LaTeX intermediate files
+set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg   " binary images
+set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest " compiled object files
+set wildignore+=*.spl                            " compiled spelling word lists
+set wildignore+=*.sw?                            " Vim swap files
+set wildignore+=*.DS_Store                       " OSX garbage
+
+" backups, swapfiles, & undofiles in one place
+let s:tempdir=expand(s:myvimdir."/tmp")
+if !isdirectory(expand(s:tempdir))
+  call mkdir(expand(s:tempdir), "p")
+endif
+set backup
+let &backupdir=s:tempdir
+set swapfile
+let &directory=s:tempdir
+if has('persistent_undo')
+  set undofile
+  let &undodir=s:tempdir
+endif
+
+if s:is_windows && executable('grep')
+  set grepprg=grep\ -n
+endif
+
+" autocmds
+augroup vimrc_general
+  au!
+
+  " more accurate syntax highlighting
+  let g:vimsyn_maxlines = 400
+  au BufEnter * syntax sync maxlines=400
+
+  " make 'nobuflisted' persist when editing a file
+  if (v:version > 704) || (v:version == 704 && has('patch786'))
+    function! s:PersistNobl(type)
+      if a:type == 'option'
+        if &buflisted && exists('b:persist_nobl')
+          unlet b:persist_nobl
+        else
+          let b:persist_nobl = 1
+        endif
+      elseif exists('b:persist_nobl')
+        if b:persist_nobl
+          setl nobuflisted
+        endif
+      endif
+    endfunction
+    au OptionSet buflisted call <SID>PersistNobl('option')
+    au BufEnter * call <SID>PersistNobl('buf')
+  endif
+
+augroup END
+
+" }}}
+" ===========================================================================
+" APPEARANCE AND FORMATTING {{{
+" ===========================================================================
+" some settings will be overwritten when certain filetypes are detected
+" see: filetype-indent-on & ftplugins
+
+" default tab settings
+set smarttab
+set shiftwidth=4 softtabstop=-1 expandtab
+
+" indenting/formatting
+set autoindent
+set smartindent " TODO: try cindent
+set textwidth=80
+set encoding=utf-8
+
+" mostly aesthetic options
+set hlsearch
+set cpoptions+=$
+set foldlevel=999
+set foldmethod=indent
+set guioptions=
+set laststatus=2
+set linebreak
+set list
+set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
+set nonumber relativenumber
+set numberwidth=1
+set ruler
+set splitright
+set t_Co=256
+if has('linebreak')
+  set showbreak=«
+  silent! set breakindent
+else
+  set listchars+=eol:¬
+endif
+
+syntax on
+
+" my 'modifed' version of Bad Wolf
+silent! colorscheme badwolf_flattened
+
+" fallback default colorscheme
+if !exists('g:colors_name')
+  colorscheme desert
+endif
+
+" standard status line if lightline isn't enabled
+" (pretty much the same layout as default lightline)
+set statusline=%<%f\ %h%m%r%=%y
+if exists('g:noscrollbar_loaded')
+  set statusline+=\ %{noscrollbar#statusline()}
+else
+  set statusline+=\ %P
+endif
+exe 'set statusline+=%8(%l,%v%)\ '
+
+" Disable Background Color Erase (BCE) so that color schemes
+" render properly when inside 256-color tmux and GNU screen.
+if &term =~ '256color'
+  set t_ut=
+endif
+
+augroup vimrc_appearance_and_formatting
+  au!
+
+  " I want these format options by default
+  au FileType * set formatoptions=rq1j
+
+  if s:is_windows
+    " Maximize window
+    au GUIEnter * simalt ~x
+    " Fonts: glorious notepad default
+    if has('nvim')
+      " GuiFont Consolas:h9
+    else
+      set guifont=Consolas:h9
+    endif
+  else
+    " Unix deserves a nicer font
+    set guifont=DejaVu\ Sans\ Mono\ 9
+  endif
+
+  " resize vim-windows when program window is resized
+  au VimResized * :wincmd =
+
+  " this makes the trailing space indicator invisible
+  " while typing, otherwise it would drive me crazy
+  au InsertEnter * :set listchars-=trail:■
+  au InsertLeave * :set listchars+=trail:■
+
+augroup END
+
+" }}}
+" ===========================================================================
+" KEY MAPPINGS {{{
+" ===========================================================================
+" anything related to plugins is located
+" under its respective PLUGINS section
+
+" ---------------------------------------------------------------------------
+" REMAPS OF DEFAULTS {{{
+" ---------------------------------------------------------------------------
+" it's good to remember these in case I'm stuck with vanilla vi/vim
+
+" disabled
+noremap  <F1>    <Nop>
+inoremap <F1>    <Nop>
+noremap  <S-CR>  <Nop>
+noremap  <Space> <Nop>
+" for c<Space>
+ounmap <Space>
+
+" go back to last buffer
+noremap <Backspace> <C-^>
+
+" Y yanks until EOL, more like D and C
+" yy still yanks the whole line
+nmap Y y$
+
+" U as a more sensible redo
+nnoremap U <C-R>
+
+" Q to replay the q register
+" I have never wanted to use Ex mode.
+nnoremap Q @q
+
+" [S]plit lines (sister to [J]oin line) {{{
+" cc still changes the whole line
+function! s:SplitLine()
+  exe "normal! i\<CR>\<Esc>^gk"
+  silent! substitute/\v +$//
+  silent! nohlsearch
+  call histdel("search", -1)
+  normal! $
+endfunction
+" }}}
+nnoremap S :call <SID>SplitLine()<CR>
+
+" center when jumping {{{
+function! s:Center()
+  let prev_so = &scrolloff
+  set scrolloff=999
+  redraw
+  let &scrolloff = prev_so
+endfunction
+" }}}
+" new jump list mnemonic: previous, next
+nnoremap <silent> <C-P> <C-O>:call <SID>Center()<CR>
+nnoremap <silent> <C-N> <C-I>:call <SID>Center()<CR>
+
+" easier scrolling
+nnoremap <C-J> <C-D>
+nnoremap <C-K> <C-U>
+
+" org-style fold viewing
+nnoremap <Tab> za
+nnoremap <S-Tab> zM
+
+" open current file's directory
+nnoremap - :e <C-R>=fnameescape(expand('%:p:h'))<CR>/<CR>
+
+" open current working directory
+nnoremap + :e .<CR>
+
+" | and _ for split windows
+nnoremap <expr><silent> \| !v:count ? "<C-W>v<C-W><Right>" : '\|'
+nnoremap <expr><silent> _  !v:count ? "<C-W>s<C-W><Down>"  : '_'
+
+" move by wrapped lines instead of line numbers, unless the motion is counted
+" also set a mark for movements across 5 lines or more
+nnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
+nnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
+vnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
+vnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
+
+" automatically jump to the end of pasted text
+" useful for pasting multi-lines of text
+xnoremap p p`]
+nnoremap p p`]
+
+" visually select the last change or yank
+nnoremap gp `[v`]
+
+" i_CTRL-[ finger slip
+inoremap <C-]> <Esc>
+
+" }}}
+" ---------------------------------------------------------------------------
+" NORMAL MAPS {{{
+" ---------------------------------------------------------------------------
+
+" Emacs cancel blasphemy
+inoremap <C-G> <Esc>
+cnoremap <C-G> <C-C>
+xnoremap <C-G> <Esc>
+
+" from tpope's rsi
+inoremap <C-A> <C-O>^
+inoremap <expr> <C-E> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<Lt>C-E>":"\<Lt>End>"
+
+" expand-o-brackets
+inoremap {<Tab> {<CR>}<Esc>O
+inoremap {; {<CR>};<Esc>O
+
+" change directories (minor time saver)
+nnoremap cd :cd<Space>
+
+" quickly manage buffers
+nnoremap gb :ls<CR>:b<Space>
+nnoremap gB :ls!<CR>:b<Space>
+
+" resizing windows
+noremap <C-Left>  <C-W><
+noremap <C-Up>    <C-W>+
+noremap <C-Down>  <C-W>-
+noremap <C-Right> <C-W>>
+
+" q to quit help {{{
+" (from Junegunn's vimrc)
+function! s:helpquit()
+  if &buftype == 'help'
+    nnoremap <buffer> q :bd<CR>
+  endif
+endfunction
+augroup q_for_quit
+  au!
+  au BufEnter *.txt call s:helpquit()
+augroup END
+" }}}
+
+" Source vimscript operator {{{
+" Nice for quick vimscript testing.
+function! s:SourceVimscript(type)
+  let sel_save = &selection
+  let &selection = "inclusive"
+  let reg_save = @"
+  if a:type == 'line'
+    silent execute "normal! '[V']y"
+  elseif a:type == 'char'
+    silent execute "normal! `[v`]y"
+  elseif a:type == "visual"
+    silent execute "normal! gvy"
+  elseif a:type == "currentline"
+    silent execute "normal! yy"
+  endif
+  let @" = substitute(@", '\n\s*\\', '', 'g')
+  " source the content
+  @"
+  let &selection = sel_save
+  let @" = reg_save
+endfunction
+" }}}
+nnoremap <silent> g: :set opfunc=<SID>SourceVimscript<CR>g@
+vnoremap <silent> g: :<C-U>call <SID>SourceVimscript("visual")<CR>
+nnoremap <silent> g:: :call <SID>SourceVimscript("currentline")<CR>
+
+" %% for current buffer file name
+" :: for current buffer file path
+cnoremap %% <C-R>=fnameescape(expand('%'))<CR>
+cnoremap :: <C-R>=fnameescape(expand('%:p:h'))<CR>/
+
+" unimpaired.vim inspired
+" toggle pastemode
+set pastetoggle=cop
+" toggle centering the cursor
+nnoremap coz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>
+
+" Delete & Replace operator {{{
+" (credit to justinmk's init.vim)
+" why?
+" - repeatable
+" - faster/more convenient than visual-replace
+" - does not modify ' mark
+" - DWIM behavior for linewise => characterwise
+func! s:trimws_ml(s) abort "trim whitespace across multiple lines
+  return substitute(a:s, '^\_s*\(.\{-}\)\_s*$', '\1', '')
+endf
+let s:rr_reg = '"'
+func! s:set_reg(reg_name) abort
+  let s:rr_reg = a:reg_name
+endf
+func! s:replace_without_yank(type) abort
+  let rr_orig = getreg(s:rr_reg, 1) "save registers and types to restore later.
+  let rr_type = getregtype(s:rr_reg)
+  let ur_orig = getreg('"', 1)
+  let ur_type = getregtype('"')
+  let sel_save = &selection
+  let &selection = "inclusive"
+  let replace_curlin = (1==col("'[") && (col('$')==1 || col('$')==(col("']")+1)) && line("'[")==line("']"))
+
+  if a:type ==? 'line' || replace_curlin
+    exe "keepjumps normal! '[V']\"".s:rr_reg."p"
+  elseif a:type ==? 'block'
+    exe "keepjumps normal! `[\<C-V>`]\"".s:rr_reg."p"
+  else
+    "DWIM: if pasting linewise contents in a _characterwise_ motion, trim
+    "      surrounding whitespace from the content to be pasted.
+    if rr_type ==# "V"
+      call setreg(s:rr_reg, s:trimws_ml(rr_orig), "v")
+    endif
+    exe "keepjumps normal! `[v`]\"".s:rr_reg."p"
+  endif
+
+  let &selection = sel_save
+  call setreg('"',      ur_orig, ur_type)
+  call setreg(s:rr_reg, rr_orig, rr_type)
+endf
+
+" }}}
+nnoremap <silent> dr  :<C-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<CR>g@
+nnoremap <silent> drr :<C-u>call <sid>set_reg(v:register)<cr>0:<C-u>set opfunc=<sid>replace_without_yank<CR>g@$
+" slightly related key-press-saver
+xnoremap R "0p
+
+" }}}
+" ---------------------------------------------------------------------------
+" LEADER MAPS {{{
+" ---------------------------------------------------------------------------
+
 let mapleader = "\<Space>"
 let maplocalleader = "\\"
+
+" edit vimrc
+nnoremap <silent> <Leader>v :edit $MYVIMRC<CR>
+nnoremap <silent> <Leader>V :tabnew $MYVIMRC<CR>
+
+" shortcuts
+nnoremap <Leader>f :find<Space>
+nnoremap <Leader>s :write<CR>
+nnoremap <Leader>h :help<Space>
+" :help on the word under the cursor
+nnoremap <Leader>H :help <C-R><C-W><CR>
+
+" save my pinky some stress
+nnoremap <Leader><Space> :
+nnoremap <Leader>w <C-w>
+
+" circular windows
+nnoremap <Leader><Tab> <C-W>w
+
+" populate the location list with last search results
+" useful for seeing the exact number of matches
+nnoremap <Leader>/ :lvim //g %<CR>
+
+" search for all numbers
+nnoremap <Leader># /\v\d+<CR>
+
+" search for all brackets
+noremap <Leader>{ ?[{}]<CR>
+noremap <Leader>} /[{}]<CR>
+ounmap <Leader>{
+ounmap <Leader>}
+
+" toggle location & quickfix lists {{{
+" (from vimwiki)
+function! GetBufferList()
+  redir =>buflist
+  silent! ls!
+  redir END
+  return buflist
+endfunction
+
+function! ToggleList(bufname, pfx)
+  let buflist = GetBufferList()
+  for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
+    if bufwinnr(bufnum) != -1
+      exec(a:pfx.'close')
+      return
+    endif
+  endfor
+  if a:pfx == 'l' && len(getloclist(0)) == 0
+    echohl ErrorMsg
+    echo "Location List is Empty."
+    return
+  endif
+  let winnr = winnr()
+  exec(a:pfx.'open')
+  if winnr() != winnr
+    wincmd p
+  endif
+endfunction
+" }}}
+nnoremap <silent> <Leader>l :call ToggleList("Location List", 'l')<CR>
+nnoremap <silent> <Leader>q :call ToggleList("Quickfix List", 'c')<CR>
+
+" alternate between header and source files {{{
+" (credit to junegunn's vimrc)
+function! s:A()
+  let name = expand('%:r')
+  let ext = tolower(expand('%:e'))
+  let sources = ['c', 'cc', 'cpp', 'cxx']
+  let headers = ['h', 'hh', 'hpp', 'hxx']
+  for pair in [[sources, headers], [headers, sources]]
+    let [set1, set2] = pair
+    if index(set1, ext) >= 0
+      for h in set2
+        let aname = name.'.'.h
+        for a in [aname, toupper(aname)]
+          if filereadable(a)
+            execute 'e' a
+            return
+          end
+        endfor
+      endfor
+    endif
+  endfor
+endfunction
+command! A call <SID>A()
+" }}}
+nnoremap <Leader>A :A<CR>
+
+" quick scratch buffer
+nnoremap <Leader>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
+
+" copy all to system clipboard
+nnoremap \y ggVG"+y
+
+" }}}
+" ---------------------------------------------------------------------------
+
+" }}}
+" ===========================================================================
+" MISCELLANEOUS {{{
+" ===========================================================================
+" Other functions, commands, settings,
+" etc.  that don't fit elsewhere go here
+
+" delete all buffers and open Startify
+function! s:RestartVim()
+  if exists('g:loaded_startify')
+    SClose
+  else
+    %bdelete
+    setl buftype=nofile bufhidden=wipe
+  endif
+endfunction
+command! -bar RestartVim call <SID>RestartVim()
+
+" toggle syntax highlighting
+" useful when Vim is crippled by its inefficient highlighting
+function! s:ToggleSyntaxHighlighting()
+  let s:folds = &foldlevel
+  exec 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
+  let &foldlevel=s:folds
+endfunction
+command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
+
+" DoubleView {{{
+" Vertically split the current buffer into two windows which will stay
+" scroll-bound together.  Allows you to see twice as much as before!
+" (disables the wrap setting and expands folds to work better)
+" (PS: this is kind of janky, but I like it anyway)
+function! s:DoubleView()
+  let s:DV_so=&scrolloff
+  set scrolloff=0 noscrollbind nowrap nofoldenable
+  botright vsplit
+  normal! Ljzt
+  setl scrollbind
+  wincmd p
+  setl scrollbind
+  let &scrolloff=s:DV_so
+endfunction " }}}
+command! DoubleView call <SID>DoubleView()
+
+" custom text objects
+let s:separators = exists('g:loaded_targets') ? [ '`', '%']
+      \ : [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', '`' ]
+for char in s:separators
+  execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+  execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+  execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+  execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+endfor
+
+" Clear Trailing White spaces
+cabbrev ctw s/\s\+$//e
 
 " }}}
 " ===========================================================================
@@ -390,583 +963,6 @@ augroup END
 
 " initialize vim-plug
 call plug#end()
-
-" }}}
-" ===========================================================================
-" GENERAL SETTINGS {{{
-" ===========================================================================
-
-" sensible options for me
-set hidden
-set incsearch
-set ignorecase
-set smartcase
-set autoread
-set nolazyredraw
-set gdefault
-set showcmd
-set nostartofline
-set path+=**
-set modeline
-set sidescroll=8
-set backspace=indent,eol,start
-set history=10000
-set undolevels=10000
-set complete=.,w,b,t
-set synmaxcol=1024
-set nrformats-=octal
-set fileformat=unix
-set virtualedit=all
-set sessionoptions-=options
-set sessionoptions-=folds
-set clipboard^=unnamedplus,unnamed
-if s:is_windows
-  set makeprg=build.bat
-endif
-silent! set mouse=a
-set vb t_vb=
-if exists('&belloff')
-  set belloff=all
-endif
-
-" command-line completion settings
-set wildmenu
-set wildmode=full
-set wildignore+=.hg,.git,.svn                    " Version control
-set wildignore+=*.aux,*.out,*.toc                " LaTeX intermediate files
-set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg   " binary images
-set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest " compiled object files
-set wildignore+=*.spl                            " compiled spelling word lists
-set wildignore+=*.sw?                            " Vim swap files
-set wildignore+=*.DS_Store                       " OSX garbage
-
-" backups, swapfiles, & undofiles in one place
-let s:tempdir=expand(s:myvimdir."/tmp")
-if !isdirectory(expand(s:tempdir))
-  call mkdir(expand(s:tempdir), "p")
-endif
-set backup
-let &backupdir=s:tempdir
-set swapfile
-let &directory=s:tempdir
-if has('persistent_undo')
-  set undofile
-  let &undodir=s:tempdir
-endif
-
-if s:is_windows && executable('grep')
-  set grepprg=grep\ -n
-endif
-
-" more accurate syntax highlighting
-syntax sync maxlines=400
-
-" autocmds
-augroup vimrc_general
-  au!
-
-  " more accurate syntax highlighting
-  let g:vimsyn_maxlines = 400
-  au BufEnter * syntax sync maxlines=400
-
-  " make 'nobuflisted' persist when editing a file
-  if (v:version > 704) || (v:version == 704 && has('patch786'))
-    function! s:PersistNobl(type)
-      if a:type == 'option'
-        if &buflisted && exists('b:persist_nobl')
-          unlet b:persist_nobl
-        else
-          let b:persist_nobl = 1
-        endif
-      elseif exists('b:persist_nobl')
-        if b:persist_nobl
-          setl nobuflisted
-        endif
-      endif
-    endfunction
-    au OptionSet buflisted call <SID>PersistNobl('option')
-    au BufEnter * call <SID>PersistNobl('buf')
-  endif
-
-augroup END
-
-" }}}
-" ===========================================================================
-" APPEARANCE AND FORMATTING {{{
-" ===========================================================================
-" some settings will be overwritten when certain filetypes are detected
-" see: filetype-indent-on & ftplugins
-
-" default tab settings
-set smarttab
-set shiftwidth=4 softtabstop=-1 expandtab
-
-" indenting/formatting
-set autoindent
-set smartindent " TODO: try cindent
-set textwidth=80
-set encoding=utf-8
-
-" mostly aesthetic options
-set hlsearch
-set cpoptions+=$
-set foldlevel=999
-set foldmethod=indent
-set guioptions=
-set laststatus=2
-set linebreak
-set list
-set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
-set nonumber relativenumber
-set numberwidth=1
-set ruler
-set splitright
-set t_Co=256
-if has('linebreak')
-  set showbreak=«
-  silent! set breakindent
-else
-  set listchars+=eol:¬
-endif
-
-syntax on
-
-" my 'modifed' version of Bad Wolf
-silent! colorscheme badwolf_flattened
-
-" fallback default colorscheme
-if !exists('g:colors_name')
-  colorscheme desert
-endif
-
-" standard status line if lightline isn't enabled
-" (pretty much the same layout as default lightline)
-set statusline=%<%f\ %h%m%r%=%y
-if exists('g:noscrollbar_loaded')
-  set statusline+=\ %{noscrollbar#statusline()}
-else
-  set statusline+=\ %P
-endif
-exe 'set statusline+=%8(%l,%v%)\ '
-
-" Disable Background Color Erase (BCE) so that color schemes
-" render properly when inside 256-color tmux and GNU screen.
-if &term =~ '256color'
-  set t_ut=
-endif
-
-augroup vimrc_appearance_and_formatting
-  au!
-
-  " I want these format options by default
-  au FileType * set formatoptions=rq1j
-
-  if s:is_windows
-    " Maximize window
-    au GUIEnter * simalt ~x
-    " Fonts: glorious notepad default
-    if has('nvim')
-      " GuiFont Consolas:h9
-    else
-      set guifont=Consolas:h9
-    endif
-  else
-    " Unix deserves a nicer font
-    set guifont=DejaVu\ Sans\ Mono\ 9
-  endif
-
-  " resize vim-windows when program window is resized
-  au VimResized * :wincmd =
-
-  " this makes the trailing space indicator invisible
-  " while typing, otherwise it would drive me crazy
-  au InsertEnter * :set listchars-=trail:■
-  au InsertLeave * :set listchars+=trail:■
-
-augroup END
-
-" }}}
-" ===========================================================================
-" KEY MAPPINGS {{{
-" ===========================================================================
-" anything related to plugins is located
-" under its respective settings section
-
-" ---------------------------------------------------------------------------
-" REMAPS OF DEFAULTS {{{
-" ---------------------------------------------------------------------------
-" it's good to remember these in case I'm stuck with vanilla vi/vim
-
-" disabled
-noremap  <F1>    <Nop>
-inoremap <F1>    <Nop>
-noremap  <S-CR>  <Nop>
-noremap  <Space> <Nop>
-" for c<Space>
-ounmap <Space>
-
-" go back to last buffer
-noremap <Backspace> <C-^>
-
-" Y yanks until EOL, more like D and C
-" yy still yanks the whole line
-nmap Y y$
-
-" U as a more sensible redo
-nnoremap U <C-R>
-
-" Q to replay the q register
-" I have never wanted to use Ex mode.
-nnoremap Q @q
-
-" [S]plit lines (sister to [J]oin line) {{{
-" cc still changes the whole line
-function! s:SplitLine()
-  exe "normal! i\<CR>\<Esc>^gk"
-  silent! substitute/\v +$//
-  silent! nohlsearch
-  call histdel("search", -1)
-  normal! $
-endfunction
-" }}}
-nnoremap S :call <SID>SplitLine()<CR>
-
-" center when jumping {{{
-function! s:Center()
-  let prev_so = &scrolloff
-  set scrolloff=999
-  redraw
-  let &scrolloff = prev_so
-endfunction
-" }}}
-" new jump list mnemonic: previous, next
-nnoremap <silent> <C-P> <C-O>:call <SID>Center()<CR>
-nnoremap <silent> <C-N> <C-I>:call <SID>Center()<CR>
-
-" easier scrolling
-nnoremap <C-J> <C-D>
-nnoremap <C-K> <C-U>
-
-" org-style fold viewing
-nnoremap <Tab> za
-nnoremap <S-Tab> zM
-
-" open current file's directory
-nnoremap - :e <C-R>=fnameescape(expand('%:p:h'))<CR>/<CR>
-
-" open current working directory
-nnoremap + :e .<CR>
-
-" | and _ for split windows
-nnoremap <expr><silent> \| !v:count ? "<C-W>v<C-W><Right>" : '\|'
-nnoremap <expr><silent> _  !v:count ? "<C-W>s<C-W><Down>"  : '_'
-
-" move by wrapped lines instead of line numbers, unless the motion is counted
-" also set a mark for movements across 5 lines or more
-nnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
-nnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
-vnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
-vnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
-
-" automatically jump to the end of pasted text
-" useful for pasting multi-lines of text
-xnoremap p p`]
-nnoremap p p`]
-
-" visually select the last change or yank
-nnoremap gp `[v`]
-
-" i_CTRL-[ finger slip
-inoremap <C-]> <Esc>
-
-" }}}
-" ---------------------------------------------------------------------------
-" NORMAL MAPS {{{
-" ---------------------------------------------------------------------------
-
-" Emacs cancel blasphemy
-inoremap <C-G> <Esc>
-cnoremap <C-G> <C-C>
-xnoremap <C-G> <Esc>
-
-" from tpope's rsi
-inoremap <C-A> <C-O>^
-inoremap <expr> <C-E> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<Lt>C-E>":"\<Lt>End>"
-
-" expand-o-brackets
-inoremap {<Tab> {<CR>}<Esc>O
-inoremap {; {<CR>};<Esc>O
-
-" change directories (minor time saver)
-nnoremap cd :cd<Space>
-
-" quickly manage buffers
-nnoremap gb :ls<CR>:b<Space>
-nnoremap gB :ls!<CR>:b<Space>
-
-" resizing windows
-noremap <C-Left>  <C-W><
-noremap <C-Up>    <C-W>+
-noremap <C-Down>  <C-W>-
-noremap <C-Right> <C-W>>
-
-" q to quit help {{{
-" (from Junegunn's vimrc)
-function! s:helpquit()
-  if &buftype == 'help'
-    nnoremap <buffer> q :bd<CR>
-  endif
-endfunction
-augroup q_for_quit
-  au!
-  au BufEnter *.txt call s:helpquit()
-augroup END
-" }}}
-
-" Source vimscript operator {{{
-" Nice for quick vimscript testing.
-function! s:SourceVimscript(type)
-  let sel_save = &selection
-  let &selection = "inclusive"
-  let reg_save = @"
-  if a:type == 'line'
-    silent execute "normal! '[V']y"
-  elseif a:type == 'char'
-    silent execute "normal! `[v`]y"
-  elseif a:type == "visual"
-    silent execute "normal! gvy"
-  elseif a:type == "currentline"
-    silent execute "normal! yy"
-  endif
-  let @" = substitute(@", '\n\s*\\', '', 'g')
-  " source the content
-  @"
-  let &selection = sel_save
-  let @" = reg_save
-endfunction
-" }}}
-nnoremap <silent> g: :set opfunc=<SID>SourceVimscript<CR>g@
-vnoremap <silent> g: :<C-U>call <SID>SourceVimscript("visual")<CR>
-nnoremap <silent> g:: :call <SID>SourceVimscript("currentline")<CR>
-
-" %% for current buffer file name
-" :: for current buffer file path
-cnoremap %% <C-R>=fnameescape(expand('%'))<CR>
-cnoremap :: <C-R>=fnameescape(expand('%:p:h'))<CR>/
-
-" unimpaired.vim inspired
-" toggle pastemode
-set pastetoggle=cop
-" toggle centering the cursor
-nnoremap coz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>
-
-" Delete & Replace operator {{{
-" (credit to justinmk's init.vim)
-" why?
-" - repeatable
-" - faster/more convenient than visual-replace
-" - does not modify ' mark
-" - DWIM behavior for linewise => characterwise
-func! s:trimws_ml(s) abort "trim whitespace across multiple lines
-  return substitute(a:s, '^\_s*\(.\{-}\)\_s*$', '\1', '')
-endf
-let s:rr_reg = '"'
-func! s:set_reg(reg_name) abort
-  let s:rr_reg = a:reg_name
-endf
-func! s:replace_without_yank(type) abort
-  let rr_orig = getreg(s:rr_reg, 1) "save registers and types to restore later.
-  let rr_type = getregtype(s:rr_reg)
-  let ur_orig = getreg('"', 1)
-  let ur_type = getregtype('"')
-  let sel_save = &selection
-  let &selection = "inclusive"
-  let replace_curlin = (1==col("'[") && (col('$')==1 || col('$')==(col("']")+1)) && line("'[")==line("']"))
-
-  if a:type ==? 'line' || replace_curlin
-    exe "keepjumps normal! '[V']\"".s:rr_reg."p"
-  elseif a:type ==? 'block'
-    exe "keepjumps normal! `[\<C-V>`]\"".s:rr_reg."p"
-  else
-    "DWIM: if pasting linewise contents in a _characterwise_ motion, trim
-    "      surrounding whitespace from the content to be pasted.
-    if rr_type ==# "V"
-      call setreg(s:rr_reg, s:trimws_ml(rr_orig), "v")
-    endif
-    exe "keepjumps normal! `[v`]\"".s:rr_reg."p"
-  endif
-
-  let &selection = sel_save
-  call setreg('"',      ur_orig, ur_type)
-  call setreg(s:rr_reg, rr_orig, rr_type)
-endf
-
-" }}}
-nnoremap <silent> dr  :<C-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<CR>g@
-nnoremap <silent> drr :<C-u>call <sid>set_reg(v:register)<cr>0:<C-u>set opfunc=<sid>replace_without_yank<CR>g@$
-" slightly related key-press-saver
-xnoremap R "0p
-
-" }}}
-" ---------------------------------------------------------------------------
-" LEADER MAPS {{{
-" ---------------------------------------------------------------------------
-" Leader is Space, see STARTUP section
-
-" edit vimrc
-nnoremap <silent> <Leader>v :edit $MYVIMRC<CR>
-nnoremap <silent> <Leader>V :tabnew $MYVIMRC<CR>
-
-" shortcuts
-nnoremap <Leader>f :find<Space>
-nnoremap <Leader>s :write<CR>
-nnoremap <Leader>h :help<Space>
-" :help on the word under the cursor
-nnoremap <Leader>H :help <C-R><C-W><CR>
-
-" save my pinky some stress
-nnoremap <Leader><Space> :
-nnoremap <Leader>w <C-w>
-
-" circular windows
-nnoremap <Leader><Tab> <C-W>w
-
-" populate the location list with last search results
-" useful for seeing the exact number of matches
-nnoremap <Leader>/ :lvim //g %<CR>
-
-" search for all numbers
-nnoremap <Leader># /\v\d+<CR>
-
-" search for all brackets
-noremap <Leader>{ ?[{}]<CR>
-noremap <Leader>} /[{}]<CR>
-ounmap <Leader>{
-ounmap <Leader>}
-
-" toggle location & quickfix lists {{{
-" (from vimwiki)
-function! GetBufferList()
-  redir =>buflist
-  silent! ls!
-  redir END
-  return buflist
-endfunction
-
-function! ToggleList(bufname, pfx)
-  let buflist = GetBufferList()
-  for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
-    if bufwinnr(bufnum) != -1
-      exec(a:pfx.'close')
-      return
-    endif
-  endfor
-  if a:pfx == 'l' && len(getloclist(0)) == 0
-    echohl ErrorMsg
-    echo "Location List is Empty."
-    return
-  endif
-  let winnr = winnr()
-  exec(a:pfx.'open')
-  if winnr() != winnr
-    wincmd p
-  endif
-endfunction
-" }}}
-nnoremap <silent> <Leader>l :call ToggleList("Location List", 'l')<CR>
-nnoremap <silent> <Leader>q :call ToggleList("Quickfix List", 'c')<CR>
-
-" alternate between header and source files {{{
-" (credit to junegunn's vimrc)
-function! s:A()
-  let name = expand('%:r')
-  let ext = tolower(expand('%:e'))
-  let sources = ['c', 'cc', 'cpp', 'cxx']
-  let headers = ['h', 'hh', 'hpp', 'hxx']
-  for pair in [[sources, headers], [headers, sources]]
-    let [set1, set2] = pair
-    if index(set1, ext) >= 0
-      for h in set2
-        let aname = name.'.'.h
-        for a in [aname, toupper(aname)]
-          if filereadable(a)
-            execute 'e' a
-            return
-          end
-        endfor
-      endfor
-    endif
-  endfor
-endfunction
-command! A call <SID>A()
-" }}}
-nnoremap <Leader>A :A<CR>
-
-" quick scratch buffer
-nnoremap <Leader>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
-
-" copy all to system clipboard
-nnoremap \y ggVG"+y
-
-" }}}
-" ---------------------------------------------------------------------------
-
-" }}}
-" ===========================================================================
-" MISCELLANEOUS {{{
-" ===========================================================================
-" Other functions, commands, settings,
-" etc.  that don't fit elsewhere go here
-
-" delete all buffers and open Startify
-function! s:RestartVim()
-  if exists('g:loaded_startify')
-    SClose
-  else
-    %bdelete
-    setl buftype=nofile bufhidden=wipe
-  endif
-endfunction
-command! -bar RestartVim call <SID>RestartVim()
-
-" toggle syntax highlighting
-" useful when Vim is crippled by its inefficient highlighting
-function! s:ToggleSyntaxHighlighting()
-  let s:folds = &foldlevel
-  exec 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
-  let &foldlevel=s:folds
-endfunction
-command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
-
-" DoubleView {{{
-" Vertically split the current buffer into two windows which will stay
-" scroll-bound together.  Allows you to see twice as much as before!
-" (disables the wrap setting and expands folds to work better)
-" (PS: this is kind of janky, but I like it anyway)
-function! s:DoubleView()
-  let s:DV_so=&scrolloff
-  set scrolloff=0 noscrollbind nowrap nofoldenable
-  botright vsplit
-  normal! Ljzt
-  setl scrollbind
-  wincmd p
-  setl scrollbind
-  let &scrolloff=s:DV_so
-endfunction " }}}
-command! DoubleView call <SID>DoubleView()
-
-" custom text objects
-let s:separators = exists('g:loaded_targets') ? [ '`', '%']
-      \ : [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', '`' ]
-for char in s:separators
-  execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
-  execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
-  execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
-  execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
-endfor
-
-" Clear Trailing White spaces
-cabbrev ctw s/\s\+$//e
 
 " }}}
 " ===========================================================================
