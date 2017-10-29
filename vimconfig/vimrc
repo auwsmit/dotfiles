@@ -31,445 +31,421 @@ let maplocalleader = "\\"
 
 call plug#begin()
 
-" ---------------------------------------------------------------------------
-" FILE/BUFFER PLUGINS {{{
-" ---------------------------------------------------------------------------
-
-Plug 'tpope/vim-eunuch'
-
-Plug 'tpope/vim-fugitive'
-" Fugitive Settings {{{
-nnoremap <Leader>gs :Gstatus<CR>
-nnoremap <Leader>gd :Gdiff<CR>
-nnoremap <Leader>gD :Gdiff HEAD<CR>
-nnoremap <Leader>gc :Gcommit<CR>
-nnoremap <Leader>gl :Git log<CR>
-nnoremap <Leader>gp :Git push<CR>
-nnoremap <Leader>gw :Gwrite<CR>
-nnoremap <Leader>gg :Ggrep<Space>
-
-" hide fugitive buffers to reduce buffer list clutter
-augroup vimrc_fugitive
+augroup vimrc_plugins
   au!
+
+  " ---------------------------------------------------------------------------
+  " FILE/BUFFER PLUGINS {{{
+  " ---------------------------------------------------------------------------
+
+  Plug 'tpope/vim-eunuch'
+
+  Plug 'tpope/vim-fugitive'
+  " Fugitive Settings {{{
+  nnoremap <Leader>gs :Gstatus<CR>
+  nnoremap <Leader>gd :Gdiff<CR>
+  nnoremap <Leader>gD :Gdiff HEAD<CR>
+  nnoremap <Leader>gc :Gcommit<CR>
+  nnoremap <Leader>gl :Git log<CR>
+  nnoremap <Leader>gp :Git push<CR>
+  nnoremap <Leader>gw :Gwrite<CR>
+  nnoremap <Leader>gg :Ggrep<Space>
+
+  " hide fugitive buffers to reduce buffer list clutter
   au BufReadPost fugitive://* set bufhidden=delete
-augroup END
-" }}}
+  " }}}
 
-Plug 'justinmk/vim-gtfo'
-" gtfo.vim Settings {{{
-let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
-" }}}
+  Plug 'justinmk/vim-gtfo'
+  " gtfo.vim Settings {{{
+  let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
+  " }}}
 
-Plug 'justinmk/vim-dirvish'
-" Dirvish Settings {{{
+  Plug 'justinmk/vim-dirvish'
+  " Dirvish Settings {{{
 
-" disable netrw
-let g:loaded_netrw = 1
-let g:loaded_netrwPlugin = 1
+  " disable netrw
+  let g:loaded_netrw = 1
+  let g:loaded_netrwPlugin = 1
 
-" open current file's directory
-nnoremap <silent> - :Dirvish %<CR>
-" open current working directory
-nnoremap <silent> + :Dirvish<CR>
-augroup my_dirvish_events
-  au!
+  " open current file's directory
+  nnoremap <silent> - :Dirvish %<CR>
+  " open current working directory
+  nnoremap <silent> + :Dirvish<CR>
   " map gh to hide "hidden" files. (Unix only)
   au FileType dirvish nnoremap <buffer> gh
         \ :g@\v/\.[^\/]+/?$@d<CR>
   au FileType dirvish set nobuflisted
-augroup END
-" }}}
+  " }}}
 
-Plug 'ctrlpvim/ctrlp.vim' ", { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
-" CtrlP Settings {{{
+  Plug 'ctrlpvim/ctrlp.vim' ", { 'on': ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
+  " CtrlP Settings {{{
 
-" ignore .git folders to speed up searches
-let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
-let g:ctrlp_max_depth = 15
-" include hidden files
-let g:ctrlp_show_hidden = 1
-" open multiple files in ONE window
-let g:ctrlp_open_multiple_files = '1vr'
-" ctrl-o to open specifically
-let g:ctrlp_arg_map = 1
-" change default CtrlP mapping
-let g:ctrlp_map = '<Leader>p'
+  " ignore .git folders to speed up searches
+  let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+  let g:ctrlp_max_depth = 15
+  " include hidden files
+  let g:ctrlp_show_hidden = 1
+  " open multiple files in ONE window
+  let g:ctrlp_open_multiple_files = '1vr'
+  " ctrl-o to open specifically
+  let g:ctrlp_arg_map = 1
+  " change default CtrlP mapping
+  let g:ctrlp_map = '<Leader>p'
 
-" free <Space> in operator mode
-augroup CtrlPLeader
-  au!
+  " free <Space> in operator mode
   au VimEnter * ounmap <Leader>p
-augroup END
 
-" shortcuts
-nnoremap <Leader>p :CtrlP<CR>
-nnoremap <Leader>b :CtrlPBuffer<CR>
-nnoremap <Leader>- :CtrlPCurFile<CR>
-nnoremap <Leader>+ :CtrlPCurWD<CR>
-nnoremap <Leader><C-R> :CtrlPMRU<CR>
-nnoremap <Leader><C-L> :CtrlPLine<CR>
-nnoremap <Leader><C-P> :CtrlP<Space>
-" }}}
+  " shortcuts
+  nnoremap <Leader>p :CtrlP<CR>
+  nnoremap <Leader>b :CtrlPBuffer<CR>
+  nnoremap <Leader>- :CtrlPCurFile<CR>
+  nnoremap <Leader>+ :CtrlPCurWD<CR>
+  nnoremap <Leader><C-R> :CtrlPMRU<CR>
+  nnoremap <Leader><C-L> :CtrlPLine<CR>
+  nnoremap <Leader><C-P> :CtrlP<Space>
+  " }}}
 
-Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
-" Sayonara Settings {{{
-" close buffer
-nnoremap gs :Sayonara<CR>
-" close buffer, don't close window
-nnoremap gS :Sayonara!<CR>
-" prompt to close vim when closing the last file
-let g:sayonara_confirm_quit = 1
-" see: 'q to quit help' under KEY MAPPINGS/NORMAL MAPS
-function! s:helpquit()
-  if &buftype == 'help'
-    nnoremap <buffer> q :Sayonara<CR>
-  endif
-endfunction
-augroup q_for_quit
-  au!
-  au BufEnter *.txt call s:helpquit()
-augroup END
-" }}}
-
-" }}}
-" ---------------------------------------------------------------------------
-" OPERATOR PLUGINS {{{
-" ---------------------------------------------------------------------------
-
-Plug 'tpope/vim-commentary'
-
-Plug 'machakann/vim-sandwich' " (tpope surround alternative)
-" vim-sandwich Settings {{{
-" mappings like tpope's surround plugin
-let g:sandwich_no_default_key_mappings = 1
-let g:operator_sandwich_no_default_key_mappings = 1
-augroup SandwichSurround
-  au!
-  au VimEnter * runtime macros/sandwich/keymap/surround.vim
-augroup END
-" }}}
-
-Plug 'tommcdo/vim-exchange'
-" vim-exchange Settings {{{
-" evil-exchange bindings
-nmap gxx <Plug>(ExchangeLine)
-nmap gX  <Plug>(ExchangeClear)
-nmap gx  <Plug>(Exchange)
-xmap gx  <Plug>(Exchange)
-" }}}
-
-" }}}
-" ---------------------------------------------------------------------------
-" TEXT OBJECT PLUGINS {{{
-" ---------------------------------------------------------------------------
-
-"Plug 'machakann/vim-sandwich' " repeated: sandwich also has text objects
-
-Plug 'kana/vim-textobj-user' |
-      \ Plug 'kana/vim-textobj-line' |
-      \ Plug 'kana/vim-textobj-entire'   |
-      \ Plug 'kana/vim-textobj-indent'   |
-      \ Plug 'kana/vim-textobj-function' |
-      \ Plug 'coderifous/textobj-word-column.vim'
-
-Plug 'junegunn/vim-after-object'
-" vim-after-object Settings {{{
-augroup after_object
-  autocmd VimEnter * call after_object#enable([']', '['], '=', ':', '-', '#', ' ')
-augroup END
-" }}}
-
-" }}}
-" ---------------------------------------------------------------------------
-" MOTION/NAVIGATION PLUGINS {{{
-" ---------------------------------------------------------------------------
-
-Plug 'chaoren/vim-wordmotion'
-
-Plug 'justinmk/vim-ipmotion'
-" ipmotion Settings {{{
-" Skip over closed folds with { and }
-let g:ip_skipfold = 1
-"}}}
-
-Plug 'junegunn/vim-slash' | Plug 'henrik/vim-indexed-search'
-" vim-indexed-search Settings {{{
-" no mappings
-let g:indexed_search_mappings = 0
-" vim-slash and indexed-search: UNITE!!!
-noremap <silent> <Plug>(slash-after) :ShowSearchIndex<CR>
-" }}}
-
-Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
-" Tagbar Settings {{{
-nnoremap <Leader>t :TagbarToggle<CR>
-" }}}
-
-" }}}
-" ---------------------------------------------------------------------------
-" SNIPPET/COMPLETION PLUGINS {{{
-" ---------------------------------------------------------------------------
-
-Plug 'SirVer/UltiSnips'
-
-Plug 'ervandew/supertab'
-
-Plug 'tpope/vim-endwise',
-      \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
-
-" }}}
-" ---------------------------------------------------------------------------
-" FORMAT/SYNTAX PLUGINS {{{
-" ---------------------------------------------------------------------------
-
-Plug 'junegunn/gv.vim',    { 'on': 'GV' }
-
-Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
-
-Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
-" vim-easy-align Settings {{{
-" Start interactive EasyAlign in visual mode (e.g. vipga)
-vmap ga <Plug>(EasyAlign)
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
-" }}}
-
-" }}}
-" ---------------------------------------------------------------------------
-" APPEARANCE/UI PLUGINS {{{
-" ---------------------------------------------------------------------------
-
-Plug 'gcavallanti/vim-noscrollbar'
-
-Plug 'AssailantLF/vim-active-numbers' " My plugin <3
-
-Plug 'machakann/vim-highlightedyank'
-" vim-highlightedyank Settings {{{
-map y <Plug>(highlightedyank)
-" colorscheme independent highlight
-augroup CustomHighlightYankRegion
-  au!
-  au VimEnter * hi HighlightedyankRegion cterm=reverse gui=reverse
-augroup END
-" }}}
-
-Plug 'itchyny/lightline.vim'
-" lightline Settings {{{
-nnoremap <silent> <Leader>L }:exec lightline#toggle()<CR>``
-
-" compatibility with other plugins {{{
-let g:lightline = {
-      \ 'colorscheme': 'powerline',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
-      \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
-      \ },
-      \ 'component_function': {
-      \   'fugitive': 'LightLineFugitive',
-      \   'filename': 'LightLineFilename',
-      \   'fileformat': 'LightLineFileformat',
-      \   'filetype': 'LightLineFiletype',
-      \   'fileencoding': 'LightLineFileencoding',
-      \   'mode': 'LightLineMode',
-      \   'ctrlpmark': 'CtrlPMark',
-      \ },
-      \ 'component_expand': {
-      \   'syntastic': 'SyntasticStatuslineFlag',
-      \ },
-      \ 'component_type': {
-      \   'syntastic': 'error',
-      \ },
-      \ 'subseparator': { 'left': '|', 'right': '|' }
-      \ }
-
-let g:lightline.component = { 'percent': '%{noscrollbar#statusline()}' }
-
-function! LightLineModified()
-  return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
-endfunction
-
-function! LightLineReadonly()
-  return &ft !~? 'help' && &readonly ? 'RO' : ''
-endfunction
-
-function! LightLineFilename()
-  let fname = expand('%:t')
-  return fname == 'ControlP' ? g:lightline.ctrlp_item :
-        \ fname == '__Tagbar__' ? g:lightline.fname :
-        \ fname =~ '__Gundo\|NERD_tree' ? '' :
-        \ &ft == 'vimfiler' ? vimfiler#get_status_string() :
-        \ &ft == 'unite' ? unite#get_status_string() :
-        \ &ft == 'vimshell' ? vimshell#get_status_string() :
-        \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
-        \ ('' != fname ? fname : '[No Name]') .
-        \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
-endfunction
-
-function! LightLineFugitive()
-  try
-    if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
-      let mark = ''  " edit here for cool mark
-      let _ = fugitive#head()
-      return strlen(_) ? mark._ : ''
+  Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' }
+  " Sayonara Settings {{{
+  " close buffer
+  nnoremap gs :Sayonara<CR>
+  " close buffer, don't close window
+  nnoremap gS :Sayonara!<CR>
+  " prompt to close vim when closing the last file
+  let g:sayonara_confirm_quit = 1
+  " see: 'q to quit help' under KEY MAPPINGS/NORMAL MAPS
+  function! s:helpquit()
+    if &buftype == 'help'
+      nnoremap <buffer> q :Sayonara<CR>
     endif
-  catch
-  endtry
-  return ''
-endfunction
+  endfunction
+  au BufEnter *.txt call s:helpquit()
+  " }}}
 
-function! LightLineFileformat()
-  return winwidth(0) > 70 ? &fileformat : ''
-endfunction
+  " }}}
+  " ---------------------------------------------------------------------------
+  " OPERATOR PLUGINS {{{
+  " ---------------------------------------------------------------------------
 
-function! LightLineFiletype()
-  return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
-endfunction
+  Plug 'tpope/vim-commentary'
 
-function! LightLineFileencoding()
-  return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
-endfunction
+  Plug 'machakann/vim-sandwich' " (tpope surround alternative)
+  " vim-sandwich Settings {{{
+  " mappings like tpope's surround plugin
+  let g:sandwich_no_default_key_mappings = 1
+  let g:operator_sandwich_no_default_key_mappings = 1
+  au VimEnter * runtime macros/sandwich/keymap/surround.vim
+  " }}}
 
-function! LightLineMode()
-  let fname = expand('%:t')
-  return fname == '__Tagbar__' ? 'Tagbar' :
-        \ fname == 'ControlP' ? 'CtrlP' :
-        \ fname == '__Gundo__' ? 'Gundo' :
-        \ fname == '__Gundo_Preview__' ? 'Gundo Preview' :
-        \ winwidth(0) > 60 ? lightline#mode() : ''
-endfunction
+  Plug 'tommcdo/vim-exchange'
+  " vim-exchange Settings {{{
+  " evil-exchange bindings
+  nmap gxx <Plug>(ExchangeLine)
+  nmap gX  <Plug>(ExchangeClear)
+  nmap gx  <Plug>(Exchange)
+  xmap gx  <Plug>(Exchange)
+  " }}}
 
-function! CtrlPMark()
-  if expand('%:t') =~ 'ControlP'
-    call lightline#link('iR'[g:lightline.ctrlp_regex])
-    return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
-          \ , g:lightline.ctrlp_next], 0)
-  else
+  " }}}
+  " ---------------------------------------------------------------------------
+  " TEXT OBJECT PLUGINS {{{
+  " ---------------------------------------------------------------------------
+
+  "Plug 'machakann/vim-sandwich' " repeated: sandwich also has text objects
+
+  Plug 'kana/vim-textobj-user' |
+        \ Plug 'kana/vim-textobj-line' |
+        \ Plug 'kana/vim-textobj-entire'   |
+        \ Plug 'kana/vim-textobj-indent'   |
+        \ Plug 'kana/vim-textobj-function' |
+        \ Plug 'coderifous/textobj-word-column.vim'
+
+  Plug 'junegunn/vim-after-object'
+  " vim-after-object Settings {{{
+  au VimEnter * call after_object#enable([']', '['], '=', ':', '-', '#', ' ')
+  " }}}
+
+  " }}}
+  " ---------------------------------------------------------------------------
+  " MOTION/NAVIGATION PLUGINS {{{
+  " ---------------------------------------------------------------------------
+
+  Plug 'chaoren/vim-wordmotion'
+
+  Plug 'justinmk/vim-ipmotion'
+  " ipmotion Settings {{{
+  " Skip over closed folds with { and }
+  let g:ip_skipfold = 1
+  "}}}
+
+  Plug 'junegunn/vim-slash' | Plug 'henrik/vim-indexed-search'
+  " vim-indexed-search Settings {{{
+  " no mappings
+  let g:indexed_search_mappings = 0
+  " vim-slash and indexed-search: UNITE!!!
+  noremap <silent> <Plug>(slash-after) :ShowSearchIndex<CR>
+  " }}}
+
+  Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' }
+  " Tagbar Settings {{{
+  nnoremap <Leader>t :TagbarToggle<CR>
+  " }}}
+
+  " }}}
+  " ---------------------------------------------------------------------------
+  " SNIPPET/COMPLETION PLUGINS {{{
+  " ---------------------------------------------------------------------------
+
+  Plug 'SirVer/UltiSnips'
+
+  Plug 'ervandew/supertab'
+
+  Plug 'tpope/vim-endwise',
+        \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
+
+  " }}}
+  " ---------------------------------------------------------------------------
+  " FORMAT/SYNTAX PLUGINS {{{
+  " ---------------------------------------------------------------------------
+
+  Plug 'junegunn/gv.vim',    { 'on': 'GV' }
+
+  Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
+
+  Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] }
+  " vim-easy-align Settings {{{
+  " Start interactive EasyAlign in visual mode (e.g. vipga)
+  vmap ga <Plug>(EasyAlign)
+  " Start interactive EasyAlign for a motion/text object (e.g. gaip)
+  nmap ga <Plug>(EasyAlign)
+  " }}}
+
+  " }}}
+  " ---------------------------------------------------------------------------
+  " APPEARANCE/UI PLUGINS {{{
+  " ---------------------------------------------------------------------------
+
+  Plug 'gcavallanti/vim-noscrollbar'
+
+  Plug 'AssailantLF/vim-active-numbers' " My plugin <3
+
+  Plug 'machakann/vim-highlightedyank'
+  " vim-highlightedyank Settings {{{
+  map y <Plug>(highlightedyank)
+  " colorscheme independent highlight
+  au VimEnter * hi HighlightedyankRegion cterm=reverse gui=reverse
+  " }}}
+
+  Plug 'itchyny/lightline.vim'
+  " lightline Settings {{{
+  nnoremap <silent> <Leader>L }:exec lightline#toggle()<CR>``
+
+  " compatibility with other plugins {{{
+  let g:lightline = {
+        \ 'colorscheme': 'powerline',
+        \ 'active': {
+        \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
+        \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+        \ },
+        \ 'component_function': {
+        \   'fugitive': 'LightLineFugitive',
+        \   'filename': 'LightLineFilename',
+        \   'fileformat': 'LightLineFileformat',
+        \   'filetype': 'LightLineFiletype',
+        \   'fileencoding': 'LightLineFileencoding',
+        \   'mode': 'LightLineMode',
+        \   'ctrlpmark': 'CtrlPMark',
+        \ },
+        \ 'component_expand': {
+        \   'syntastic': 'SyntasticStatuslineFlag',
+        \ },
+        \ 'component_type': {
+        \   'syntastic': 'error',
+        \ },
+        \ 'subseparator': { 'left': '|', 'right': '|' }
+        \ }
+
+  let g:lightline.component = { 'percent': '%{noscrollbar#statusline()}' }
+
+  function! LightLineModified()
+    return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+  endfunction
+
+  function! LightLineReadonly()
+    return &ft !~? 'help' && &readonly ? 'RO' : ''
+  endfunction
+
+  function! LightLineFilename()
+    let fname = expand('%:t')
+    return fname == 'ControlP' ? g:lightline.ctrlp_item :
+          \ fname == '__Tagbar__' ? g:lightline.fname :
+          \ fname =~ '__Gundo\|NERD_tree' ? '' :
+          \ &ft == 'vimfiler' ? vimfiler#get_status_string() :
+          \ &ft == 'unite' ? unite#get_status_string() :
+          \ &ft == 'vimshell' ? vimshell#get_status_string() :
+          \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
+          \ ('' != fname ? fname : '[No Name]') .
+          \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
+  endfunction
+
+  function! LightLineFugitive()
+    try
+      if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
+        let mark = ''  " edit here for cool mark
+        let _ = fugitive#head()
+        return strlen(_) ? mark._ : ''
+      endif
+    catch
+    endtry
     return ''
-  endif
-endfunction
+  endfunction
 
-let g:ctrlp_status_func = {
-      \ 'main': 'CtrlPStatusFunc_1',
-      \ 'prog': 'CtrlPStatusFunc_2',
-      \ }
+  function! LightLineFileformat()
+    return winwidth(0) > 70 ? &fileformat : ''
+  endfunction
 
-function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
-  let g:lightline.ctrlp_regex = a:regex
-  let g:lightline.ctrlp_prev = a:prev
-  let g:lightline.ctrlp_item = a:item
-  let g:lightline.ctrlp_next = a:next
-  return lightline#statusline(0)
-endfunction
+  function! LightLineFiletype()
+    return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
+  endfunction
 
-function! CtrlPStatusFunc_2(str)
-  return lightline#statusline(0)
-endfunction
+  function! LightLineFileencoding()
+    return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+  endfunction
 
-let g:tagbar_status_func = 'TagbarStatusFunc'
+  function! LightLineMode()
+    let fname = expand('%:t')
+    return fname == '__Tagbar__' ? 'Tagbar' :
+          \ fname == 'ControlP' ? 'CtrlP' :
+          \ fname == '__Gundo__' ? 'Gundo' :
+          \ fname == '__Gundo_Preview__' ? 'Gundo Preview' :
+          \ winwidth(0) > 60 ? lightline#mode() : ''
+  endfunction
 
-function! TagbarStatusFunc(current, sort, fname, ...) abort
-  let g:lightline.fname = a:fname
-  return lightline#statusline(0)
-endfunction
-" }}}}
-" }}}
+  function! CtrlPMark()
+    if expand('%:t') =~ 'ControlP'
+      call lightline#link('iR'[g:lightline.ctrlp_regex])
+      return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
+            \ , g:lightline.ctrlp_next], 0)
+    else
+      return ''
+    endif
+  endfunction
 
-Plug 'junegunn/vim-emoji'
-" vim-emoji Settings {{{
-set completefunc=emoji#complete
-" change :emoji_name: into emoji
-command! Emojify exec '%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/g'
-      \ | normal ``
-" }}}
+  let g:ctrlp_status_func = {
+        \ 'main': 'CtrlPStatusFunc_1',
+        \ 'prog': 'CtrlPStatusFunc_2',
+        \ }
 
-Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' }
-" Goyo Settings {{{
-" toggle Goyo (distraction free editing)
-nnoremap <Leader>G :Goyo<CR>
-" }}}
+  function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
+    let g:lightline.ctrlp_regex = a:regex
+    let g:lightline.ctrlp_prev = a:prev
+    let g:lightline.ctrlp_item = a:item
+    let g:lightline.ctrlp_next = a:next
+    return lightline#statusline(0)
+  endfunction
 
-Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
-" Rainbow Parenthesis Settings {{{
-augroup rainbow_filetypes
-  au!
+  function! CtrlPStatusFunc_2(str)
+    return lightline#statusline(0)
+  endfunction
+
+  let g:tagbar_status_func = 'TagbarStatusFunc'
+
+  function! TagbarStatusFunc(current, sort, fname, ...) abort
+    let g:lightline.fname = a:fname
+    return lightline#statusline(0)
+  endfunction
+  " }}}}
+  " }}}
+
+  Plug 'junegunn/vim-emoji'
+  " vim-emoji Settings {{{
+  set completefunc=emoji#complete
+  " change :emoji_name: into emoji
+  command! Emojify exec '%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/g'
+        \ | normal ``
+  " }}}
+
+  Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' }
+  " Goyo Settings {{{
+  " toggle Goyo (distraction free editing)
+  nnoremap <Leader>G :Goyo<CR>
+  " }}}
+
+  Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
+  " Rainbow Parenthesis Settings {{{
   au FileType c,cpp,vim,sh,dosbatch,lisp RainbowParentheses
-augroup END
-" }}}
+  " }}}
 
-Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' }
-" indentLine Settings {{{
-nnoremap <Leader>i :IndentLinesToggle<CR>
-" use custom filetype detection for better vim-plug compatibility
-let g:indentLine_enabled = 0
-let g:indentLine_fileType = ['']
-augroup ft_indentLine
-  au!
+  Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' }
+  " indentLine Settings {{{
+  nnoremap <Leader>i :IndentLinesToggle<CR>
+  " use custom filetype detection for better vim-plug compatibility
+  let g:indentLine_enabled = 0
+  let g:indentLine_fileType = ['']
   au FileType c,cpp IndentLinesEnable
-augroup END
-" }}}
+  " }}}
 
-if s:is_windows
-  Plug 'kkoenig/wimproved.vim'
-  " wimproved.vim Settings {{{
-  " toggle fullscreen
-  nnoremap <F11> :WToggleFullscreen<CR>
-  " Fix GVim's ugly window border
-  augroup Wimproved
-    au!
+  if s:is_windows
+    Plug 'kkoenig/wimproved.vim'
+    " wimproved.vim Settings {{{
+    " toggle fullscreen
+    nnoremap <F11> :WToggleFullscreen<CR>
+    " Fix GVim's ugly window border
     au GUIEnter * WToggleClean
-  augroup END
-endif
-" }}}
+  endif
+  " }}}
 
-" }}}
-" ---------------------------------------------------------------------------
-" CONVENIENCE/MISC PLUGINS " {{{
-" ---------------------------------------------------------------------------
+  " }}}
+  " ---------------------------------------------------------------------------
+  " CONVENIENCE/MISC PLUGINS " {{{
+  " ---------------------------------------------------------------------------
 
-Plug 'tpope/vim-rsi'
+  Plug 'tpope/vim-rsi'
 
-Plug 'tpope/vim-repeat'
+  Plug 'tpope/vim-repeat'
 
-Plug 'tpope/vim-sleuth'
+  Plug 'tpope/vim-sleuth'
 
-Plug 'tpope/vim-unimpaired'
+  Plug 'tpope/vim-unimpaired'
 
-Plug 'Konfekt/FastFold'
+  Plug 'Konfekt/FastFold'
 
-Plug 'dietsche/vim-lastplace'
+  Plug 'dietsche/vim-lastplace'
 
-Plug 'romainl/vim-qf'
+  Plug 'romainl/vim-qf'
 
-Plug 'ludovicchabant/vim-gutentags'
-" gutentags Settings {{{
-let g:gutentags_enabled = 0
-" }}}
+  Plug 'ludovicchabant/vim-gutentags'
+  " gutentags Settings {{{
+  let g:gutentags_enabled = 0
+  " }}}
 
-Plug 'mhinz/vim-Startify'
-" Startify Settings {{{
-let g:ctrlp_reuse_window = 'startify'
-let g:startify_files_number = 6
-let g:startify_session_delete_buffers = 1
-let g:startify_session_persistence = 1
-" }}}
+  Plug 'mhinz/vim-Startify'
+  " Startify Settings {{{
+  let g:ctrlp_reuse_window = 'startify'
+  let g:startify_files_number = 6
+  let g:startify_session_delete_buffers = 1
+  let g:startify_session_persistence = 1
+  " }}}
 
-Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
-" undotree Settings {{{
-nnoremap <Leader>u :UndotreeToggle<CR>
-function! g:Undotree_CustomMap()
-  nunmap <buffer> <Tab>
-endfunction
-" }}}
+  Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' }
+  " undotree Settings {{{
+  nnoremap <Leader>u :UndotreeToggle<CR>
+  function! g:Undotree_CustomMap()
+    nunmap <buffer> <Tab>
+  endfunction
+  " }}}
 
-" Plug 'AndrewRadev/switch.vim'
+  " Plug 'AndrewRadev/switch.vim'
 
-" Plug 'AndrewRadev/splitjoin.vim',
-"       \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'python', 'ruby', 'go' ] }
+  " Plug 'AndrewRadev/splitjoin.vim',
+  "       \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'python', 'ruby', 'go' ] }
 
-" Plug 'mhinz/vim-grepper'
+  " Plug 'mhinz/vim-grepper'
 
-" }}}
-" ---------------------------------------------------------------------------
+  " }}}
+  " ---------------------------------------------------------------------------
+
+augroup END
 
 call plug#end()
 
