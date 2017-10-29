@@ -172,6 +172,13 @@ Plug 'kana/vim-textobj-user' |
       \ Plug 'kana/vim-textobj-function' |
       \ Plug 'coderifous/textobj-word-column.vim'
 
+Plug 'junegunn/vim-after-object'
+" vim-after-object Settings {{{
+augroup after_object
+  autocmd VimEnter * call after_object#enable([']', '['], '=', ':', '-', '#', ' ')
+augroup END
+" }}}
+
 " }}}
 " ---------------------------------------------------------------------------
 " MOTION/NAVIGATION PLUGINS {{{
