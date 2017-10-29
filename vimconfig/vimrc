@@ -465,6 +465,10 @@ syntax sync maxlines=400
 augroup vimrc_general
   au!
 
+  " more accurate syntax highlighting
+  let g:vimsyn_maxlines = 400
+  au BufEnter * syntax sync maxlines=400
+
   " make 'nobuflisted' persist when editing a file
   if (v:version > 704) || (v:version == 704 && has('patch786'))
     function! s:PersistNobl(type)
