@@ -27,11 +27,12 @@ let maplocalleader = "\\"
 " ===========================================================================
 " PLUGINS {{{
 " ===========================================================================
-" vim-plug is the package manager
 
+" setup vim-plug
 call plug#begin()
 
-augroup vimrc_plugins
+" all plugin config autocmds in one group
+augroup vimrc_plugin_config
   au!
 
   " ---------------------------------------------------------------------------
@@ -447,6 +448,7 @@ augroup vimrc_plugins
 
 augroup END
 
+" initialize vim-plug
 call plug#end()
 
 " }}}
