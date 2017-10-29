@@ -438,6 +438,8 @@ Plug 'Konfekt/FastFold'
 
 Plug 'dietsche/vim-lastplace'
 
+Plug 'romainl/vim-qf'
+
 Plug 'ludovicchabant/vim-gutentags'
 " gutentags Settings {{{
 let g:gutentags_enabled = 0
@@ -445,10 +447,6 @@ let g:gutentags_enabled = 0
 
 Plug 'mhinz/vim-Startify'
 " Startify Settings {{{
-" augroup startify_numbers
-"   au!
-"   au User Startified setlocal relativenumber number
-" augroup END
 let g:ctrlp_reuse_window = 'startify'
 let g:startify_files_number = 6
 let g:startify_session_delete_buffers = 1
@@ -727,10 +725,6 @@ nnoremap <C-K> <C-U>
 " org-style fold viewing
 nnoremap <Tab> za
 nnoremap <S-Tab> zM
-
-" going to the exact column is more useful most of the time
-nnoremap ` '
-nnoremap ' `
 
 " open current file's directory
 nnoremap - :e <C-R>=fnameescape(expand('%:p:h'))<CR>/<CR>
