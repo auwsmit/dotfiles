@@ -374,6 +374,14 @@ endfunction
 " }}}}
 " }}}
 
+Plug 'junegunn/vim-emoji'
+" vim-emoji Settings {{{
+set completefunc=emoji#complete
+" change :emoji_name: into emoji
+command! Emojify exec '%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/g'
+      \ | normal ``
+" }}}
+
 Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' }
 " Goyo Settings {{{
 " toggle Goyo (distraction free editing)
