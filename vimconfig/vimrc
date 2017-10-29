@@ -358,6 +358,11 @@ augroup vimrc_plugin_config
   " }}}}
   " }}}
 
+  Plug 'junegunn/vim-peekaboo'
+  " vim-peekabo {{{
+  let g:peekaboo_delay = 250
+  " }}}
+
   Plug 'junegunn/vim-emoji'
   " vim-emoji Settings {{{
   set completefunc=emoji#complete
