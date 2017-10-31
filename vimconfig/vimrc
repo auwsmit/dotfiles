@@ -165,6 +165,9 @@ augroup vimrc_plugin_config
   noremap <silent> <plug>(slash-after) :<c-u>ShowSearchIndex<cr>zz
   xunmap <plug>(slash-after)
   " }}}
+  Plug 'romainl/vim-cool'
+
+  " au CmdlineLeave [/\?] au 
   Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " {{{
   nnoremap <leader>t :TagbarToggle<cr>
   " }}}
