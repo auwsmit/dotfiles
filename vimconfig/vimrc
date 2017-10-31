@@ -1,6 +1,6 @@
 " vim: set foldmethod=marker:
-" Author: Austin Smith <AssailantLF@gmail.com>
-" Source: https://gitlab.com/AssailantLF/dotfiles
+" Author: Austin Smith <auwsmit@gmail.com>
+" Source: https://gitlab.com/auwsmit/dotfiles
 " Best viewed with vim's folds (see :help folds)
 
 " ===========================================================================
@@ -159,11 +159,10 @@ augroup vimrc_plugin_config
   " Skip over closed folds with { and }
   let g:ip_skipfold = 1
   "}}}
-  Plug 'junegunn/vim-slash' | Plug 'henrik/vim-indexed-search' " {{{
-  " no mappings
+  Plug 'auwsmit/vim-slash' | Plug 'henrik/vim-indexed-search' " {{{
   let g:indexed_search_mappings = 0
-  " vim-slash and indexed-search: UNITE!!!
-  noremap <silent> <plug>(slash-after) :<c-u>ShowSearchIndex<cr>
+  " slash + indexed-search, also centered results
+  noremap <silent> <plug>(slash-after) :<c-u>ShowSearchIndex<cr>zz
   xunmap <plug>(slash-after)
   " }}}
   Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " {{{
