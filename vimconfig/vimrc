@@ -166,8 +166,6 @@ augroup vimrc_plugin_config
   xunmap <plug>(slash-after)
   " }}}
   Plug 'romainl/vim-cool'
-
-  " au CmdlineLeave [/\?] au 
   Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " {{{
   nnoremap <leader>t :TagbarToggle<cr>
   " }}}
@@ -202,7 +200,7 @@ augroup vimrc_plugin_config
   " ---------------------------------------------------------------------------
 
   Plug 'gcavallanti/vim-noscrollbar'
-  " Plug 'AssailantLF/vim-active-numbers' " My plugin <3
+  Plug 'auwsmit/vim-active-numbers' " My plugin <3
   Plug 'itchyny/lightline.vim' " {{{
   nnoremap <silent> <leader>L }:exec lightline#toggle()<cr>``
 
@@ -220,7 +218,7 @@ augroup vimrc_plugin_config
         \   'filetype': 'LightLineFiletype',
         \   'fileencoding': 'LightLineFileencoding',
         \   'mode': 'LightLineMode',
-        \   'ctrlpmark': 'CtrlPMark',
+        \   'ctrlpmark': 'LightLineCtrlPMark',
         \ },
         \ 'component_expand': {
         \   'syntastic': 'SyntasticStatuslineFlag',
@@ -287,7 +285,7 @@ augroup vimrc_plugin_config
           \ winwidth(0) > 60 ? lightline#mode() : ''
   endfunction
 
-  function! CtrlPMark()
+  function! LightLineCtrlPMark()
     if expand('%:t') =~ 'ControlP'
       call lightline#link('iR'[g:lightline.ctrlp_regex])
       return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
@@ -461,7 +459,7 @@ augroup vimrc_general
   au BufEnter * syntax sync fromstart
 
   " make 'nobuflisted' persist when editing a file
-  if (v:version > 704) || (v:version == 704 && has('patch786'))
+  if exists('##OptionSet')
     function! s:PersistNobl(type)
       if a:type == 'option'
         if &buflisted && exists('b:persist_nobl')
@@ -520,13 +518,12 @@ else
   set listchars+=eol:¬
 endif
 
-syntax enable
-
 " my 'modifed' version of Bad Wolf
 silent! colorscheme badwolf_flattened
 
 " fallback default colorscheme
 if !exists('g:colors_name')
+  syntax enable
   colorscheme desert
 endif
 
@@ -797,6 +794,11 @@ nnoremap <silent> dr  :<c-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>re
 nnoremap <silent> drr :<c-u>call <sid>set_reg(v:register)<cr>0:<c-u>set opfunc=<sid>replace_without_yank<cr>g@$
 " slightly related key-press-saver
 xnoremap R "0p
+
+" browse search results while
+" searching.. with tab/s-tab
+cnoremap <expr>  <tab>    getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
+cnoremap <expr>  <s-tab>  getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
 
 " }}}
 " ---------------------------------------------------------------------------
