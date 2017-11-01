@@ -20,7 +20,7 @@ elseif has('nvim')
   let s:myvimdir ="~/.config/nvim"
 endif
 
-" map leader for plugins
+" map leader early for plugins
 let mapleader = "\<space>"
 let maplocalleader = "\\"
 
@@ -40,9 +40,6 @@ augroup vimrc_plugin_config
   " FILE/BUFFER PLUGINS {{{
   " ---------------------------------------------------------------------------
 
-  Plug 'romainl/vim-tinyMRU' " {{{
-  nnoremap <leader>r :ME<space>
-  " }}}
   Plug 'tpope/vim-eunuch'
   Plug 'tpope/vim-fugitive' " {{{
   nnoremap <leader>gs :Gstatus<cr>
@@ -56,6 +53,9 @@ augroup vimrc_plugin_config
 
   " hide fugitive buffers to reduce buffer list clutter
   au BufReadPost fugitive://* set bufhidden=delete
+  " }}}
+  Plug 'romainl/vim-tinyMRU' " {{{
+  nnoremap <leader>r :ME<space>
   " }}}
   " Plug 'mattn/vim-fz' {{{
   function! Fz_install(info)
@@ -73,7 +73,6 @@ augroup vimrc_plugin_config
   let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
   " }}}
   Plug 'justinmk/vim-dirvish' " {{{
-
   " disable netrw
   let g:loaded_netrw = 1
   let g:loaded_netrwPlugin = 1
@@ -82,6 +81,7 @@ augroup vimrc_plugin_config
   nnoremap <silent> - :Dirvish %<cr>
   " open current working directory
   nnoremap <silent> + :Dirvish<cr>
+
   " map gh to hide "hidden" files. (Unix only)
   au FileType dirvish nnoremap <buffer> gh
         \ :g@\v/\.[^\/]+/?$@d<cr>
@@ -537,11 +537,7 @@ augroup vimrc_appearance_and_formatting
     " Maximize window
     au GUIEnter * simalt ~x
     " Fonts: glorious notepad default
-    if has('nvim')
-      " GuiFont Consolas:h9
-    else
-      set guifont=Consolas:h9
-    endif
+    set guifont=Consolas:h9
   else
     " Unix deserves a nicer font
     set guifont=DejaVu\ Sans\ Mono\ 9
