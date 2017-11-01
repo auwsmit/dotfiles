@@ -20,6 +20,7 @@ elseif has('nvim')
   let s:myvimdir ="~/.config/nvim"
 endif
 
+" map leader for plugins
 let mapleader = "\<space>"
 let maplocalleader = "\\"
 
@@ -39,6 +40,9 @@ augroup vimrc_plugin_config
   " FILE/BUFFER PLUGINS {{{
   " ---------------------------------------------------------------------------
 
+  Plug 'romainl/vim-tinyMRU' " {{{
+  nnoremap <leader>r :ME<space>
+  " }}}
   Plug 'tpope/vim-eunuch'
   Plug 'tpope/vim-fugitive' " {{{
   nnoremap <leader>gs :Gstatus<cr>
@@ -52,6 +56,18 @@ augroup vimrc_plugin_config
 
   " hide fugitive buffers to reduce buffer list clutter
   au BufReadPost fugitive://* set bufhidden=delete
+  " }}}
+  " Plug 'mattn/vim-fz' {{{
+  function! Fz_install(info)
+    if a:info.status == 'installed'
+      !go get github.com/mattn/files
+      !go get github.com/mattn/gof
+    endif
+  endfunction
+  Plug 'mattn/vim-fz', { 'do': function('Fz_install') }
+  nnoremap <leader>f :Fz <c-r>=fnameescape(expand('%:p:h'))<cr><cr>
+  " idk why <c-j> isn't working like it should
+  tnoremap <c-j> <down>
   " }}}
   Plug 'justinmk/vim-gtfo' " {{{
   let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
@@ -70,32 +86,6 @@ augroup vimrc_plugin_config
   au FileType dirvish nnoremap <buffer> gh
         \ :g@\v/\.[^\/]+/?$@d<cr>
   au FileType dirvish set nobuflisted
-  " }}}
-  Plug 'ctrlpvim/ctrlp.vim' " {{{
-
-  " ignore .git folders to speed up searches
-  let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
-  let g:ctrlp_max_depth = 15
-  " include hidden files
-  let g:ctrlp_show_hidden = 1
-  " open multiple files in ONE window
-  let g:ctrlp_open_multiple_files = '1vr'
-  " ctrl-o to open specifically
-  let g:ctrlp_arg_map = 1
-  " change default CtrlP mapping
-  let g:ctrlp_map = '<leader>p'
-
-  " free <space> in operator mode
-  au VimEnter * ounmap <leader>p
-
-  " shortcuts
-  nnoremap <leader>p :CtrlP<cr>
-  nnoremap <leader>b :CtrlPBuffer<cr>
-  nnoremap <leader>- :CtrlPCurFile<cr>
-  nnoremap <leader>+ :CtrlPCurWD<cr>
-  nnoremap <leader><c-r> :CtrlPMRU<cr>
-  nnoremap <leader><c-l> :CtrlPLine<cr>
-  nnoremap <leader><c-p> :CtrlP<space>
   " }}}
   Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " {{{
   " close buffer
@@ -175,8 +165,8 @@ augroup vimrc_plugin_config
   " SNIPPET/COMPLETION PLUGINS {{{
   " ---------------------------------------------------------------------------
 
-  Plug 'SirVer/UltiSnips'
   Plug 'ervandew/supertab'
+  Plug 'SirVer/UltiSnips'
   Plug 'tpope/vim-endwise',
         \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
 
@@ -349,7 +339,7 @@ augroup vimrc_plugin_config
 
   " }}}
   " ---------------------------------------------------------------------------
-  " CONVENIENCE/MISC PLUGINS " {{{
+  " MISC/CONVENIENCE PLUGINS " {{{
   " ---------------------------------------------------------------------------
 
   Plug 'tpope/vim-rsi'
@@ -362,12 +352,6 @@ augroup vimrc_plugin_config
   Plug 'tweekmonster/startuptime.vim'
   Plug 'ludovicchabant/vim-gutentags' " {{{
   let g:gutentags_enabled = 0
-  " }}}
-  Plug 'mhinz/vim-Startify' " {{{
-  let g:ctrlp_reuse_window = 'startify'
-  let g:startify_files_number = 6
-  let g:startify_session_delete_buffers = 1
-  let g:startify_session_persistence = 1
   " }}}
   Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' } " {{{
   nnoremap <leader>u :UndotreeToggle<cr>
@@ -811,7 +795,6 @@ nnoremap <silent> <leader>v :edit $MYVIMRC<cr>
 nnoremap <silent> <leader>V :tabnew $MYVIMRC<cr>
 
 " shortcuts
-nnoremap <leader>f :find<space>
 nnoremap <leader>s :write<cr>
 nnoremap <leader>h :help<space>
 " :help on the word under the cursor
@@ -911,14 +894,10 @@ nnoremap \y ggVG"+y
 " Other functions, commands, settings,
 " etc.  that don't fit elsewhere go here
 
-" delete all buffers and open Startify
+" delete all buffers and open a scratch buffer
 function! s:RestartVim()
-  if exists('g:loaded_startify')
-    SClose
-  else
-    %bdelete
-    setl buftype=nofile bufhidden=wipe
-  endif
+  %bdelete
+  setl buftype=nofile bufhidden=wipe
 endfunction
 command! -bar RestartVim call <sid>RestartVim()
 
