@@ -901,6 +901,8 @@ func! s:replace_without_yank(type) abort
     exe "keepjumps normal! '[V']\"".s:rr_reg."p"
   elseif a:type ==? 'block'
     exe "keepjumps normal! `[\<c-v>`]\"".s:rr_reg."p"
+  elseif a:type == 'visual'
+    exe "keepjumps normal! gv\"".s:rr_reg."p"
   else
     "DWIM: if pasting linewise contents in a _characterwise_ motion, trim
     "      surrounding whitespace from the content to be pasted.
@@ -918,8 +920,7 @@ endf
 " }}}
 nnoremap <silent> dr  :<c-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<cr>g@
 nnoremap <silent> drr :<c-u>call <sid>set_reg(v:register)<cr>0:<c-u>set opfunc=<sid>replace_without_yank<cr>g@$
-" slightly related key-press-saver
-xnoremap R "0p
+xnoremap <silent> R :<c-u>call <sid>set_reg(v:register)<bar>call <sid>replace_without_yank('visual')<cr>
 
 " browse search results while
 " searching.. with tab/s-tab
