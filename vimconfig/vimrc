@@ -101,9 +101,11 @@ augroup vimrc_plugin_config
     nnoremap <leader>- :CtrlPCurFile<cr>
     nnoremap <leader>+ :CtrlPCurWD<cr>
     nnoremap <leader>b :CtrlPBuffer<cr>
-    nnoremap <leader>pp :CtrlP<space>
-    nnoremap <leader>pr :CtrlPMRU<cr>
-    nnoremap <leader>pl :CtrlPLine<cr>
+    nnoremap <leader>ff :CtrlP<space>
+    nnoremap <leader>fl :CtrlPLine<cr>
+    nnoremap <leader>fb :CtrlPLine %<cr>
+    nnoremap <leader>ft :CtrlPBufTagAll<cr>
+    nnoremap <leader>fr :CtrlPMRU<cr>
     " }}}
   else
     Plug 'junegunn/fzf.vim' " {{{
@@ -114,16 +116,16 @@ augroup vimrc_plugin_config
     nnoremap <leader>+ :FZF<cr>
     nnoremap <leader>b :FzfBuffers<cr>
     nnoremap <leader>ff :FZF<space>
-    nnoremap <leader>fg :FzfGFiles<cr>
-    nnoremap <leader>fs :FzfGFiles?<cr>
-    nnoremap <leader>fc :FzfCommits<cr>
     nnoremap <leader>fl :FzfLines<cr>
     nnoremap <leader>fb :FzfBLines<cr>
     nnoremap <leader>ft :FzfTags<cr>
-    nnoremap <leader>fh :FzfHelptags<cr>
     nnoremap <leader>fr :FzfHistory<cr>
+    nnoremap <leader>fh :FzfHelptags<cr>
     nnoremap <leader>f: :FzfHistory:<cr>
     nnoremap <leader>f/ :FzfHistory/<cr>
+    nnoremap <leader>fg :FzfGFiles<cr>
+    nnoremap <leader>fs :FzfGFiles?<cr>
+    nnoremap <leader>fc :FzfCommits<cr>
     nnoremap <leader><space> :FzfCommands<cr>
 
     " adapt to colorscheme
