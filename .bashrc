@@ -59,7 +59,9 @@ bind '"\e[A"':history-search-backward
 bind '"\e[B"':history-search-forward
 
 # Remap mouse buttons to adjust volume
-xbindkeys
+if ! pgrep -x "xbindkeys" > /dev/null ; then
+  xbindkeys
+fi
 
 ## ALIASES ##
 
