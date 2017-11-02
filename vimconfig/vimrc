@@ -56,35 +56,69 @@ augroup vimrc_plugin_config
   Plug 'romainl/vim-tinyMRU' " {{{
   nnoremap <leader>r :ME<space>
   " }}}
-  Plug 'ctrlpvim/ctrlp.vim' " {{{
+  if s:is_windows " CtrlP is the best FZF.vim alternative for Windows :(
+    Plug 'ctrlpvim/ctrlp.vim' " {{{
 
-  " ignore .git folders to speed up searches
-  let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
-  let g:ctrlp_max_depth = 15
-  " include hidden files
-  let g:ctrlp_show_hidden = 1
-  " open multiple files in ONE window
-  let g:ctrlp_open_multiple_files = '1vr'
-  " ctrl-o to open specifically
-  let g:ctrlp_arg_map = 1
-  " change default CtrlP mapping
-  let g:ctrlp_map = '<leader>p'
+    " include hidden files
+    let g:ctrlp_show_hidden = 1
+    " open multiple files in ONE window
+    let g:ctrlp_open_multiple_files = '1vr'
+    " ctrl-o to open specifically
+    let g:ctrlp_arg_map = 1
+    " change default CtrlP mapping
+    let g:ctrlp_map = '<leader>p'
 
-  " free <space> in operator mode
-  au VimEnter * ounmap <leader>p
+    " free <space> in operator mode
+    au VimEnter * ounmap <leader>p
 
-  " shortcuts
-  nnoremap <leader>p :CtrlP<cr>
-  nnoremap <leader>b :CtrlPBuffer<cr>
-  nnoremap <leader>- :CtrlPCurFile<cr>
-  nnoremap <leader>+ :CtrlPCurWD<cr>
-  nnoremap <leader><c-r> :CtrlPMRU<cr>
-  nnoremap <leader><c-l> :CtrlPLine<cr>
-  nnoremap <leader><c-p> :CtrlP<space>
-  " }}}
+    nnoremap <leader>- :CtrlPCurFile<cr>
+    nnoremap <leader>+ :CtrlPCurWD<cr>
+    nnoremap <leader>b :CtrlPBuffer<cr>
+    nnoremap <leader>pp :CtrlP<space>
+    nnoremap <leader>pr :CtrlPMRU<cr>
+    nnoremap <leader>pl :CtrlPLine<cr>
+    " }}}
+  else
+    Plug 'junegunn/fzf.vim' " {{{
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    let g:fzf_command_prefix = 'Fzf'
+
+    nnoremap <leader>- :FZF <c-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
+    nnoremap <leader>+ :FZF<cr>
+    nnoremap <leader>b :FzfBuffers<cr>
+    nnoremap <leader>ff :FZF<space>
+    nnoremap <leader>fg :FzfGFiles<cr>
+    nnoremap <leader>fs :FzfGFiles?<cr>
+    nnoremap <leader>fc :FzfCommits<cr>
+    nnoremap <leader>fl :FzfLines<cr>
+    nnoremap <leader>fb :FzfBLines<cr>
+    nnoremap <leader>ft :FzfTags<cr>
+    nnoremap <leader>fh :FzfHelptags<cr>
+    nnoremap <leader>fr :FzfHistory<cr>
+    nnoremap <leader>f: :FzfHistory:<cr>
+    nnoremap <leader>f/ :FzfHistory/<cr>
+    nnoremap <leader><space> :FzfCommands<cr>
+
+    " adapt to colorscheme
+    let g:fzf_colors =
+          \ { 'fg':    ['fg', 'Normal'],
+          \ 'bg':      ['bg', 'Normal'],
+          \ 'hl':      ['fg', 'Comment'],
+          \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+          \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+          \ 'hl+':     ['fg', 'Statement'],
+          \ 'info':    ['fg', 'PreProc'],
+          \ 'border':  ['fg', 'Ignore'],
+          \ 'prompt':  ['fg', 'Conditional'],
+          \ 'pointer': ['fg', 'Exception'],
+          \ 'marker':  ['fg', 'Keyword'],
+          \ 'spinner': ['fg', 'Label'],
+          \ 'header':  ['fg', 'Comment'] }
+    " }}}
+  endif
   if has('python') || has('python3')
+    Plug 'ludovicchabant/ctrlp-py-matcher' " {{{
     " TODO check for when FelikZ/ctrlp-py-matcher updates
-    Plug 'ludovicchabant/ctrlp-py-matcher'
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
     " }}}
   endif
@@ -909,7 +943,7 @@ nnoremap <leader>h :help<space>
 nnoremap <leader>H :help <c-r><c-w><cr>
 
 " save my pinky some stress
-nnoremap <leader><space> :
+nnoremap <leader>; :
 nnoremap <leader>w <c-w>
 
 " circular windows
