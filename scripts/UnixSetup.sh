@@ -86,5 +86,5 @@ if [ -e ~/.vimrc ]; then
 fi
 
 # Disable pcspkr module (the horrid beeping)
-rmmod -s pcspkr >> /dev/null 2>&1
-echo 'install pcspkr /bin/false' > /etc/modprobe.d/aws_nobeep
+# rmmod -s pcspkr >> /dev/null 2>&1
+# echo 'install pcspkr /bin/false' > /etc/modprobe.d/aws_nobeep
