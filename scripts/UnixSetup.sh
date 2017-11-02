@@ -80,6 +80,10 @@ my_mkdir ~/.config/lilyterm
 make_link_and_backup \
   ~/.config/lilyterm/default.conf $repo_dir/lilyterm.conf $backup_dir/lilyterm
 
+# .xbindkeysrc
+make_link_and_backup \
+  ~/.xbindkeysrc $repo_dir/.xbindkeysrc $backup_dir
+
 # check for stray vimrc
 if [ -e ~/.vimrc ]; then
   mv -i ~/.vimrc $backup_dir
