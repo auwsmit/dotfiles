@@ -56,17 +56,31 @@ augroup vimrc_plugin_config
   Plug 'romainl/vim-tinyMRU' " {{{
   nnoremap <leader>r :ME<space>
   " }}}
-  " Plug 'mattn/vim-fz' {{{
-  function! Fz_install(info)
-    if a:info.status == 'installed'
-      !go get github.com/mattn/files
-      !go get github.com/mattn/gof
-    endif
-  endfunction
-  Plug 'mattn/vim-fz', { 'do': function('Fz_install') }
-  nnoremap <leader>f :Fz <c-r>=fnameescape(expand('%:p:h'))<cr><cr>
-  " idk why <c-j> isn't working like it should
-  tnoremap <c-j> <down>
+  Plug 'ctrlpvim/ctrlp.vim' " {{{
+
+  " ignore .git folders to speed up searches
+  let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+  let g:ctrlp_max_depth = 15
+  " include hidden files
+  let g:ctrlp_show_hidden = 1
+  " open multiple files in ONE window
+  let g:ctrlp_open_multiple_files = '1vr'
+  " ctrl-o to open specifically
+  let g:ctrlp_arg_map = 1
+  " change default CtrlP mapping
+  let g:ctrlp_map = '<leader>p'
+
+  " free <space> in operator mode
+  au VimEnter * ounmap <leader>p
+
+  " shortcuts
+  nnoremap <leader>p :CtrlP<cr>
+  nnoremap <leader>b :CtrlPBuffer<cr>
+  nnoremap <leader>- :CtrlPCurFile<cr>
+  nnoremap <leader>+ :CtrlPCurWD<cr>
+  nnoremap <leader><c-r> :CtrlPMRU<cr>
+  nnoremap <leader><c-l> :CtrlPLine<cr>
+  nnoremap <leader><c-p> :CtrlP<space>
   " }}}
   Plug 'justinmk/vim-gtfo' " {{{
   let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
