@@ -56,6 +56,33 @@ augroup vimrc_plugin_config
   Plug 'romainl/vim-tinyMRU' " {{{
   nnoremap <leader>r :ME<space>
   " }}}
+  Plug 'justinmk/vim-gtfo' " {{{
+  let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
+  " }}}
+  Plug 'justinmk/vim-dirvish' " {{{
+  " disable netrw
+  let g:loaded_netrw = 1
+  let g:loaded_netrwPlugin = 1
+  " map gh to hide "hidden" files. (Unix only)
+  au FileType dirvish nnoremap <buffer> gh
+        \ :g@\v/\.[^\/]+/?$@d<cr>
+  au FileType dirvish set nobuflisted
+  " }}}
+  Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " {{{
+  " close buffer
+  nnoremap gs :Sayonara<cr>
+  " close buffer, don't close window
+  nnoremap gS :Sayonara!<cr>
+  " prompt to close vim when closing the last file
+  let g:sayonara_confirm_quit = 1
+  " see: 'q to quit help' under KEY MAPPINGS/NORMAL MAPS
+  function! s:helpquit()
+    if &buftype == 'help'
+      nnoremap <buffer> q :Sayonara<cr>
+    endif
+  endfunction
+  au BufEnter *.txt call s:helpquit()
+  " }}}
   if s:is_windows " CtrlP is the best FZF.vim alternative for Windows :(
     Plug 'ctrlpvim/ctrlp.vim' " {{{
 
@@ -122,33 +149,6 @@ augroup vimrc_plugin_config
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
     " }}}
   endif
-  Plug 'justinmk/vim-gtfo' " {{{
-  let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
-  " }}}
-  Plug 'justinmk/vim-dirvish' " {{{
-  " disable netrw
-  let g:loaded_netrw = 1
-  let g:loaded_netrwPlugin = 1
-  " map gh to hide "hidden" files. (Unix only)
-  au FileType dirvish nnoremap <buffer> gh
-        \ :g@\v/\.[^\/]+/?$@d<cr>
-  au FileType dirvish set nobuflisted
-  " }}}
-  Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " {{{
-  " close buffer
-  nnoremap gs :Sayonara<cr>
-  " close buffer, don't close window
-  nnoremap gS :Sayonara!<cr>
-  " prompt to close vim when closing the last file
-  let g:sayonara_confirm_quit = 1
-  " see: 'q to quit help' under KEY MAPPINGS/NORMAL MAPS
-  function! s:helpquit()
-    if &buftype == 'help'
-      nnoremap <buffer> q :Sayonara<cr>
-    endif
-  endfunction
-  au BufEnter *.txt call s:helpquit()
-  " }}}
 
   " }}}
   " ---------------------------------------------------------------------------
@@ -191,6 +191,7 @@ augroup vimrc_plugin_config
   " MOTION/NAVIGATION PLUGINS {{{
   " ---------------------------------------------------------------------------
 
+  Plug 'romainl/vim-cool'
   Plug 'chaoren/vim-wordmotion'
   Plug 'justinmk/vim-ipmotion' " {{{
   " Skip over closed folds with { and }
@@ -202,7 +203,6 @@ augroup vimrc_plugin_config
   noremap <silent> <plug>(slash-after) :<c-u>ShowSearchIndex<cr>zz
   xunmap <plug>(slash-after)
   " }}}
-  Plug 'romainl/vim-cool'
   Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " {{{
   nnoremap <leader>t :TagbarToggle<cr>
   " }}}
@@ -213,11 +213,6 @@ augroup vimrc_plugin_config
   " ---------------------------------------------------------------------------
 
   Plug 'ervandew/supertab'
-  if has('python3')
-    Plug 'SirVer/UltiSnips' " {{{
-    let g:UltiSnipsExpandTrigger="<c-j>"
-    " }}}
-  endif
   Plug 'tpope/vim-endwise',
         \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
   Plug 'prabirshrestha/asyncomplete.vim' " {{{
@@ -315,6 +310,11 @@ augroup vimrc_plugin_config
     " }}}
   endif
   " }}}
+  if has('python3')
+    Plug 'SirVer/UltiSnips' " {{{
+    let g:UltiSnipsExpandTrigger="<c-j>"
+    " }}}
+  endif
 
   " }}}
   " ---------------------------------------------------------------------------
@@ -496,15 +496,15 @@ augroup vimrc_plugin_config
   Plug 'dietsche/vim-lastplace'
   Plug 'romainl/vim-qf'
   Plug 'tweekmonster/startuptime.vim'
-  if executable('ctags')
-    Plug 'ludovicchabant/vim-gutentags'
-  endif
   Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' } " {{{
   nnoremap <leader>u :UndotreeToggle<cr>
   function! g:Undotree_CustomMap()
     nunmap <buffer> <tab>
   endfunction
   " }}}
+  if executable('ctags')
+    Plug 'ludovicchabant/vim-gutentags'
+  endif
 
   " }}}
   " ---------------------------------------------------------------------------
