@@ -9,14 +9,8 @@ esac
 ## FUNCTIONS ##
 
 # Check if a command exists
-command_exists () {
+cmd_exists () {
   type "$1" >> /dev/null 2>&1 ;
-}
-
-# Actually remove/purge apt metapackages
-# (buggy)
-aptmeta () {
-  sudo apt-get $1 --auto-remove  $(apt-cache depends $2 | cut -f 2 -d ':' | grep -v \< | tr '\n' ' ') ;
 }
 
 # Ask for confirmation to startx
@@ -59,8 +53,10 @@ bind '"\e[A"':history-search-backward
 bind '"\e[B"':history-search-forward
 
 # Remap mouse buttons to adjust volume
-if ! pgrep -x "xbindkeys" > /dev/null ; then
-  xbindkeys
+if cmd_exists xbindkeys ; then
+  if ! pgrep -x "xbindkeys" > /dev/null ; then
+    xbindkeys
+  fi
 fi
 
 ## ALIASES ##
@@ -92,7 +88,7 @@ alias bl_lower="sudo bash -c \"echo $(($max_bright/15)) > $sys_backlight/brightn
 alias battery='acpi'
 
 # Package management
-if command_exists apt ; then
+if cmd_exists apt ; then
   alias pacu='sudo apt update'
   alias paci='sudo apt update; sudo apt install --auto-remove'
   alias pacr='sudo apt remove --auto-remove'
@@ -105,7 +101,7 @@ fi
 
 # Auto-run startx on virtual terminal 1, since it's the default VT
 # (disabled for now)
-#if command_exists startx ; then
+#if cmd_exists startx ; then
 #  # for systemd:
 #  if [[ ! ${DISPLAY} && ${XDG_VTNR} == 1 ]]; then
 #    confirm_startx
