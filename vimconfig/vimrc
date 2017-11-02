@@ -337,6 +337,7 @@ augroup vimrc_plugin_config
 
   Plug 'gcavallanti/vim-noscrollbar'
   Plug 'auwsmit/vim-active-numbers' " My plugin <3
+  Plug 'auwsmit/badcanine' " (it's badwolf)
   Plug 'itchyny/lightline.vim' " {{{
   nnoremap <silent> <leader>L }:exec lightline#toggle()<cr>``
 
@@ -648,8 +649,7 @@ else
   set listchars+=eol:¬
 endif
 
-" my 'modifed' version of Bad Wolf
-silent! colorscheme badwolf_flattened
+silent! colorscheme badcanine
 
 " fallback default colorscheme
 if !exists('g:colors_name')
