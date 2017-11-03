@@ -69,18 +69,18 @@ augroup vimrc_plugin_config
   au FileType dirvish set nobuflisted
   " }}}
   Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " {{{
-  " close buffer
-  nnoremap gs :Sayonara<cr>
-  " close buffer, don't close window
-  nnoremap gS :Sayonara!<cr>
+  " close buffer + preserve windows
+  nnoremap gs :Sayonara!<cr>
+  " close buffer + close window
+  nnoremap gS :Sayonara<cr>
   " prompt to close vim when closing the last file
   let g:sayonara_confirm_quit = 1
   " see: 'q to quit help' under KEY MAPPINGS/NORMAL MAPS
-  function! s:helpquit()
+  fun! s:helpquit()
     if &buftype == 'help'
       nnoremap <buffer> q :Sayonara<cr>
     endif
-  endfunction
+  endfun
   au BufEnter *.txt call s:helpquit()
   " }}}
   if s:is_windows " CtrlP is the best FZF.vim alternative for Windows :(
@@ -223,10 +223,10 @@ augroup vimrc_plugin_config
 
   let g:asyncomplete_auto_popup = 0
   let g:asyncomplete_remove_duplicates = 1
-  function! s:ToggleAsyncomplete()
+  fun! s:ToggleAsyncomplete()
     silent! let g:asyncomplete_auto_popup =
           \ g:asyncomplete_auto_popup ? 0 : 1
-  endfunction
+  endfun
   nnoremap <leader>a :call <sid>ToggleAsyncomplete()<cr>
   " inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
   " inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
@@ -370,15 +370,15 @@ augroup vimrc_plugin_config
 
   let g:lightline.component = { 'percent': '%{noscrollbar#statusline()}' }
 
-  function! LightLineModified()
+  fun! LightLineModified()
     return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
-  endfunction
+  endfun
 
-  function! LightLineReadonly()
+  fun! LightLineReadonly()
     return &ft !~? 'help' && &readonly ? 'RO' : ''
-  endfunction
+  endfun
 
-  function! LightLineFilename()
+  fun! LightLineFilename()
     let fname = expand('%:t')
     return fname == 'ControlP' ? g:lightline.ctrlp_item :
           \ fname == '__Tagbar__' ? g:lightline.fname :
@@ -389,9 +389,9 @@ augroup vimrc_plugin_config
           \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
           \ ('' != fname ? fname : '[No Name]') .
           \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
-  endfunction
+  endfun
 
-  function! LightLineFugitive()
+  fun! LightLineFugitive()
     try
       if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
         let mark = ''  " edit here for cool mark
@@ -401,30 +401,30 @@ augroup vimrc_plugin_config
     catch
     endtry
     return ''
-  endfunction
+  endfun
 
-  function! LightLineFileformat()
+  fun! LightLineFileformat()
     return winwidth(0) > 70 ? &fileformat : ''
-  endfunction
+  endfun
 
-  function! LightLineFiletype()
+  fun! LightLineFiletype()
     return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
-  endfunction
+  endfun
 
-  function! LightLineFileencoding()
+  fun! LightLineFileencoding()
     return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
-  endfunction
+  endfun
 
-  function! LightLineMode()
+  fun! LightLineMode()
     let fname = expand('%:t')
     return fname == '__Tagbar__' ? 'Tagbar' :
           \ fname == 'ControlP' ? 'CtrlP' :
           \ fname == '__Gundo__' ? 'Gundo' :
           \ fname == '__Gundo_Preview__' ? 'Gundo Preview' :
           \ winwidth(0) > 60 ? lightline#mode() : ''
-  endfunction
+  endfun
 
-  function! LightLineCtrlPMark()
+  fun! LightLineCtrlPMark()
     if expand('%:t') =~ 'ControlP'
       call lightline#link('iR'[g:lightline.ctrlp_regex])
       return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
@@ -432,31 +432,31 @@ augroup vimrc_plugin_config
     else
       return ''
     endif
-  endfunction
+  endfun
 
   let g:ctrlp_status_func = {
         \ 'main': 'CtrlPStatusFunc_1',
         \ 'prog': 'CtrlPStatusFunc_2',
         \ }
 
-  function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
+  fun! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
     let g:lightline.ctrlp_regex = a:regex
     let g:lightline.ctrlp_prev = a:prev
     let g:lightline.ctrlp_item = a:item
     let g:lightline.ctrlp_next = a:next
     return lightline#statusline(0)
-  endfunction
+  endfun
 
-  function! CtrlPStatusFunc_2(str)
+  fun! CtrlPStatusFunc_2(str)
     return lightline#statusline(0)
-  endfunction
+  endfun
 
   let g:tagbar_status_func = 'TagbarStatusFunc'
 
-  function! TagbarStatusFunc(current, sort, fname, ...) abort
+  fun! TagbarStatusFunc(current, sort, fname, ...) abort
     let g:lightline.fname = a:fname
     return lightline#statusline(0)
-  endfunction
+  endfun
   " }}}
 
   " }}}
@@ -501,9 +501,9 @@ augroup vimrc_plugin_config
   Plug 'tweekmonster/startuptime.vim'
   Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' } " {{{
   nnoremap <leader>u :UndotreeToggle<cr>
-  function! g:Undotree_CustomMap()
+  fun! g:Undotree_CustomMap()
     nunmap <buffer> <tab>
-  endfunction
+  endfun
   " }}}
   if executable('ctags')
     Plug 'ludovicchabant/vim-gutentags'
@@ -593,7 +593,7 @@ augroup vimrc_general
 
   " make 'nobuflisted' persist when editing a file
   if exists('##OptionSet')
-    function! s:PersistNobl(type)
+    fun! s:PersistNobl(type)
       if a:type == 'option'
         if &buflisted && exists('b:persist_nobl')
           unlet b:persist_nobl
@@ -605,7 +605,7 @@ augroup vimrc_general
           setl nobuflisted
         endif
       endif
-    endfunction
+    endfun
     au OptionSet buflisted call <sid>PersistNobl('option')
     au BufEnter * call <sid>PersistNobl('buf')
   endif
@@ -737,25 +737,26 @@ nnoremap Q @q
 
 " [S]plit lines (sister to [J]oin line) {{{
 " cc still changes the whole line
-function! s:SplitLine()
+fun! s:SplitLine()
   exe "normal! i\<cr>\<esc>^gk"
   silent! substitute/\v +$//
   silent! nohlsearch
   call histdel("search", -1)
   normal! $
-endfunction
+endfun
 " }}}
 nnoremap S :call <sid>SplitLine()<cr>
 
 " center when jumping {{{
-function! s:Center()
+fun! s:Center()
   let prev_so = &scrolloff
   set scrolloff=999
   redraw
   let &scrolloff = prev_so
-endfunction
+endfun
 " }}}
 " new jump list mnemonic: previous, next
+" (frees up CTRL-i AKA Tab)
 nnoremap <silent> <c-p> <c-o>:call <sid>Center()<cr>
 nnoremap <silent> <c-n> <c-i>:call <sid>Center()<cr>
 
@@ -828,11 +829,11 @@ noremap <c-right> <c-w>>
 
 " q to quit help {{{
 " (from Junegunn's vimrc)
-function! s:helpquit()
+fun! s:helpquit()
   if &buftype == 'help'
     nnoremap <buffer> q :bd<cr>
   endif
-endfunction
+endfun
 augroup q_for_quit
   au!
   au BufEnter *.txt call s:helpquit()
@@ -841,7 +842,7 @@ augroup END
 
 " Source vimscript operator {{{
 " Nice for quick vimscript testing.
-function! s:SourceVimscript(type)
+fun! s:SourceVimscript(type)
   let sel_save = &selection
   let &selection = "inclusive"
   let reg_save = @"
@@ -859,7 +860,7 @@ function! s:SourceVimscript(type)
   @"
   let &selection = sel_save
   let @" = reg_save
-endfunction
+endfun
 " }}}
 nnoremap <silent> g: :set opfunc=<sid>SourceVimscript<cr>g@
 vnoremap <silent> g: :<c-u>call <sid>SourceVimscript("visual")<cr>
@@ -967,14 +968,14 @@ ounmap <leader>}
 
 " toggle location & quickfix lists {{{
 " (from vimwiki)
-function! GetBufferList()
+fun! GetBufferList()
   redir =>buflist
   silent! ls!
   redir END
   return buflist
-endfunction
+endfun
 
-function! ToggleList(bufname, pfx)
+fun! ToggleList(bufname, pfx)
   let buflist = GetBufferList()
   for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
     if bufwinnr(bufnum) != -1
@@ -992,14 +993,14 @@ function! ToggleList(bufname, pfx)
   if winnr() != winnr
     wincmd p
   endif
-endfunction
+endfun
 " }}}
 nnoremap <silent> <leader>l :call ToggleList("Location List", 'l')<cr>
 nnoremap <silent> <leader>q :call ToggleList("Quickfix List", 'c')<cr>
 
 " alternate between header and source files {{{
 " (credit to junegunn's vimrc)
-function! s:A()
+fun! s:A()
   let name = expand('%:r')
   let ext = tolower(expand('%:e'))
   let sources = ['c', 'cc', 'cpp', 'cxx']
@@ -1018,7 +1019,7 @@ function! s:A()
       endfor
     endif
   endfor
-endfunction
+endfun
 command! A call <sid>A()
 " }}}
 nnoremap <leader>A :A<cr>
@@ -1040,19 +1041,19 @@ nnoremap \y ggVG"+y
 " etc.  that don't fit elsewhere go here
 
 " delete all buffers and open a scratch buffer
-function! s:RestartVim()
+fun! s:RestartVim()
   %bdelete
   setl buftype=nofile bufhidden=wipe
-endfunction
+endfun
 command! -bar RestartVim call <sid>RestartVim()
 
 " toggle syntax highlighting
 " useful when Vim is crippled by its inefficient highlighting
-function! s:ToggleSyntaxHighlighting()
+fun! s:ToggleSyntaxHighlighting()
   let s:folds = &foldlevel
   exec 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
   let &foldlevel=s:folds
-endfunction
+endfun
 command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
 
 " DoubleView {{{
@@ -1060,7 +1061,7 @@ command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
 " scroll-bound together.  Allows you to see twice as much as before!
 " (disables the wrap setting and expands folds to work better)
 " (PS: this is kind of janky, but I like it anyway)
-function! s:DoubleView()
+fun! s:DoubleView()
   let s:DV_so=&scrolloff
   set scrolloff=0 noscrollbind nowrap nofoldenable
   botright vsplit
@@ -1069,7 +1070,7 @@ function! s:DoubleView()
   wincmd p
   setl scrollbind
   let &scrolloff=s:DV_so
-endfunction " }}}
+endfun " }}}
 command! DoubleView call <sid>DoubleView()
 
 " custom text objects
@@ -1081,7 +1082,6 @@ for char in s:separators
   execute 'xnoremap a' . char . ' :<c-u>normal! F' . char . 'vf' . char . '<cr>'
   execute 'onoremap a' . char . ' :normal va' . char . '<cr>'
 endfor
-
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
 
