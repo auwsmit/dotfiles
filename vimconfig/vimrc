@@ -498,7 +498,23 @@ augroup vimrc_plugin_config
   Plug 'Konfekt/FastFold'
   Plug 'dietsche/vim-lastplace'
   Plug 'romainl/vim-qf'
+  Plug 'xolox/vim-session' " {{{
+  Plug 'xolox/vim-misc'
+  let g:session_autosave = 0
+  let g:session_autoload = 0
+  " }}}
   Plug 'tweekmonster/startuptime.vim'
+  Plug 'auwsmit/vim-hydra' " {{{
+
+  let s:hytrigger = 'z.'
+  let s:hyquit  = [ 'q', '.', '<space>' ]
+  let s:hynav =  [ 'u', '<c-u>', 'd', '<c-d>' ]
+  let s:hynav += [ '[', '{',     ']', '}',    ]
+  let s:hynav += [ 'j', 'zj',    'k', 'zk'    ]
+  let s:hynav += [ 'M', 'zM',    'R', 'zR'    ]
+  let s:hynav += [ 'm', 'zm',    'r', 'zr'    ]
+  au VimEnter * call MakeHydra(s:hytrigger,s:hyquit,s:hynav)
+  " }}}
   Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' } " {{{
   nnoremap <leader>u :UndotreeToggle<cr>
   fun! g:Undotree_CustomMap()
@@ -1045,7 +1061,7 @@ fun! s:RestartVim()
   %bdelete
   setl buftype=nofile bufhidden=wipe
 endfun
-command! -bar RestartVim call <sid>RestartVim()
+command! -bar KillBuffers call <sid>RestartVim()
 
 " toggle syntax highlighting
 " useful when Vim is crippled by its inefficient highlighting
