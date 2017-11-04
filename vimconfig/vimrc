@@ -20,10 +20,6 @@ elseif has('nvim')
   let s:myvimdir ="~/.config/nvim"
 endif
 
-" map leader early for plugins
-let mapleader = "\<space>"
-let maplocalleader = "\\"
-
 " }}}
 " ===========================================================================
 " PLUGINS {{{
@@ -42,19 +38,19 @@ augroup vimrc_plugin_config
 
   Plug 'tpope/vim-eunuch'
   Plug 'tpope/vim-fugitive' " {{{
-  nnoremap <leader>gs :Gstatus<cr>
-  nnoremap <leader>gd :Gdiff<cr>
-  nnoremap <leader>gD :Gdiff HEAD<cr>
-  nnoremap <leader>gc :Gcommit<cr>
-  nnoremap <leader>gl :Git log<cr>
-  nnoremap <leader>gp :Git push<cr>
-  nnoremap <leader>gw :Gwrite<cr>
-  nnoremap <leader>gg :Ggrep<space>
+  nnoremap <space>gs :Gstatus<cr>
+  nnoremap <space>gd :Gdiff<cr>
+  nnoremap <space>gD :Gdiff HEAD<cr>
+  nnoremap <space>gc :Gcommit<cr>
+  nnoremap <space>gl :Git log<cr>
+  nnoremap <space>gp :Git push<cr>
+  nnoremap <space>gw :Gwrite<cr>
+  nnoremap <space>gg :Ggrep<space>
   " hide fugitive buffers to reduce buffer list clutter
   au BufReadPost fugitive://* set bufhidden=delete
   " }}}
   Plug 'romainl/vim-tinyMRU' " {{{
-  nnoremap <leader>r :ME<space>
+  nnoremap <space>r :ME<space>
   " }}}
   Plug 'justinmk/vim-gtfo' " {{{
   let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
@@ -93,40 +89,40 @@ augroup vimrc_plugin_config
     " ctrl-o to open specifically
     let g:ctrlp_arg_map = 1
     " change default CtrlP mapping
-    let g:ctrlp_map = '<leader>p'
+    let g:ctrlp_map = '<space>p'
 
     " free <space> in operator mode
-    au VimEnter * ounmap <leader>p
+    au VimEnter * ounmap <space>p
 
-    nnoremap <leader>- :CtrlPCurFile<cr>
-    nnoremap <leader>+ :CtrlPCurWD<cr>
-    nnoremap <leader>b :CtrlPBuffer<cr>
-    nnoremap <leader>ff :CtrlP<space>
-    nnoremap <leader>fl :CtrlPLine<cr>
-    nnoremap <leader>fb :CtrlPLine %<cr>
-    nnoremap <leader>ft :CtrlPBufTagAll<cr>
-    nnoremap <leader>fr :CtrlPMRU<cr>
+    nnoremap <space>- :CtrlPCurFile<cr>
+    nnoremap <space>+ :CtrlPCurWD<cr>
+    nnoremap <space>b :CtrlPBuffer<cr>
+    nnoremap <space>ff :CtrlP<space>
+    nnoremap <space>fl :CtrlPLine<cr>
+    nnoremap <space>fb :CtrlPLine %<cr>
+    nnoremap <space>ft :CtrlPBufTagAll<cr>
+    nnoremap <space>fr :CtrlPMRU<cr>
     " }}}
   else
     Plug 'junegunn/fzf.vim' " {{{
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     let g:fzf_command_prefix = 'Fzf'
 
-    nnoremap <leader>- :FZF <c-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
-    nnoremap <leader>+ :FZF<cr>
-    nnoremap <leader>b :FzfBuffers<cr>
-    nnoremap <leader>ff :FZF<space>
-    nnoremap <leader>fl :FzfLines<cr>
-    nnoremap <leader>fb :FzfBLines<cr>
-    nnoremap <leader>ft :FzfTags<cr>
-    nnoremap <leader>fr :FzfHistory<cr>
-    nnoremap <leader>fh :FzfHelptags<cr>
-    nnoremap <leader>f: :FzfHistory:<cr>
-    nnoremap <leader>f/ :FzfHistory/<cr>
-    nnoremap <leader>fg :FzfGFiles<cr>
-    nnoremap <leader>fs :FzfGFiles?<cr>
-    nnoremap <leader>fc :FzfCommits<cr>
-    nnoremap <leader><space> :FzfCommands<cr>
+    nnoremap <space>- :FZF <c-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
+    nnoremap <space>+ :FZF<cr>
+    nnoremap <space>b :FzfBuffers<cr>
+    nnoremap <space>ff :FZF<space>
+    nnoremap <space>fl :FzfLines<cr>
+    nnoremap <space>fb :FzfBLines<cr>
+    nnoremap <space>ft :FzfTags<cr>
+    nnoremap <space>fr :FzfHistory<cr>
+    nnoremap <space>fh :FzfHelptags<cr>
+    nnoremap <space>f: :FzfHistory:<cr>
+    nnoremap <space>f/ :FzfHistory/<cr>
+    nnoremap <space>fg :FzfGFiles<cr>
+    nnoremap <space>fs :FzfGFiles?<cr>
+    nnoremap <space>fc :FzfCommits<cr>
+    nnoremap <space><space> :FzfCommands<cr>
 
     " adapt to colorscheme
     let g:fzf_colors =
@@ -206,7 +202,7 @@ augroup vimrc_plugin_config
   xunmap <plug>(slash-after)
   " }}}
   Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " {{{
-  nnoremap <leader>t :TagbarToggle<cr>
+  nnoremap <space>t :TagbarToggle<cr>
   " }}}
 
   " }}}
@@ -217,101 +213,6 @@ augroup vimrc_plugin_config
   Plug 'ervandew/supertab'
   Plug 'tpope/vim-endwise',
         \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
-  Plug 'prabirshrestha/asyncomplete.vim' " {{{
-  Plug 'prabirshrestha/async.vim'
-  " asyncomplete.vim general settings {{{
-
-  let g:asyncomplete_auto_popup = 0
-  let g:asyncomplete_remove_duplicates = 1
-  fun! s:ToggleAsyncomplete()
-    silent! let g:asyncomplete_auto_popup =
-          \ g:asyncomplete_auto_popup ? 0 : 1
-  endfun
-  nnoremap <leader>a :call <sid>ToggleAsyncomplete()<cr>
-  " inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-  " inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-  " inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
-  imap <c-space> <Plug>(asyncomplete_force_refresh)
-  " }}}
-  Plug 'prabirshrestha/asyncomplete-lsp.vim' " {{{
-  Plug 'prabirshrestha/vim-lsp'
-
-  if executable('pyls')
-    " pip install python-language-server
-    au User lsp_setup call lsp#register_server({
-          \ 'name': 'pyls',
-          \ 'cmd': {server_info->['pyls']},
-          \ 'whitelist': ['python'],
-          \ })
-  endif
-  if executable('clangd')
-    au User lsp_setup call lsp#register_server({
-          \ 'name': 'clangd',
-          \ 'cmd': {server_info->['clangd']},
-          \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
-          \ })
-  endif
-  " }}}
-  Plug 'prabirshrestha/asyncomplete-buffer.vim' " {{{
-
-  au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
-        \ 'name': 'buffer',
-        \ 'whitelist': ['*'],
-        \ 'blacklist': ['go'],
-        \ 'completor': function('asyncomplete#sources#buffer#completor'),
-        \ }))
-  " }}}
-  Plug 'yami-beta/asyncomplete-omni.vim' " {{{
-
-  au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
-        \ 'name': 'omni',
-        \ 'whitelist': ['*'],
-        \ 'blacklist': ['html'],
-        \ 'completor': function('asyncomplete#sources#omni#completor')
-        \  }))
-  " }}}
-  Plug 'prabirshrestha/asyncomplete-necosyntax.vim' " {{{
-  Plug 'Shougo/neco-syntax'
-
-  au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
-        \ 'name': 'necosyntax',
-        \ 'whitelist': ['*'],
-        \ 'completor': function('asyncomplete#sources#necosyntax#completor'),
-        \ }))
-  " }}}
-  Plug 'prabirshrestha/asyncomplete-necovim.vim' " {{{
-  Plug 'Shougo/neco-vim'
-
-  au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necovim#get_source_options({
-        \ 'name': 'necovim',
-        \ 'whitelist': ['vim'],
-        \ 'completor': function('asyncomplete#sources#necovim#completor'),
-        \ }))
-  " }}}
-  if has('python3')
-    Plug 'prabirshrestha/asyncomplete-ultisnips.vim' " {{{
-
-    au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#ultisnips#get_source_options({
-          \ 'name': 'ultisnips',
-          \ 'whitelist': ['*'],
-          \ 'completor': function('asyncomplete#sources#ultisnips#completor'),
-          \ }))
-    " }}}
-  endif
-  if executable('ctags')
-    Plug 'prabirshrestha/asyncomplete-tags.vim' " {{{
-
-    au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#tags#get_source_options({
-          \ 'name': 'tags',
-          \ 'whitelist': ['c'],
-          \ 'completor': function('asyncomplete#sources#tags#completor'),
-          \ 'config': {
-          \    'max_file_size': 20000000,
-          \  },
-          \ }))
-    " }}}
-  endif
-  " }}}
   if has('python3')
     Plug 'SirVer/UltiSnips' " {{{
     let g:UltiSnipsExpandTrigger="<c-j>"
@@ -341,7 +242,7 @@ augroup vimrc_plugin_config
   Plug 'auwsmit/vim-active-numbers' " My plugin <3
   Plug 'auwsmit/badcanine' " (it's badwolf)
   Plug 'itchyny/lightline.vim' " {{{
-  nnoremap <silent> <leader>L }:exec lightline#toggle()<cr>``
+  nnoremap <silent> <space>L }:exec lightline#toggle()<cr>``
 
   " compatibility with other plugins {{{
   let g:lightline = {
@@ -465,13 +366,13 @@ augroup vimrc_plugin_config
   " }}}
   Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' } " {{{
   " toggle Goyo (distraction free editing)
-  nnoremap <leader>G :Goyo<cr>
+  nnoremap <space>G :Goyo<cr>
   " }}}
   Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' } " {{{
   au FileType c,cpp,vim,sh,dosbatch,lisp RainbowParentheses
   " }}}
   Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' } " {{{
-  nnoremap <leader>i :IndentLinesToggle<cr>
+  nnoremap <space>i :IndentLinesToggle<cr>
   " use custom filetype detection for better vim-plug compatibility
   let g:indentLine_enabled = 0
   let g:indentLine_fileType = ['']
@@ -505,6 +406,8 @@ augroup vimrc_plugin_config
   " }}}
   Plug 'tweekmonster/startuptime.vim'
   Plug 'auwsmit/vim-hydra' " {{{
+  nnoremap q :echo 'lel'<cr>
+  let g:map_save = maparg('q', 'n', 0, 1)
 
   let s:hytrigger = 'z.'
   let s:hyquit  = [ 'q', '.', '<space>' ]
@@ -516,7 +419,7 @@ augroup vimrc_plugin_config
   au VimEnter * call MakeHydra(s:hytrigger,s:hyquit,s:hynav)
   " }}}
   Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' } " {{{
-  nnoremap <leader>u :UndotreeToggle<cr>
+  nnoremap <space>u :UndotreeToggle<cr>
   fun! g:Undotree_CustomMap()
     nunmap <buffer> <tab>
   endfun
@@ -950,37 +853,37 @@ cnoremap <expr>  <s-tab>  getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>',
 " ---------------------------------------------------------------------------
 " LEADER MAPS {{{
 " ---------------------------------------------------------------------------
-" See STARTUP for mapleader
+" space is my leader
 
 " edit vimrc
-nnoremap <silent> <leader>v :edit $MYVIMRC<cr>
-nnoremap <silent> <leader>V :tabnew $MYVIMRC<cr>
+nnoremap <silent> <space>v :edit $MYVIMRC<cr>
+nnoremap <silent> <space>V :tabnew $MYVIMRC<cr>
 
 " shortcuts
-nnoremap <leader>s :write<cr>
-nnoremap <leader>h :help<space>
+nnoremap <space>s :write<cr>
+nnoremap <space>h :help<space>
 " :help on the word under the cursor
-nnoremap <leader>H :help <c-r><c-w><cr>
+nnoremap <space>H :help <c-r><c-w><cr>
 
 " save my pinky some stress
-nnoremap <leader>; :
-nnoremap <leader>w <c-w>
+nnoremap <space>; :
+nnoremap <space>w <c-w>
 
 " circular windows
-nnoremap <leader><tab> <c-w>w
+nnoremap <space><tab> <c-w>w
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches
-nnoremap <leader>/ :lvim //g %<cr>
+nnoremap <space>/ :lvim //g %<cr>
 
 " search for all numbers
-nnoremap <leader># /\v\d+<cr>
+nnoremap <space># /\v\d+<cr>
 
 " search for all brackets
-noremap <leader>{ ?[{}]<cr>
-noremap <leader>} /[{}]<cr>
-ounmap <leader>{
-ounmap <leader>}
+noremap <space>{ ?[{}]<cr>
+noremap <space>} /[{}]<cr>
+ounmap <space>{
+ounmap <space>}
 
 " toggle location & quickfix lists {{{
 " (from vimwiki)
@@ -1011,8 +914,8 @@ fun! ToggleList(bufname, pfx)
   endif
 endfun
 " }}}
-nnoremap <silent> <leader>l :call ToggleList("Location List", 'l')<cr>
-nnoremap <silent> <leader>q :call ToggleList("Quickfix List", 'c')<cr>
+nnoremap <silent> <space>l :call ToggleList("Location List", 'l')<cr>
+nnoremap <silent> <space>q :call ToggleList("Quickfix List", 'c')<cr>
 
 " alternate between header and source files {{{
 " (credit to junegunn's vimrc)
@@ -1038,10 +941,10 @@ fun! s:A()
 endfun
 command! A call <sid>A()
 " }}}
-nnoremap <leader>A :A<cr>
+nnoremap <space>A :A<cr>
 
 " quick scratch buffer
-nnoremap <leader>S :enew<cr>:setl bt=nofile bh=hide noswf<cr>:set ft=
+nnoremap <space>S :enew<cr>:setl bt=nofile bh=hide noswf<cr>:set ft=
 
 " copy all to system clipboard
 nnoremap \y ggVG"+y
