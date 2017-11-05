@@ -684,6 +684,7 @@ nnoremap <c-j> <c-d>
 nnoremap <c-k> <c-u>
 
 " org-style fold viewing
+" TODO: make functions that are even more accurate
 nnoremap <tab> za
 nnoremap <s-tab> zM
 
@@ -720,10 +721,11 @@ inoremap <c-]> <esc>
 " NORMAL MAPS {{{
 " ---------------------------------------------------------------------------
 
-" Emacs cancel blasphemy
+" Emacs blasphemy
 inoremap <c-g> <esc>
 cnoremap <c-g> <c-c>
 xnoremap <c-g> <esc>
+nnoremap <c-h> :help<space>
 
 " from tpope's rsi
 inoremap <c-a> <c-o>^
