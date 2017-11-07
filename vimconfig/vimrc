@@ -49,9 +49,6 @@ augroup vimrc_plugin_config
   " hide fugitive buffers to reduce buffer list clutter
   au BufReadPost fugitive://* set bufhidden=delete
   " }}}
-  Plug 'romainl/vim-tinyMRU' " {{{
-  nnoremap <space>r :ME<space>
-  " }}}
   Plug 'justinmk/vim-gtfo' " {{{
   let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
   " }}}
@@ -97,11 +94,11 @@ augroup vimrc_plugin_config
     nnoremap <space>- :CtrlPCurFile<cr>
     nnoremap <space>+ :CtrlPCurWD<cr>
     nnoremap <space>b :CtrlPBuffer<cr>
+    nnoremap <space>r :CtrlPMRU<cr>
     nnoremap <space>ff :CtrlP<space>
     nnoremap <space>fl :CtrlPLine<cr>
     nnoremap <space>fb :CtrlPLine %<cr>
     nnoremap <space>ft :CtrlPBufTagAll<cr>
-    nnoremap <space>fr :CtrlPMRU<cr>
     " }}}
   else
     Plug 'junegunn/fzf.vim' " {{{
@@ -111,11 +108,11 @@ augroup vimrc_plugin_config
     nnoremap <space>- :FZF <c-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
     nnoremap <space>+ :FZF<cr>
     nnoremap <space>b :FzfBuffers<cr>
+    nnoremap <space>r :FzfHistory<cr>
     nnoremap <space>ff :FZF<space>
     nnoremap <space>fl :FzfLines<cr>
     nnoremap <space>fb :FzfBLines<cr>
     nnoremap <space>ft :FzfTags<cr>
-    nnoremap <space>fr :FzfHistory<cr>
     nnoremap <space>fh :FzfHelptags<cr>
     nnoremap <space>f: :FzfHistory:<cr>
     nnoremap <space>f/ :FzfHistory/<cr>
@@ -238,6 +235,7 @@ augroup vimrc_plugin_config
   " APPEARANCE/UI PLUGINS {{{
   " ---------------------------------------------------------------------------
 
+  Plug 'xtal8/traces.vim'
   Plug 'gcavallanti/vim-noscrollbar'
   Plug 'auwsmit/vim-active-numbers' " My plugin <3
   Plug 'auwsmit/badcanine' " (it's badwolf)
@@ -406,17 +404,12 @@ augroup vimrc_plugin_config
   " }}}
   Plug 'tweekmonster/startuptime.vim'
   Plug 'auwsmit/vim-hydra' " {{{
-  nnoremap q :echo 'lel'<cr>
-  let g:map_save = maparg('q', 'n', 0, 1)
-
-  let s:hytrigger = 'z.'
   let s:hyquit  = [ 'q', '.', '<space>' ]
-  let s:hynav =  [ 'u', '<c-u>', 'd', '<c-d>' ]
-  let s:hynav += [ '[', '{',     ']', '}',    ]
-  let s:hynav += [ 'j', 'zj',    'k', 'zk'    ]
-  let s:hynav += [ 'M', 'zM',    'R', 'zR'    ]
-  let s:hynav += [ 'm', 'zm',    'r', 'zr'    ]
-  au VimEnter * call MakeHydra(s:hytrigger,s:hyquit,s:hynav)
+  let s:hynav = [ '[', '{', ']', '}', 'u', '<c-u>', 'd', '<c-d>' ]
+  let s:hymove  = [ 'k', ':<C-u>move-2<CR>==' ]
+  let s:hymove += [ 'j', ':<C-u>move+<CR>==' ]
+  au VimEnter * call MakeHydra('<space>.',s:hyquit,s:hynav) |
+        \ call MakeHydra('<space>m',s:hyquit,s:hymove)
   " }}}
   Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' } " {{{
   nnoremap <space>u :UndotreeToggle<cr>
@@ -864,10 +857,13 @@ nnoremap <silent> <space>V :tabnew $MYVIMRC<cr>
 " shortcuts
 nnoremap <space>s :write<cr>
 nnoremap <space>h :help<space>
-" :help on the word under the cursor
-nnoremap <space>H :help <c-r><c-w><cr>
+" :help on the WORD under the cursor
+nnoremap <space>H :help <c-r><c-a>
 
 " save my pinky some stress
+if maparg('<space><space>','n') == ''
+  nnoremap <space><space> :
+endif
 nnoremap <space>; :
 nnoremap <space>w <c-w>
 
