@@ -242,10 +242,10 @@ augroup vimrc_plugin_config
 
   " compatibility with other plugins {{{
   let g:lightline = {
-        \ 'colorscheme': 'powerline',
+        \ 'colorscheme': 'mypowerline',
         \ 'active': {
-        \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
-        \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+        \   'left': [ [ 'lineinfo' ], [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
+        \   'right': [ [ 'syntastic'], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
         \ },
         \ 'component_function': {
         \   'fugitive': 'LightLineFugitive',
@@ -576,13 +576,12 @@ endif
 
 " standard status line if lightline isn't enabled
 " (pretty much the same layout as default lightline)
-set statusline=%<%f\ %h%m%r%=%y
+set statusline=\|%l,%v\|\ %<%f\ %h%m%r%=\%y
 if exists('g:noscrollbar_loaded')
-  set statusline+=\ %{noscrollbar#statusline()}
+  set statusline+=\ \|%{noscrollbar#statusline()}\|
 else
-  set statusline+=\ %P
+  execute 'set statusline+=\ '
 endif
-execute 'set statusline+=%8(%l,%v%)\ '
 
 " Disable Background Color Erase (BCE) so that color schemes
 " render properly when inside 256-color tmux and GNU screen.
