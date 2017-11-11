@@ -69,7 +69,7 @@ augroup vimrc_plugin_config
   " prompt to close vim when closing the last file
   let g:sayonara_confirm_quit = 1
   " see: 'q to quit help' under KEY MAPPINGS/NORMAL MAPS
-  fun! s:helpquit()
+  fun! s:helpquit() abort
     if &buftype == 'help'
       nnoremap <buffer> q :Sayonara<cr>
     endif
@@ -508,7 +508,7 @@ augroup vimrc_general
 
   " make 'nobuflisted' persist when editing a file
   if exists('##OptionSet')
-    fun! s:PersistNobl(type)
+    fun! s:PersistNobl(type) abort
       if a:type == 'option'
         if &buflisted && exists('b:persist_nobl')
           unlet b:persist_nobl
@@ -558,7 +558,6 @@ set nonumber norelativenumber
 set numberwidth=1
 set ruler
 set splitright
-set t_Co=256
 if has('linebreak')
   set showbreak=«
   silent! set breakindent
@@ -651,7 +650,7 @@ nnoremap Q @q
 
 " [S]plit lines (sister to [J]oin line) {{{
 " cc still changes the whole line
-fun! s:SplitLine()
+fun! s:SplitLine() abort
   exe "normal! i\<cr>\<esc>^gk"
   silent! substitute/\v +$//
   silent! nohlsearch
@@ -662,7 +661,7 @@ endfun
 nnoremap S :call <sid>SplitLine()<cr>
 
 " center when jumping {{{
-fun! s:Center()
+fun! s:Center() abort
   let prev_so = &scrolloff
   set scrolloff=999
   redraw
@@ -697,8 +696,8 @@ nnoremap <expr><silent> _  !v:count ? "<c-w>s<c-w><down>"  : '_'
 " also set a mark for movements across 5 lines or more
 nnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
 nnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
-vnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
-vnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
+xnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
+xnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
 
 " automatically jump to the end of pasted text
 " useful for pasting multi-lines of text
@@ -745,7 +744,7 @@ noremap <c-right> <c-w>>
 
 " q to quit help {{{
 " (from Junegunn's vimrc)
-fun! s:helpquit()
+fun! s:helpquit() abort
   if &buftype == 'help'
     nnoremap <buffer> q :bd<cr>
   endif
@@ -758,7 +757,7 @@ augroup END
 
 " Source vimscript operator {{{
 " Nice for quick vimscript testing.
-fun! s:SourceVimscript(type)
+fun! s:SourceVimscript(type) abort
   let sel_save = &selection
   let &selection = "inclusive"
   let reg_save = @"
@@ -779,7 +778,7 @@ fun! s:SourceVimscript(type)
 endfun
 " }}}
 nnoremap <silent> g: :set opfunc=<sid>SourceVimscript<cr>g@
-vnoremap <silent> g: :<c-u>call <sid>SourceVimscript("visual")<cr>
+xnoremap <silent> g: :<c-u>call <sid>SourceVimscript("visual")<cr>
 nnoremap <silent> g:: :call <sid>SourceVimscript("currentline")<cr>
 
 " %% for current buffer file name
@@ -887,14 +886,14 @@ ounmap <space>}
 
 " toggle location & quickfix lists {{{
 " (from vimwiki)
-fun! GetBufferList()
+fun! GetBufferList() abort
   redir =>buflist
   silent! ls!
   redir END
   return buflist
 endfun
 
-fun! ToggleList(bufname, pfx)
+fun! ToggleList(bufname, pfx) abort
   let buflist = GetBufferList()
   for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
     if bufwinnr(bufnum) != -1
@@ -919,7 +918,7 @@ nnoremap <silent> <space>q :call ToggleList("Quickfix List", 'c')<cr>
 
 " alternate between header and source files {{{
 " (credit to junegunn's vimrc)
-fun! s:A()
+fun! s:A() abort
   let name = expand('%:r')
   let ext = tolower(expand('%:e'))
   let sources = ['c', 'cc', 'cpp', 'cxx']
@@ -960,7 +959,7 @@ nnoremap \y ggVG"+y
 " etc.  that don't fit elsewhere go here
 
 " delete all buffers and open a scratch buffer
-fun! s:RestartVim()
+fun! s:RestartVim() abort
   %bdelete
   setl buftype=nofile bufhidden=wipe
 endfun
@@ -968,7 +967,7 @@ command! -bar KillBuffers call <sid>RestartVim()
 
 " toggle syntax highlighting
 " useful when Vim is crippled by its inefficient highlighting
-fun! s:ToggleSyntaxHighlighting()
+fun! s:ToggleSyntaxHighlighting() abort
   let s:folds = &foldlevel
   exec 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
   let &foldlevel=s:folds
@@ -980,7 +979,7 @@ command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
 " scroll-bound together.  Allows you to see twice as much as before!
 " (disables the wrap setting and expands folds to work better)
 " (PS: this is kind of janky, but I like it anyway)
-fun! s:DoubleView()
+fun! s:DoubleView() abort
   let s:DV_so=&scrolloff
   set scrolloff=0 noscrollbind nowrap nofoldenable
   botright vsplit
