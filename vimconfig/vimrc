@@ -630,16 +630,15 @@ augroup END
 noremap  <f1>    <nop>
 inoremap <f1>    <nop>
 noremap  <s-cr>  <nop>
-noremap  <space> <nop>
-" for c<space>
-ounmap <space>
+nnoremap  <space> <nop>
+xnoremap  <space> <nop>
 
 " go back to last buffer
-noremap <backspace> <c-^>
+nnoremap <backspace> <c-^>
 
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
-nmap Y y$
+nnoremap Y y$
 
 " U as a more sensible redo
 nnoremap U <c-r>
@@ -879,10 +878,8 @@ nnoremap <space>/ :lvim //g %<cr>
 nnoremap <space># /\v\d+<cr>
 
 " search for all brackets
-noremap <space>{ ?[{}]<cr>
-noremap <space>} /[{}]<cr>
-ounmap <space>{
-ounmap <space>}
+nnoremap <space>{ ?[{}]<cr>
+nnoremap <space>} /[{}]<cr>
 
 " toggle location & quickfix lists {{{
 " (from vimwiki)
