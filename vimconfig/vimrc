@@ -191,7 +191,7 @@ augroup vimrc_plugin_config
   Plug 'justinmk/vim-ipmotion' " {{{
   " Skip over closed folds with { and }
   let g:ip_skipfold = 1
-  "}}}
+  " }}}
   Plug 'auwsmit/vim-slash' | Plug 'henrik/vim-indexed-search' " {{{
   let g:indexed_search_mappings = 0
   " slash + indexed-search, also centered results
@@ -221,7 +221,6 @@ augroup vimrc_plugin_config
   " FORMAT/SYNTAX PLUGINS {{{
   " ---------------------------------------------------------------------------
 
-  Plug 'junegunn/gv.vim',    { 'on': 'GV' }
   Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
   Plug 'junegunn/vim-easy-align',   { 'on': ['<plug>(EasyAlign)', 'EasyAlign'] } " {{{
   " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -237,7 +236,6 @@ augroup vimrc_plugin_config
 
   Plug 'xtal8/traces.vim'
   Plug 'gcavallanti/vim-noscrollbar'
-  Plug 'auwsmit/vim-active-numbers' " My plugin <3
   Plug 'auwsmit/badcanine' " (it's badwolf)
   Plug 'itchyny/lightline.vim' " {{{
   nnoremap <silent> <space>L }:exec lightline#toggle()<cr>``
@@ -397,15 +395,19 @@ augroup vimrc_plugin_config
   Plug 'Konfekt/FastFold'
   Plug 'dietsche/vim-lastplace'
   Plug 'romainl/vim-qf'
+  Plug 'junegunn/gv.vim',    { 'on': 'GV' }
   Plug 'xolox/vim-session' " {{{
   Plug 'xolox/vim-misc'
   let g:session_autosave = 0
   let g:session_autoload = 0
   " }}}
-  Plug 'tweekmonster/startuptime.vim'
   Plug 'auwsmit/vim-hydra' " {{{
   let s:hyquit  = [ 'q', '.', '<space>' ]
-  let s:hynav = [ '[', '{', ']', '}', 'u', '<c-u>', 'd', '<c-d>' ]
+  let s:hynav = [
+        \ '[', '{',
+        \ ']', '}',
+        \ 'u', '<c-u>',
+        \ 'd', '<c-d>' ]
   let s:hymove  = [ 'k', ':<C-u>move-2<CR>==' ]
   let s:hymove += [ 'j', ':<C-u>move+<CR>==' ]
   au VimEnter * call MakeHydra('<space>.',s:hyquit,s:hynav) |
@@ -458,6 +460,7 @@ set virtualedit=all
 set sessionoptions-=options
 set sessionoptions-=folds
 set clipboard^=unnamedplus,unnamed
+set foldopen-=block
 if s:is_windows
   set makeprg=build.bat
 endif
@@ -551,7 +554,7 @@ set laststatus=2
 set linebreak
 set list
 set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
-set nonumber relativenumber
+set nonumber norelativenumber
 set numberwidth=1
 set ruler
 set splitright
