@@ -7,10 +7,9 @@
 " STARTUP {{{
 " ===========================================================================
 
-" detect OS for OS-specific options
-let s:is_cygwin = has('win32unix') || has('win64unix')
-let s:is_mac = has('gui_macvim') || has('mac')
-let s:is_windows = has('win32') || has('win64')
+" shorter conditionals
+let s:is_windows = (has('win32') || has('win64'))
+let s:has_python = (has('python') || has('python3'))
 
 " detect .vim directory
 let s:myvimdir ="~/.vim"
@@ -76,7 +75,7 @@ augroup vimrc_plugin_config
   endfun
   au BufEnter *.txt call s:helpquit()
   " }}}
-  if s:is_windows " CtrlP is the best FZF.vim alternative for Windows :(
+  if s:is_windows && s:has_python
     Plug 'ctrlpvim/ctrlp.vim' " {{{
 
     " include hidden files
@@ -138,9 +137,10 @@ augroup vimrc_plugin_config
           \ 'header':  ['fg', 'Comment'] }
     " }}}
   endif
-  if has('python') || has('python3')
+  if s:has_python
     Plug 'ludovicchabant/ctrlp-py-matcher' " {{{
     " TODO check for when FelikZ/ctrlp-py-matcher updates
+    " see: https://github.com/FelikZ/ctrlp-py-matcher/pull/35
     let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
     " }}}
   endif
@@ -210,10 +210,8 @@ augroup vimrc_plugin_config
   Plug 'ervandew/supertab'
   Plug 'tpope/vim-endwise',
         \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
-  if has('python3')
-    Plug 'SirVer/UltiSnips' " {{{
-    let g:UltiSnipsExpandTrigger="<c-j>"
-    " }}}
+  if s:has_python
+    Plug 'SirVer/UltiSnips'
   endif
 
   " }}}
@@ -224,7 +222,7 @@ augroup vimrc_plugin_config
   Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
   Plug 'junegunn/vim-easy-align',   { 'on': ['<plug>(EasyAlign)', 'EasyAlign'] } " {{{
   " Start interactive EasyAlign in visual mode (e.g. vipga)
-  vmap ga <plug>(EasyAlign)
+  xmap ga <plug>(EasyAlign)
   " Start interactive EasyAlign for a motion/text object (e.g. gaip)
   nmap ga <plug>(EasyAlign)
   " }}}
@@ -593,6 +591,7 @@ augroup vimrc_appearance_and_formatting
 
   " I want these format options by default
   au FileType * set formatoptions=rq1j
+  au VimEnter * set formatoptions=rq1j
 
   if s:is_windows
     " Maximize window
@@ -727,6 +726,7 @@ inoremap <expr> <c-e> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<lt>
 " expand-o-brackets
 inoremap {<tab> {<cr>}<esc>O
 inoremap {; {<cr>};<esc>O
+inoremap {{{<cr> {{{<cr>}}}<esc>O
 
 " change directories (minor time saver)
 nnoremap cd :cd<space>
@@ -741,14 +741,23 @@ noremap <c-up>    <c-w>+
 noremap <c-down>  <c-w>-
 noremap <c-right> <c-w>>
 
-" q to quit help {{{
-" (from Junegunn's vimrc)
+" unimpaired.vim inspired
+" toggle pastemode
+nnoremap cop :set invpaste<CR>
+" toggle centering the cursor
+nnoremap coz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
+
+" improved help mappings {{{
+" (q to quit from Junegunn's vimrc)
 fun! s:helpquit() abort
   if &buftype == 'help'
     nnoremap <buffer> q :bd<cr>
+    nnoremap <buffer> <tab> /\|\zs\S\+\ze\|<cr>
+    nnoremap <buffer> <s-tab> ?\|\zs\S\+\ze\|<cr>
+    nnoremap <buffer> <cr> <c-]>
   endif
 endfun
-augroup q_for_quit
+augroup improved_quit_maps
   au!
   au BufEnter *.txt call s:helpquit()
 augroup END
@@ -779,17 +788,6 @@ endfun
 nnoremap <silent> g: :set opfunc=<sid>SourceVimscript<cr>g@
 xnoremap <silent> g: :<c-u>call <sid>SourceVimscript("visual")<cr>
 nnoremap <silent> g:: :call <sid>SourceVimscript("currentline")<cr>
-
-" %% for current buffer file name
-" :: for current buffer file path
-cnoremap %% <c-r>=fnameescape(expand('%'))<cr>
-cnoremap :: <c-r>=fnameescape(expand('%:p:h'))<cr>/
-
-" unimpaired.vim inspired
-" toggle pastemode
-nnoremap cop :set invpaste<CR>
-" toggle centering the cursor
-nnoremap coz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
 
 " Delete & Replace operator {{{
 " (credit to justinmk's init.vim)
@@ -839,6 +837,11 @@ nnoremap <silent> dr  :<c-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>re
 nnoremap <silent> drr :<c-u>call <sid>set_reg(v:register)<cr>0:<c-u>set opfunc=<sid>replace_without_yank<cr>g@$
 xnoremap <silent> R :<c-u>call <sid>set_reg(v:register)<bar>call <sid>replace_without_yank('visual')<cr>
 
+" %% for current buffer file name
+" :: for current buffer file path
+cnoremap %% <c-r>=fnameescape(expand('%'))<cr>
+cnoremap :: <c-r>=fnameescape(expand('%:p:h'))<cr>/
+
 " browse search results while
 " searching.. with tab/s-tab
 cnoremap <expr>  <tab>    getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
@@ -867,8 +870,9 @@ endif
 nnoremap <space>; :
 nnoremap <space>w <c-w>
 
-" circular windows
+" like a worse alt-tab for windows
 nnoremap <space><tab> <c-w>w
+nnoremap <space><s-tab> <c-w>W
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches
