@@ -8,7 +8,7 @@
 " ===========================================================================
 
 " shorter conditionals
-let s:is_windows = (has('win32') || has('win64'))
+let s:is_windows = (has('win32')  || has('win64'))
 let s:has_python = (has('python') || has('python3'))
 
 " detect .vim directory
@@ -238,12 +238,16 @@ augroup vimrc_plugin_config
   Plug 'itchyny/lightline.vim' " {{{
   nnoremap <silent> <space>L }:exec lightline#toggle()<cr>``
 
-  " compatibility with other plugins {{{
+  " layout + compatibility with other plugins {{{
   let g:lightline = {
         \ 'colorscheme': 'mypowerline',
         \ 'active': {
-        \   'left': [ [ 'lineinfo' ], [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
-        \   'right': [ [ 'syntastic'], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+        \   'left': [ ['lineinfo'], [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
+        \   'right': [ ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+        \ },
+        \ 'inactive': {
+        \   'left': [ ['lineinfo'], ['filename'] ],
+        \   'right': [ ['percent'] ]
         \ },
         \ 'component_function': {
         \   'fugitive': 'LightLineFugitive',
@@ -253,12 +257,6 @@ augroup vimrc_plugin_config
         \   'fileencoding': 'LightLineFileencoding',
         \   'mode': 'LightLineMode',
         \   'ctrlpmark': 'LightLineCtrlPMark',
-        \ },
-        \ 'component_expand': {
-        \   'syntastic': 'SyntasticStatuslineFlag',
-        \ },
-        \ 'component_type': {
-        \   'syntastic': 'error',
         \ },
         \ 'subseparator': { 'left': '|', 'right': '|' }
         \ }
@@ -273,6 +271,7 @@ augroup vimrc_plugin_config
     return &ft !~? 'help' && &readonly ? 'RO' : ''
   endfun
 
+  " TODO: think of other relevant names
   fun! LightLineFilename()
     let fname = expand('%:t')
     return fname == 'ControlP' ? g:lightline.ctrlp_item :
@@ -310,6 +309,7 @@ augroup vimrc_plugin_config
     return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
   endfun
 
+  " TODO: think of other relevant names
   fun! LightLineMode()
     let fname = expand('%:t')
     return fname == '__Tagbar__' ? 'Tagbar' :
@@ -629,8 +629,8 @@ augroup END
 noremap  <f1>    <nop>
 inoremap <f1>    <nop>
 noremap  <s-cr>  <nop>
-nnoremap  <space> <nop>
-xnoremap  <space> <nop>
+nnoremap <space> <nop>
+xnoremap <space> <nop>
 
 " go back to last buffer
 nnoremap <backspace> <c-^>
@@ -727,6 +727,7 @@ inoremap <expr> <c-e> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<lt>
 inoremap {<tab> {<cr>}<esc>O
 inoremap {; {<cr>};<esc>O
 inoremap {{{<cr> {{{<cr>}}}<esc>O
+" ... }}}
 
 " change directories (minor time saver)
 nnoremap cd :cd<space>
@@ -752,8 +753,8 @@ nnoremap coz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
 fun! s:helpquit() abort
   if &buftype == 'help'
     nnoremap <buffer> q :bd<cr>
-    nnoremap <buffer> <tab> /\|\zs\S\+\ze\|<cr>
-    nnoremap <buffer> <s-tab> ?\|\zs\S\+\ze\|<cr>
+    nnoremap <silent><buffer> <tab> :call search("\|\\S\\+\|")<cr>
+    nnoremap <silent><buffer> <s-tab> :call search("\|\\S\\+\|",'b')<cr>
     nnoremap <buffer> <cr> <c-]>
   endif
 endfun
