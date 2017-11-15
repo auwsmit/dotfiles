@@ -1,21 +1,18 @@
 " =============================================================================
 " Filename: autoload/lightline/colorscheme/mypowerline.vim
-" Author: (99.9%) itchyny, (0.01%) auwsmit
+" Original Author: itchyny
+" Author Of Small Adjustments: auwsmit
 " License: MIT License
-" Last Change: 2017/11/10 15:16:02.
+" Last Change: 2017/11/14 15:38:27.
 " =============================================================================
-
-" CHANGES FROM ORIGINAL:
-" Recolored for lineinfo to be
-" the first component on the left
 
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
 let s:p.normal.left = [ ['brightgreen', 'darkestgreen'], ['darkestgreen', 'brightgreen', 'bold'], ['white', 'gray4'] ]
-let s:p.normal.right = [ ['gray5', 'gray10'], ['gray9', 'gray4'], ['gray8', 'gray2'] ]
-let s:p.inactive.right = [ ['gray1', 'gray5'], ['gray4', 'gray1'], ['gray4', 'gray0'] ]
-let s:p.inactive.left = s:p.inactive.right[1:]
+let s:p.normal.right = [ ['gray9', 'gray4'], ['gray8', 'gray2'] ]
+let s:p.inactive.left = [ ['gray4', 'gray1'], ['gray4', 'gray1'] ]
+let s:p.inactive.right = s:p.inactive.left
 let s:p.insert.left = [ ['white', 'darkestcyan'], ['darkestcyan', 'white', 'bold'], ['white', 'darkblue'] ]
-let s:p.insert.right = [ [ 'darkestcyan', 'mediumcyan' ], [ 'mediumcyan', 'darkblue' ], [ 'mediumcyan', 'darkestblue' ] ]
+let s:p.insert.right = [ [ 'mediumcyan', 'darkblue' ], [ 'mediumcyan', 'darkestblue' ] ]
 let s:p.replace.left = [ ['brightred', 'darkestred'], ['white', 'brightred', 'bold'], ['white', 'gray4'] ]
 let s:p.visual.left = [ ['brightorange', 'darkred'], ['darkred', 'brightorange', 'bold'], ['white', 'gray4'] ]
 let s:p.normal.middle = [ [ 'gray7', 'gray2' ] ]
