@@ -29,13 +29,14 @@ call plug#begin()
 
 " all plugin config autocmds in one group
 augroup vimrc_plugin_config
-  au!
+  autocmd!
 
   " ---------------------------------------------------------------------------
   " FILE/BUFFER PLUGINS {{{
   " ---------------------------------------------------------------------------
 
   Plug 'tpope/vim-eunuch'
+  Plug 'tpope/vim-projectionist'
   Plug 'tpope/vim-fugitive' " {{{
   nnoremap <space>gs :Gstatus<cr>
   nnoremap <space>gd :Gdiff<cr>
@@ -87,7 +88,8 @@ augroup vimrc_plugin_config
     " change default CtrlP mapping
     let g:ctrlp_map = '<space>p'
 
-    " free <space> in operator mode
+    " free <space> in operator mode for c<space>
+    " (equivalent to cl and s.. I like having options)
     au VimEnter * ounmap <space>p
 
     nnoremap <space>- :CtrlPCurFile<cr>
@@ -99,7 +101,7 @@ augroup vimrc_plugin_config
     nnoremap <space>fb :CtrlPLine %<cr>
     nnoremap <space>ft :CtrlPBufTagAll<cr>
     " }}}
-  else
+  elseif !s:is_windows
     Plug 'junegunn/fzf.vim' " {{{
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     let g:fzf_command_prefix = 'Fzf'
@@ -199,7 +201,7 @@ augroup vimrc_plugin_config
   xunmap <plug>(slash-after)
   " }}}
   Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " {{{
-  nnoremap <space>t :TagbarToggle<cr>
+  nnoremap <space>tt :TagbarToggle<cr>
   " }}}
 
   " }}}
@@ -233,21 +235,28 @@ augroup vimrc_plugin_config
   " ---------------------------------------------------------------------------
 
   Plug 'xtal8/traces.vim'
-  Plug 'gcavallanti/vim-noscrollbar'
+  Plug 'gcavallanti/vim-noscrollbar' " {{{
+  " au VimEnter * set statusline+=[%{noscrollbar#statusline()}]
+  " }}}
   Plug 'auwsmit/badcanine' " (it's badwolf)
   Plug 'itchyny/lightline.vim' " {{{
-  nnoremap <silent> <space>L }:exec lightline#toggle()<cr>``
+  nnoremap <silent> <space>tL }:execute lightline#toggle()<cr>``
 
   " layout + compatibility with other plugins {{{
   let g:lightline = {
         \ 'colorscheme': 'mypowerline',
         \ 'active': {
-        \   'left': [ ['lineinfo'], [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
-        \   'right': [ ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+        \   'left': [ ['lineinfo'], [ 'mode', 'paste' ],
+        \             [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
+        \   'right': [ ['percent'],
+        \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
         \ },
         \ 'inactive': {
         \   'left': [ ['lineinfo'], ['filename'] ],
         \   'right': [ ['percent'] ]
+        \ },
+        \ 'component': {
+        \   'percent': '%{noscrollbar#statusline()}'
         \ },
         \ 'component_function': {
         \   'fugitive': 'LightLineFugitive',
@@ -260,8 +269,6 @@ augroup vimrc_plugin_config
         \ },
         \ 'subseparator': { 'left': '|', 'right': '|' }
         \ }
-
-  let g:lightline.component = { 'percent': '%{noscrollbar#statusline()}' }
 
   fun! LightLineModified()
     return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
@@ -276,10 +283,7 @@ augroup vimrc_plugin_config
     let fname = expand('%:t')
     return fname == 'ControlP' ? g:lightline.ctrlp_item :
           \ fname == '__Tagbar__' ? g:lightline.fname :
-          \ fname =~ '__Gundo\|NERD_tree' ? '' :
-          \ &ft == 'vimfiler' ? vimfiler#get_status_string() :
-          \ &ft == 'unite' ? unite#get_status_string() :
-          \ &ft == 'vimshell' ? vimshell#get_status_string() :
+          \ fname =~ 'undotree_*\|diffpanel_*' ? '' :
           \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
           \ ('' != fname ? fname : '[No Name]') .
           \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
@@ -287,7 +291,7 @@ augroup vimrc_plugin_config
 
   fun! LightLineFugitive()
     try
-      if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
+      if expand('%:t') !~? 'Tagbar\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
         let mark = ''  " edit here for cool mark
         let _ = fugitive#head()
         return strlen(_) ? mark._ : ''
@@ -314,8 +318,7 @@ augroup vimrc_plugin_config
     let fname = expand('%:t')
     return fname == '__Tagbar__' ? 'Tagbar' :
           \ fname == 'ControlP' ? 'CtrlP' :
-          \ fname == '__Gundo__' ? 'Gundo' :
-          \ fname == '__Gundo_Preview__' ? 'Gundo Preview' :
+          \ fname =~ 'undotree_*\|diffpanel_*' ? '' :
           \ winwidth(0) > 60 ? lightline#mode() : ''
   endfun
 
@@ -360,13 +363,13 @@ augroup vimrc_plugin_config
   " }}}
   Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' } " {{{
   " toggle Goyo (distraction free editing)
-  nnoremap <space>G :Goyo<cr>
+  nnoremap <space>tg :Goyo<cr>
   " }}}
-  Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' } " {{{
-  au FileType c,cpp,vim,sh,dosbatch,lisp RainbowParentheses
-  " }}}
+ Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' } " {{{
+ au FileType c,cpp,vim,sh,dosbatch,lisp RainbowParentheses
+ " }}}
   Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' } " {{{
-  nnoremap <space>i :IndentLinesToggle<cr>
+  nnoremap <space>ti :IndentLinesToggle<cr>
   " use custom filetype detection for better vim-plug compatibility
   let g:indentLine_enabled = 0
   let g:indentLine_fileType = ['']
@@ -398,6 +401,7 @@ augroup vimrc_plugin_config
   Plug 'xolox/vim-misc'
   let g:session_autosave = 0
   let g:session_autoload = 0
+  nnoremap <space>xr :RestartVim<cr>
   " }}}
   Plug 'auwsmit/vim-hydra' " {{{
   let s:hyquit  = [ 'q', '.', '<space>' ]
@@ -412,7 +416,7 @@ augroup vimrc_plugin_config
         \ call MakeHydra('<space>m',s:hyquit,s:hymove)
   " }}}
   Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' } " {{{
-  nnoremap <space>u :UndotreeToggle<cr>
+  nnoremap <space>tu :UndotreeToggle<cr>
   fun! g:Undotree_CustomMap()
     nunmap <buffer> <tab>
   endfun
@@ -499,10 +503,7 @@ endif
 
 " autocmds
 augroup vimrc_general
-  au!
-
-  " more accurate syntax highlighting
-  au BufEnter * syntax sync fromstart
+  autocmd!
 
   " make 'nobuflisted' persist when editing a file
   if exists('##OptionSet')
@@ -571,14 +572,8 @@ if !exists('g:colors_name')
   colorscheme desert
 endif
 
-" standard status line if lightline isn't enabled
-" (pretty much the same layout as default lightline)
-set statusline=\|%l,%v\|\ %<%f\ %h%m%r%=\%y
-if exists('g:noscrollbar_loaded')
-  set statusline+=\ \|%{noscrollbar#statusline()}\|
-else
-  execute 'set statusline+=\ '
-endif
+" my statusline
+execute 'set statusline=[%l,%v]\ %<%f\ %h%m%r%=%y\ [%P] '
 
 " Disable Background Color Erase (BCE) so that color schemes
 " render properly when inside 256-color tmux and GNU screen.
@@ -587,7 +582,10 @@ if &term =~ '256color'
 endif
 
 augroup vimrc_appearance_and_formatting
-  au!
+  autocmd!
+
+  " more accurate syntax highlighting
+  au BufEnter *.vim syntax sync fromstart
 
   " I want these format options by default
   au FileType * set formatoptions=rq1j
@@ -725,9 +723,7 @@ inoremap <expr> <c-e> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<lt>
 
 " expand-o-brackets
 inoremap {<tab> {<cr>}<esc>O
-inoremap {; {<cr>};<esc>O
-inoremap {{{<cr> {{{<cr>}}}<esc>O
-" ... }}}
+inoremap {;<tab> {<cr>};<esc>O
 
 " change directories (minor time saver)
 nnoremap cd :cd<space>
@@ -750,7 +746,7 @@ nnoremap coz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
 
 " improved help mappings {{{
 " (q to quit from Junegunn's vimrc)
-fun! s:helpquit() abort
+fun! s:helpmaps() abort
   if &buftype == 'help'
     nnoremap <buffer> q :bd<cr>
     nnoremap <silent><buffer> <tab> :call search("\|\\S\\+\|")<cr>
@@ -759,8 +755,8 @@ fun! s:helpquit() abort
   endif
 endfun
 augroup improved_quit_maps
-  au!
-  au BufEnter *.txt call s:helpquit()
+  autocmd!
+  au BufEnter *.txt call s:helpmaps()
 augroup END
 " }}}
 
@@ -861,8 +857,6 @@ nnoremap <silent> <space>V :tabnew $MYVIMRC<cr>
 " shortcuts
 nnoremap <space>s :write<cr>
 nnoremap <space>h :help<space>
-" :help on the WORD under the cursor
-nnoremap <space>H :help <c-r><c-a>
 
 " save my pinky some stress
 if maparg('<space><space>','n') == ''
@@ -899,7 +893,7 @@ fun! ToggleList(bufname, pfx) abort
   let buflist = GetBufferList()
   for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
     if bufwinnr(bufnum) != -1
-      exec(a:pfx.'close')
+      execute(a:pfx.'close')
       return
     endif
   endfor
@@ -909,40 +903,14 @@ fun! ToggleList(bufname, pfx) abort
     return
   endif
   let winnr = winnr()
-  exec(a:pfx.'open')
+  execute(a:pfx.'open')
   if winnr() != winnr
     wincmd p
   endif
 endfun
 " }}}
-nnoremap <silent> <space>l :call ToggleList("Location List", 'l')<cr>
-nnoremap <silent> <space>q :call ToggleList("Quickfix List", 'c')<cr>
-
-" alternate between header and source files {{{
-" (credit to junegunn's vimrc)
-fun! s:A() abort
-  let name = expand('%:r')
-  let ext = tolower(expand('%:e'))
-  let sources = ['c', 'cc', 'cpp', 'cxx']
-  let headers = ['h', 'hh', 'hpp', 'hxx']
-  for pair in [[sources, headers], [headers, sources]]
-    let [set1, set2] = pair
-    if index(set1, ext) >= 0
-      for h in set2
-        let aname = name.'.'.h
-        for a in [aname, toupper(aname)]
-          if filereadable(a)
-            execute 'e' a
-            return
-          end
-        endfor
-      endfor
-    endif
-  endfor
-endfun
-command! A call <sid>A()
-" }}}
-nnoremap <space>A :A<cr>
+nnoremap <silent> <space>tl :call ToggleList("Location List", 'l')<cr>
+nnoremap <silent> <space>tq :call ToggleList("Quickfix List", 'c')<cr>
 
 " quick scratch buffer
 nnoremap <space>S :enew<cr>:setl bt=nofile bh=hide noswf<cr>:set ft=
@@ -971,7 +939,7 @@ command! -bar KillBuffers call <sid>RestartVim()
 " useful when Vim is crippled by its inefficient highlighting
 fun! s:ToggleSyntaxHighlighting() abort
   let s:folds = &foldlevel
-  exec 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
+  execute 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
   let &foldlevel=s:folds
 endfun
 command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
