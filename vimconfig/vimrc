@@ -76,7 +76,7 @@ augroup vimrc_plugin_config
   endfun
   au BufEnter *.txt call s:helpquit()
   " }}}
-  if s:is_windows && s:has_python
+  if s:is_windows
     Plug 'ctrlpvim/ctrlp.vim' " {{{
 
     " include hidden files
@@ -235,9 +235,6 @@ augroup vimrc_plugin_config
   " ---------------------------------------------------------------------------
 
   Plug 'xtal8/traces.vim'
-  Plug 'gcavallanti/vim-noscrollbar' " {{{
-  " au VimEnter * set statusline+=[%{noscrollbar#statusline()}]
-  " }}}
   Plug 'auwsmit/badcanine' " (it's badwolf)
   Plug 'itchyny/lightline.vim' " {{{
   nnoremap <silent> <space>tL }:execute lightline#toggle()<cr>``
@@ -254,9 +251,6 @@ augroup vimrc_plugin_config
         \ 'inactive': {
         \   'left': [ ['lineinfo'], ['filename'] ],
         \   'right': [ ['percent'] ]
-        \ },
-        \ 'component': {
-        \   'percent': '%{noscrollbar#statusline()}'
         \ },
         \ 'component_function': {
         \   'fugitive': 'LightLineFugitive',
