@@ -201,7 +201,7 @@ augroup vimrc_plugin_config
   xunmap <plug>(slash-after)
   " }}}
   Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " {{{
-  nnoremap <space>tt :TagbarToggle<cr>
+  nnoremap <space>t :TagbarToggle<cr>
   " }}}
 
   " }}}
@@ -238,7 +238,7 @@ augroup vimrc_plugin_config
   Plug 'auwsmit/badcanine' " (it's badwolf)
   Plug 'itchyny/lightline.vim' " {{{
 
-  nnoremap <silent> <space>tL }:execute lightline#toggle()<cr>``
+  nnoremap <silent> <space>L }:execute lightline#toggle()<cr>``
 
   " layout + compatibility with other plugins {{{
   let g:lightline = {
@@ -276,7 +276,6 @@ augroup vimrc_plugin_config
     \: float2nr(100*(1.0*line('.')/line('$'))).'%'
   endfun
 
-  " I don't need this
   let g:lightline.mode_map = {
         \ 'n' : 'N',
         \ 'i' : 'I',
@@ -310,7 +309,7 @@ augroup vimrc_plugin_config
   fun! LightLineFugitive()
     try
       if expand('%:t') !~? 'Tagbar\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
-        let mark = ''  " edit here for cool mark
+        let mark = 'β '
         let _ = fugitive#head()
         return strlen(_) ? mark._ : ''
       endif
@@ -372,13 +371,13 @@ augroup vimrc_plugin_config
   " }}}
   Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' } " {{{
   " toggle Goyo (distraction free editing)
-  nnoremap <space>tg :Goyo<cr>
+  nnoremap <space>G :Goyo<cr>
   " }}}
  Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' } " {{{
  au FileType c,cpp,vim,sh,dosbatch,lisp RainbowParentheses
  " }}}
   Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' } " {{{
-  nnoremap <space>ti :IndentLinesToggle<cr>
+  nnoremap <space>I :IndentLinesToggle<cr>
   " use custom filetype detection for better vim-plug compatibility
   let g:indentLine_enabled = 0
   let g:indentLine_fileType = ['']
@@ -410,22 +409,9 @@ augroup vimrc_plugin_config
   Plug 'xolox/vim-misc'
   let g:session_autosave = 0
   let g:session_autoload = 0
-  nnoremap <space>xr :RestartVim<cr>
-  " }}}
-  Plug 'auwsmit/vim-hydra' " {{{
-  let s:hyquit  = [ 'q', '.', '<space>' ]
-  let s:hynav = [
-        \ '[', '{',
-        \ ']', '}',
-        \ 'u', '<c-u>',
-        \ 'd', '<c-d>' ]
-  let s:hymove  = [ 'k', ':<C-u>move-2<CR>==' ]
-  let s:hymove += [ 'j', ':<C-u>move+<CR>==' ]
-  au VimEnter * call MakeHydra('<space>.',s:hyquit,s:hynav) |
-        \ call MakeHydra('<space>m',s:hyquit,s:hymove)
   " }}}
   Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' } " {{{
-  nnoremap <space>tu :UndotreeToggle<cr>
+  nnoremap <space>u :UndotreeToggle<cr>
   fun! g:Undotree_CustomMap()
     nunmap <buffer> <tab>
   endfun
@@ -698,10 +684,6 @@ nnoremap + :e .<cr>
 nnoremap <expr><silent> \| !v:count ? "<c-w>v<c-w><right>" : '\|'
 nnoremap <expr><silent> _  !v:count ? "<c-w>s<c-w><down>"  : '_'
 
-" circular window navigation
-nnoremap ) <c-w>w
-nnoremap ( <c-w>W
-
 " move by wrapped lines instead of line numbers, unless the motion is counted
 " also set a mark for movements across 5 lines or more
 nnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
@@ -768,7 +750,7 @@ fun! s:helpmaps() abort
     nnoremap <buffer> <cr> <c-]>
   endif
 endfun
-augroup improved_quit_maps
+augroup improved_help_maps
   autocmd!
   au BufEnter *.txt call s:helpmaps()
 augroup END
@@ -848,8 +830,8 @@ nnoremap <silent> dr  :<c-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>re
 nnoremap <silent> drr :<c-u>call <sid>set_reg(v:register)<cr>0:<c-u>set opfunc=<sid>replace_without_yank<cr>g@$
 xnoremap <silent> R :<c-u>call <sid>set_reg(v:register)<bar>call <sid>replace_without_yank('visual')<cr>
 
-" %% for current buffer file name
-" :: for current buffer file path
+" %% expands to current buffer file name
+" :: expands to current buffer file path
 cnoremap %% <c-r>=fnameescape(expand('%'))<cr>
 cnoremap :: <c-r>=fnameescape(expand('%:p:h'))<cr>/
 
@@ -857,6 +839,11 @@ cnoremap :: <c-r>=fnameescape(expand('%:p:h'))<cr>/
 " searching.. with tab/s-tab
 cnoremap <expr>  <tab>    getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
 cnoremap <expr>  <s-tab>  getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
+
+if has('terminal')
+  tnoremap <esc> <c-w>N
+  tnoremap <c-g> <c-w>N
+endif
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -871,12 +858,12 @@ nnoremap <silent> <space>V :tabnew $MYVIMRC<cr>
 " shortcuts
 nnoremap <space>s :write<cr>
 nnoremap <space>h :help<space>
-
-" save my pinky some stress
 if maparg('<space><space>','n') == ''
   nnoremap <space><space> :
 endif
 nnoremap <space>; :
+nnoremap <space>o <c-w>o
+nnoremap <space>x <c-w>c
 nnoremap <space>w <c-w>
 
 " circular window navigation
@@ -922,14 +909,22 @@ fun! ToggleList(bufname, pfx) abort
   endif
 endfun
 " }}}
-nnoremap <silent> <space>tl :call ToggleList("Location List", 'l')<cr>
-nnoremap <silent> <space>tq :call ToggleList("Quickfix List", 'c')<cr>
+nnoremap <silent> <space>l :call ToggleList("Location List", 'l')<cr>
+nnoremap <silent> <space>q :call ToggleList("Quickfix List", 'c')<cr>
 
 " quick scratch buffer
 nnoremap <space>S :enew<cr>:setl bt=nofile bh=hide noswf<cr>:set ft=
 
-" copy all to system clipboard
-nnoremap \y ggVG"+y
+" toggle syntax highlighting {{{
+" useful when Vim is crippled by its inefficient highlighting
+fun! s:ToggleSyntaxHighlighting() abort
+  let s:folds = &foldlevel
+  execute 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
+  let &foldlevel=s:folds
+endfun
+command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
+" }}}
+nnoremap <space>ts :call <sid>ToggleSyntaxHighlighting()
 
 " }}}
 " ---------------------------------------------------------------------------
@@ -947,15 +942,6 @@ fun! s:RestartVim() abort
   setl buftype=nofile bufhidden=wipe
 endfun
 command! -bar KillBuffers call <sid>RestartVim()
-
-" toggle syntax highlighting
-" useful when Vim is crippled by its inefficient highlighting
-fun! s:ToggleSyntaxHighlighting() abort
-  let s:folds = &foldlevel
-  execute 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
-  let &foldlevel=s:folds
-endfun
-command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
 
 " DoubleView {{{
 " Vertically split the current buffer into two windows which will stay
