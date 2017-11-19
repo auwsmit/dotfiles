@@ -237,6 +237,7 @@ augroup vimrc_plugin_config
   Plug 'xtal8/traces.vim'
   Plug 'auwsmit/badcanine' " (it's badwolf)
   Plug 'itchyny/lightline.vim' " {{{
+
   nnoremap <silent> <space>tL }:execute lightline#toggle()<cr>``
 
   " layout + compatibility with other plugins {{{
@@ -252,6 +253,9 @@ augroup vimrc_plugin_config
         \   'left': [ ['lineinfo'], ['filename'] ],
         \   'right': [ ['percent'] ]
         \ },
+        \ 'component': {
+        \   'percent': '%3{LightLinePercent()}',
+        \ },
         \ 'component_function': {
         \   'fugitive': 'LightLineFugitive',
         \   'filename': 'LightLineFilename',
@@ -264,15 +268,35 @@ augroup vimrc_plugin_config
         \ 'subseparator': { 'left': '|', 'right': '|' }
         \ }
 
+  " emacs-style percent
+  fun! LightLinePercent()
+    return line('w0') == 1 && line('w$') == line('$') ? 'All'
+    \: line('.') == 1 ? 'Top'
+    \: line('.') == line('$') ? 'Bot'
+    \: float2nr(100*(1.0*line('.')/line('$'))).'%'
+  endfun
+
+  " I don't need this
+  let g:lightline.mode_map = {
+        \ 'n' : 'N',
+        \ 'i' : 'I',
+        \ 'R' : 'R',
+        \ 'v' : 'V',
+        \ 'V' : 'VL',
+        \ "\<C-v>": 'VB',
+        \ 'c' : 'C',
+        \ 's' : 'S',
+        \ 'S' : 'SL',
+        \ "\<C-s>": 'SB',
+        \ 't': 'T',
+        \ }
+
   fun! LightLineModified()
     return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
   endfun
-
   fun! LightLineReadonly()
     return &ft !~? 'help' && &readonly ? 'RO' : ''
   endfun
-
-  " TODO: think of other relevant names
   fun! LightLineFilename()
     let fname = expand('%:t')
     return fname == 'ControlP' ? g:lightline.ctrlp_item :
@@ -298,22 +322,18 @@ augroup vimrc_plugin_config
   fun! LightLineFileformat()
     return winwidth(0) > 70 ? &fileformat : ''
   endfun
-
   fun! LightLineFiletype()
     return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
   endfun
-
   fun! LightLineFileencoding()
     return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
   endfun
-
-  " TODO: think of other relevant names
   fun! LightLineMode()
     let fname = expand('%:t')
     return fname == '__Tagbar__' ? 'Tagbar' :
           \ fname == 'ControlP' ? 'CtrlP' :
           \ fname =~ 'undotree_*\|diffpanel_*' ? '' :
-          \ winwidth(0) > 60 ? lightline#mode() : ''
+          \ lightline#mode()
   endfun
 
   fun! LightLineCtrlPMark()
@@ -325,12 +345,10 @@ augroup vimrc_plugin_config
       return ''
     endif
   endfun
-
   let g:ctrlp_status_func = {
         \ 'main': 'CtrlPStatusFunc_1',
         \ 'prog': 'CtrlPStatusFunc_2',
         \ }
-
   fun! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
     let g:lightline.ctrlp_regex = a:regex
     let g:lightline.ctrlp_prev = a:prev
@@ -338,13 +356,10 @@ augroup vimrc_plugin_config
     let g:lightline.ctrlp_next = a:next
     return lightline#statusline(0)
   endfun
-
   fun! CtrlPStatusFunc_2(str)
     return lightline#statusline(0)
   endfun
-
   let g:tagbar_status_func = 'TagbarStatusFunc'
-
   fun! TagbarStatusFunc(current, sort, fname, ...) abort
     let g:lightline.fname = a:fname
     return lightline#statusline(0)
@@ -551,6 +566,7 @@ set nonumber norelativenumber
 set numberwidth=1
 set ruler
 set splitright
+set noshowmode
 if has('linebreak')
   set showbreak=«
   silent! set breakindent
@@ -681,6 +697,10 @@ nnoremap + :e .<cr>
 " | and _ for split windows
 nnoremap <expr><silent> \| !v:count ? "<c-w>v<c-w><right>" : '\|'
 nnoremap <expr><silent> _  !v:count ? "<c-w>s<c-w><down>"  : '_'
+
+" circular window navigation
+nnoremap ) <c-w>w
+nnoremap ( <c-w>W
 
 " move by wrapped lines instead of line numbers, unless the motion is counted
 " also set a mark for movements across 5 lines or more
@@ -859,9 +879,8 @@ endif
 nnoremap <space>; :
 nnoremap <space>w <c-w>
 
-" like a worse alt-tab for windows
+" circular window navigation
 nnoremap <space><tab> <c-w>w
-nnoremap <space><s-tab> <c-w>W
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches
@@ -870,9 +889,9 @@ nnoremap <space>/ :lvim //g %<cr>
 " search for all numbers
 nnoremap <space># /\v\d+<cr>
 
-" search for all brackets
-nnoremap <space>{ ?[{}]<cr>
-nnoremap <space>} /[{}]<cr>
+" search for brackets
+nnoremap <space>[ ?[{}]<cr>
+nnoremap <space>] /[{}]<cr>
 
 " toggle location & quickfix lists {{{
 " (from vimwiki)
