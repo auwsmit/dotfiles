@@ -77,31 +77,54 @@ augroup vimrc_plugin_config
   au BufEnter *.txt call s:helpquit()
   " }}}
   if s:is_windows
-    Plug 'ctrlpvim/ctrlp.vim' " {{{
+     Plug 'Yggdroot/LeaderF' " {{{
 
-    " include hidden files
-    let g:ctrlp_show_hidden = 1
-    " open multiple files in ONE window
-    let g:ctrlp_open_multiple_files = '1vr'
-    " ctrl-o to open specifically
-    let g:ctrlp_arg_map = 1
-    " change default CtrlP mapping
-    let g:ctrlp_map = '<space>p'
+     " options
+     let g:Lf_CommandMap = {'<c-c>': ['<esc>', '<c-c>', '<c-g>']}
+     let g:Lf_WindowHeight = 10
+     let g:Lf_UseVersionControlTool = 0
+     let g:Lf_FollowLinks = 1
+     let g:Lf_DefaultMode = 'FullPath'
+     let g:Lf_StlColorscheme = 'powerline'
 
-    " free <space> in operator mode for c<space>
-    " (equivalent to cl and s.. I like having options)
-    au VimEnter * ounmap <space>p
+     nnoremap <space>- :LeaderfFile <c-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
+     nnoremap <space>+ :LeaderfFile<cr>
+     nnoremap <space>b :LeaderfBuffer<cr>
+     nnoremap <space>r :LeaderfMru<cr>
+     nnoremap <space>ff :LeaderfFile<space>
+     nnoremap <space>fl :LeaderfLineAll<cr>
+     nnoremap <space>fb :LeaderfLine<cr>
+     nnoremap <space>ft :LeaderfTag<cr>
+     nnoremap <space>fh :LeaderfHelp<cr>
+     nnoremap <space>f: :LeaderfHistoryCmd<cr>
+     nnoremap <space>f/ :LeaderfHistorySearch<cr>
+     " }}}
+    " Plug 'ctrlpvim/ctrlp.vim' " {{{
+    " let s:has_ctrlp = 1
 
-    nnoremap <space>- :CtrlPCurFile<cr>
-    nnoremap <space>+ :CtrlPCurWD<cr>
-    nnoremap <space>b :CtrlPBuffer<cr>
-    nnoremap <space>r :CtrlPMRU<cr>
-    nnoremap <space>ff :CtrlP<space>
-    nnoremap <space>fl :CtrlPLine<cr>
-    nnoremap <space>fb :CtrlPLine %<cr>
-    nnoremap <space>ft :CtrlPBufTagAll<cr>
-    " }}}
-  elseif !s:is_windows
+    " " include hidden files
+    " let g:ctrlp_show_hidden = 1
+    " " open multiple files in ONE window
+    " let g:ctrlp_open_multiple_files = '1vr'
+    " " ctrl-o to open specifically
+    " let g:ctrlp_arg_map = 1
+    " " change default CtrlP mapping
+    " let g:ctrlp_map = '<space>p'
+
+    " " free <space> in operator mode for c<space>
+    " " (equivalent to cl and s.. I like having options)
+    " au VimEnter * ounmap <space>p
+
+    " nnoremap <space>- :CtrlPCurFile<cr>
+    " nnoremap <space>+ :CtrlPCurWD<cr>
+    " nnoremap <space>b :CtrlPBuffer<cr>
+    " nnoremap <space>r :CtrlPMRU<cr>
+    " nnoremap <space>ff :CtrlP<space>
+    " nnoremap <space>fl :CtrlPLine<cr>
+    " nnoremap <space>fb :CtrlPLine %<cr>
+    " nnoremap <space>ft :CtrlPBufTagAll<cr>
+    " " }}}
+  else
     Plug 'junegunn/fzf.vim' " {{{
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     let g:fzf_command_prefix = 'Fzf'
@@ -139,13 +162,13 @@ augroup vimrc_plugin_config
           \ 'header':  ['fg', 'Comment'] }
     " }}}
   endif
-  if s:has_python
-    Plug 'ludovicchabant/ctrlp-py-matcher' " {{{
-    " TODO check for when FelikZ/ctrlp-py-matcher updates
-    " see: https://github.com/FelikZ/ctrlp-py-matcher/pull/35
-    let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
-    " }}}
-  endif
+  " if exists('s:has_ctrlp') && s:has_python
+  "   Plug 'ludovicchabant/ctrlp-py-matcher' " {{{
+  "   " TODO check for when FelikZ/ctrlp-py-matcher updates
+  "   " see: https://github.com/FelikZ/ctrlp-py-matcher/pull/35
+  "   let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+  "   " }}}
+  " endif
 
   " }}}
   " ---------------------------------------------------------------------------
