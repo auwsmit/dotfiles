@@ -259,6 +259,7 @@ augroup vimrc_plugin_config
 
   Plug 'xtal8/traces.vim'
   Plug 'auwsmit/badcanine' " (it's badwolf)
+  Plug 'auwsmit/vim-active-numbers'
   Plug 'itchyny/lightline.vim' " {{{
 
   nnoremap <silent> <space>L }:execute lightline#toggle()<cr>``
@@ -332,7 +333,7 @@ augroup vimrc_plugin_config
   fun! LightLineFugitive()
     try
       if expand('%:t') !~? 'Tagbar\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
-        let mark = 'β '
+        let mark = 'β ' " βranch, with a B
         let _ = fugitive#head()
         return strlen(_) ? mark._ : ''
       endif
@@ -352,9 +353,9 @@ augroup vimrc_plugin_config
   endfun
   fun! LightLineMode()
     let fname = expand('%:t')
-    return fname == '__Tagbar__' ? 'Tagbar' :
+    return winwidth(0) <= 70 ? '' :
+          \ fname == '__Tagbar__' ? 'Tagbar' :
           \ fname == 'ControlP' ? 'CtrlP' :
-          \ fname =~ 'undotree_*\|diffpanel_*' ? '' :
           \ lightline#mode()
   endfun
 
@@ -475,7 +476,6 @@ set undolevels=10000
 set complete=.,w,b,t
 set synmaxcol=1024
 set nrformats-=octal
-set fileformat=unix
 set virtualedit=all
 set sessionoptions-=options
 set sessionoptions-=folds
@@ -571,7 +571,7 @@ set laststatus=2
 set linebreak
 set list
 set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
-set nonumber norelativenumber
+set nonumber relativenumber
 set numberwidth=1
 set ruler
 set splitright
@@ -762,6 +762,17 @@ noremap <c-right> <c-w>>
 nnoremap cop :set invpaste<CR>
 " toggle centering the cursor
 nnoremap coz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
+" toggle syntax highlighting {{{
+" useful when Vim is crippled by its inefficient highlighting
+fun! s:ToggleSyntaxHighlighting() abort
+  let s:folds = &foldlevel
+  execute 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
+  let &foldlevel=s:folds
+endfun
+command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
+" }}}
+nnoremap coS :call <sid>ToggleSyntaxHighlighting()<cr>
+
 
 " improved help mappings {{{
 " (q to quit from Junegunn's vimrc)
@@ -886,7 +897,7 @@ if maparg('<space><space>','n') == ''
 endif
 nnoremap <space>; :
 nnoremap <space>o <c-w>o
-nnoremap <space>x <c-w>c
+nnoremap <space>c <c-w>c
 nnoremap <space>w <c-w>
 
 " circular window navigation
@@ -937,17 +948,6 @@ nnoremap <silent> <space>q :call ToggleList("Quickfix List", 'c')<cr>
 
 " quick scratch buffer
 nnoremap <space>S :enew<cr>:setl bt=nofile bh=hide noswf<cr>:set ft=
-
-" toggle syntax highlighting {{{
-" useful when Vim is crippled by its inefficient highlighting
-fun! s:ToggleSyntaxHighlighting() abort
-  let s:folds = &foldlevel
-  execute 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
-  let &foldlevel=s:folds
-endfun
-command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
-" }}}
-nnoremap <space>ts :call <sid>ToggleSyntaxHighlighting()
 
 " }}}
 " ---------------------------------------------------------------------------
