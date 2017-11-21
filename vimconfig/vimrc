@@ -82,10 +82,10 @@ augroup vimrc_plugin_config
      " options
      let g:Lf_CommandMap = {'<c-c>': ['<esc>', '<c-c>', '<c-g>']}
      let g:Lf_WindowHeight = 10
-     let g:Lf_UseVersionControlTool = 0
      let g:Lf_FollowLinks = 1
      let g:Lf_DefaultMode = 'FullPath'
      let g:Lf_StlColorscheme = 'powerline'
+     let g:Lf_ExternalCommand = 'rg "%s" --files --no-ignore'
 
      nnoremap <space>- :LeaderfFile <c-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
      nnoremap <space>+ :LeaderfFile<cr>
@@ -99,31 +99,6 @@ augroup vimrc_plugin_config
      nnoremap <space>f: :LeaderfHistoryCmd<cr>
      nnoremap <space>f/ :LeaderfHistorySearch<cr>
      " }}}
-    " Plug 'ctrlpvim/ctrlp.vim' " {{{
-    " let s:has_ctrlp = 1
-
-    " " include hidden files
-    " let g:ctrlp_show_hidden = 1
-    " " open multiple files in ONE window
-    " let g:ctrlp_open_multiple_files = '1vr'
-    " " ctrl-o to open specifically
-    " let g:ctrlp_arg_map = 1
-    " " change default CtrlP mapping
-    " let g:ctrlp_map = '<space>p'
-
-    " " free <space> in operator mode for c<space>
-    " " (equivalent to cl and s.. I like having options)
-    " au VimEnter * ounmap <space>p
-
-    " nnoremap <space>- :CtrlPCurFile<cr>
-    " nnoremap <space>+ :CtrlPCurWD<cr>
-    " nnoremap <space>b :CtrlPBuffer<cr>
-    " nnoremap <space>r :CtrlPMRU<cr>
-    " nnoremap <space>ff :CtrlP<space>
-    " nnoremap <space>fl :CtrlPLine<cr>
-    " nnoremap <space>fb :CtrlPLine %<cr>
-    " nnoremap <space>ft :CtrlPBufTagAll<cr>
-    " " }}}
   else
     Plug 'junegunn/fzf.vim' " {{{
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -162,13 +137,6 @@ augroup vimrc_plugin_config
           \ 'header':  ['fg', 'Comment'] }
     " }}}
   endif
-  " if exists('s:has_ctrlp') && s:has_python
-  "   Plug 'ludovicchabant/ctrlp-py-matcher' " {{{
-  "   " TODO check for when FelikZ/ctrlp-py-matcher updates
-  "   " see: https://github.com/FelikZ/ctrlp-py-matcher/pull/35
-  "   let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
-  "   " }}}
-  " endif
 
   " }}}
   " ---------------------------------------------------------------------------
@@ -224,7 +192,8 @@ augroup vimrc_plugin_config
   xunmap <plug>(slash-after)
   " }}}
   Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " {{{
-  nnoremap <space>t :TagbarToggle<cr>
+  nnoremap <space>t :TagbarOpen fj<cr>
+  nnoremap <space>T :TagbarToggle<cr>
   " }}}
 
   " }}}
@@ -269,7 +238,7 @@ augroup vimrc_plugin_config
         \ 'colorscheme': 'mypowerline',
         \ 'active': {
         \   'left': [ ['lineinfo'], [ 'mode', 'paste' ],
-        \             [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
+        \             [ 'fugitive', 'filename' ] ],
         \   'right': [ ['percent'],
         \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
         \ },
@@ -287,7 +256,6 @@ augroup vimrc_plugin_config
         \   'filetype': 'LightLineFiletype',
         \   'fileencoding': 'LightLineFileencoding',
         \   'mode': 'LightLineMode',
-        \   'ctrlpmark': 'LightLineCtrlPMark',
         \ },
         \ 'subseparator': { 'left': '|', 'right': '|' }
         \ }
@@ -322,8 +290,7 @@ augroup vimrc_plugin_config
   endfun
   fun! LightLineFilename()
     let fname = expand('%:t')
-    return fname == 'ControlP' ? g:lightline.ctrlp_item :
-          \ fname == '__Tagbar__' ? g:lightline.fname :
+    return fname =~ '__Tagbar__*' ? 'Tagbar' :
           \ fname =~ 'undotree_*\|diffpanel_*' ? '' :
           \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
           \ ('' != fname ? fname : '[No Name]') .
@@ -353,35 +320,9 @@ augroup vimrc_plugin_config
   endfun
   fun! LightLineMode()
     let fname = expand('%:t')
-    return winwidth(0) <= 70 ? '' :
-          \ fname == '__Tagbar__' ? 'Tagbar' :
-          \ fname == 'ControlP' ? 'CtrlP' :
-          \ lightline#mode()
+    return winwidth(0) <= 70 ? '' : lightline#mode()
   endfun
 
-  fun! LightLineCtrlPMark()
-    if expand('%:t') =~ 'ControlP'
-      call lightline#link('iR'[g:lightline.ctrlp_regex])
-      return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
-            \ , g:lightline.ctrlp_next], 0)
-    else
-      return ''
-    endif
-  endfun
-  let g:ctrlp_status_func = {
-        \ 'main': 'CtrlPStatusFunc_1',
-        \ 'prog': 'CtrlPStatusFunc_2',
-        \ }
-  fun! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
-    let g:lightline.ctrlp_regex = a:regex
-    let g:lightline.ctrlp_prev = a:prev
-    let g:lightline.ctrlp_item = a:item
-    let g:lightline.ctrlp_next = a:next
-    return lightline#statusline(0)
-  endfun
-  fun! CtrlPStatusFunc_2(str)
-    return lightline#statusline(0)
-  endfun
   let g:tagbar_status_func = 'TagbarStatusFunc'
   fun! TagbarStatusFunc(current, sort, fname, ...) abort
     let g:lightline.fname = a:fname
@@ -900,8 +841,29 @@ nnoremap <space>o <c-w>o
 nnoremap <space>c <c-w>c
 nnoremap <space>w <c-w>
 
-" circular window navigation
-nnoremap <space><tab> <c-w>w
+" to previous window
+" (or next window, if prev is gone)
+let g:win_tracker = 0
+augroup vimrc_prev_window
+  au!
+  au WinEnter * let w:prev_window = g:win_tracker
+  au WinLeave * let g:win_tracker = winnr()
+augroup END
+fun! s:BetterLastWindow() abort
+  let l:lastwin = winnr()
+  wincmd p
+  if l:lastwin == winnr()
+    if exists('w:prev_window')
+      if winheight(w:prev_window) > -1
+        silent! exec w:prev_window.' wincmd w'
+      endif
+    endif
+    if l:lastwin == winnr()
+      wincmd w
+    endif
+  endif
+endfun
+nnoremap <silent> <space><tab> :call <SID>BetterLastWindow()<cr>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches
