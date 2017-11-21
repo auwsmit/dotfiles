@@ -191,7 +191,7 @@ augroup vimrc_plugin_config
   noremap <silent> <plug>(slash-after) :<c-u>ShowSearchIndex<cr>zz
   xunmap <plug>(slash-after)
   " }}}
-  Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " {{{
+  Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " {{{
   nnoremap <space>t :TagbarOpen fj<cr>
   nnoremap <space>T :TagbarToggle<cr>
   " }}}
@@ -490,7 +490,7 @@ augroup END
 " APPEARANCE AND FORMATTING {{{
 " ===========================================================================
 " some settings will be overwritten when certain filetypes are detected
-" see: filetype-indent-on & ftplugins
+" see: filetype-indent-on, ftplugins, & after-directory
 
 " default tab settings
 set smarttab
@@ -545,7 +545,7 @@ augroup vimrc_appearance_and_formatting
   autocmd!
 
   " more accurate syntax highlighting
-  au BufEnter *.vim syntax sync fromstart
+  au FileType vim syntax sync fromstart
 
   " I want these format options by default
   au FileType * set formatoptions=rq1j
