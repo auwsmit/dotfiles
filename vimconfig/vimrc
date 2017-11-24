@@ -19,6 +19,12 @@ elseif has('nvim')
   let s:myvimdir ="~/.config/nvim"
 endif
 
+" - mapleader & <leader> are dumb
+" - <space> is my leader
+" - leave \ alone
+let mapleader = '<F12>'
+let maplocalleader = '<F12>'
+
 " }}}
 " ===========================================================================
 " PLUGINS {{{
@@ -181,6 +187,7 @@ augroup vimrc_plugin_config
 
   Plug 'romainl/vim-cool'
   Plug 'chaoren/vim-wordmotion'
+  Plug 'justinmk/vim-sneak'
   Plug 'justinmk/vim-ipmotion' " {{{
   " Skip over closed folds with { and }
   let g:ip_skipfold = 1
@@ -228,7 +235,7 @@ augroup vimrc_plugin_config
 
   Plug 'xtal8/traces.vim'
   Plug 'auwsmit/badcanine' " (it's badwolf)
-  Plug 'auwsmit/vim-active-numbers'
+  " Plug 'auwsmit/vim-active-numbers'
   Plug 'itchyny/lightline.vim' " {{{
 
   nnoremap <silent> <space>L }:execute lightline#toggle()<cr>``
@@ -260,7 +267,6 @@ augroup vimrc_plugin_config
         \ 'subseparator': { 'left': '|', 'right': '|' }
         \ }
 
-  " emacs-style percent
   fun! LightLinePercent()
     return line('w0') == 1 && line('w$') == line('$') ? 'All'
     \: line('.') == 1 ? 'Top'
@@ -341,7 +347,7 @@ augroup vimrc_plugin_config
  Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' } " {{{
  au FileType c,cpp,vim,sh,dosbatch,lisp RainbowParentheses
  " }}}
-  Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' } " {{{
+  Plug 'Yggdroot/indentLine', { 'on': ['IndentLinesEnable', 'IndentLinesToggle'] } " {{{
   nnoremap <space>I :IndentLinesToggle<cr>
   " use custom filetype detection for better vim-plug compatibility
   let g:indentLine_enabled = 0
@@ -512,7 +518,7 @@ set laststatus=2
 set linebreak
 set list
 set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
-set nonumber relativenumber
+set nonumber norelativenumber
 set numberwidth=1
 set ruler
 set splitright
@@ -604,9 +610,8 @@ nnoremap U <c-r>
 " I have never wanted to use Ex mode.
 nnoremap Q @q
 
-" [S]plit lines (sister to [J]oin line) {{{
-" cc still changes the whole line
-fun! s:SplitLine() abort
+" Split line (opposite of J) {{{
+fun! s:SplitLine()
   exe "normal! i\<cr>\<esc>^gk"
   silent! substitute/\v +$//
   silent! nohlsearch
@@ -614,7 +619,9 @@ fun! s:SplitLine() abort
   normal! $
 endfun
 " }}}
-nnoremap S :call <sid>SplitLine()<cr>
+nnoremap <silent> <plug>(MySplitLine) :call <sid>SplitLine()<cr>
+      \ :silent! call repeat#set("\<plug>(MySplitLine)", v:count)<cr>
+nmap \ <plug>(MySplitLine)
 
 " center when jumping {{{
 fun! s:Center() abort
@@ -826,22 +833,20 @@ endif
 " ---------------------------------------------------------------------------
 " space is my leader
 
-" edit vimrc
-nnoremap <silent> <space>v :edit $MYVIMRC<cr>
-nnoremap <silent> <space>V :tabnew $MYVIMRC<cr>
-
 " shortcuts
+nnoremap <space>v :edit $MYVIMRC<cr>
+nnoremap <space>V :tabnew $MYVIMRC<cr>
 nnoremap <space>s :write<cr>
 nnoremap <space>h :help<space>
-if maparg('<space><space>','n') == ''
-  nnoremap <space><space> :
-endif
-nnoremap <space>; :
 nnoremap <space>o <c-w>o
 nnoremap <space>c <c-w>c
 nnoremap <space>w <c-w>
+nnoremap <space>; :
+if maparg('<space><space>','n') == ''
+  nnoremap <space><space> :
+endif
 
-" to previous window
+" to previous window {{{
 " (or next window, if prev is gone)
 let g:win_tracker = 0
 augroup vimrc_prev_window
@@ -862,8 +867,8 @@ fun! s:BetterLastWindow() abort
       wincmd w
     endif
   endif
-endfun
-nnoremap <silent> <space><tab> :call <SID>BetterLastWindow()<cr>
+endfun " }}}
+nnoremap <silent> <space><tab> :call <sid>BetterLastWindow()<cr>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches
