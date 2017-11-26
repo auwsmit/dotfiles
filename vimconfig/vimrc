@@ -242,9 +242,9 @@ augroup vimrc_plugin_config
 
   " layout + compatibility with other plugins {{{
   let g:lightline = {
-        \ 'colorscheme': 'mypowerline',
+        \ 'colorscheme': 'mycustom',
         \ 'active': {
-        \   'left': [ ['lineinfo'], [ 'mode', 'paste' ],
+        \   'left': [ ['lineinfo', 'mode', 'paste' ],
         \             [ 'fugitive', 'filename' ] ],
         \   'right': [ ['percent'],
         \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
