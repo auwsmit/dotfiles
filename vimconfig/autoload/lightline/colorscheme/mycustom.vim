@@ -10,7 +10,7 @@ let s:p.normal.left = [ ['gray1', '#0a9dff', 'bold'], ['white', 'gray3'] ]
 let s:p.normal.right = [ ['gray1', '#0a9dff', 'bold'] ]
 let s:p.normal.middle = [ [ 'gray8', 'gray2' ] ]
 
-let s:p.inactive.left = [ ['gray6', 'gray2'], ['gray6', 'gray2'] ]
+let s:p.inactive.left = [ ['gray5', 'gray2'], ['gray5', 'gray2'] ]
 let s:p.inactive.right = s:p.inactive.left
 let s:p.inactive.middle = [ ['white', 'gray1'] ]
 
