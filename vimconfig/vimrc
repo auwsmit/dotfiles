@@ -22,8 +22,8 @@ endif
 " - mapleader & <leader> are dumb
 " - <space> is my leader
 " - leave \ alone
-let mapleader = '<F12>'
-let maplocalleader = '<F12>'
+let mapleader = "\<F12>"
+let maplocalleader = "\<F12>"
 
 " }}}
 " ===========================================================================
@@ -170,6 +170,7 @@ augroup vimrc_plugin_config
   " ---------------------------------------------------------------------------
 
   Plug 'machakann/vim-sandwich'
+  Plug 'kana/vim-niceblock'
   Plug 'kana/vim-textobj-user' |
         \ Plug 'kana/vim-textobj-line' |
         \ Plug 'kana/vim-textobj-entire'   |
@@ -187,7 +188,6 @@ augroup vimrc_plugin_config
 
   Plug 'romainl/vim-cool'
   Plug 'chaoren/vim-wordmotion'
-  Plug 'justinmk/vim-sneak'
   Plug 'justinmk/vim-ipmotion' " {{{
   " Skip over closed folds with { and }
   let g:ip_skipfold = 1
@@ -235,7 +235,7 @@ augroup vimrc_plugin_config
 
   Plug 'xtal8/traces.vim'
   Plug 'auwsmit/badcanine' " (it's badwolf)
-  " Plug 'auwsmit/vim-active-numbers'
+  Plug 'auwsmit/vim-active-numbers'
   Plug 'itchyny/lightline.vim' " {{{
 
   nnoremap <silent> <space>L }:execute lightline#toggle()<cr>``
@@ -380,6 +380,7 @@ augroup vimrc_plugin_config
   Plug 'xolox/vim-misc'
   let g:session_autosave = 0
   let g:session_autoload = 0
+  au VimEnter * exec 'au! PluginXoloxMisc'
   " }}}
   Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' } " {{{
   nnoremap <space>u :UndotreeToggle<cr>
@@ -410,7 +411,7 @@ set incsearch
 set ignorecase
 set smartcase
 set autoread
-set nolazyredraw
+set lazyredraw
 set gdefault
 set showcmd
 set nostartofline
@@ -518,7 +519,7 @@ set laststatus=2
 set linebreak
 set list
 set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
-set nonumber norelativenumber
+set nonumber relativenumber
 set numberwidth=1
 set ruler
 set splitright
@@ -554,8 +555,8 @@ augroup vimrc_appearance_and_formatting
   au FileType vim syntax sync fromstart
 
   " I want these format options by default
-  au FileType * set formatoptions=rq1j
-  au VimEnter * set formatoptions=rq1j
+  " au FileType * set formatoptions=rq1j
+  " au VimEnter * set formatoptions=rq1j
 
   if s:is_windows
     " Maximize window
@@ -621,20 +622,12 @@ endfun
 " }}}
 nnoremap <silent> <plug>(MySplitLine) :call <sid>SplitLine()<cr>
       \ :silent! call repeat#set("\<plug>(MySplitLine)", v:count)<cr>
-nmap \ <plug>(MySplitLine)
+nmap S <plug>(MySplitLine)
 
-" center when jumping {{{
-fun! s:Center() abort
-  let prev_so = &scrolloff
-  set scrolloff=999
-  redraw
-  let &scrolloff = prev_so
-endfun
-" }}}
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
-nnoremap <silent> <c-p> <c-o>:call <sid>Center()<cr>
-nnoremap <silent> <c-n> <c-i>:call <sid>Center()<cr>
+nnoremap <silent> <c-p> <c-o>
+nnoremap <silent> <c-n> <c-i>
 
 " easier scrolling
 nnoremap <c-j> <c-d>
