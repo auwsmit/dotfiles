@@ -1,6 +1,6 @@
 " *** THESE SETTINGS ALSO APPLY TO CPP FILES ***
 
-setlocal foldmethod=syntax
+set foldmethod=syntax
 
 " (0 - Indent 0 characters after an open parenthesis
 " Example: if (c1 && (c2 ||
@@ -20,4 +20,4 @@ setlocal foldmethod=syntax
 " Example: int
 "          func()
 
-setlocal cino=(0,l1,t0
+set cino=(0,l1,t0
