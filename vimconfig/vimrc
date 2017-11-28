@@ -35,7 +35,7 @@ call plug#begin()
 
 " all plugin config autocmds in one group
 augroup vimrc_plugin_config
-  autocmd!
+  au!
 
   " ---------------------------------------------------------------------------
   " FILE/BUFFER PLUGINS {{{
@@ -244,21 +244,22 @@ augroup vimrc_plugin_config
   let g:lightline = {
         \ 'colorscheme': 'mycustom',
         \ 'active': {
-        \   'left': [ ['lineinfo', 'mode', 'paste' ],
+        \   'left': [ [ 'lineinfo', 'mode', 'paste' ],
         \             [ 'fugitive', 'filename' ] ],
         \   'right': [ ['percent'],
         \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
         \ },
         \ 'inactive': {
-        \   'left': [ ['lineinfo'], ['filename'] ],
+        \   'left': [ ['lineinfo'], ['filename_i'] ],
         \   'right': [ ['percent'] ]
         \ },
         \ 'component': {
         \   'percent': '%3{LightLinePercent()}',
+        \   'filename': '%{LightLineFilename(1)}',
+        \   'filename_i': '%{LightLineFilename(0)}',
         \ },
         \ 'component_function': {
         \   'fugitive': 'LightLineFugitive',
-        \   'filename': 'LightLineFilename',
         \   'fileformat': 'LightLineFileformat',
         \   'filetype': 'LightLineFiletype',
         \   'fileencoding': 'LightLineFileencoding',
@@ -294,8 +295,8 @@ augroup vimrc_plugin_config
   fun! LightLineReadonly()
     return &ft !~? 'help' && &readonly ? 'RO' : ''
   endfun
-  fun! LightLineFilename()
-    let fname = expand('%:t')
+  fun! LightLineFilename(active)
+    let fname = expand(a:active ? '%:~:.' : '%:p')
     return fname =~ '__Tagbar__*' ? 'Tagbar' :
           \ fname =~ 'undotree_*\|diffpanel_*' ? '' :
           \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
@@ -469,7 +470,7 @@ endif
 
 " autocmds
 augroup vimrc_general
-  autocmd!
+  au!
 
   " make 'nobuflisted' persist when editing a file
   if exists('##OptionSet')
@@ -549,14 +550,10 @@ if &term =~ '256color'
 endif
 
 augroup vimrc_appearance_and_formatting
-  autocmd!
+  au!
 
   " more accurate syntax highlighting
   au FileType vim syntax sync fromstart
-
-  " I want these format options by default
-  " au FileType * set formatoptions=rq1j
-  " au VimEnter * set formatoptions=rq1j
 
   if s:is_windows
     " Maximize window
@@ -589,13 +586,7 @@ augroup END
 " REMAPS OF DEFAULTS {{{
 " ---------------------------------------------------------------------------
 " it's good to remember these in case I'm stuck with vanilla vi/vim
-
-" disabled
-noremap  <f1>    <nop>
-inoremap <f1>    <nop>
-noremap  <s-cr>  <nop>
-nnoremap <space> <nop>
-xnoremap <space> <nop>
+" (more specifically, remaps of *important* defaults)
 
 " go back to last buffer
 nnoremap <backspace> <c-^>
@@ -619,9 +610,10 @@ fun! s:SplitLine()
   call histdel("search", -1)
   normal! $
 endfun
-" }}}
+" works with tpope's repeat.vim
 nnoremap <silent> <plug>(MySplitLine) :call <sid>SplitLine()<cr>
       \ :silent! call repeat#set("\<plug>(MySplitLine)", v:count)<cr>
+" }}}
 nmap S <plug>(MySplitLine)
 
 " new jump list mnemonic: previous, next
@@ -634,7 +626,7 @@ nnoremap <c-j> <c-d>
 nnoremap <c-k> <c-u>
 
 " org-style fold viewing
-" TODO: make functions that are even more accurate
+" TODO: make functions that are more accurate
 nnoremap <tab> za
 nnoremap <s-tab> zM
 
@@ -668,14 +660,22 @@ inoremap <c-]> <esc>
 
 " }}}
 " ---------------------------------------------------------------------------
-" NORMAL MAPS {{{
+" STANDARD MAPS {{{
 " ---------------------------------------------------------------------------
+
+" :help works fine, thanks
+noremap <f1> <nop>
+inoremap <f1> <nop>
 
 " Emacs blasphemy
 inoremap <c-g> <esc>
 cnoremap <c-g> <c-c>
 xnoremap <c-g> <esc>
 nnoremap <c-h> :help<space>
+
+" don't run commands without my consent
+cnoremap <esc> <c-c>
+cnoremap <esc> <c-c>
 
 " from tpope's rsi
 inoremap <c-a> <c-o>^
@@ -689,8 +689,19 @@ inoremap {;<tab> {<cr>};<esc>O
 nnoremap cd :cd<space>
 
 " quickly manage buffers
-nnoremap gb :ls<cr>:b<space>
-nnoremap gB :ls!<cr>:b<space>
+fun! s:buflist_proper_esc()
+  " otherwise you need to press esc twice
+  cnoremap <silent><buffer> <esc> <esc><esc>:call <sid>buflist_remove_maps()<cr>
+  cnoremap <silent><buffer> <c-g> <esc><esc>:call <sid>buflist_remove_maps()<cr>
+  cnoremap <silent><buffer> <cr> <cr>:call <sid>buflist_remove_maps()<cr>
+endfun
+fun! s:buflist_remove_maps()
+  cunmap <buffer> <esc>
+  cunmap <buffer> <c-g>
+  cunmap <buffer> <cr>
+endfun
+nnoremap gb :call <sid>buflist_proper_esc()<cr>:ls<cr>:b<space>
+nnoremap gB :call <sid>buflist_proper_esc()<cr>:ls!<cr>:b<space>
 
 " resizing windows
 noremap <c-left>  <c-w><
@@ -726,7 +737,7 @@ fun! s:helpmaps() abort
   endif
 endfun
 augroup improved_help_maps
-  autocmd!
+  au!
   au BufEnter *.txt call s:helpmaps()
 augroup END
 " }}}
@@ -825,6 +836,10 @@ endif
 " LEADER MAPS {{{
 " ---------------------------------------------------------------------------
 " space is my leader
+
+" don't move my cursor plz
+nnoremap <space> <nop>
+xnoremap <space> <nop>
 
 " shortcuts
 nnoremap <space>v :edit $MYVIMRC<cr>
