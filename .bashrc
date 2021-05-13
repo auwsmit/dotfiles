@@ -75,14 +75,14 @@ alias fuck='sudo $(history -p \!\!)'
 alias e='emacsclient -n'
 alias v='vim --remote-silent'
 
-# Brightness adjustment
-# (bl for BackLight)
-sys_backlight=/sys/class/backlight/*
-max_bright=$(cat $sys_backlight/max_brightness)
-alias bl_max="sudo bash -c \"echo $max_bright > $sys_backlight/brightness\""
-alias bl_mid="sudo bash -c \"echo $(($max_bright/2)) > $sys_backlight/brightness\""
-alias bl_low="sudo bash -c \"echo $(($max_bright/10)) > $sys_backlight/brightness\""
-alias bl_lower="sudo bash -c \"echo $(($max_bright/15)) > $sys_backlight/brightness\""
+# # Brightness adjustment
+# # (bl for BackLight)
+# sys_backlight=/sys/class/backlight/*
+# max_bright=$(cat $sys_backlight/max_brightness)
+# alias bl_max="sudo bash -c \"echo $max_bright > $sys_backlight/brightness\""
+# alias bl_mid="sudo bash -c \"echo $(($max_bright/2)) > $sys_backlight/brightness\""
+# alias bl_low="sudo bash -c \"echo $(($max_bright/10)) > $sys_backlight/brightness\""
+# alias bl_lower="sudo bash -c \"echo $(($max_bright/15)) > $sys_backlight/brightness\""
 
 # Battery info
 alias battery='acpi'
