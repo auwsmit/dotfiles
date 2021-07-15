@@ -83,7 +83,7 @@ augroup vimrc_plugin_config
   au BufEnter *.txt call s:helpquit()
   " }}}
   if s:is_windows
-     Plug 'Yggdroot/LeaderF' " {{{
+     Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' } " {{{
 
      " options
      let g:Lf_CommandMap = {'<c-c>': ['<esc>', '<c-c>', '<c-g>']}
