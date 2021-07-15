@@ -238,7 +238,7 @@ augroup vimrc_plugin_config
   Plug 'auwsmit/vim-active-numbers'
   Plug 'itchyny/lightline.vim' " {{{
 
-  nnoremap <silent> <space>L }:execute lightline#toggle()<cr>``
+  nnoremap <silent> <space>L }:call lightline#toggle()<cr>``
 
   " layout + compatibility with other plugins {{{
   let g:lightline = {
@@ -336,6 +336,9 @@ augroup vimrc_plugin_config
     return lightline#statusline(0)
   endfun
   " }}}
+
+  " currently disabled
+  au VimEnter * call lightline#disable()
 
   " }}}
   Plug 'junegunn/vim-peekaboo' " {{{
