@@ -44,12 +44,12 @@ augroup vimrc_plugin_config
   Plug 'tpope/vim-eunuch'
   Plug 'tpope/vim-projectionist'
   Plug 'tpope/vim-fugitive' " {{{
-  nnoremap <space>gs :Gstatus<cr>
-  nnoremap <space>gd :Gdiff<cr>
-  nnoremap <space>gD :Gdiff HEAD<cr>
-  nnoremap <space>gc :Gcommit<cr>
-  nnoremap <space>gl :Git log<cr>
-  nnoremap <space>gp :Git push<cr>
+  nnoremap <space>gs :G<cr>
+  nnoremap <space>gd :Gdiffsplit<cr>
+  nnoremap <space>gD :Gdiffsplit HEAD<cr>
+  nnoremap <space>gc :G commit<cr>
+  nnoremap <space>gl :G log<cr>
+  nnoremap <space>gp :G push<cr>
   nnoremap <space>gw :Gwrite<cr>
   nnoremap <space>gg :Ggrep<space>
   " hide fugitive buffers to reduce buffer list clutter
@@ -926,6 +926,11 @@ nnoremap <silent> <space>q :call ToggleList("Quickfix List", 'c')<cr>
 
 " quick scratch buffer
 nnoremap <space>S :enew<cr>:setl bt=nofile bh=hide noswf<cr>:set ft=
+
+" open command prompt at vim's current directory
+if s:is_windows
+  nnoremap <space>C :!start cmd /k cd %:p:h<cr>
+endif
 
 " }}}
 " ---------------------------------------------------------------------------
