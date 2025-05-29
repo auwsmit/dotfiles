@@ -7,7 +7,6 @@
 " STARTUP {{{
 " ===========================================================================
 
-" shorter conditionals
 let s:is_windows = (has('win32')  || has('win64'))
 let s:has_python = (has('python') || has('python3'))
 
@@ -18,12 +17,6 @@ if s:is_windows
 elseif has('nvim')
   let s:myvimdir ="~/.config/nvim"
 endif
-
-" - mapleader & <leader> are dumb
-" - <space> is my leader
-" - leave \ alone
-let mapleader = "\<F12>"
-let maplocalleader = "\<F12>"
 
 " }}}
 " ===========================================================================
@@ -276,17 +269,17 @@ augroup vimrc_plugin_config
   endfun
 
   let g:lightline.mode_map = {
-        \ 'n' : 'N',
-        \ 'i' : 'I',
-        \ 'R' : 'R',
-        \ 'v' : 'V',
+        \ 'n' : 'N ',
+        \ 'i' : 'I ',
+        \ 'R' : 'R ',
+        \ 'v' : 'V ',
         \ 'V' : 'VL',
         \ "\<C-v>": 'VB',
-        \ 'c' : 'C',
-        \ 's' : 'S',
+        \ 'c' : 'C ',
+        \ 's' : 'S ',
         \ 'S' : 'SL',
         \ "\<C-s>": 'SB',
-        \ 't': 'T',
+        \ 't': 'T ',
         \ }
 
   fun! LightLineModified()
@@ -433,6 +426,7 @@ set sessionoptions-=options
 set sessionoptions-=folds
 set clipboard^=unnamedplus,unnamed
 set foldopen-=block
+set shortmess-=S
 if s:is_windows
   set makeprg=build.bat
 endif
@@ -469,6 +463,12 @@ endif
 
 if s:is_windows && executable('grep')
   set grepprg=grep\ -n
+endif
+
+" Neovide config
+if exists("g:neovide")
+  let g:neovide_cursor_animation_length = 0.08
+  let g:neovide_scroll_animation_length = 0.2
 endif
 
 " autocmds
@@ -510,7 +510,6 @@ set shiftwidth=4 softtabstop=-1 expandtab
 " indenting/formatting
 set autoindent
 set smartindent " TODO: try cindent
-set textwidth=80
 set encoding=utf-8
 
 " mostly aesthetic options
@@ -562,10 +561,10 @@ augroup vimrc_appearance_and_formatting
     " Maximize window
     au GUIEnter * simalt ~x
     " Fonts: glorious notepad default
-    set guifont=Consolas:h9
+    set guifont=Consolas:h10
   else
     " Unix deserves a nicer font
-    set guifont=DejaVu\ Sans\ Mono\ 9
+    set guifont=DejaVu\ Sans\ Mono\ 10
   endif
 
   " resize vim-windows when program window is resized
@@ -600,6 +599,9 @@ nnoremap Y y$
 
 " U as a more sensible redo
 nnoremap U <c-r>
+
+" classic
+nnoremap <c-z> u
 
 " Q to replay the q register
 " I have never wanted to use Ex mode.
@@ -661,6 +663,7 @@ nnoremap gp `[v`]
 " i_CTRL-[ finger slip
 inoremap <c-]> <esc>
 
+
 " }}}
 " ---------------------------------------------------------------------------
 " STANDARD MAPS {{{
@@ -713,10 +716,8 @@ noremap <c-down>  <c-w>-
 noremap <c-right> <c-w>>
 
 " unimpaired.vim inspired
-" toggle pastemode
-nnoremap cop :set invpaste<CR>
 " toggle centering the cursor
-nnoremap coz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
+nnoremap yoz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
 " toggle syntax highlighting {{{
 " useful when Vim is crippled by its inefficient highlighting
 fun! s:ToggleSyntaxHighlighting() abort
@@ -726,14 +727,17 @@ fun! s:ToggleSyntaxHighlighting() abort
 endfun
 command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
 " }}}
-nnoremap coS :call <sid>ToggleSyntaxHighlighting()<cr>
-
+nnoremap yoS :call <sid>ToggleSyntaxHighlighting()<cr>
 
 " improved help mappings {{{
 " (q to quit from Junegunn's vimrc)
 fun! s:helpmaps() abort
   if &buftype == 'help'
-    nnoremap <buffer> q :bd<cr>
+    if g:sayonara_plugged == 1
+      nnoremap <buffer> q :Sayonara<cr>
+    else
+      nnoremap <buffer> q :bd<cr>
+    endif
     nnoremap <silent><buffer> <tab> :call search("\|\\S\\+\|")<cr>
     nnoremap <silent><buffer> <s-tab> :call search("\|\\S\\+\|",'b')<cr>
     nnoremap <buffer> <cr> <c-]>
