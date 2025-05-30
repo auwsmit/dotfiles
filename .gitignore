@@ -7,5 +7,6 @@ vimconfig/.netrwhist
 vimconfig/session/
 vimconfig/sessions/
 vimconfig/tmp/
+vimconfig/neotmp/
 vimconfig/plugged
 init.vim

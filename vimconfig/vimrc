@@ -700,9 +700,9 @@ fun! s:buflist_proper_esc()
   cnoremap <silent><buffer> <cr> <cr>:call <sid>buflist_remove_maps()<cr>
 endfun
 fun! s:buflist_remove_maps()
-  cunmap <buffer> <esc>
-  cunmap <buffer> <c-g>
-  cunmap <buffer> <cr>
+  silent! cunmap <buffer> <esc>
+  silent! cunmap <buffer> <c-g>
+  silent! cunmap <buffer> <cr>
 endfun
 nnoremap gb :call <sid>buflist_proper_esc()<cr>:ls<cr>:b<space>
 nnoremap gB :call <sid>buflist_proper_esc()<cr>:ls!<cr>:b<space>
