@@ -54,12 +54,8 @@ augroup vimrc_plugin_config
   " disable netrw
   let g:loaded_netrw = 1
   let g:loaded_netrwPlugin = 1
-  " q to quit
-  au FileType dirvish nnoremap <buffer> q
-        \ :Sayonara!<cr>
-  " gq to macro
-  au FileType dirvish nnoremap <buffer> gq q
   " gh to hide "hidden" files. (Unix only)
+  au VimEnter * nnoremap - <Plug>(dirvish_up)
   au FileType dirvish nnoremap <buffer> gh
         \ :g@\v/\.[^\/]+/?$@d<cr>
   " - to keep going up the directory tree
@@ -149,7 +145,7 @@ augroup vimrc_plugin_config
         \ Plug 'kana/vim-textobj-function' |
         \ Plug 'coderifous/textobj-word-column.vim'
   Plug 'junegunn/vim-after-object' " {{{
-  au VimEnter * call after_object#enable([']', '['], '=', ':', '-', '#', ' ')
+  au VimEnter * silent! call after_object#enable([']', '['], '=', ':', '-', '#', ' ')
   " }}}
 
   " " }}}
@@ -321,7 +317,7 @@ augroup vimrc_plugin_config
   " nnoremap <space>G :Goyo<cr>
   " " }}}
   Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' } " {{{
-  au FileType c,cpp,vim,sh,dosbatch,lisp RainbowParentheses
+  au FileType c,cpp,vim,sh,dosbatch,lisp silent! RainbowParentheses
   " }}}
   " Plug 'Yggdroot/indentLine', { 'on': ['IndentLinesEnable', 'IndentLinesToggle'] } " {{{
   " nnoremap <space>I :IndentLinesToggle<cr>
@@ -335,7 +331,7 @@ augroup vimrc_plugin_config
     " toggle fullscreen
     nnoremap <F11> :WToggleFullscreen<cr>
     " Fix GVim's ugly window border
-    au GUIEnter * WToggleClean
+    au GUIEnter * silent! WToggleClean
     " }}}
   endif
 
@@ -358,7 +354,7 @@ augroup vimrc_plugin_config
   Plug 'xolox/vim-misc'
   let g:session_autosave = 0
   let g:session_autoload = 0
-  au VimEnter * exec 'au! PluginXoloxMisc'
+  au VimEnter * silent! exec 'au! PluginXoloxMisc'
   " }}}
   if has('python')
     Plug 'sjl/gundo.vim' " {{{
@@ -435,7 +431,11 @@ set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX garbage
 
 " backups, swapfiles, & undofiles in one place
-let s:tempdir=expand(s:myvimdir."/tmp")
+if has('nvim')
+  let s:tempdir=expand(s:myvimdir."/neotmp")
+else
+  let s:tempdir=expand(s:myvimdir."/tmp")
+end
 if !isdirectory(expand(s:tempdir))
   call mkdir(expand(s:tempdir), "p")
 endif
@@ -521,7 +521,18 @@ else
   set listchars+=eol:¬
 endif
 
+" colorscheme and fallbacks if there are no
+" plugins or if it's an older version of vim
 silent! colorscheme badwolf
+fun! s:colorcheck(color) abort
+  if !exists('g:colors_name')
+    syntax enable
+    exec 'colorscheme ' . a:color
+  endif
+endfun
+call <sid>colorcheck('unokai')
+call <sid>colorcheck('habamax')
+call <sid>colorcheck('desert')
 
 " fallback default colorscheme
 if !exists('g:colors_name')
@@ -720,11 +731,7 @@ nnoremap yoS :call <sid>ToggleSyntaxHighlighting()<cr>
 " (q to quit from Junegunn's vimrc)
 fun! s:helpmaps() abort
   if &buftype == 'help'
-    if g:sayonara_plugged == 1
-      nnoremap <buffer> q :Sayonara<cr>
-    else
-      nnoremap <buffer> q :bd<cr>
-    endif
+    nnoremap <buffer> q :bd<cr>
     nnoremap <silent><buffer> <tab> :call search("\|\\S\\+\|")<cr>
     nnoremap <silent><buffer> <s-tab> :call search("\|\\S\\+\|",'b')<cr>
     nnoremap <buffer> <cr> <c-]>
