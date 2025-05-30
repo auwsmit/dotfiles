@@ -524,15 +524,15 @@ endif
 " colorscheme and fallbacks if there are no
 " plugins or if it's an older version of vim
 silent! colorscheme badwolf
-fun! s:colorcheck(color) abort
+fun! VimrcColorcheck(color) abort
   if !exists('g:colors_name')
     syntax enable
     exec 'colorscheme ' . a:color
   endif
 endfun
-call <sid>colorcheck('unokai')
-call <sid>colorcheck('habamax')
-call <sid>colorcheck('desert')
+call VimrcColorcheck('unokai')
+call VimrcColorcheck('habamax')
+call VimrcColorcheck('desert')
 
 " fallback default colorscheme
 if !exists('g:colors_name')
@@ -566,12 +566,12 @@ augroup vimrc_appearance_and_formatting
   endif
 
   " resize vim-windows when program window is resized
-  au VimResized * :wincmd =
+  au VimResized * wincmd =
 
   " this makes the trailing space indicator invisible
   " while typing, otherwise it would drive me crazy
-  au InsertEnter * :set listchars-=trail:■
-  au InsertLeave * :set listchars+=trail:■
+  au InsertEnter * set listchars-=trail:■
+  au InsertLeave * set listchars+=trail:■
 
 augroup END
 
@@ -816,6 +816,21 @@ endf
 nnoremap <silent> dr  :<c-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<cr>g@
 nnoremap <silent> drr :<c-u>call <sid>set_reg(v:register)<cr>0:<c-u>set opfunc=<sid>replace_without_yank<cr>g@$
 xnoremap <silent> R :<c-u>call <sid>set_reg(v:register)<bar>call <sid>replace_without_yank('visual')<cr>
+
+" no accidental command window (q:) {{{
+"
+" explanation: using 'nnoremap q: <nop>' gives my
+" 'q to quit' map a slight pause, so this is a roundabout
+" way of disabling q: without using any map commands
+
+nnoremap <space>: :let g:cmdwinmap=1<cr>q:
+augroup vimrc_cmdwin_map
+  au!
+  let g:cmdwinmap = 0
+  au CmdwinLeave * let g:cmdwinmap = 0
+  au CmdwinEnter * exec expand(g:cmdwinmap ? '' : 'quit')
+augroup END
+" }}}
 
 " %% expands to current buffer file name
 " :: expands to current buffer file path
