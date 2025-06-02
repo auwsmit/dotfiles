@@ -35,18 +35,18 @@ augroup vimrc_plugin_config
   " ---------------------------------------------------------------------------
 
   Plug 'tpope/vim-eunuch' " shell commands, e.g. :Remove & :Move & :Chmod
-  " Plug 'tpope/vim-fugitive' " {{{
-  " nnoremap <space>gs :G<cr>
-  " nnoremap <space>gd :Gdiffsplit<cr>
-  " nnoremap <space>gD :Gdiffsplit HEAD<cr>
-  " nnoremap <space>gc :G commit<cr>
-  " nnoremap <space>gl :G log<cr>
-  " nnoremap <space>gp :G push<cr>
-  " nnoremap <space>gw :Gwrite<cr>
-  " nnoremap <space>gg :Ggrep<space>
-  " " hide fugitive buffers to reduce buffer list clutter
-  " au BufReadPost fugitive://* set bufhidden=delete
-  " " }}}
+  Plug 'tpope/vim-fugitive' " {{{
+  nnoremap <space>gs :G<cr>
+  nnoremap <space>gd :Gdiffsplit<cr>
+  nnoremap <space>gD :Gdiffsplit HEAD<cr>
+  nnoremap <space>gc :G commit<cr>
+  nnoremap <space>gl :G log<cr>
+  nnoremap <space>gp :G push<cr>
+  nnoremap <space>gw :Gwrite<cr>
+  nnoremap <space>gg :Ggrep<space>
+  " hide fugitive buffers to reduce buffer list clutter
+  au BufReadPost fugitive://* set bufhidden=delete
+  " }}}
   Plug 'justinmk/vim-gtfo' " {{{
   let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
   " }}}
@@ -124,13 +124,13 @@ augroup vimrc_plugin_config
   let g:operator_sandwich_no_default_key_mappings = 1
   au VimEnter * runtime macros/sandwich/keymap/surround.vim
   " }}}
-  " Plug 'tommcdo/vim-exchange' " {{{
-  " " evil-exchange bindings
-  " nmap gxx <plug>(ExchangeLine)
-  " nmap gX  <plug>(ExchangeClear)
-  " nmap gx  <plug>(Exchange)
-  " xmap gx  <plug>(Exchange)
-  " " }}}
+  Plug 'tommcdo/vim-exchange' " {{{
+  " evil-exchange bindings
+  nmap gxx <plug>(ExchangeLine)
+  nmap gX  <plug>(ExchangeClear)
+  nmap gx  <plug>(Exchange)
+  xmap gx  <plug>(Exchange)
+  " }}}
 
   " }}}
   " ---------------------------------------------------------------------------
@@ -156,9 +156,10 @@ augroup vimrc_plugin_config
   if v:version > 800
     Plug 'romainl/vim-cool'
   endif
+  " makes vim's 'word's more precise
   Plug 'chaoren/vim-wordmotion'
   Plug 'justinmk/vim-ipmotion' " {{{
-  " Skip over closed folds with { and }
+  " skip over closed folds with { and }
   let g:ip_skipfold = 1
   " }}}
   Plug 'auwsmit/vim-slash' | Plug 'henrik/vim-indexed-search' " {{{
@@ -181,9 +182,9 @@ augroup vimrc_plugin_config
   Plug 'ervandew/supertab'
   Plug 'tpope/vim-endwise',
         \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
-  " if s:has_python
-  "   Plug 'SirVer/UltiSnips'
-  " endif
+  if s:has_python
+    Plug 'SirVer/UltiSnips'
+  endif
 
   " }}}
   " ---------------------------------------------------------------------------
@@ -215,14 +216,14 @@ augroup vimrc_plugin_config
   let g:lightline = {
         \ 'colorscheme': 'mycustom',
         \ 'active': {
-        \   'left': [ [ 'lineinfo', 'mode', 'paste' ],
-        \             [ 'fugitive', 'filename' ] ],
-        \   'right': [ ['percent'],
-        \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
+        \   'left': [ ['mode', 'paste'],
+        \             ['fugitive', 'filename'] ],
+        \   'right': [ ['percent', 'lineinfo'],
+        \              ['fileformat', 'fileencoding', 'filetype'] ]
         \ },
         \ 'inactive': {
-        \   'left': [ ['lineinfo'], ['filename_i'] ],
-        \   'right': [ ['percent'] ]
+        \   'left': [ ['filename_i'] ],
+        \   'right': [ ['percent', 'lineinfo'] ]
         \ },
         \ 'component': {
         \   'percent': '%3{LightLinePercent()}',
@@ -246,19 +247,14 @@ augroup vimrc_plugin_config
     \: float2nr(100*(1.0*line('.')/line('$'))).'%'
   endfun
 
-  let g:lightline.mode_map = {
-        \ 'n' : 'N ',
-        \ 'i' : 'I ',
-        \ 'R' : 'R ',
-        \ 'v' : 'V ',
-        \ 'V' : 'VL',
-        \ "\<C-v>": 'VB',
-        \ 'c' : 'C ',
-        \ 's' : 'S ',
-        \ 'S' : 'SL',
-        \ "\<C-s>": 'SB',
-        \ 't': 'T ',
-        \ }
+  " let g:lightline.mode_map = {
+  "       \ 'n' : ' N ', 'i' : ' I ',
+  "       \ 'R' : ' R ', 'v' : ' V ',
+  "       \ 'V' : ' VL', "\<C-v>": ' VB',
+  "       \ 'c' : ' C ', 's' : ' S ',
+  "       \ 'S' : ' SL', "\<C-s>": ' SB',
+  "       \ 't': ' T ',
+  "       \ }
 
   fun! LightLineModified()
     return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
