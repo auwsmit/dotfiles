@@ -3,9 +3,7 @@
 " Source: https://gitlab.com/auwsmit/dotfiles
 " Best viewed with vim's folds (see :help folds)
 
-" ===========================================================================
 " STARTUP {{{
-" ===========================================================================
 
 let s:is_windows = (has('win32')  || has('win64'))
 let s:has_python = (has('python') || has('python3'))
@@ -19,9 +17,7 @@ elseif has('nvim')
 endif
 
 " }}}
-" ===========================================================================
 " PLUGINS {{{
-" ===========================================================================
 
 " setup vim-plug
 call plug#begin()
@@ -30,9 +26,7 @@ call plug#begin()
 augroup vimrc_plugin_config
   au!
 
-  " ---------------------------------------------------------------------------
   " FILE/BUFFER PLUGINS {{{
-  " ---------------------------------------------------------------------------
 
   Plug 'tpope/vim-eunuch' " shell commands, e.g. :Remove & :Move & :Chmod
   Plug 'tpope/vim-fugitive' " {{{
@@ -113,9 +107,7 @@ augroup vimrc_plugin_config
   " }}}
 
   " }}}
-  " ---------------------------------------------------------------------------
   " OPERATOR PLUGINS {{{
-  " ---------------------------------------------------------------------------
 
   Plug 'tpope/vim-commentary'
   Plug 'machakann/vim-sandwich' " (surround.vim alternative) {{{
@@ -133,9 +125,7 @@ augroup vimrc_plugin_config
   " }}}
 
   " }}}
-  " ---------------------------------------------------------------------------
   " TEXT OBJECT PLUGINS {{{
-  " ---------------------------------------------------------------------------
 
   Plug 'kana/vim-niceblock'
   Plug 'kana/vim-textobj-user'         |
@@ -149,9 +139,7 @@ augroup vimrc_plugin_config
   " }}}
 
   " " }}}
-  " " ---------------------------------------------------------------------------
-  " " MOTION/NAVIGATION PLUGINS {{{
-  " " ---------------------------------------------------------------------------
+  " MOTION/NAVIGATION PLUGINS {{{
 
   if v:version > 800
     Plug 'romainl/vim-cool'
@@ -175,9 +163,7 @@ augroup vimrc_plugin_config
   " }}}
 
   " " }}}
-  " " ---------------------------------------------------------------------------
-  " " SNIPPET/COMPLETION PLUGINS {{{
-  " " ---------------------------------------------------------------------------
+  " SNIPPET/COMPLETION PLUGINS {{{
 
   Plug 'ervandew/supertab'
   Plug 'tpope/vim-endwise',
@@ -187,9 +173,7 @@ augroup vimrc_plugin_config
   endif
 
   " }}}
-  " ---------------------------------------------------------------------------
   " FORMAT/SYNTAX PLUGINS {{{
-  " ---------------------------------------------------------------------------
 
   Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
   " Plug 'junegunn/vim-easy-align',   { 'on': ['<plug>(EasyAlign)', 'EasyAlign'] } " {{{
@@ -200,9 +184,7 @@ augroup vimrc_plugin_config
   " }}}
 
   " " }}}
-  " " ---------------------------------------------------------------------------
-  " " APPEARANCE/UI PLUGINS {{{
-  " " ---------------------------------------------------------------------------
+  " APPEARANCE/UI PLUGINS {{{
 
   " for older versions of Vim/Nvim
   Plug 'xtal8/traces.vim'
@@ -217,7 +199,7 @@ augroup vimrc_plugin_config
         \ 'colorscheme': 'mycustom',
         \ 'active': {
         \   'left': [ ['mode', 'paste'],
-        \             ['fugitive', 'filename'] ],
+        \             ['fugitive', 'gitbranch', 'filename'] ],
         \   'right': [ ['percent', 'lineinfo'],
         \              ['fileformat', 'fileencoding', 'filetype'] ]
         \ },
@@ -232,6 +214,7 @@ augroup vimrc_plugin_config
         \ },
         \ 'component_function': {
         \   'gitbranch': 'FugitiveHead',
+        \   'fugitive': 'LightLineFugitive',
         \   'fileformat': 'LightLineFileformat',
         \   'filetype': 'LightLineFiletype',
         \   'fileencoding': 'LightLineFileencoding',
@@ -246,15 +229,6 @@ augroup vimrc_plugin_config
     \: line('.') == line('$') ? 'Bot'
     \: float2nr(100*(1.0*line('.')/line('$'))).'%'
   endfun
-
-  " let g:lightline.mode_map = {
-  "       \ 'n' : ' N ', 'i' : ' I ',
-  "       \ 'R' : ' R ', 'v' : ' V ',
-  "       \ 'V' : ' VL', "\<C-v>": ' VB',
-  "       \ 'c' : ' C ', 's' : ' S ',
-  "       \ 'S' : ' SL', "\<C-s>": ' SB',
-  "       \ 't': ' T ',
-  "       \ }
 
   fun! LightLineModified()
     return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
@@ -273,7 +247,7 @@ augroup vimrc_plugin_config
 
   fun! LightLineFugitive()
     try
-      if expand('%:t') !~? 'Tagbar\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
+      if expand('%:t') !~? 'Tagbar' && &ft !~? 'vimfiler' && exists('*fugitive#head')
         let mark = 'β ' " βranch, with a B
         let _ = fugitive#head()
         return strlen(_) ? mark._ : ''
@@ -332,9 +306,7 @@ augroup vimrc_plugin_config
   endif
 
   " }}}
-  " ---------------------------------------------------------------------------
   " MISC/CONVENIENCE PLUGINS " {{{
-  " ---------------------------------------------------------------------------
 
   if v:version > 800
     Plug 'romainl/vim-qf'
@@ -369,7 +341,6 @@ augroup vimrc_plugin_config
   endif
 
   " }}}
-  " ---------------------------------------------------------------------------
 
 augroup END
 
@@ -377,9 +348,7 @@ augroup END
 call plug#end()
 
 " }}}
-" ===========================================================================
 " GENERAL SETTINGS {{{
-" ===========================================================================
 
 " sensible options for me
 set hidden
@@ -481,9 +450,7 @@ augroup vimrc_general
 augroup END
 
 " }}}
-" ===========================================================================
 " APPEARANCE AND FORMATTING {{{
-" ===========================================================================
 " some settings will be overwritten when certain filetypes are detected
 " see: filetype-indent-on, ftplugins, & after-directory
 
@@ -506,7 +473,7 @@ set laststatus=2
 set linebreak
 set list
 set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
-set nonumber relativenumber
+set number relativenumber
 set numberwidth=1
 set ruler
 set splitright
@@ -573,15 +540,11 @@ augroup vimrc_appearance_and_formatting
 augroup END
 
 " }}}
-" ===========================================================================
 " KEY MAPPINGS {{{
-" ===========================================================================
 " anything related to plugins is located
 " under its respective PLUGINS section
 
-" ---------------------------------------------------------------------------
 " REMAPS OF DEFAULTS {{{
-" ---------------------------------------------------------------------------
 " it's good to remember these in case I'm stuck with vanilla vi/vim
 " (more specifically, remaps of *important* defaults)
 
@@ -621,9 +584,9 @@ nmap S <plug>(MySplitLine)
 nnoremap <silent> <c-p> <c-o>
 nnoremap <silent> <c-n> <c-i>
 
-" easier scrolling
-nnoremap <c-j> <c-d>
-nnoremap <c-k> <c-u>
+" fold traversal
+nnoremap <c-j> zj
+nnoremap <c-k> zk
 
 " org-style fold viewing
 " TODO: make functions that are more accurate
@@ -659,9 +622,7 @@ nnoremap gp `[v`]
 inoremap <c-]> <esc>
 
 " }}}
-" ---------------------------------------------------------------------------
 " STANDARD MAPS {{{
-" ---------------------------------------------------------------------------
 
 " :help works fine, thanks
 noremap <f1> <nop>
@@ -833,9 +794,7 @@ if has('terminal')
 endif
 
 " }}}
-" ---------------------------------------------------------------------------
 " LEADER MAPS {{{
-" ---------------------------------------------------------------------------
 " space is my leader
 
 " don't move my cursor plz
@@ -949,12 +908,9 @@ if s:is_windows
 endif
 
 " }}}
-" ---------------------------------------------------------------------------
 
 " }}}
-" ===========================================================================
 " MISCELLANEOUS {{{
-" ===========================================================================
 " Other functions, commands, settings,
 " etc.  that don't fit elsewhere go here
 
@@ -995,4 +951,3 @@ endfor
 cabbrev ctw s/\s\+$//e
 
 " }}}
-" ===========================================================================
