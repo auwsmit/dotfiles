@@ -157,9 +157,9 @@ augroup vimrc_plugin_config
   noremap <silent> <plug>(slash-after) :<c-u>ShowSearchIndex<cr>zz
   xunmap <plug>(slash-after)
   " }}}
-  " Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " {{{
-  " nnoremap <space>t :TagbarOpen fj<cr>
-  " nnoremap <space>T :TagbarToggle<cr>
+  Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " {{{
+  nnoremap <space>t :TagbarOpen fj<cr>
+  nnoremap <space>T :TagbarToggle<cr>
   " }}}
 
   " " }}}
@@ -205,12 +205,14 @@ augroup vimrc_plugin_config
         \ },
         \ 'inactive': {
         \   'left': [ ['filename_i'] ],
-        \   'right': [ ['percent', 'lineinfo'] ]
+        \   'right': [ ['percent', 'lineinfo_i'] ]
         \ },
         \ 'component': {
         \   'percent': '%3{LightLinePercent()}',
         \   'filename': '%{LightLineFilename(1)}',
         \   'filename_i': '%{LightLineFilename(0)}',
+        \   'lineinfo': 'L%l/C%c',
+        \   'lineinfo_i': 'L%l/%L'
         \ },
         \ 'component_function': {
         \   'gitbranch': 'FugitiveHead',
@@ -463,11 +465,18 @@ set autoindent
 set smartindent " TODO: try cindent
 set encoding=utf-8
 
+fun! s:MyFoldExpr()
+  return 1
+endfun
+
+set foldmethod=expr
+set foldexpr=<sid>MyFoldExpr()
+
 " mostly aesthetic options
 set hlsearch
 set cpoptions+=$
 set foldlevel=999
-set foldmethod=indent
+" set foldmethod=indent
 set guioptions=
 set laststatus=2
 set linebreak
@@ -486,7 +495,7 @@ else
 endif
 
 " colorscheme and fallbacks if there are no
-" plugins or if it's an older version of vim
+" plugins or if incompatible for some reason
 silent! colorscheme badwolf
 fun! VimrcColorcheck(color) abort
   if !exists('g:colors_name')
