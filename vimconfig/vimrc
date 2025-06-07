@@ -211,8 +211,8 @@ augroup vimrc_plugin_config
         \   'percent': '%3{LightLinePercent()}',
         \   'filename': '%{LightLineFilename(1)}',
         \   'filename_i': '%{LightLineFilename(0)}',
-        \   'lineinfo': 'L%l/C%c',
-        \   'lineinfo_i': 'L%l/%L'
+        \   'lineinfo': 'L.%l/C.%c',
+        \   'lineinfo_i': 'L.%l/%L'
         \ },
         \ 'component_function': {
         \   'gitbranch': 'FugitiveHead',
@@ -465,18 +465,11 @@ set autoindent
 set smartindent " TODO: try cindent
 set encoding=utf-8
 
-fun! s:MyFoldExpr()
-  return 1
-endfun
-
-set foldmethod=expr
-set foldexpr=<sid>MyFoldExpr()
-
 " mostly aesthetic options
 set hlsearch
 set cpoptions+=$
 set foldlevel=999
-" set foldmethod=indent
+set foldmethod=indent
 set guioptions=
 set laststatus=2
 set linebreak
