@@ -1,6 +1,6 @@
 " vim: set foldmethod=marker:
 " Author: Austin Smith <auwsmit@gmail.com>
-" Source: https://gitlab.com/auwsmit/dotfiles
+" Source: https://github.com/auwsmit/dotfiles
 " Best viewed with vim's folds (see :help folds)
 
 " STARTUP {{{
@@ -28,8 +28,9 @@ augroup vimrc_plugin_config
 
   " FILE/BUFFER PLUGINS {{{
 
-  Plug 'tpope/vim-eunuch' " shell commands, e.g. :Remove & :Move & :Chmod
-  Plug 'tpope/vim-fugitive' " {{{
+  Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
+  Plug 'tpope/vim-fugitive'   " vim + git integration
+  " {{{
   nnoremap <space>gs :G<cr>
   nnoremap <space>gd :Gdiffsplit<cr>
   nnoremap <space>gD :Gdiffsplit HEAD<cr>
@@ -41,10 +42,19 @@ augroup vimrc_plugin_config
   " hide fugitive buffers to reduce buffer list clutter
   au BufReadPost fugitive://* set bufhidden=delete
   " }}}
-  Plug 'justinmk/vim-gtfo' " {{{
+  Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
+  " {{{
   let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
   " }}}
-  Plug 'justinmk/vim-dirvish' " {{{
+  Plug 'preservim/nerdtree'   " file tree viewer
+  " {{{
+  nnoremap <space>n :NERDTreeFind<cr>
+  " close if nerdtree is last window
+  au BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1
+        \ && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+  " }}}
+  Plug 'justinmk/vim-dirvish' " minimal file explorer
+  " {{{
   " disable netrw
   let g:loaded_netrw = 1
   let g:loaded_netrwPlugin = 1
@@ -55,9 +65,9 @@ augroup vimrc_plugin_config
   " - to keep going up the directory tree
   au FileType dirvish nnoremap <buffer> -
         \ :e <C-R>=fnameescape(expand('%:p:h'))<CR>/..<CR>
-  au FileType dirvish set nobuflisted
   " }}}
-  Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " {{{
+  Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
+  " {{{
   " close buffer + preserve windows
   nnoremap gs :Sayonara!<cr>
   " close buffer + close window
@@ -66,11 +76,14 @@ augroup vimrc_plugin_config
   let g:sayonara_confirm_quit = 1
   let g:sayonara_plugged = 1
   " }}}
-  Plug 'yegappan/mru'
+  Plug 'yegappan/mru'         " most recent file list
+  " {{{
   nnoremap <space>r :MRU<cr>
   nnoremap <space>fr :MRU<space>
-  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " {{{
-  Plug 'junegunn/fzf.vim'
+  " }}}
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
+  " {{{
+  Plug 'junegunn/fzf.vim' " fzf + vim integration
   let g:fzf_command_prefix = 'Fzf'
 
   nnoremap <space>- :FZF <c-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
@@ -109,14 +122,16 @@ augroup vimrc_plugin_config
   " }}}
   " OPERATOR PLUGINS {{{
 
-  Plug 'tpope/vim-commentary'
-  Plug 'machakann/vim-sandwich' " (surround.vim alternative) {{{
+  Plug 'tpope/vim-commentary'   " comment mappings
+  Plug 'machakann/vim-sandwich' " (surround.vim alternative)
+  " {{{
   " surround-like mappings
   let g:sandwich_no_default_key_mappings = 1
   let g:operator_sandwich_no_default_key_mappings = 1
   au VimEnter * runtime macros/sandwich/keymap/surround.vim
   " }}}
-  Plug 'tommcdo/vim-exchange' " {{{
+  Plug 'tommcdo/vim-exchange'   " exchange operator
+  " {{{
   " evil-exchange bindings
   nmap gxx <plug>(ExchangeLine)
   nmap gX  <plug>(ExchangeClear)
@@ -134,7 +149,8 @@ augroup vimrc_plugin_config
         \ Plug 'kana/vim-textobj-indent'  |
         \ Plug 'kana/vim-textobj-function' |
         \ Plug 'coderifous/textobj-word-column.vim'
-  Plug 'junegunn/vim-after-object' " {{{
+  Plug 'junegunn/vim-after-object'
+  " {{{
   au VimEnter * silent! call after_object#enable([']', '['], '=', ':', '-', '#', ' ')
   " }}}
 
@@ -142,22 +158,23 @@ augroup vimrc_plugin_config
   " MOTION/NAVIGATION PLUGINS {{{
 
   if v:version > 800
-    Plug 'romainl/vim-cool'
+    Plug 'romainl/vim-cool'     " auto-disable search highlighting
   endif
-  " makes vim's 'word's more precise
-  Plug 'chaoren/vim-wordmotion'
-  Plug 'justinmk/vim-ipmotion' " {{{
-  " skip over closed folds with { and }
+  Plug 'chaoren/vim-wordmotion' " makes vim's 'word's more precise
+  Plug 'justinmk/vim-ipmotion'  " { } move over folds
+  " {{{
   let g:ip_skipfold = 1
   " }}}
-  Plug 'auwsmit/vim-slash' | Plug 'henrik/vim-indexed-search' " {{{
+  Plug 'auwsmit/vim-slash' | Plug 'henrik/vim-indexed-search' " improved search
+  " {{{
   let g:indexed_search_mappings = 0
   let g:indexed_search_max_lines = 50000
   " slash + indexed-search, also centered results
   noremap <silent> <plug>(slash-after) :<c-u>ShowSearchIndex<cr>zz
   xunmap <plug>(slash-after)
   " }}}
-  Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " {{{
+  Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
+  " {{{
   nnoremap <space>t :TagbarOpen fj<cr>
   nnoremap <space>T :TagbarToggle<cr>
   " }}}
@@ -165,33 +182,32 @@ augroup vimrc_plugin_config
   " " }}}
   " SNIPPET/COMPLETION PLUGINS {{{
 
-  Plug 'ervandew/supertab'
-  Plug 'tpope/vim-endwise',
-        \ { 'for': [ 'vim', 'c', 'cpp', 'lua', 'ruby', 'sh', 'zsh', 'snippets' ] }
+  Plug 'ervandew/supertab'  " tab autocomplete
+  Plug 'tpope/vim-endwise', " auto-create end of certain keywords (if->endif)
   if s:has_python
-    Plug 'SirVer/UltiSnips'
+    Plug 'SirVer/UltiSnips' " snippets manager
   endif
 
   " }}}
   " FORMAT/SYNTAX PLUGINS {{{
 
-  Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] }
-  " Plug 'junegunn/vim-easy-align',   { 'on': ['<plug>(EasyAlign)', 'EasyAlign'] } " {{{
-  " " Start interactive EasyAlign in visual mode (e.g. vipga)
-  " xmap ga <plug>(EasyAlign)
-  " " Start interactive EasyAlign for a motion/text object (e.g. gaip)
-  " nmap ga <plug>(EasyAlign)
+  Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
+  Plug 'junegunn/vim-easy-align',   { 'on': ['<plug>(EasyAlign)', 'EasyAlign'] } " align text operator
+  " {{{
+  " Start interactive EasyAlign in visual mode (e.g. vipga)
+  xmap ga <plug>(EasyAlign)
+  " Start interactive EasyAlign for a motion/text object (e.g. gaip)
+  nmap ga <plug>(EasyAlign)
   " }}}
 
   " " }}}
   " APPEARANCE/UI PLUGINS {{{
 
-  " for older versions of Vim/Nvim
-  Plug 'xtal8/traces.vim'
-
-  Plug 'sjl/badwolf'
-  Plug 'auwsmit/vim-active-numbers'
-  Plug 'itchyny/lightline.vim' " {{{
+  Plug 'xtal8/traces.vim'           " previews patterns for ex commands
+  Plug 'sjl/badwolf'                " a colorscheme
+  Plug 'auwsmit/vim-active-numbers' " line numbers follow window
+  Plug 'itchyny/lightline.vim'      " prettier statusbar
+  " {{{
   nnoremap <silent> <space>L }:call lightline#toggle()<cr>``
 
   " layout + compatibility with other plugins {{{
@@ -281,57 +297,56 @@ augroup vimrc_plugin_config
   " }}}
 
   " }}}
-  Plug 'junegunn/vim-peekaboo' " {{{
+  Plug 'junegunn/vim-peekaboo'      " preview registers
+  " {{{
   let g:peekaboo_delay = 350
   " }}}
-  " Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' } " {{{
+  " Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' }
+  " " {{{
   " " toggle Goyo (distraction free editing)
   " nnoremap <space>G :Goyo<cr>
   " " }}}
-  Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' } " {{{
+  Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
+  " {{{
   au FileType c,cpp,vim,sh,dosbatch,lisp silent! RainbowParentheses
   " }}}
-  " Plug 'Yggdroot/indentLine', { 'on': ['IndentLinesEnable', 'IndentLinesToggle'] } " {{{
-  " nnoremap <space>I :IndentLinesToggle<cr>
-  " " use custom filetype detection for better vim-plug compatibility
-  " let g:indentLine_enabled = 0
-  " let g:indentLine_fileType = ['']
-  " au FileType c,cpp IndentLinesEnable
-  " " }}}
-  if s:is_windows
-    Plug 'vim-scripts/wimproved.vim' " {{{
-    " toggle fullscreen
-    nnoremap <F11> :WToggleFullscreen<cr>
-    " Fix GVim's ugly window border
-    au GUIEnter * silent! WToggleClean
-    " }}}
-  endif
+  Plug 'Yggdroot/indentLine', { 'on': ['IndentLinesEnable', 'IndentLinesToggle'] }
+  " {{{
+  nnoremap <space>I :IndentLinesToggle<cr>
+  " use custom filetype detection for better vim-plug compatibility
+  let g:indentLine_enabled = 0
+  let g:indentLine_fileType = ['']
+  au FileType c,cpp IndentLinesEnable
+  " }}}
 
   " }}}
   " MISC/CONVENIENCE PLUGINS " {{{
 
   if v:version > 800
-    Plug 'romainl/vim-qf'
+    Plug 'romainl/vim-qf' " sensible quickfix improvements
   endif
-  Plug 'tpope/vim-rsi'
-  Plug 'tpope/vim-repeat'
-  Plug 'tpope/vim-sleuth'
-  Plug 'tpope/vim-unimpaired'
-  Plug 'Konfekt/FastFold'
-  Plug 'farmergreg/vim-lastplace'
-  " Plug 'junegunn/gv.vim',    { 'on': 'GV' }
-  Plug 'xolox/vim-session' " {{{
-  Plug 'xolox/vim-misc'
+  Plug 'tpope/vim-rsi'            " readline key maps for cmd and ins mode
+  Plug 'tpope/vim-repeat'         " allows plugins to . repeat easier
+  Plug 'tpope/vim-sleuth'         " auto-detect tab settings per-file
+  Plug 'tpope/vim-unimpaired'     " tons of useful [x/]x mappings
+  Plug 'Konfekt/FastFold'         " optimize how Vim updates folds
+  Plug 'farmergreg/vim-lastplace' " reopen files at last position
+                                  " Plug 'junegunn/gv.vim',    { 'on': 'GV' }
+  Plug 'xolox/vim-session'        " simplified session management
+  " {{{
+  Plug 'xolox/vim-misc' " vim-session dependency
   let g:session_autosave = 0
   let g:session_autoload = 0
   au VimEnter * silent! exec 'au! PluginXoloxMisc'
   " }}}
   if has('python')
-    Plug 'sjl/gundo.vim' " {{{
+    Plug 'sjl/gundo.vim' " visual undo tree
+    " {{{
     nnoremap <space>u :GundoToggle<cr>
   " }}}
   else
-    Plug 'mbbill/undotree',    { 'on': 'UndotreeToggle' } " {{{
+    Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' } " visual undo tree
+    " {{{
     nnoremap <space>u :UndotreeToggle<cr>
     fun! g:Undotree_CustomMap()
       nunmap <buffer> <tab>
@@ -339,7 +354,7 @@ augroup vimrc_plugin_config
   " }}}
   endif
   if executable('ctags')
-    Plug 'ludovicchabant/vim-gutentags'
+    Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
   endif
 
   " }}}
@@ -425,31 +440,6 @@ if exists("g:neovide")
   let g:neovide_cursor_animation_length = 0.08
   let g:neovide_scroll_animation_length = 0.2
 endif
-
-" autocmds
-augroup vimrc_general
-  au!
-
-  " make 'nobuflisted' persist when editing a file
-  if exists('##OptionSet')
-    fun! s:PersistNobl(type) abort
-      if a:type == 'option'
-        if &buflisted && exists('b:persist_nobl')
-          unlet b:persist_nobl
-        else
-          let b:persist_nobl = 1
-        endif
-      elseif exists('b:persist_nobl')
-        if b:persist_nobl
-          setl nobuflisted
-        endif
-      endif
-    endfun
-    au OptionSet buflisted call <sid>PersistNobl('option')
-    au BufEnter * call <sid>PersistNobl('buf')
-  endif
-
-augroup END
 
 " }}}
 " APPEARANCE AND FORMATTING {{{
@@ -931,12 +921,12 @@ command! -bar KillBuffers call <sid>DeleteAllBuffers()
 fun! s:DoubleView() abort
   let s:DV_so=&scrolloff
   set scrolloff=0 noscrollbind nowrap nofoldenable
-  exec "normal! m'\<c-b>"
+  exec "normal! m`\<c-b>"
   botright vsplit
   normal! Ljzt
   windo setl scrollbind
   let &scrolloff=s:DV_so
-  exec "normal! \<c-w>p''"
+  exec "normal! \<c-w>p``"
 endfun " }}}
 command! DoubleView call <sid>DoubleView()
 
@@ -953,3 +943,4 @@ endfor
 cabbrev ctw s/\s\+$//e
 
 " }}}
+
