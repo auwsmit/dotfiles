@@ -220,15 +220,15 @@ augroup vimrc_plugin_config
         \              ['fileformat', 'fileencoding', 'filetype'] ]
         \ },
         \ 'inactive': {
-        \   'left': [ ['filename_i'] ],
+        \   'left': [ [], ['filename_i'] ],
         \   'right': [ ['percent', 'lineinfo_i'] ]
         \ },
         \ 'component': {
         \   'percent': '%3{LightLinePercent()}',
         \   'filename': '%{LightLineFilename(1)}',
         \   'filename_i': '%{LightLineFilename(0)}',
-        \   'lineinfo': 'L.%l/C.%c',
-        \   'lineinfo_i': 'L.%l/%L'
+        \   'lineinfo': '%l,%c',
+        \   'lineinfo_i': '%l/%L'
         \ },
         \ 'component_function': {
         \   'gitbranch': 'FugitiveHead',
@@ -241,11 +241,20 @@ augroup vimrc_plugin_config
         \ 'subseparator': { 'left': '|', 'right': '|' }
         \ }
 
+  let g:lightline.mode_map = {
+        \ 'n' : ' N ', 'i' : ' I ',
+        \ 'R' : ' R ', 'v' : ' V ',
+        \ 'V' : ' VL', "\<C-v>": ' VB',
+        \ 'c' : ' C ', 's' : ' S ',
+        \ 'S' : ' SL', "\<C-s>": ' SB',
+        \ 't': ' T ',
+        \ }
+
   fun! LightLinePercent()
     return line('w0') == 1 && line('w$') == line('$') ? 'All'
-    \: line('.') == 1 ? 'Top'
-    \: line('.') == line('$') ? 'Bot'
-    \: float2nr(100*(1.0*line('.')/line('$'))).'%'
+          \: line('.') == 1 ? 'Top'
+          \: line('.') == line('$') ? 'Bot'
+          \: float2nr(100*(1.0*line('.')/line('$'))).'%'
   endfun
 
   fun! LightLineModified()
@@ -286,7 +295,7 @@ augroup vimrc_plugin_config
   endfun
   fun! LightLineMode()
     let fname = expand('%:t')
-    return winwidth(0) <= 70 ? '' : lightline#mode()
+    return lightline#mode()
   endfun
 
   let g:tagbar_status_func = 'TagbarStatusFunc'
