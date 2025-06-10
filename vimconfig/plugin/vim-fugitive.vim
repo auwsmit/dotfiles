@@ -6,5 +6,9 @@ nnoremap <space>gl :G log<cr>
 nnoremap <space>gp :G push<cr>
 nnoremap <space>gw :Gwrite<cr>
 nnoremap <space>gg :Ggrep<space>
-" hide fugitive buffers to reduce buffer list clutter
-au BufReadPost fugitive://* set bufhidden=delete
+
+augroup config_Fugitive
+  au!
+  " hide fugitive buffers to reduce buffer list clutter
+  au BufReadPost fugitive://* set bufhidden=delete
+augroup END

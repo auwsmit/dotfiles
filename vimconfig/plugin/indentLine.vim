@@ -1,5 +1,10 @@
 nnoremap <space>I :IndentLinesToggle<cr>
+
 " use custom filetype detection for better vim-plug compatibility
 let g:indentLine_enabled = 0
 let g:indentLine_fileType = ['']
-au FileType c,cpp IndentLinesEnable
+
+augroup config_indentLine
+  au!
+  au FileType c,cpp IndentLinesEnable
+augroup END
