@@ -58,12 +58,11 @@ Plug 'junegunn/vim-after-object'
 " " }}}
 " MOTION/NAVIGATION PLUGINS {{{
 
-if v:version > 800
-  Plug 'romainl/vim-cool'     " auto-disable search highlighting
-endif
+Plug 'romainl/vim-cool'       " auto-disable search highlighting
 Plug 'chaoren/vim-wordmotion' " makes vim's 'word's more precise
 Plug 'justinmk/vim-ipmotion'  " { } move over folds
-Plug 'auwsmit/vim-slash' | Plug 'henrik/vim-indexed-search' " improved search
+Plug 'junegunn/vim-slash'     " mildly improved search
+Plug 'henrik/vim-indexed-search' " show total results (works on older versions of vim)
 Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
 
 " " }}}
@@ -86,9 +85,8 @@ Plug 'junegunn/vim-easy-align',   { 'on': ['<plug>(EasyAlign)', 'EasyAlign'] } "
 
 Plug 'xtal8/traces.vim'           " previews patterns for ex commands
 Plug 'sjl/badwolf'                " a colorscheme
-Plug 'auwsmit/vim-active-numbers' " line numbers follow window
+Plug 'auwsmit/vim-active-numbers' " line numbers follow the current window
 Plug 'itchyny/lightline.vim'      " prettier statusbar
-Plug 'junegunn/vim-peekaboo'      " preview registers
 Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' } " distraction free editing
 Plug 'Yggdroot/indentLine', { 'on': ['IndentLinesEnable', 'IndentLinesToggle'] } " indent indicators
 Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
@@ -99,6 +97,7 @@ Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
 if v:version > 800
   Plug 'romainl/vim-qf' " sensible quickfix improvements
 endif
+Plug 'junegunn/vim-peekaboo'    " preview registers
 Plug 'tpope/vim-rsi'            " readline key maps for cmd and ins mode
 Plug 'tpope/vim-repeat'         " allows plugins to . repeat easier
 Plug 'tpope/vim-sleuth'         " auto-detect tab settings per-file
@@ -146,6 +145,7 @@ set sessionoptions-=folds
 set clipboard^=unnamedplus,unnamed
 set foldopen-=block
 set shortmess-=S
+set shortmess+=F
 if s:is_windows
   set makeprg=build.bat
 endif
@@ -191,7 +191,7 @@ endif
 
 " Neovide config
 if exists("g:neovide")
-  let g:neovide_cursor_animation_length = 0.08
+  let g:neovide_cursor_animation_length = 0.00
   let g:neovide_scroll_animation_length = 0.2
 endif
 
@@ -359,6 +359,45 @@ nnoremap gp `[v`]
 
 " i_CTRL-[ finger slip
 inoremap <c-]> <esc>
+
+" edit or create plugin config {{{
+" press Enter on [Plug 'author/plugin'] to create or open a local config file
+fun! s:GotoPluginConfig()
+  let @9 = ''
+  norm m`0eb"9ye
+  if @9 == 'Plug'
+    norm vi'of/l"9y``
+    let s:path_to_plugin = expand(g:myvimdir.'/plugin/'.@9.'.vim')
+    if filereadable(s:path_to_plugin)
+      echo 'Found config for ' . @9
+      exec 'edit ' . s:path_to_plugin
+      return
+    else
+      let s:msg = 'No plugin config found. Would you like to create one?'
+      let s:choice = confirm(s:msg,"&yes\n/&No",2)
+      if s:choice == 2
+        return | else | redraw
+        echo 'Editing local config for ' . @9
+        exec 'edit ' . s:path_to_plugin
+      endif
+    endif
+  else
+    norm ``
+  endif
+endfun
+
+fun! s:PluginConfigMapper()
+  let s:current_file = expand('%:t')
+  if s:current_file == 'init.vim' || s:current_file == 'vimrc'
+    nnoremap <silent><buffer> <cr> :call <sid>GotoPluginConfig()<cr>
+  endif
+endfun
+
+" }}}
+augroup vimrc_view_plugin_config
+  au!
+  au FileType vim call <sid>PluginConfigMapper()
+augroup END
 
 " }}}
 " STANDARD MAPS {{{
@@ -534,39 +573,6 @@ if has('nvim')
   tnoremap <c-]> <c-\><c-n>
   tnoremap <c-g> <c-\><c-n>
 endif
-
-" press Enter on [Plug 'author/plugin'] name to open a local config file {{{
-" TODO: add confirmation for creating new config file if one doesn't exist
-fun! s:GotoPluginConfig()
-  let @9 = ''
-  norm m`0eb"9ye
-  if @9 == 'Plug'
-    norm vi'of/l"9y``
-    let s:path_to_plugin = expand(g:myvimdir.'/plugin/'.@9.'.vim')
-    if filereadable(s:path_to_plugin)
-      echo 'Found config for ' . @9
-      exec 'edit ' . s:path_to_plugin
-      return
-    else
-      echo 'No plugin config found'
-    endif
-  else
-    norm ``
-  endif
-endfun
-
-fun! s:PluginConfigMapping()
-  let s:current_file = expand('%:t')
-  if s:current_file == 'init.vim' || s:current_file == 'vimrc'
-    nnoremap <silent><buffer> <cr> :call <sid>GotoPluginConfig()<cr>
-  endif
-endfun
-
-" }}}
-augroup vimrc_plugin_config_map
-  au!
-  au FileType vim call <sid>PluginConfigMapping()
-augroup END
 
 " }}}
 " LEADER MAPS {{{
