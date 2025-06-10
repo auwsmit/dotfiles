@@ -18,7 +18,8 @@ endif
 
 " }}}
 " PLUGINS {{{
-" plugin config files can be found under g:myvimdir/plugins
+" plugin config files can be found under g:myvimdir/plugin
+" press Enter on a line below to goto its config file
 
 " setup vim-plug
 call plug#begin()
@@ -63,7 +64,7 @@ endif
 Plug 'chaoren/vim-wordmotion' " makes vim's 'word's more precise
 Plug 'justinmk/vim-ipmotion'  " { } move over folds
 Plug 'auwsmit/vim-slash' | Plug 'henrik/vim-indexed-search' " improved search
-Plug 'majutsushi/tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
+Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
 
 " " }}}
 " SNIPPET/COMPLETION PLUGINS {{{
@@ -286,7 +287,7 @@ augroup END
 
 " }}}
 " KEY MAPPINGS {{{
-" plugin related maps can be found in g:myvimdir/plugins files
+" plugin related maps can be found in g:myvimdir/plugin files
 
 " REMAPS OF DEFAULTS {{{
 " it's good to remember these in case I'm stuck with vanilla vi/vim
@@ -532,12 +533,46 @@ cnoremap :: <c-r>=fnameescape(expand('%:p:h'))<cr>/
 cnoremap <expr>  <tab>    getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
 cnoremap <expr>  <s-tab>  getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
 
+" sane terminal escape
 if has('nvim')
   tnoremap <esc> <c-\><c-n>
   tnoremap <c-[> <c-\><c-n>
   tnoremap <c-]> <c-\><c-n>
   tnoremap <c-g> <c-\><c-n>
 endif
+
+" press Enter on [Plug 'author/plugin'] name to open a local config file {{{
+" TODO: add confirmation for creating new config file if one doesn't exist
+fun! s:GotoPluginConfig()
+  let @9 = ''
+  norm m`0eb"9ye
+  if @9 == 'Plug'
+    norm vi'of/l"9y``
+    let s:path_to_plugin = expand(g:myvimdir.'/plugin/'.@9.'.vim')
+    if filereadable(s:path_to_plugin)
+      echo 'Found config for ' . @9
+      exec 'edit ' . s:path_to_plugin
+      return
+    else
+      echo 'No plugin config found'
+    endif
+  else
+    norm ``
+  endif
+endfun
+
+fun! s:PluginConfigMapping()
+  let s:current_file = expand('%:t')
+  if s:current_file == 'init.vim' || s:current_file == 'vimrc'
+    nnoremap <silent><buffer> <cr> :call <sid>GotoPluginConfig()<cr>
+  endif
+endfun
+
+" }}}
+augroup vimrc_plugin_config_map
+  au!
+  au FileType vim call <sid>PluginConfigMapping()
+augroup END
 
 " }}}
 " LEADER MAPS {{{
