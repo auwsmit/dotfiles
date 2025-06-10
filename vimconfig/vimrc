@@ -130,7 +130,7 @@ augroup vimrc_plugin_config
   let g:operator_sandwich_no_default_key_mappings = 1
   au VimEnter * runtime macros/sandwich/keymap/surround.vim
   " }}}
-  Plug 'tommcdo/vim-exchange'   " exchange operator
+  Plug 'tommcdo/vim-exchange'   " exchange two pieces of text
   " {{{
   " evil-exchange bindings
   nmap gxx <plug>(ExchangeLine)
@@ -301,16 +301,16 @@ augroup vimrc_plugin_config
   " {{{
   let g:peekaboo_delay = 350
   " }}}
-  " Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' }
-  " " {{{
-  " " toggle Goyo (distraction free editing)
-  " nnoremap <space>G :Goyo<cr>
-  " " }}}
+  Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' } " distraction free editing
+  " {{{
+  " toggle Goyo
+  nnoremap <space>G :Goyo<cr>
+  " }}}
   Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
   " {{{
   au FileType c,cpp,vim,sh,dosbatch,lisp silent! RainbowParentheses
   " }}}
-  Plug 'Yggdroot/indentLine', { 'on': ['IndentLinesEnable', 'IndentLinesToggle'] }
+  Plug 'Yggdroot/indentLine', { 'on': ['IndentLinesEnable', 'IndentLinesToggle'] } " indent indicators
   " {{{
   nnoremap <space>I :IndentLinesToggle<cr>
   " use custom filetype detection for better vim-plug compatibility
@@ -331,7 +331,7 @@ augroup vimrc_plugin_config
   Plug 'tpope/vim-unimpaired'     " tons of useful [x/]x mappings
   Plug 'Konfekt/FastFold'         " optimize how Vim updates folds
   Plug 'farmergreg/vim-lastplace' " reopen files at last position
-                                  " Plug 'junegunn/gv.vim',    { 'on': 'GV' }
+  Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
   Plug 'xolox/vim-session'        " simplified session management
   " {{{
   Plug 'xolox/vim-misc' " vim-session dependency
@@ -340,7 +340,7 @@ augroup vimrc_plugin_config
   au VimEnter * silent! exec 'au! PluginXoloxMisc'
   " }}}
   if has('python')
-    Plug 'sjl/gundo.vim' " visual undo tree
+    Plug 'sjl/gundo.vim'          " visual undo tree
     " {{{
     nnoremap <space>u :GundoToggle<cr>
   " }}}
@@ -780,9 +780,11 @@ cnoremap :: <c-r>=fnameescape(expand('%:p:h'))<cr>/
 cnoremap <expr>  <tab>    getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
 cnoremap <expr>  <s-tab>  getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
 
-if has('terminal')
-  tnoremap <esc> <c-w>N
-  tnoremap <c-g> <c-w>N
+if has('nvim')
+  tnoremap <esc> <c-\><c-n>
+  tnoremap <c-[> <c-\><c-n>
+  tnoremap <c-]> <c-\><c-n>
+  tnoremap <c-g> <c-\><c-n>
 endif
 
 " }}}
