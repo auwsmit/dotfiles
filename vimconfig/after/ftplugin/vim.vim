@@ -1,2 +1,5 @@
 " only continue comments from insert mode
-set formatoptions-=o
+setlocal formatoptions-=o
+
+" 2-space indentation
+setlocal sw=2
