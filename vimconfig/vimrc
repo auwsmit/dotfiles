@@ -244,12 +244,6 @@ call VimrcColorcheck('unokai')
 call VimrcColorcheck('habamax')
 call VimrcColorcheck('desert')
 
-" fallback default colorscheme
-if !exists('g:colors_name')
-  syntax enable
-  colorscheme desert
-endif
-
 " my statusline
 execute 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
 
