@@ -58,9 +58,9 @@ Plug 'junegunn/vim-after-object'
 " " }}}
 " MOTION/NAVIGATION PLUGINS {{{
 
-Plug 'chaoren/vim-wordmotion' " makes vim's 'word's more precise
-Plug 'justinmk/vim-ipmotion'  " { } move over folds
-Plug 'junegunn/vim-slash'     " improved search
+Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
+Plug 'justinmk/vim-ipmotion'     " { } move over folds
+Plug 'junegunn/vim-slash'        " improved search
 Plug 'henrik/vim-indexed-search' " show total results (works on older versions of vim)
 Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
 
@@ -362,26 +362,23 @@ inoremap <c-]> <esc>
 " edit or create plugin config {{{
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
 fun! s:GotoPluginConfig()
-  let @9 = ''
-  norm m`0eb"9ye
-  if @9 == 'Plug'
-    norm vi'of/l"9y``
-    let s:path_to_plugin = expand(g:myvimdir.'/plugin/'.@9.'.vim')
+  if getline('.') =~ "Plug '.*'"
+    " this pattern returns whatever is within the single quotes
+    let s:pattern = ".*'[^/]*/\\(.*\\)'.*"
+    let s:name = substitute(getline('.'), s:pattern, '\1', '')
+    let s:path_to_plugin = expand(g:myvimdir.'/plugin/'.s:name.'.vim')
     if filereadable(s:path_to_plugin)
-      echo 'Found config for ' . @9
+      echo 'Found config for ' . s:name
       exec 'edit ' . s:path_to_plugin
-      return
     else
       let s:msg = 'No plugin config found. Would you like to create one?'
       let s:choice = confirm(s:msg,"&yes\n/&No",2)
-      if s:choice == 2
-        return | else | redraw
-        echo 'Editing local config for ' . @9
+      if s:choice == 1
+        redraw
+        echo 'Editing local config for ' . s:name
         exec 'edit ' . s:path_to_plugin
       endif
     endif
-  else
-    norm ``
   endif
 endfun
 
