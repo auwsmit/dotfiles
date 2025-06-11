@@ -58,10 +58,9 @@ Plug 'junegunn/vim-after-object'
 " " }}}
 " MOTION/NAVIGATION PLUGINS {{{
 
-Plug 'romainl/vim-cool'       " auto-disable search highlighting
 Plug 'chaoren/vim-wordmotion' " makes vim's 'word's more precise
 Plug 'justinmk/vim-ipmotion'  " { } move over folds
-Plug 'junegunn/vim-slash'     " mildly improved search
+Plug 'junegunn/vim-slash'     " improved search
 Plug 'henrik/vim-indexed-search' " show total results (works on older versions of vim)
 Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
 
