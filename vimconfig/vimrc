@@ -36,12 +36,13 @@ Plug 'yegappan/mru'         " most recent file list
 Plug 'junegunn/fzf.vim'     " fzf + vim integration
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
+Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
 
 " }}}
 " OPERATOR PLUGINS {{{
 
 Plug 'tpope/vim-commentary'   " comment mappings
-Plug 'machakann/vim-sandwich' " (surround.vim alternative)
+Plug 'machakann/vim-sandwich' " modify surrounding text eg: () and ''
 Plug 'tommcdo/vim-exchange'   " exchange two pieces of text
 
 " }}}
@@ -63,7 +64,6 @@ Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
 Plug 'justinmk/vim-ipmotion'     " { } move over folds
 Plug 'junegunn/vim-slash'        " improved search
 Plug 'henrik/vim-indexed-search' " show total results (works on older versions of vim)
-Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
 
 " " }}}
 " SNIPPET/COMPLETION PLUGINS {{{
@@ -233,13 +233,13 @@ endif
 
 " colorscheme and fallbacks if there are no
 " plugins or if incompatible for some reason
-silent! colorscheme badwolf
 fun! VimrcColorcheck(color) abort
   if !exists('g:colors_name')
     syntax enable
-    exec 'colorscheme ' . a:color
+    exec 'silent! colorscheme ' . a:color
   endif
 endfun
+call VimrcColorcheck('badwolf')
 call VimrcColorcheck('unokai')
 call VimrcColorcheck('habamax')
 call VimrcColorcheck('desert')
@@ -329,9 +329,18 @@ nmap S <plug>(MySplitLine)
 nnoremap <silent> <c-p> <c-o>
 nnoremap <silent> <c-n> <c-i>
 
-" fold traversal
-nnoremap <c-j> zj
-nnoremap <c-k> zk
+" fold traversal {{{
+fun! s:FoldedMoveToStart()
+  if foldclosed('.') != -1 " fold is closed
+    " make sure that folds open from the start
+    norm! zo[zzc
+  endif
+endfun
+" }}}
+nnoremap <silent><c-k> zk:call <sid>FoldedMoveToStart()<cr>zz
+nnoremap <c-j> zjzz
+nnoremap <c-h> zc
+nnoremap <c-l> zo
 
 " org-style fold viewing
 " TODO: make functions that are more accurate
@@ -370,28 +379,28 @@ inoremap <c-]> <esc>
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
 fun! s:GotoPluginConfig()
   if getline('.') =~ "Plug '.*'"
-    " this pattern returns whatever is within the single quotes
-    let s:pattern = ".*'[^/]*/\\(.*\\)'.*"
-    let s:name = substitute(getline('.'), s:pattern, '\1', '')
-    let s:path_to_plugin = expand(g:myvimdir.'/plugin/'.s:name.'.vim')
-    if filereadable(s:path_to_plugin)
-      echo 'Found config for ' . s:name
-      exec 'edit ' . s:path_to_plugin
+    " this pattern matches whatever is within the single quotes
+    let pattern = "Plug.*'[^']*/\\zs[^']*\\ze'"
+    let name = matchstr(getline('.'), pattern)
+    let path_to_plugin = expand(g:myvimdir.'/plugin/'.name.'.vim')
+    if filereadable(path_to_plugin)
+      echo 'Found config for ' . name
+      exec 'split ' . fnameescape(path_to_plugin)
     else
-      let s:msg = 'No plugin config found. Would you like to create one?'
-      let s:choice = confirm(s:msg,"&yes\n/&No",2)
-      if s:choice == 1
+      let msg = 'No plugin config found. Would you like to create one?'
+      let choice = confirm(msg,"&yes\n/&No",2)
+      if choice == 1
         redraw
-        echo 'Editing local config for ' . s:name
-        exec 'edit ' . s:path_to_plugin
+        echo 'Editing local config for ' . name
+        exec 'split ' . fnameescape(path_to_plugin)
       endif
     endif
   endif
 endfun
 
 fun! s:PluginConfigMapper()
-  let s:current_file = expand('%:t')
-  if s:current_file == 'init.vim' || s:current_file == 'vimrc'
+  let current_file = expand('%:t')
+  if current_file == 'init.vim' || current_file == 'vimrc'
     nnoremap <silent><buffer> <cr> :call <sid>GotoPluginConfig()<cr>
   endif
 endfun
@@ -413,7 +422,6 @@ inoremap <f1> <nop>
 inoremap <c-g> <esc>
 cnoremap <c-g> <c-c>
 xnoremap <c-g> <esc>
-nnoremap <c-h> :help<space>
 
 " don't run commands without my consent
 cnoremap <esc> <c-c>
@@ -462,9 +470,9 @@ nnoremap yoz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
 " toggle syntax highlighting {{{
 " useful when Vim is crippled by its inefficient highlighting
 fun! s:ToggleSyntaxHighlighting() abort
-  let s:folds = &foldlevel
+  let folds = &foldlevel
   execute 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
-  let &foldlevel=s:folds
+  let &foldlevel=folds
 endfun
 command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
 " }}}
@@ -588,7 +596,6 @@ xnoremap <space> <nop>
 " shortcuts
 nnoremap <space>v :edit $MYVIMRC<cr>
 nnoremap <space>s :write<cr>
-nnoremap <space>h :help<space>
 nnoremap <space>o <c-w>o
 nnoremap <space>c <c-w>c
 nnoremap <space>w <c-w>
@@ -596,6 +603,18 @@ nnoremap <space>; :
 if maparg('<space><space>','n') == ''
   nnoremap <space><space> :
 endif
+
+" help under the cursor
+function! s:VisualSelection() abort
+  let [l1, c1] = getpos("'<")[1:2]
+  let [l2, c2] = getpos("'>")[1:2]
+  if l1 == l2
+    return getline(l1)[c1 - 1 : c2 - 1]
+  endif
+  return ''
+endfunction
+nnoremap <space>H :help <c-r><c-w>
+xnoremap <space>H :<c-u>help <c-r>=<sid>VisualSelection()<cr>
 
 " to previous window {{{
 " (or next window, if prev is gone)
@@ -711,13 +730,13 @@ command! -bar KillBuffers call <sid>DeleteAllBuffers()
 " (disables the wrap setting and expands folds to work better)
 " (PS: this is kind of janky, but I like it anyway)
 fun! s:DoubleView() abort
-  let s:DV_so=&scrolloff
+  let DV_so=&scrolloff
   set scrolloff=0 noscrollbind nowrap nofoldenable
   exec "normal! m`\<c-b>"
   botright vsplit
   normal! Ljzt
   windo setl scrollbind
-  let &scrolloff=s:DV_so
+  let &scrolloff=DV_so
   exec "normal! \<c-w>p``"
 endfun " }}}
 command! DoubleView call <sid>DoubleView()
