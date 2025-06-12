@@ -7,6 +7,7 @@
 
 let s:is_windows = (has('win32')  || has('win64'))
 let s:has_python = (has('python') || has('python3'))
+let s:is_win_git = has_key(environ(), "MINGW_PREFIX") && has_key(environ(), "EXEPATH")
 
 " detect .vim directory
 let g:myvimdir ="~/.vim"
@@ -242,6 +243,12 @@ endfun
 call VimrcColorcheck('unokai')
 call VimrcColorcheck('habamax')
 call VimrcColorcheck('desert')
+
+" git bash on windows has weird (poor) colors, so this looks best
+if s:is_win_git
+  colorscheme evening
+  silent! call lightline#disable()
+endif
 
 " my statusline
 execute 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'

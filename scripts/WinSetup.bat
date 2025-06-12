@@ -18,6 +18,9 @@ mkdir "%home_dir%old_dotfiles"
 CALL :Backup_Old_Files "" "vimfiles"
 mklink /d  "%home_dir%vimfiles" "%repo_dir%vimconfig"
 
+:: Vim in git bash
+mklink /d  "%home_dir%.vim" "%repo_dir%vimconfig"
+
 :: Neovim
 CALL :Backup_Old_Files "AppData\Local\" "nvim"
 CALL :Backup_Old_Files "AppData\Local\" "nvim-data"
