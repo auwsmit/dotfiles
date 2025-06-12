@@ -1,7 +1,7 @@
 :: @echo off
 :: This script create symlinks from my dotfiles repo to the proper places
 :: Also stores any old config files in a backup folder just in case
-:: ps holy shit batch scripting is awful
+:: ps holy shit batch scripting is awful, next time will try powershell
 
 :: VARIABLES
 :: %~dp0 expands to the full path of this file
@@ -19,6 +19,7 @@ CALL :Backup_Old_Files "" "vimfiles"
 mklink /d  "%home_dir%vimfiles" "%repo_dir%vimconfig"
 
 :: Vim in git bash
+CALL :Backup_Old_Files "" ".vim"
 mklink /d  "%home_dir%.vim" "%repo_dir%vimconfig"
 
 :: Neovim
