@@ -8,12 +8,10 @@ nnoremap <space>ff :FZF<space>
 nnoremap <space>fl :FzfLines<cr>
 nnoremap <space>fb :FzfBLines<cr>
 nnoremap <space>ft :FzfTags<cr>
-nnoremap <space>fh :FzfHelptags<cr>
 nnoremap <space>f: :FzfHistory:<cr>
 nnoremap <space>f/ :FzfHistory/<cr>
 nnoremap <space>fg :FzfGFiles<cr>
 nnoremap <space>fs :FzfGFiles?<cr>
-nnoremap <space>fc :FzfCommits<cr>
 nnoremap <space><space> :FzfCommands<cr>
 
 " adapt to colorscheme
