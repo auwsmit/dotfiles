@@ -12,4 +12,8 @@ vimconfig/neotmp/
 vimconfig/lua/
 vimconfig/shada/
 vimconfig/plugged/
+vimconfig/lua/
+vimconfig/harpoon.json
+vimconfig/harpoon/
+vimconfig/spear_data/
 init.vim
