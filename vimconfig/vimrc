@@ -37,6 +37,21 @@ Plug 'junegunn/fzf.vim'     " fzf + vim integration
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
 Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
+if has('nvim')
+  " trying my first neovim lua plugin.
+  " TODO recreate a simple version in ye olde vimscript {{{
+  " - basically marks on steroids
+  " - only for files not line positions
+  " - remembers last location while bookmarked
+  " - opens toggleable window to view bookmarks
+  " - bookmarks are grouped by current working directory
+  " - hotkeys for add and remove bookmark
+  " - hot keys for quick access, maybe integrate with peekaboo
+  " }}}
+  Plug 'nvim-lua/plenary.nvim'
+  Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
+endif
+Plug 'auwsmit/vim-spear'
 
 " }}}
 " OPERATOR PLUGINS {{{
@@ -168,21 +183,17 @@ set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX garbage
 
 " backups, swapfiles, & undofiles in one place
-if has('nvim')
-  let s:tempdir=expand(g:myvimdir."/neotmp")
-else
-  let s:tempdir=expand(g:myvimdir."/tmp")
-end
+let s:tempdir=expand(g:myvimdir .(has('nvim') ? '/neotmp' : '/tmp'))
 if !isdirectory(expand(s:tempdir))
-  call mkdir(expand(s:tempdir), "p")
+  call mkdir(expand(s:tempdir), 'p')
 endif
 set backup
-let &backupdir=s:tempdir
+let &backupdir=s:tempdir . '//'
 set swapfile
-let &directory=s:tempdir
+let &directory=s:tempdir . '//'
 if has('persistent_undo')
   set undofile
-  let &undodir=s:tempdir
+  let &undodir=s:tempdir . '//'
 endif
 
 if s:is_windows && executable('grep')
@@ -200,7 +211,7 @@ endif
 " some settings will be overwritten when certain filetypes are detected
 " see: filetype-indent-on, ftplugins, & after-directory
 
-" default tab settings
+" default tab settings (vim-sleuth will usually override this)
 set smarttab
 set shiftwidth=4 softtabstop=-1 expandtab
 
@@ -379,20 +390,26 @@ inoremap <c-]> <esc>
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
 fun! s:GotoPluginConfig()
   if getline('.') =~ "Plug '.*'"
-    " this pattern matches whatever is within the single quotes
+    " this pattern matches whatever is within the
+    " single quotes, and after the first slash
     let pattern = "Plug.*'[^']*/\\zs[^']*\\ze'"
     let name = matchstr(getline('.'), pattern)
-    let path_to_plugin = expand(g:myvimdir.'/plugin/'.name.'.vim')
-    if filereadable(path_to_plugin)
+    let path_to_plugin = expand(g:myvimdir.'/plugin/'.name)
+    if filereadable(path_to_plugin.'.vim')
       echo 'Found config for ' . name
-      exec 'split ' . fnameescape(path_to_plugin)
+      exec 'edit ' . fnameescape(path_to_plugin.'.vim')
+    elseif filereadable(path_to_plugin.'.lua')
+      echo 'Found config for ' . name
+      exec 'edit ' . fnameescape(path_to_plugin.'.lua')
     else
       let msg = 'No plugin config found. Would you like to create one?'
-      let choice = confirm(msg,"&yes\n/&No",2)
-      if choice == 1
+      let choice1 = confirm(msg,"&No\n&yes",1)
+      if choice1 == 2
+        let choice2 = confirm('',"&Vim\nor &lua",1)
+        let ftype = choice2 == 1 ? '.vim' : '.lua'
         redraw
         echo 'Editing local config for ' . name
-        exec 'split ' . fnameescape(path_to_plugin)
+        exec 'edit ' . fnameescape(path_to_plugin.ftype)
       endif
     endif
   endif
