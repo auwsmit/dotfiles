@@ -29,12 +29,14 @@ call plug#begin()
 
 Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
 Plug 'tpope/vim-fugitive'   " vim + git integration
-Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
-Plug 'preservim/nerdtree'   " file tree viewer
-Plug 'justinmk/vim-dirvish' " minimal file explorer
 Plug 'yegappan/mru'         " most recent file list
+Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
+Plug 'justinmk/vim-dirvish' " minimal file explorer
+Plug 'preservim/nerdtree',  " file tree viewer
+      \ { 'on': ['NERDTreeToggle', 'NERDTreeFind', 'NERDTree'] }
+Plug 'junegunn/fzf',        " general fuzzy finder
+      \ { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'     " fzf + vim integration
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
 Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
 if has('nvim')
@@ -51,7 +53,8 @@ if has('nvim')
   Plug 'nvim-lua/plenary.nvim'
   Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
 endif
-Plug 'auwsmit/vim-spear'
+" Plug 'auwsmit/vim-spear'
+Plug 'Y:\Git\vim-spear'
 
 " }}}
 " OPERATOR PLUGINS {{{
@@ -383,6 +386,10 @@ nnoremap p p`]
 " visually select the last change or yank
 nnoremap gp `[v`]
 
+" move visual selections around without yank/paste
+xnoremap <silent> <Up>   :move-2<CR>gv=gv
+xnoremap <silent> <Down> :move'>+<CR>gv=gv
+
 " i_CTRL-[ finger slip
 inoremap <c-]> <esc>
 
@@ -594,6 +601,21 @@ cnoremap :: <c-r>=fnameescape(expand('%:p:h'))<cr>/
 cnoremap <expr>  <tab>    getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
 cnoremap <expr>  <s-tab>  getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
 
+" automatically create undo breaks in insert mode {{{
+" it's better to just build the habit of exiting and entering
+" insert mode in small chunks, but still gonna try this out.
+fun! s:SetupInsertUndoBreaks()
+  inoremap <buffer> . .<C-g>u
+  inoremap <buffer> , ,<C-g>u
+  inoremap <buffer> ! !<C-g>u
+  inoremap <buffer> ? ?<C-g>u
+endfun
+augroup auto_insert_undo_breaks
+  au!
+  au FileType txt,markdown call <sid>SetupInsertUndoBreaks()
+augroup END
+"}}}
+
 " sane terminal escape
 if has('nvim')
   tnoremap <esc> <c-\><c-n>
@@ -611,7 +633,7 @@ nnoremap <space> <nop>
 xnoremap <space> <nop>
 
 " shortcuts
-nnoremap <space>v :edit $MYVIMRC<cr>
+nnoremap <silent><space>v :exec 'edit '.resolve($MYVIMRC)<cr>
 nnoremap <space>s :write<cr>
 nnoremap <space>o <c-w>o
 nnoremap <space>c <c-w>c
@@ -633,29 +655,8 @@ endfunction
 nnoremap <space>H :help <c-r><c-w>
 xnoremap <space>H :<c-u>help <c-r>=<sid>VisualSelection()<cr>
 
-" to previous window {{{
-" (or next window, if prev is gone)
-let g:win_tracker = 0
-augroup vimrc_prev_window
-  au!
-  au WinEnter * let w:prev_window = g:win_tracker
-  au WinLeave * let g:win_tracker = winnr()
-augroup END
-fun! s:BetterLastWindow() abort
-  let l:lastwin = winnr()
-  wincmd p
-  if l:lastwin == winnr()
-    if exists('w:prev_window')
-      if winheight(w:prev_window) > -1
-        silent! exec w:prev_window.' wincmd w'
-      endif
-    endif
-    if l:lastwin == winnr()
-      wincmd w
-    endif
-  endif
-endfun " }}}
-nnoremap <silent> <space><tab> :call <sid>BetterLastWindow()<cr>
+" better CTRL-W_p (if previous window is gone, move to next window)
+nnoremap <silent> <space><tab> <c-w>p:if winnr() == winnr('#')<cr>wincmd w<cr>endif<cr>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches
