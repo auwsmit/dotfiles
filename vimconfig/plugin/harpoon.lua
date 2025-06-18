@@ -5,9 +5,9 @@ harpoon:setup()
 -- REQUIRED
 
 -- add
-vim.keymap.set("n", "<space>A", function() harpoon:list():add() end)
+vim.keymap.set("n", "<space>a", function() harpoon:list():add() end)
 -- m for marks.. because they're like marks
-vim.keymap.set("n", "<space>m", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+vim.keymap.set("n", "<c-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
 
 vim.keymap.set("n", "<C-1>", function() harpoon:list():select(1) end)
 vim.keymap.set("n", "<C-2>", function() harpoon:list():select(2) end)

@@ -5,7 +5,7 @@ let g:lightline = {
       \ 'colorscheme': 'mycustom',
       \ 'active': {
       \   'left': [ ['mode', 'paste'],
-      \             ['fugitive', 'gitbranch', 'filename'] ],
+      \             ['gitbranch', 'filename'] ],
       \   'right': [ ['percent', 'lineinfo'],
       \              ['fileformat', 'fileencoding', 'filetype'] ]
       \ },
@@ -22,7 +22,6 @@ let g:lightline = {
       \ },
       \ 'component_function': {
       \   'gitbranch': 'FugitiveHead',
-      \   'fugitive': 'LightLineFugitive',
       \   'fileformat': 'LightLineFileformat',
       \   'filetype': 'LightLineFiletype',
       \   'fileencoding': 'LightLineFileencoding',
@@ -60,18 +59,6 @@ fun! LightLineFilename(active)
         \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
         \ ('' != fname ? fname : '[No Name]') .
         \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
-endfun
-
-fun! LightLineFugitive()
-  try
-    if expand('%:t') !~? 'Tagbar' && &ft !~? 'vimfiler' && exists('*fugitive#head')
-      let mark = 'β ' " βranch, with a B
-      let _ = fugitive#head()
-      return strlen(_) ? mark._ : ''
-    endif
-  catch
-  endtry
-  return ''
 endfun
 
 fun! LightLineFileformat()
