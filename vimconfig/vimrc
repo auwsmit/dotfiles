@@ -30,6 +30,7 @@ call plug#begin()
 Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
 Plug 'tpope/vim-fugitive'   " vim + git integration
 Plug 'yegappan/mru'         " most recent file list
+" Plug 'Y:\Git\mru'           " most recent file list
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
 Plug 'justinmk/vim-dirvish' " minimal file explorer
 Plug 'preservim/nerdtree',  " file tree viewer
@@ -186,17 +187,20 @@ set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX garbage
 
 " backups, swapfiles, & undofiles in one place
-let s:tempdir=expand(g:myvimdir .(has('nvim') ? '/neotmp' : '/tmp'))
-if !isdirectory(expand(s:tempdir))
-  call mkdir(expand(s:tempdir), 'p')
+let s:tempdir=expand(g:myvimdir .(has('nvim') ? '/neotmp/' : '/tmp/'))
+if !isdirectory(s:tempdir)
+  call mkdir(s:tempdir, 'p')
+  call mkdir(s:tempdir.'backup', 'p')
+  call mkdir(s:tempdir.'swap', 'p')
+  call mkdir(s:tempdir.'undo', 'p')
 endif
 set backup
-let &backupdir=s:tempdir . '//'
+let &backupdir=s:tempdir .'backup//'
 set swapfile
-let &directory=s:tempdir . '//'
+let &directory=s:tempdir .'swap//'
 if has('persistent_undo')
   set undofile
-  let &undodir=s:tempdir . '//'
+  let &undodir=s:tempdir .'undo//'
 endif
 
 if s:is_windows && executable('grep')
@@ -233,6 +237,7 @@ set laststatus=2
 set linebreak
 set list
 set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
+set cursorline
 set number relativenumber
 set numberwidth=1
 set ruler
@@ -462,11 +467,15 @@ inoremap {;<tab> {<cr>};<esc>O
 " change directories (minor time saver)
 nnoremap cd :cd<space>
 
+" have some standards
+nnoremap <c-s> :write<cr>
+nnoremap <c-s-Q> :qall<cr>
+
 " quickly manage buffers
 fun! s:buflist_proper_esc()
   " otherwise you need to press esc twice
-  cnoremap <silent><buffer> <esc> <esc><esc>:call <sid>buflist_remove_maps()<cr>
-  cnoremap <silent><buffer> <c-g> <esc><esc>:call <sid>buflist_remove_maps()<cr>
+  cnoremap <silent><buffer> <esc> <c-u><esc><esc>:call <sid>buflist_remove_maps()<cr>
+  cnoremap <silent><buffer> <c-g> <c-u><esc><esc>:call <sid>buflist_remove_maps()<cr>
   cnoremap <silent><buffer> <cr> <cr>:call <sid>buflist_remove_maps()<cr>
 endfun
 fun! s:buflist_remove_maps()
@@ -536,6 +545,7 @@ fun! s:SourceVimscript(type) abort
   let @" = substitute(@", '\n\s*\\', '', 'g')
   " source the content
   @"
+  if (g:syntax_on) | syntax on | endif
   let &selection = sel_save
   let @" = reg_save
 endfun
@@ -622,6 +632,11 @@ if has('nvim')
   tnoremap <c-[> <c-\><c-n>
   tnoremap <c-]> <c-\><c-n>
   tnoremap <c-g> <c-\><c-n>
+elseif has('terminal')
+  tnoremap <esc> <c-w>N
+  tnoremap <c-[> <c-w>N
+  tnoremap <c-]> <c-w>N
+  tnoremap <c-g> <c-w>N
 endif
 
 " }}}
@@ -634,7 +649,6 @@ xnoremap <space> <nop>
 
 " shortcuts
 nnoremap <silent><space>v :exec 'edit '.resolve($MYVIMRC)<cr>
-nnoremap <space>s :write<cr>
 nnoremap <space>o <c-w>o
 nnoremap <space>c <c-w>c
 nnoremap <space>w <c-w>
@@ -772,4 +786,5 @@ endfor
 cabbrev ctw s/\s\+$//e
 
 " }}}
+
 
