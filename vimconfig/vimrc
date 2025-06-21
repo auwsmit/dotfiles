@@ -677,16 +677,8 @@ if maparg('<space><space>','n') == ''
 endif
 
 " help under the cursor
-function! s:VisualSelection() abort
-  let [l1, c1] = getpos("'<")[1:2]
-  let [l2, c2] = getpos("'>")[1:2]
-  if l1 == l2
-    return getline(l1)[c1 - 1 : c2 - 1]
-  endif
-  return ''
-endfunction
 nnoremap <space>H :help <C-r><C-w>
-xnoremap <space>H :<C-u>help <C-r>=<sid>VisualSelection()<cr>
+xnoremap <space>H :<C-u>help <C-r>=getline('.')[col("'<")-1:col("'>")-1]<cr>
 
 fun! s:GotoPreviousWindow()
   let cur_win = winnr()
