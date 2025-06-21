@@ -41,16 +41,6 @@ Plug 'junegunn/fzf.vim'     " fzf + vim integration
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
 Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
 if has('nvim')
-  " trying my first neovim lua plugin.
-  " TODO recreate a simple version in ye olde vimscript {{{
-  " - basically marks on steroids
-  " - only for files not line positions
-  " - remembers last location while bookmarked
-  " - opens toggleable window to view bookmarks
-  " - bookmarks are grouped by current working directory
-  " - hotkeys for add and remove bookmark
-  " - hot keys for quick access, maybe integrate with peekaboo
-  " }}}
   Plug 'nvim-lua/plenary.nvim'
   Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
 endif
@@ -81,6 +71,8 @@ Plug 'junegunn/vim-after-object'
 
 Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
 Plug 'justinmk/vim-ipmotion'     " { } move over folds
+" TODO: fuse these three into one personal search plugin
+Plug 'romainl/vim-cool'          " auto-clear search highlight
 Plug 'junegunn/vim-slash'        " improved search
 Plug 'henrik/vim-indexed-search' " show total results (works on older versions of vim)
 
@@ -88,7 +80,6 @@ Plug 'henrik/vim-indexed-search' " show total results (works on older versions o
 " SNIPPET/COMPLETION PLUGINS {{{
 
 Plug 'ervandew/supertab'  " tab autocomplete
-Plug 'tpope/vim-endwise', " auto-create end of certain keywords (if->endif)
 if s:has_python
   Plug 'SirVer/UltiSnips' " snippets manager
 endif
@@ -96,8 +87,12 @@ endif
 " }}}
 " FORMAT/SYNTAX PLUGINS {{{
 
+Plug 'nicwest/vim-camelsnek'
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
-Plug 'junegunn/vim-easy-align',   { 'on': ['<plug>(EasyAlign)', 'EasyAlign'] } " align text operator
+Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } " align text operator
+if has('nvim')
+  Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+endif
 
 " " }}}
 " APPEARANCE/UI PLUGINS {{{
@@ -313,17 +308,17 @@ augroup END
 " (more specifically, remaps of *important* defaults)
 
 " go back to last buffer
-nnoremap <backspace> <c-^>
+nnoremap <Backspace> <C-^>
 
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
 nnoremap Y y$
 
 " U as a more sensible redo
-nnoremap U <c-r>
+nnoremap U <C-r>
 
 " classic
-nnoremap <c-z> u
+nnoremap <C-z> u
 
 " Q to replay the q register
 " I have never wanted to use Ex mode.
@@ -338,15 +333,21 @@ fun! s:SplitLine()
   normal! $
 endfun
 " works with tpope's repeat.vim
-nnoremap <silent> <plug>(MySplitLine) :call <sid>SplitLine()<cr>
-      \ :silent! call repeat#set("\<plug>(MySplitLine)", v:count)<cr>
+nnoremap <silent> <Plug>(MySplitLine) :call <sid>SplitLine()<cr>
+      \ :silent! call repeat#set("\<Plug>(MySplitLine)", v:count)<cr>
 " }}}
-nmap S <plug>(MySplitLine)
+nmap S <Plug>(MySplitLine)
+
+" center page scrolling
+nnoremap <silent> <C-u> <C-u>zz
+nnoremap <silent> <C-d> <C-d>zz
+nnoremap <silent> <C-f> <C-f>zz
+nnoremap <silent> <C-b> <C-b>zz
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
-nnoremap <silent> <c-p> <c-o>
-nnoremap <silent> <c-n> <c-i>
+nnoremap <silent> <C-p> <C-o>
+nnoremap <silent> <C-n> <C-i>
 
 " fold traversal {{{
 fun! s:FoldedMoveToStart()
@@ -356,10 +357,10 @@ fun! s:FoldedMoveToStart()
   endif
 endfun
 " }}}
-nnoremap <silent><c-k> zk:call <sid>FoldedMoveToStart()<cr>zz
-nnoremap <c-j> zjzz
-nnoremap <c-h> zc
-nnoremap <c-l> zo
+nnoremap <silent><C-k> zk:call <sid>FoldedMoveToStart()<cr>zz
+nnoremap <C-j> zjzz
+nnoremap <C-h> zc
+nnoremap <C-l> zo
 
 " org-style fold viewing
 " TODO: make functions that are more accurate
@@ -367,14 +368,14 @@ nnoremap <tab> za
 nnoremap <s-tab> zM
 
 " open current file's directory
-nnoremap - :e <c-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
+nnoremap - :e <C-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
 
 " open current working directory
 nnoremap + :e .<cr>
 
 " | and _ for split windows
-nnoremap <expr><silent> \| !v:count ? "<c-w>v<c-w><right>" : '\|'
-nnoremap <expr><silent> _  !v:count ? "<c-w>s<c-w><down>"  : '_'
+nnoremap <expr><silent> \| !v:count ? "<C-w>v<C-w><right>" : '\|'
+nnoremap <expr><silent> _  !v:count ? "<C-w>s<C-w><down>"  : '_'
 
 " move by wrapped lines instead of line numbers, unless the motion is counted
 " also set a mark for movements across 5 lines or more
@@ -395,16 +396,33 @@ nnoremap gp `[v`]
 xnoremap <silent> <Up>   :move-2<CR>gv=gv
 xnoremap <silent> <Down> :move'>+<CR>gv=gv
 
+" no accidental command window (q:) {{{
+" explanation: using 'nnoremap q: <nop>' gives my
+" 'q to quit' map a slight pause, so this is a roundabout
+" way of disabling q: without using any map commands
+"
+" zee history and commands, oui oui
+nnoremap z: :let g:cmdwinmap=1<cr>q:
+nnoremap z/ :let g:cmdwinmap=1<cr>q/
+
+augroup vimrc_cmdwin_map
+  au!
+  let g:cmdwinmap = 0
+  au CmdwinLeave * let g:cmdwinmap = 0
+  au CmdwinEnter * exec expand(g:cmdwinmap ? '' : 'quit')
+augroup END
+" }}}
+
 " i_CTRL-[ finger slip
-inoremap <c-]> <esc>
+inoremap <C-]> <esc>
 
 " edit or create plugin config {{{
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
 fun! s:GotoPluginConfig()
   if getline('.') =~ "Plug '.*'"
-    " this pattern matches whatever is within the
-    " single quotes, and after the first slash
-    let pattern = "Plug.*'[^']*/\\zs[^']*\\ze'"
+    " this pattern matches whatever is after the
+    " last slash in single quotes on a Plug line
+    let pattern = "Plug.*'[^']*[\\/]\\zs[^']*\\ze'"
     let name = matchstr(getline('.'), pattern)
     let path_to_plugin = expand(g:myvimdir.'/plugin/'.name)
     if filereadable(path_to_plugin.'.vim')
@@ -446,19 +464,18 @@ augroup END
 " :help works fine, thanks
 noremap <f1> <nop>
 inoremap <f1> <nop>
-
 " Emacs blasphemy
-inoremap <c-g> <esc>
-cnoremap <c-g> <c-c>
-xnoremap <c-g> <esc>
+inoremap <C-g> <esc>
+cnoremap <C-g> <C-c>
+xnoremap <C-g> <esc>
 
 " don't run commands without my consent
-cnoremap <esc> <c-c>
-cnoremap <esc> <c-c>
+cnoremap <esc> <C-c>
+cnoremap <esc> <C-c>
 
 " from tpope's rsi
-inoremap <c-a> <c-o>^
-inoremap <expr> <c-e> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<lt>C-E>":"\<lt>End>"
+inoremap <C-a> <C-o>^
+inoremap <expr> <C-e> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<lt>C-E>":"\<lt>End>"
 
 " expand-o-brackets
 inoremap {<tab> {<cr>}<esc>O
@@ -467,34 +484,33 @@ inoremap {;<tab> {<cr>};<esc>O
 " change directories (minor time saver)
 nnoremap cd :cd<space>
 
-" have some standards
-nnoremap <c-s> :write<cr>
-nnoremap <c-s-Q> :qall<cr>
+" alt quit
+nnoremap <C-s-Q> :qall<cr>
 
 " quickly manage buffers
 fun! s:buflist_proper_esc()
   " otherwise you need to press esc twice
-  cnoremap <silent><buffer> <esc> <c-u><esc><esc>:call <sid>buflist_remove_maps()<cr>
-  cnoremap <silent><buffer> <c-g> <c-u><esc><esc>:call <sid>buflist_remove_maps()<cr>
-  cnoremap <silent><buffer> <cr> <cr>:call <sid>buflist_remove_maps()<cr>
+  cnoremap <silent> <buffer> <esc> <C-u><esc><esc>:call <sid>buflist_remove_maps()<cr>
+  cnoremap <silent> <buffer> <C-g> <C-u><esc><esc>:call <sid>buflist_remove_maps()<cr>
+  cnoremap <silent> <buffer> <cr> <cr>:call <sid>buflist_remove_maps()<cr>
 endfun
 fun! s:buflist_remove_maps()
   silent! cunmap <buffer> <esc>
-  silent! cunmap <buffer> <c-g>
+  silent! cunmap <buffer> <C-g>
   silent! cunmap <buffer> <cr>
 endfun
 nnoremap gb :call <sid>buflist_proper_esc()<cr>:ls<cr>:b<space>
 nnoremap gB :call <sid>buflist_proper_esc()<cr>:ls!<cr>:b<space>
 
 " resizing windows
-noremap <c-left>  5<c-w><
-noremap <c-up>    5<c-w>+
-noremap <c-down>  5<c-w>-
-noremap <c-right> 5<c-w>>
-noremap <s-left>  <c-w><
-noremap <s-up>    <c-w>+
-noremap <s-down>  <c-w>-
-noremap <s-right> <c-w>>
+noremap <C-left>  5<C-w><
+noremap <C-up>    5<C-w>+
+noremap <C-down>  5<C-w>-
+noremap <C-right> 5<C-w>>
+noremap <s-left>  <C-w><
+noremap <s-up>    <C-w>+
+noremap <s-down>  <C-w>-
+noremap <s-right> <C-w>>
 
 " unimpaired.vim inspired
 " toggle centering the cursor
@@ -518,7 +534,7 @@ fun! s:helpmaps() abort
     nnoremap <buffer> q :bd<cr>
     nnoremap <silent><buffer> <tab> :call search("\|\\S\\+\|")<cr>
     nnoremap <silent><buffer> <s-tab> :call search("\|\\S\\+\|",'b')<cr>
-    nnoremap <buffer> <cr> <c-]>
+    nnoremap <buffer> <cr> <C-]>
   endif
 endfun
 augroup improved_help_maps
@@ -551,7 +567,7 @@ fun! s:SourceVimscript(type) abort
 endfun
 " }}}
 nnoremap <silent> g: :set opfunc=<sid>SourceVimscript<cr>g@
-xnoremap <silent> g: :<c-u>call <sid>SourceVimscript("visual")<cr>
+xnoremap <silent> g: :<C-u>call <sid>SourceVimscript("visual")<cr>
 nnoremap <silent> g:: :call <sid>SourceVimscript("currentline")<cr>
 
 " Delete & Replace operator {{{
@@ -580,7 +596,7 @@ func! s:replace_without_yank(type) abort
   if a:type ==? 'line' || replace_curlin
     exec "keepjumps normal! '[V']\"".s:rr_reg."p"
   elseif a:type ==? 'block'
-    exec "keepjumps normal! `[\<c-v>`]\"".s:rr_reg."p"
+    exec "keepjumps normal! `[\<C-v>`]\"".s:rr_reg."p"
   elseif a:type == 'visual'
     exec "keepjumps normal! gv\"".s:rr_reg."p"
   else
@@ -598,18 +614,18 @@ func! s:replace_without_yank(type) abort
 endf
 
 " }}}
-nnoremap <silent> dr  :<c-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<cr>g@
-nnoremap <silent> drr :<c-u>call <sid>set_reg(v:register)<cr>0:<c-u>set opfunc=<sid>replace_without_yank<cr>g@$
-xnoremap <silent> R :<c-u>call <sid>set_reg(v:register)<bar>call <sid>replace_without_yank('visual')<cr>
+nnoremap <silent> dr  :<C-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<cr>g@
+nnoremap <silent> drr :<C-u>call <sid>set_reg(v:register)<cr>0:<C-u>set opfunc=<sid>replace_without_yank<cr>g@$
+xnoremap <silent> R :<C-u>call <sid>set_reg(v:register)<bar>call <sid>replace_without_yank('visual')<cr>
 
 " %% expands to current buffer file name
 " :: expands to current buffer file path
-cnoremap %% <c-r>=fnameescape(expand('%'))<cr>
-cnoremap :: <c-r>=fnameescape(expand('%:p:h'))<cr>/
+cnoremap %% <C-r>=fnameescape(expand('%'))<cr>
+cnoremap :: <C-r>=fnameescape(expand('%:p:h'))<cr>/
 
 " browse search results while searching with tab/s-tab
-cnoremap <expr>  <tab>    getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
-cnoremap <expr>  <s-tab>  getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
+cnoremap <expr>  <tab>    getcmdtype() =~ '[?/]' ? '<C-g>' : feedkeys('<tab>', 'int')[1]
+cnoremap <expr>  <s-tab>  getcmdtype() =~ '[?/]' ? '<C-t>' : feedkeys('<s-tab>', 'int')[1]
 
 " automatically create undo breaks in insert mode {{{
 " it's better to just build the habit of exiting and entering
@@ -628,20 +644,23 @@ augroup END
 
 " sane terminal escape
 if has('nvim')
-  tnoremap <esc> <c-\><c-n>
-  tnoremap <c-[> <c-\><c-n>
-  tnoremap <c-]> <c-\><c-n>
-  tnoremap <c-g> <c-\><c-n>
+  tnoremap <esc> <C-\><C-n>
+  tnoremap <C-[> <C-\><C-n>
+  tnoremap <C-]> <C-\><C-n>
+  tnoremap <C-g> <C-\><C-n>
 elseif has('terminal')
-  tnoremap <esc> <c-w>N
-  tnoremap <c-[> <c-w>N
-  tnoremap <c-]> <c-w>N
-  tnoremap <c-g> <c-w>N
+  tnoremap <esc> <C-w>N
+  tnoremap <C-[> <C-w>N
+  tnoremap <C-]> <C-w>N
+  tnoremap <C-g> <C-w>N
 endif
 
 " }}}
 " LEADER MAPS {{{
 " space is my leader
+
+" lemme hold shift for capital leader maps
+map <s-space> <space>
 
 " don't move my cursor plz
 nnoremap <space> <nop>
@@ -649,9 +668,9 @@ xnoremap <space> <nop>
 
 " shortcuts
 nnoremap <silent><space>v :exec 'edit '.resolve($MYVIMRC)<cr>
-nnoremap <space>o <c-w>o
-nnoremap <space>c <c-w>c
-nnoremap <space>w <c-w>
+nnoremap <space>o <C-w>o
+nnoremap <space>c <C-w>c
+nnoremap <space>w <C-w>
 nnoremap <space>; :
 if maparg('<space><space>','n') == ''
   nnoremap <space><space> :
@@ -666,32 +685,22 @@ function! s:VisualSelection() abort
   endif
   return ''
 endfunction
-nnoremap <space>H :help <c-r><c-w>
-xnoremap <space>H :<c-u>help <c-r>=<sid>VisualSelection()<cr>
+nnoremap <space>H :help <C-r><C-w>
+xnoremap <space>H :<C-u>help <C-r>=<sid>VisualSelection()<cr>
 
-" better CTRL-W_p (if previous window is gone, move to next window)
-nnoremap <silent> <space><tab> <c-w>p:if winnr() == winnr('#')<cr>wincmd w<cr>endif<cr>
+fun! s:GotoPreviousWindow()
+  let cur_win = winnr()
+  wincmd p
+  if winnr() == cur_win
+    wincmd w
+  endif
+endfun
+" reliable CTRL-W_p (if previous window is gone, move to next window)
+nnoremap <silent> <space><tab> :call <sid>GotoPreviousWindow()<cr>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches
 nnoremap <space>? :lvim //g %<cr>
-
-" no accidental command window (q:) {{{
-" explanation: using 'nnoremap q: <nop>' gives my
-" 'q to quit' map a slight pause, so this is a roundabout
-" way of disabling q: without using any map commands
-"
-" mnemonic is 'history command' and 'history search'
-nnoremap <space>h: :let g:cmdwinmap=1<cr>q:
-nnoremap <space>h/ :let g:cmdwinmap=1<cr>q/
-
-augroup vimrc_cmdwin_map
-  au!
-  let g:cmdwinmap = 0
-  au CmdwinLeave * let g:cmdwinmap = 0
-  au CmdwinEnter * exec expand(g:cmdwinmap ? '' : 'quit')
-augroup END
-" }}}
 
 " search for all numbers
 nnoremap <space>/# /\v\d+<cr>
@@ -764,12 +773,12 @@ command! -bar KillBuffers call <sid>DeleteAllBuffers()
 fun! s:DoubleView() abort
   let DV_so=&scrolloff
   set scrolloff=0 noscrollbind nowrap nofoldenable
-  exec "normal! m`\<c-b>"
+  exec "normal! m`\<C-b>"
   botright vsplit
   normal! Ljzt
   windo setl scrollbind
   let &scrolloff=DV_so
-  exec "normal! \<c-w>p``"
+  exec "normal! \<C-w>p``"
 endfun " }}}
 command! DoubleView call <sid>DoubleView()
 
@@ -777,9 +786,9 @@ command! DoubleView call <sid>DoubleView()
 let s:separators = exists('g:loaded_targets') ? [ '`', '%']
       \ : [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', '`' ]
 for char in s:separators
-  exec 'xnoremap i' . char . ' :<c-u>normal! T' . char . 'vt' . char . '<cr>'
+  exec 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<cr>'
   exec 'onoremap i' . char . ' :normal vi' . char . '<cr>'
-  exec 'xnoremap a' . char . ' :<c-u>normal! F' . char . 'vf' . char . '<cr>'
+  exec 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<cr>'
   exec 'onoremap a' . char . ' :normal va' . char . '<cr>'
 endfor
 " Clear Trailing White spaces
