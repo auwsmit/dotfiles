@@ -317,9 +317,6 @@ nnoremap Y y$
 " U as a more sensible redo
 nnoremap U <C-r>
 
-" classic
-nnoremap <C-z> u
-
 " Q to replay the q register
 " I have never wanted to use Ex mode.
 nnoremap Q @q
@@ -346,8 +343,8 @@ nnoremap <silent> <C-b> <C-b>zz
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
-nnoremap <silent> <C-p> <C-o>zz
-nnoremap <silent> <C-n> <C-i>zz
+nnoremap <silent> <C-p> <C-o>
+nnoremap <silent> <C-n> <C-i>
 
 " org-style fold viewing
 " TODO: make functions that are more accurate
