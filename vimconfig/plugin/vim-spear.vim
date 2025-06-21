@@ -5,15 +5,15 @@ let g:spear_save_on_change = 0
 let g:spear_next_prev_cycle = 1
 let g:spear_convert_backslashes = 0
 
-nnoremap <silent> <space>A :call spear#add_file()<cr>
-nnoremap <silent> <space>X :call spear#remove_file()<cr>
-nnoremap <silent> <c-s>    :call spear#toggle_menu()<cr>
-nnoremap <silent> <c-h>    :call spear#open_file(1)<cr>
-nnoremap <silent> <c-j>    :call spear#open_file(2)<cr>
-nnoremap <silent> <c-k>    :call spear#open_file(3)<cr>
-nnoremap <silent> <c-l>    :call spear#open_file(4)<cr>
-nnoremap <silent> <c-.>    :call spear#next_prev_file('next')<cr>
-nnoremap <silent> <c-,>    :call spear#next_prev_file('prev')<cr>
+nnoremap <silent> <Space>A :call spear#add_file()<CR>
+nnoremap <silent> <Space>X :call spear#remove_file()<CR>
+nnoremap <silent> <C-s>    :call spear#toggle_menu()<CR>
+nnoremap <silent> <C-h>    :call spear#open_file(1)<CR>
+nnoremap <silent> <C-j>    :call spear#open_file(2)<CR>
+nnoremap <silent> <C-k>    :call spear#open_file(3)<CR>
+nnoremap <silent> <C-l>    :call spear#open_file(4)<CR>
+nnoremap <silent> <M-.>    :call spear#next_prev_file('next')<CR>
+nnoremap <silent> <M-,>    :call spear#next_prev_file('prev')<CR>
 
 " let g:spear_create_commands = 1
 " " all neatly around home row
