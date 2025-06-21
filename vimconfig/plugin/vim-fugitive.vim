@@ -14,5 +14,5 @@ endfun
 
 augroup config_Fugitive
   au!
-  au FileType fugitive,git call s:fugitive_maps()
+  au FileType fugitive,git,gitcommit call s:fugitive_maps()
 augroup END
