@@ -4,7 +4,7 @@
 # === VARIABLES ==================
 
 # YOUR USERNAME GOES HERE:
-username=aws
+username=root
 # (if you don't know, run whoami in the terminal)
 
 # Any of your previous config files will be found here.
