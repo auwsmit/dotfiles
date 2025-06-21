@@ -308,7 +308,7 @@ augroup END
 " (more specifically, remaps of *important* defaults)
 
 " go back to last buffer
-nnoremap <Backspace> <C-^>
+nnoremap <BackSpace> <C-^>
 
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
@@ -326,15 +326,15 @@ nnoremap Q @q
 
 " Split line (opposite of J) {{{
 fun! s:SplitLine()
-  exec "normal! i\<cr>\<esc>^gk"
+  exec "normal! i\<CR>\<Esc>^gk"
   silent! substitute/\v +$//
   silent! nohlsearch
   call histdel("search", -1)
   normal! $
 endfun
 " works with tpope's repeat.vim
-nnoremap <silent> <Plug>(MySplitLine) :call <sid>SplitLine()<cr>
-      \ :silent! call repeat#set("\<Plug>(MySplitLine)", v:count)<cr>
+nnoremap <silent> <Plug>(MySplitLine) :call <SID>SplitLine()<CR>
+      \ :silent! call repeat#set("\<Plug>(MySplitLine)", v:count)<CR>
 " }}}
 nmap S <Plug>(MySplitLine)
 
@@ -346,32 +346,19 @@ nnoremap <silent> <C-b> <C-b>zz
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
-nnoremap <silent> <C-p> <C-o>
-nnoremap <silent> <C-n> <C-i>
-
-" fold traversal {{{
-fun! s:FoldedMoveToStart()
-  if foldclosed('.') != -1 " fold is closed
-    " make sure that folds open from the start
-    norm! zo[zzc
-  endif
-endfun
-" }}}
-nnoremap <silent><C-k> zk:call <sid>FoldedMoveToStart()<cr>zz
-nnoremap <C-j> zjzz
-nnoremap <C-h> zc
-nnoremap <C-l> zo
+nnoremap <silent> <C-p> <C-o>zz
+nnoremap <silent> <C-n> <C-i>zz
 
 " org-style fold viewing
 " TODO: make functions that are more accurate
-nnoremap <tab> za
-nnoremap <s-tab> zM
+nnoremap <Tab> za
+nnoremap <S-Tab> zM
 
 " open current file's directory
-nnoremap - :e <C-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
+nnoremap - :e <C-r>=fnameescape(expand('%:p:h'))<CR>/<CR>
 
 " open current working directory
-nnoremap + :e .<cr>
+nnoremap + :e .<CR>
 
 " | and _ for split windows
 nnoremap <expr><silent> \| !v:count ? "<C-w>v<C-w><right>" : '\|'
@@ -397,13 +384,13 @@ xnoremap <silent> <Up>   :move-2<CR>gv=gv
 xnoremap <silent> <Down> :move'>+<CR>gv=gv
 
 " no accidental command window (q:) {{{
-" explanation: using 'nnoremap q: <nop>' gives my
+" explanation: using 'nnoremap q: <Nop>' gives my
 " 'q to quit' map a slight pause, so this is a roundabout
 " way of disabling q: without using any map commands
 "
-" zee history and commands, oui oui
-nnoremap z: :let g:cmdwinmap=1<cr>q:
-nnoremap z/ :let g:cmdwinmap=1<cr>q/
+" zee history and zee commands, oui oui
+nnoremap z: :let g:cmdwinmap=1<CR>q:
+nnoremap z/ :let g:cmdwinmap=1<CR>q/
 
 augroup vimrc_cmdwin_map
   au!
@@ -414,7 +401,7 @@ augroup END
 " }}}
 
 " i_CTRL-[ finger slip
-inoremap <C-]> <esc>
+inoremap <C-]> <Esc>
 
 " edit or create plugin config {{{
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
@@ -448,73 +435,73 @@ endfun
 fun! s:PluginConfigMapper()
   let current_file = expand('%:t')
   if current_file == 'init.vim' || current_file == 'vimrc'
-    nnoremap <silent><buffer> <cr> :call <sid>GotoPluginConfig()<cr>
+    nnoremap <silent><buffer> <CR> :call <SID>GotoPluginConfig()<CR>
   endif
 endfun
 
 " }}}
 augroup vimrc_view_plugin_config
   au!
-  au FileType vim call <sid>PluginConfigMapper()
+  au FileType vim call <SID>PluginConfigMapper()
 augroup END
 
 " }}}
 " STANDARD MAPS {{{
 
 " :help works fine, thanks
-noremap <f1> <nop>
-inoremap <f1> <nop>
+noremap <f1> <Nop>
+inoremap <f1> <Nop>
 " Emacs blasphemy
-inoremap <C-g> <esc>
+inoremap <C-g> <Esc>
 cnoremap <C-g> <C-c>
-xnoremap <C-g> <esc>
+xnoremap <C-g> <Esc>
 
 " don't run commands without my consent
-cnoremap <esc> <C-c>
-cnoremap <esc> <C-c>
+cnoremap <Esc> <C-c>
+cnoremap <Esc> <C-c>
 
 " from tpope's rsi
 inoremap <C-a> <C-o>^
-inoremap <expr> <C-e> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<lt>C-E>":"\<lt>End>"
+inoremap <expr> <C-e> col('.')>strlen(getline('.'))<Bar><Bar>pumvisible()?"\<lt>C-E>":"\<lt>End>"
 
 " expand-o-brackets
-inoremap {<tab> {<cr>}<esc>O
-inoremap {;<tab> {<cr>};<esc>O
+inoremap {<Tab> {<CR>}<Esc>O
+inoremap {;<Tab> {<CR>};<Esc>O
 
 " change directories (minor time saver)
-nnoremap cd :cd<space>
+nnoremap cd :cd<Space>
 
 " alt quit
-nnoremap <C-s-Q> :qall<cr>
+nnoremap <C-s-Q> :qall<CR>
 
 " quickly manage buffers
 fun! s:buflist_proper_esc()
   " otherwise you need to press esc twice
-  cnoremap <silent> <buffer> <esc> <C-u><esc><esc>:call <sid>buflist_remove_maps()<cr>
-  cnoremap <silent> <buffer> <C-g> <C-u><esc><esc>:call <sid>buflist_remove_maps()<cr>
-  cnoremap <silent> <buffer> <cr> <cr>:call <sid>buflist_remove_maps()<cr>
+  cnoremap <silent> <buffer> <Esc> <C-u><Esc><Esc>:call <SID>buflist_remove_maps()<CR>
+  cnoremap <silent> <buffer> <C-g> <C-u><Esc><Esc>:call <SID>buflist_remove_maps()<CR>
+  cnoremap <silent> <buffer> <CR> <CR>:call <SID>buflist_remove_maps()<CR>
 endfun
 fun! s:buflist_remove_maps()
-  silent! cunmap <buffer> <esc>
+  silent! cunmap <buffer> <Esc>
   silent! cunmap <buffer> <C-g>
-  silent! cunmap <buffer> <cr>
+  silent! cunmap <buffer> <CR>
 endfun
-nnoremap gb :call <sid>buflist_proper_esc()<cr>:ls<cr>:b<space>
-nnoremap gB :call <sid>buflist_proper_esc()<cr>:ls!<cr>:b<space>
+nnoremap gb :call <SID>buflist_proper_esc()<CR>:ls<CR>:b<Space>
+nnoremap gB :call <SID>buflist_proper_esc()<CR>:ls!<CR>:b<Space>
 
 " resizing windows
 noremap <C-left>  5<C-w><
 noremap <C-up>    5<C-w>+
 noremap <C-down>  5<C-w>-
 noremap <C-right> 5<C-w>>
-noremap <s-left>  <C-w><
-noremap <s-up>    <C-w>+
-noremap <s-down>  <C-w>-
-noremap <s-right> <C-w>>
+noremap <S-left>  <C-w><
+noremap <S-up>    <C-w>+
+noremap <S-down>  <C-w>-
+noremap <S-right> <C-w>>
 
 " unimpaired.vim inspired
 " toggle centering the cursor
-nnoremap yoz :let &scrolloff=999-&scrolloff<cr>:set so?<cr>
+nnoremap yoz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>
 
 " toggle syntax highlighting {{{
 " useful when Vim is crippled by its inefficient highlighting
@@ -523,18 +510,18 @@ fun! s:ToggleSyntaxHighlighting() abort
   execute 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
   let &foldlevel=folds
 endfun
-command! ToggleSyntax call <sid>ToggleSyntaxHighlighting()
+command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
 " }}}
-nnoremap yoS :call <sid>ToggleSyntaxHighlighting()<cr>
+nnoremap yoS :call <SID>ToggleSyntaxHighlighting()<CR>
 
 " improved help mappings {{{
 " (q to quit from Junegunn's vimrc)
 fun! s:helpmaps() abort
   if &buftype == 'help'
-    nnoremap <buffer> q :bd<cr>
-    nnoremap <silent><buffer> <tab> :call search("\|\\S\\+\|")<cr>
-    nnoremap <silent><buffer> <s-tab> :call search("\|\\S\\+\|",'b')<cr>
-    nnoremap <buffer> <cr> <C-]>
+    nnoremap <buffer> q :bd<CR>
+    nnoremap <silent><buffer> <Tab> :call search("\|\\S\\+\|")<CR>
+    nnoremap <silent><buffer> <S-Tab> :call search("\|\\S\\+\|",'b')<CR>
+    nnoremap <buffer> <CR> <C-]>
   endif
 endfun
 augroup improved_help_maps
@@ -566,9 +553,9 @@ fun! s:SourceVimscript(type) abort
   let @" = reg_save
 endfun
 " }}}
-nnoremap <silent> g: :set opfunc=<sid>SourceVimscript<cr>g@
-xnoremap <silent> g: :<C-u>call <sid>SourceVimscript("visual")<cr>
-nnoremap <silent> g:: :call <sid>SourceVimscript("currentline")<cr>
+nnoremap <silent> g: :set opfunc=<SID>SourceVimscript<CR>g@
+xnoremap <silent> g: :<C-u>call <SID>SourceVimscript("visual")<CR>
+nnoremap <silent> g:: :call <SID>SourceVimscript("currentline")<CR>
 
 " Delete & Replace operator {{{
 " (credit to justinmk's init.vim)
@@ -614,18 +601,18 @@ func! s:replace_without_yank(type) abort
 endf
 
 " }}}
-nnoremap <silent> dr  :<C-u>call <sid>set_reg(v:register)<bar>set opfunc=<sid>replace_without_yank<cr>g@
-nnoremap <silent> drr :<C-u>call <sid>set_reg(v:register)<cr>0:<C-u>set opfunc=<sid>replace_without_yank<cr>g@$
-xnoremap <silent> R :<C-u>call <sid>set_reg(v:register)<bar>call <sid>replace_without_yank('visual')<cr>
+nnoremap <silent> dr  :<C-u>call <SID>set_reg(v:register)<Bar>set opfunc=<SID>replace_without_yank<CR>g@
+nnoremap <silent> drr :<C-u>call <SID>set_reg(v:register)<CR>0:<C-u>set opfunc=<SID>replace_without_yank<CR>g@$
+xnoremap <silent> R :<C-u>call <SID>set_reg(v:register)<Bar>call <SID>replace_without_yank('visual')<CR>
 
 " %% expands to current buffer file name
 " :: expands to current buffer file path
-cnoremap %% <C-r>=fnameescape(expand('%'))<cr>
-cnoremap :: <C-r>=fnameescape(expand('%:p:h'))<cr>/
+cnoremap %% <C-r>=fnameescape(expand('%'))<CR>
+cnoremap :: <C-r>=fnameescape(expand('%:p:h'))<CR>/
 
 " browse search results while searching with tab/s-tab
-cnoremap <expr>  <tab>    getcmdtype() =~ '[?/]' ? '<C-g>' : feedkeys('<tab>', 'int')[1]
-cnoremap <expr>  <s-tab>  getcmdtype() =~ '[?/]' ? '<C-t>' : feedkeys('<s-tab>', 'int')[1]
+cnoremap <expr>  <Tab>    getcmdtype() =~ '[?/]' ? '<C-g>' : feedkeys('<Tab>', 'int')[1]
+cnoremap <expr>  <S-Tab>  getcmdtype() =~ '[?/]' ? '<C-t>' : feedkeys('<S-Tab>', 'int')[1]
 
 " automatically create undo breaks in insert mode {{{
 " it's better to just build the habit of exiting and entering
@@ -638,18 +625,18 @@ fun! s:SetupInsertUndoBreaks()
 endfun
 augroup auto_insert_undo_breaks
   au!
-  au FileType txt,markdown call <sid>SetupInsertUndoBreaks()
+  au FileType txt,markdown call <SID>SetupInsertUndoBreaks()
 augroup END
 "}}}
 
 " sane terminal escape
 if has('nvim')
-  tnoremap <esc> <C-\><C-n>
+  tnoremap <Esc> <C-\><C-n>
   tnoremap <C-[> <C-\><C-n>
   tnoremap <C-]> <C-\><C-n>
   tnoremap <C-g> <C-\><C-n>
 elseif has('terminal')
-  tnoremap <esc> <C-w>N
+  tnoremap <Esc> <C-w>N
   tnoremap <C-[> <C-w>N
   tnoremap <C-]> <C-w>N
   tnoremap <C-g> <C-w>N
@@ -660,25 +647,26 @@ endif
 " space is my leader
 
 " lemme hold shift for capital leader maps
-map <s-space> <space>
+map <S-Space> <Space>
+map <S-Space><S-Space> <Space><Space>
 
 " don't move my cursor plz
-nnoremap <space> <nop>
-xnoremap <space> <nop>
+nnoremap <Space> <Nop>
+xnoremap <Space> <Nop>
 
 " shortcuts
-nnoremap <silent><space>v :exec 'edit '.resolve($MYVIMRC)<cr>
-nnoremap <space>o <C-w>o
-nnoremap <space>c <C-w>c
-nnoremap <space>w <C-w>
-nnoremap <space>; :
-if maparg('<space><space>','n') == ''
-  nnoremap <space><space> :
+nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
+nnoremap <Space>o <C-w>o
+nnoremap <Space>c <C-w>c
+nnoremap <Space>w <C-w>
+nnoremap <Space>; :
+if maparg('<Space><Space>','n') == ''
+  nnoremap <Space><Space> :
 endif
 
 " help under the cursor
-nnoremap <space>H :help <C-r><C-w>
-xnoremap <space>H :<C-u>help <C-r>=getline('.')[col("'<")-1:col("'>")-1]<cr>
+nnoremap <Space>H :help <C-r><C-w>
+xnoremap <Space>H :<C-u>help <C-r>=getline('.')[col("'<")-1:col("'>")-1]<CR>
 
 fun! s:GotoPreviousWindow()
   let cur_win = winnr()
@@ -688,18 +676,18 @@ fun! s:GotoPreviousWindow()
   endif
 endfun
 " reliable CTRL-W_p (if previous window is gone, move to next window)
-nnoremap <silent> <space><tab> :call <sid>GotoPreviousWindow()<cr>
+nnoremap <silent> <Space><Tab> :call <SID>GotoPreviousWindow()<CR>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches
-nnoremap <space>? :lvim //g %<cr>
+nnoremap <Space>? :lvim //g %<CR>
 
 " search for all numbers
-nnoremap <space>/# /\v\d+<cr>
+nnoremap <Space>/# /\v\d+<CR>
 
 " search for brackets
-nnoremap <space>/[ ?[{}]<cr>
-nnoremap <space>/] /[{}]<cr>
+nnoremap <Space>/[ ?[{}]<CR>
+nnoremap <Space>/] /[{}]<CR>
 
 " toggle location & quickfix lists {{{
 " (from vimwiki)
@@ -732,15 +720,15 @@ fun! ToggleList(bufname, pfx) abort
   endif
 endfun
 " }}}
-nnoremap <silent> <space>l :call ToggleList("Location List", 'l')<cr>
-nnoremap <silent> <space>q :call ToggleList("Quickfix List", 'c')<cr>
+nnoremap <silent> <Space>l :call ToggleList("Location List", 'l')<CR>
+nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
 
 " quick scratch buffer
-nnoremap <space>S :enew<cr>:setl bt=nofile bh=hide noswf<cr>:set ft=
+nnoremap <Space>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
 
 " open command prompt at vim's current directory
 if s:is_windows
-  nnoremap <space>C :!start cmd /k cd %:p:h<cr>
+  nnoremap <Space>C :!start cmd /k cd %:p:h<CR>
 endif
 
 " }}}
@@ -755,7 +743,7 @@ fun! s:DeleteAllBuffers() abort
   %bdelete
   setl buftype=nofile bufhidden=wipe
 endfun
-command! -bar KillBuffers call <sid>DeleteAllBuffers()
+command! -bar KillBuffers call <SID>DeleteAllBuffers()
 
 " DoubleView {{{
 " Vertically split the current buffer into two windows which will stay
@@ -772,16 +760,16 @@ fun! s:DoubleView() abort
   let &scrolloff=DV_so
   exec "normal! \<C-w>p``"
 endfun " }}}
-command! DoubleView call <sid>DoubleView()
+command! DoubleView call <SID>DoubleView()
 
 " custom text objects
 let s:separators = exists('g:loaded_targets') ? [ '`', '%']
-      \ : [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '%', '`' ]
+      \ : [ '_', '.', ':', ',', ';', '<Bar>', '/', '<bslash>', '*', '+', '%', '`' ]
 for char in s:separators
-  exec 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<cr>'
-  exec 'onoremap i' . char . ' :normal vi' . char . '<cr>'
-  exec 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<cr>'
-  exec 'onoremap a' . char . ' :normal va' . char . '<cr>'
+  exec 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+  exec 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+  exec 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+  exec 'onoremap a' . char . ' :normal va' . char . '<CR>'
 endfor
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
