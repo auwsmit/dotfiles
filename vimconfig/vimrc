@@ -44,8 +44,8 @@ if has('nvim')
   Plug 'nvim-lua/plenary.nvim'
   Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
 endif
-" Plug 'auwsmit/vim-spear'
-Plug 'Y:\Git\vim-spear'
+Plug 'auwsmit/vim-spear'
+" Plug 'Y:\Git\vim-spear'
 
 " }}}
 " OPERATOR PLUGINS {{{
@@ -308,7 +308,7 @@ augroup END
 " (more specifically, remaps of *important* defaults)
 
 " go back to last buffer
-nnoremap <BackSpace> <C-^>
+nnoremap <BS> <C-^>
 
 " Y yanks until EOL, more like D and C
 " yy still yanks the whole line
@@ -384,7 +384,7 @@ xnoremap <silent> <Up>   :move-2<CR>gv=gv
 xnoremap <silent> <Down> :move'>+<CR>gv=gv
 
 " no accidental command window (q:) {{{
-" explanation: using 'nnoremap q: <Nop>' gives my
+" explanation: using 'nnoremap q: <NOP>' gives my
 " 'q to quit' map a slight pause, so this is a roundabout
 " way of disabling q: without using any map commands
 "
@@ -449,8 +449,8 @@ augroup END
 " STANDARD MAPS {{{
 
 " :help works fine, thanks
-noremap <f1> <Nop>
-inoremap <f1> <Nop>
+noremap <F1> <NOP>
+inoremap <F1> <NOP>
 " Emacs blasphemy
 inoremap <C-g> <Esc>
 cnoremap <C-g> <C-c>
@@ -651,8 +651,8 @@ map <S-Space> <Space>
 map <S-Space><S-Space> <Space><Space>
 
 " don't move my cursor plz
-nnoremap <Space> <Nop>
-xnoremap <Space> <Nop>
+nnoremap <Space> <NOP>
+xnoremap <Space> <NOP>
 
 " shortcuts
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
@@ -764,7 +764,7 @@ command! DoubleView call <SID>DoubleView()
 
 " custom text objects
 let s:separators = exists('g:loaded_targets') ? [ '`', '%']
-      \ : [ '_', '.', ':', ',', ';', '<Bar>', '/', '<bslash>', '*', '+', '%', '`' ]
+      \ : [ '_', '.', ':', ',', ';', '<Bar>', '/', '<Bslash>', '*', '+', '%', '`' ]
 for char in s:separators
   exec 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
   exec 'onoremap i' . char . ' :normal vi' . char . '<CR>'
