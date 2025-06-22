@@ -16,5 +16,5 @@
 -- map('n', '<C-j>',    ":call spear#open_file(2)<CR>", opts)
 -- map('n', '<C-k>',    ":call spear#open_file(3)<CR>", opts)
 -- map('n', '<C-l>',    ":call spear#open_file(4)<CR>", opts)
--- map('n', '<C-.>',    ":call spear#next_prev_file('next')<CR>", opts)
--- map('n', '<C-,>',    ":call spear#next_prev_file('prev')<CR>", opts)
+-- map('n', '<C-S-n>',    ":call spear#next_prev_file('next')<CR>", opts)
+-- map('n', '<C-S-p>',    ":call spear#next_prev_file('prev')<CR>", opts)

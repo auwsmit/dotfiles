@@ -12,8 +12,8 @@ nnoremap <silent> <C-h>    :call spear#open_file(1)<CR>
 nnoremap <silent> <C-j>    :call spear#open_file(2)<CR>
 nnoremap <silent> <C-k>    :call spear#open_file(3)<CR>
 nnoremap <silent> <C-l>    :call spear#open_file(4)<CR>
-nnoremap <silent> <M-.>    :call spear#next_prev_file('next')<CR>
-nnoremap <silent> <M-,>    :call spear#next_prev_file('prev')<CR>
+nnoremap <silent> <C-S-n>    :call spear#next_prev_file('next')<CR>
+nnoremap <silent> <C-S-p>    :call spear#next_prev_file('prev')<CR>
 
 " let g:spear_create_commands = 1
 " " all neatly around home row
