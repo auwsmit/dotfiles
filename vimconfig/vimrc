@@ -44,8 +44,8 @@ if has('nvim')
   Plug 'nvim-lua/plenary.nvim'
   Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
 endif
-Plug 'auwsmit/vim-spear'
-" Plug 'Y:\Git\vim-spear'
+" Plug 'auwsmit/vim-spear'
+Plug 'Y:\Git\vim-spear'
 
 " }}}
 " OPERATOR PLUGINS {{{
@@ -394,6 +394,8 @@ augroup vimrc_cmdwin_map
   let g:cmdwinmap = 0
   au CmdwinLeave * let g:cmdwinmap = 0
   au CmdwinEnter * exec expand(g:cmdwinmap ? '' : 'quit')
+  au CmdlineLeave * let g:cmdwinmap = 0
+  au CmdlineEnter * let g:cmdwinmap = 1
 augroup END
 " }}}
 
