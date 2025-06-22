@@ -335,11 +335,19 @@ nnoremap <silent> <Plug>(MySplitLine) :call <SID>SplitLine()<CR>
 " }}}
 nmap S <Plug>(MySplitLine)
 
-" center page scrolling
-nnoremap <silent> <C-u> <C-u>zz
-nnoremap <silent> <C-d> <C-d>zz
-nnoremap <silent> <C-f> <C-f>zz
-nnoremap <silent> <C-b> <C-b>zz
+" make a new jump if scrolled far away
+fun! s:ScrollMakesJump()
+  let distance_til_jump = 150
+  if abs(line('.') - line("''")) >= distance_til_jump
+    norm m'
+  endif
+endfun
+
+" centered scrolling
+nnoremap <silent> <C-u> <C-u>zz:call <SID>ScrollMakesJump()<CR>
+nnoremap <silent> <C-d> <C-d>zz:call <SID>ScrollMakesJump()<CR>
+nnoremap <silent> <C-f> <C-f>zz:call <SID>ScrollMakesJump()<CR>
+nnoremap <silent> <C-b> <C-b>zz:call <SID>ScrollMakesJump()<CR>
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
@@ -761,7 +769,8 @@ fun! s:DoubleView() abort
 endfun " }}}
 command! DoubleView call <SID>DoubleView()
 
-" custom text objects
+" basic custom text objects
+" "inside symbol" and "a symbol"
 let s:separators = exists('g:loaded_targets') ? [ '`', '%']
       \ : [ '_', '.', ':', ',', ';', '<Bar>', '/', '<Bslash>', '*', '+', '%', '`' ]
 for char in s:separators
@@ -770,6 +779,7 @@ for char in s:separators
   exec 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
   exec 'onoremap a' . char . ' :normal va' . char . '<CR>'
 endfor
+
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
 
