@@ -4,5 +4,5 @@ nnoremap <space>R :FZFMru<space>
 " other plugins use d, so use x to delete instead
 augroup config_mru
   au!
-  au FileType mru map <buffer> x dl
+  au FileType mru map <buffer> x dlh
 augroup END

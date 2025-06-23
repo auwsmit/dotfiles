@@ -4,6 +4,7 @@
 -- vim.g.spear_save_on_change = 0
 -- vim.g.spear_next_prev_cycle = 1
 -- vim.g.spear_convert_backslashes = 1
+-- vim.g.spear_use_floating_window = 1
 -- -- vim.g.spear_create_commands = 1
 
 -- local map = vim.keymap.set
@@ -16,5 +17,5 @@
 -- map('n', '<C-j>',    ":call spear#open_file(2)<CR>", opts)
 -- map('n', '<C-k>',    ":call spear#open_file(3)<CR>", opts)
 -- map('n', '<C-l>',    ":call spear#open_file(4)<CR>", opts)
--- map('n', '<C-S-n>',    ":call spear#next_prev_file('next')<CR>", opts)
--- map('n', '<C-S-p>',    ":call spear#next_prev_file('prev')<CR>", opts)
+-- map('n', '<C-S-N>',    ":call spear#next_prev_file('next')<CR>", opts)
+-- map('n', '<C-S-P>',    ":call spear#next_prev_file('prev')<CR>", opts)
