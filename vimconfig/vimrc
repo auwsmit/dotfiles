@@ -204,8 +204,8 @@ endif
 
 " Neovide config
 if exists("g:neovide")
-  let g:neovide_cursor_animation_length = 0.00
-  let g:neovide_scroll_animation_length = 0.2
+  let g:neovide_cursor_animation_length = 0
+  let g:neovide_scroll_animation_length = 0
 endif
 
 " }}}
@@ -337,11 +337,13 @@ nmap S <Plug>(MySplitLine)
 
 " make a new jump if scrolled far away
 fun! s:ScrollMakesJump()
-  let distance_til_jump = 150
+  let distance_til_jump = 200
   if abs(line('.') - line("''")) >= distance_til_jump
     norm m'
   endif
 endfun
+
+" TODO: make { and } less jump hungry
 
 " centered scrolling
 nnoremap <silent> <C-u> <C-u>zz:call <SID>ScrollMakesJump()<CR>
@@ -369,6 +371,41 @@ nnoremap + :e .<CR>
 nnoremap <expr><silent> \| !v:count ? "<C-w>v<C-w><right>" : '\|'
 nnoremap <expr><silent> _  !v:count ? "<C-w>s<C-w><down>"  : '_'
 
+" j exists
+nnoremap <CR> <NOP>
+
+" no accidental command window (q:) {{{
+" explanation: using 'nnoremap q: <NOP>' gives my
+" 'q to quit' map a slight pause, so this is a convoluted
+" way of disabling q: without using any map commands.
+" also :<C-f> still works
+"
+" zee history and zee commands, oui oui
+augroup vimrc_cmdwin_map
+  au!
+  let g:cmdwinmap = 0
+  au CmdwinLeave * let g:cmdwinmap = 0
+  au CmdwinEnter * exec expand(g:cmdwinmap ? '' : 'quit')
+augroup END
+fun! s:FixCtrlF_Autogroup()
+  let g:cmdwinmap = 1
+  augroup fix_cmd_ctrl_f
+    au!
+    au CmdlineLeave * call <SID>FixCtrlF()
+  augroup END
+endfun
+fun s:FixCtrlF()
+  let g:cmdwinmap = 0
+  augroup fix_cmd_ctrl_f
+    au!
+  augroup END
+endfun
+" }}}
+nnoremap z: :let g:cmdwinmap=1<CR>q:
+nnoremap z/ :let g:cmdwinmap=1<CR>q/
+nnoremap : :call <SID>FixCtrlF_Autogroup()<CR>:<C-u>
+xnoremap : :<C-u>call <SID>FixCtrlF_Autogroup()<CR>gv:
+
 " move by wrapped lines instead of line numbers, unless the motion is counted
 " also set a mark for movements across 5 lines or more
 nnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
@@ -387,25 +424,6 @@ nnoremap gp `[v`]
 " move visual selections around without yank/paste
 xnoremap <silent> <Up>   :move-2<CR>gv=gv
 xnoremap <silent> <Down> :move'>+<CR>gv=gv
-
-" no accidental command window (q:) {{{
-" explanation: using 'nnoremap q: <NOP>' gives my
-" 'q to quit' map a slight pause, so this is a roundabout
-" way of disabling q: without using any map commands
-"
-" zee history and zee commands, oui oui
-nnoremap z: :let g:cmdwinmap=1<CR>q:
-nnoremap z/ :let g:cmdwinmap=1<CR>q/
-
-augroup vimrc_cmdwin_map
-  au!
-  let g:cmdwinmap = 0
-  au CmdwinLeave * let g:cmdwinmap = 0
-  au CmdwinEnter * exec expand(g:cmdwinmap ? '' : 'quit')
-  au CmdlineLeave * let g:cmdwinmap = 0
-  au CmdlineEnter * let g:cmdwinmap = 1
-augroup END
-" }}}
 
 " i_CTRL-[ finger slip
 inoremap <C-]> <Esc>
@@ -671,9 +689,20 @@ if maparg('<Space><Space>','n') == ''
   nnoremap <Space><Space> :
 endif
 
-" help under the cursor
-nnoremap <Space>H :help <C-r><C-w>
-xnoremap <Space>H :<C-u>help <C-r>=getline('.')[col("'<")-1:col("'>")-1]<CR>
+" :help under the cursor
+function! s:HelpWithHistory(type)
+  let text = ''
+  if a:type == 'visual'
+    let text = getline('.')[col("'<")-1:col("'>")-1]
+  elseif a:type == 'word'
+    let text = expand('<cword>')
+  endif
+  let cmd = 'help ' . text
+  call histadd(':', cmd)
+  execute cmd
+endfunction
+nnoremap <Space>H :call <SID>HelpWithHistory('word')<CR>
+xnoremap <Space>H :call <SID>HelpWithHistory('visual')<CR>
 
 fun! s:GotoPreviousWindow()
   let cur_win = winnr()
