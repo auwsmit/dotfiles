@@ -689,7 +689,7 @@ if maparg('<Space><Space>','n') == ''
   nnoremap <Space><Space> :
 endif
 
-" :help under the cursor
+" :help under the cursor, also adds to command history
 function! s:HelpWithHistory(type)
   let text = ''
   if a:type == 'visual'
@@ -777,7 +777,7 @@ endif
 " delete all buffers and open a scratch buffer
 fun! s:DeleteAllBuffers() abort
   %bdelete
-  setl buftype=nofile bufhidden=wipe
+  setl buftype=nofile bufhidden=hide
 endfun
 command! -bar KillBuffers call <SID>DeleteAllBuffers()
 
