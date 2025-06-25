@@ -4,9 +4,9 @@
 # === VARIABLES ===
 
 # YOUR USERNAME GOES HERE:
-username=
+read -p "Enter username: " username
 
-# Any of your previous config files will be found here.
+# Any of previous config files will be found here.
 #           V  V  V  V  V  V
 backup_dir=~/.old_dotfiles
 repo_dir=$(cd .. && pwd)
@@ -53,8 +53,8 @@ fi
 
 # neovim
 my_mkdir ~/.config
-make_link_and_backup $repo_dir/vimconfig ~/.config/nvim           $backup_dir/.config
-make_link_and_backup $repo_dir/vimconfig ~/.local/share/nvim-data $backup_dir/.local/share
+make_link_and_backup $repo_dir/vimconfig ~/.config/nvim      $backup_dir/.config
+make_link_and_backup $repo_dir/vimconfig ~/.local/share/nvim $backup_dir/.local/share
 # since we're already making a link for .config/nvim,
 # just make a fake init.vim in the repo
 if [ -L $repo_dir/init.vim ] ; then
