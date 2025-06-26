@@ -32,9 +32,13 @@ make_link_and_backup () {
   fi
   # make symbolic link
   # for folder
-  if [ -d $2 ]; then ln -s -d $1 $2; fi
+  if [ -d $1 ]; then
+    ln -s -d $1 $2
+  fi
   # for file
-  if [ ! -d $2 ]; then ln -s $1 $2; fi
+  if [ ! -d $1 ]; then
+    ln -s $1 $2
+  fi
   chown -h $username:$username $2
 }
 
