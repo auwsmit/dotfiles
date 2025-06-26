@@ -7,7 +7,7 @@ let g:spear_next_prev_cycle = 0
 let g:spear_convert_backslashes = 0
 let g:spear_use_floating_window = 1
 
-let g:spear_use_floating_window = 1
+let g:spear_use_floating_window = 0
 
 nnoremap <silent> <Space>A  :call spear#add_file()<CR>
 nnoremap <silent> <Space>X  :call spear#remove_file()<CR>
