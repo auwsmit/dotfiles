@@ -91,14 +91,14 @@ Plug 'nicwest/vim-camelsnek'
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } " align text operator
 if has('nvim')
-  Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+  " Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 endif
 
 " " }}}
 " APPEARANCE/UI PLUGINS {{{
 
 Plug 'xtal8/traces.vim'           " previews patterns for ex commands
-Plug 'sjl/badwolf'                " a colorscheme
+Plug 'sjl/badwolf'                " my favorite colorscheme
 Plug 'auwsmit/vim-active-numbers' " line numbers follow the current window
 Plug 'itchyny/lightline.vim'      " prettier statusbar
 Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' } " distraction free editing
@@ -247,16 +247,26 @@ endif
 
 " colorscheme and fallbacks if there are no
 " plugins or if incompatible for some reason
-fun! VimrcColorcheck(color) abort
+if has('nvim')
+  " restore original highlight groups
+  colorscheme vim
+endif
+silent! colorscheme badwolf
+fun! VimrcColorFallback(color) abort
   if !exists('g:colors_name')
+    if has('nvim')
+      colorscheme default
+    endif
     syntax enable
     exec 'silent! colorscheme ' . a:color
+  elseif g:colors_name == 'vim'
+    unlet g:colors_name
+    call VimrcColorFallback(a:color)
   endif
 endfun
-call VimrcColorcheck('badwolf')
-call VimrcColorcheck('unokai')
-call VimrcColorcheck('habamax')
-call VimrcColorcheck('desert')
+call VimrcColorFallback('unokai')
+call VimrcColorFallback('habamax')
+call VimrcColorFallback('desert')
 
 " git bash on windows has weird (poor) colors, so this looks best
 if s:is_win_git
@@ -337,19 +347,29 @@ nmap S <Plug>(MySplitLine)
 
 " make a new jump if scrolled far away
 fun! s:ScrollMakesJump()
-  let distance_til_jump = 200
+  let distance_til_jump = 150
   if abs(line('.') - line("''")) >= distance_til_jump
     norm m'
   endif
 endfun
-
-" TODO: make { and } less jump hungry
-
 " centered scrolling
-nnoremap <silent> <C-u> <C-u>zz:call <SID>ScrollMakesJump()<CR>
-nnoremap <silent> <C-d> <C-d>zz:call <SID>ScrollMakesJump()<CR>
-nnoremap <silent> <C-f> <C-f>zz:call <SID>ScrollMakesJump()<CR>
-nnoremap <silent> <C-b> <C-b>zz:call <SID>ScrollMakesJump()<CR>
+noremap <silent> <C-u> <C-u>zz:call <SID>ScrollMakesJump()<CR>
+noremap <silent> <C-d> <C-d>zz:call <SID>ScrollMakesJump()<CR>
+noremap <silent> <C-f> <C-f>zz:call <SID>ScrollMakesJump()<CR>
+noremap <silent> <C-b> <C-b>zz:call <SID>ScrollMakesJump()<CR>
+
+" { and } only make jumps after a distance
+fun! s:BracketsLessJumpy(bracket)
+  let distance_til_jump = 150
+  exec 'keepjumps normal! '. a:bracket
+  let cursor_pos = getpos('.')
+  if abs(line('.') - line("''")) >= distance_til_jump
+    norm m'
+  endif
+  keepjumps call setpos('.', cursor_pos)
+endfun
+nnoremap <silent> { :call <SID>BracketsLessJumpy('{')<CR>
+nnoremap <silent> } :call <SID>BracketsLessJumpy('}')<CR>
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
@@ -773,13 +793,6 @@ endif
 " MISCELLANEOUS {{{
 " Other functions, commands, settings,
 " etc.  that don't fit elsewhere go here
-
-" delete all buffers and open a scratch buffer
-fun! s:DeleteAllBuffers() abort
-  %bdelete
-  setl buftype=nofile bufhidden=hide
-endfun
-command! -bar KillBuffers call <SID>DeleteAllBuffers()
 
 " DoubleView {{{
 " Vertically split the current buffer into two windows which will stay
