@@ -1,3 +1,4 @@
+-- TODO: fix
 local ok, mod = pcall(require, 'harpoon')
 
 if ok then

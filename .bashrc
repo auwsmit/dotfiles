@@ -13,17 +13,10 @@ cmd_exists () {
   type "$1" >> /dev/null 2>&1 ;
 }
 
-# Ask for confirmation to startx
-confirm_startx () {
-  echo
-  read -p "Start X Server? (y or n) " -n 1 -r
-  case "$REPLY" in
-    y|Y ) exec startx;;
-    * ) echo;;
-  esac
-}
-
 ## SETTINGS ##
+
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --bash)"
 
 # Minimal prompt
 if [ "$(whoami)" = "root" ]; then
@@ -33,15 +26,15 @@ else
 fi
 
 # Don't put duplicate lines in history
-HISTCONTROL=ignoredups
+# HISTCONTROL=ignoredups
 
 # Infinite .bash_history
 HISTSIZE=
 HISTFILESIZE=
 
-# Check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-shopt -s checkwinsize
+# # Check the window size after each command and, if necessary,
+# # update the values of LINES and COLUMNS.
+# shopt -s checkwinsize
 
 # Automatically change directories if a directory is the sole argument
 shopt -s autocd
@@ -51,13 +44,6 @@ shopt -s autocd
 # bind '"\e[B"':history-search-forward 2> /dev/null
 bind '"\e[A"':history-search-backward
 bind '"\e[B"':history-search-forward
-
-# Remap mouse buttons to adjust volume
-if cmd_exists xbindkeys ; then
-  if ! pgrep -x "xbindkeys" > /dev/null ; then
-    xbindkeys
-  fi
-fi
 
 ## ALIASES ##
 
@@ -73,7 +59,7 @@ alias fuck='sudo $(history -p \!\!)'
 # one instance of emacs/vim
 # and single letter shortcuts are cool too
 alias e='emacsclient -n'
-alias v='vim --remote-silent'
+alias v='nvim --remote-silent'
 
 # # Brightness adjustment
 # # (bl for BackLight)
