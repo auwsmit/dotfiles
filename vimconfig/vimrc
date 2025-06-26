@@ -20,7 +20,7 @@ endif
 " }}}
 " PLUGINS {{{
 " plugin config files can be found under g:myvimdir/plugin
-" press Enter on a line below to goto its config file
+" press <Enter> on a line below to goto its config file
 
 " setup vim-plug
 call plug#begin()
@@ -44,8 +44,11 @@ if has('nvim')
   Plug 'nvim-lua/plenary.nvim'
   Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
 endif
-" Plug 'auwsmit/vim-spear'
-Plug 'Y:\Git\vim-spear'
+if s:is_windows
+  Plug 'Y:\Git\vim-spear'
+else
+  Plug 'auwsmit/vim-spear'
+endif
 
 " }}}
 " OPERATOR PLUGINS {{{
@@ -71,6 +74,7 @@ Plug 'junegunn/vim-after-object'
 
 Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
 Plug 'justinmk/vim-ipmotion'     " { } move over folds
+
 " TODO: fuse these three into one personal search plugin
 Plug 'romainl/vim-cool'          " auto-clear search highlight
 Plug 'junegunn/vim-slash'        " improved search
@@ -358,19 +362,6 @@ noremap <silent> <C-d> <C-d>zz:call <SID>ScrollMakesJump()<CR>
 noremap <silent> <C-f> <C-f>zz:call <SID>ScrollMakesJump()<CR>
 noremap <silent> <C-b> <C-b>zz:call <SID>ScrollMakesJump()<CR>
 
-" { and } only make jumps after a distance
-fun! s:BracketsLessJumpy(bracket)
-  let distance_til_jump = 150
-  exec 'keepjumps normal! '. a:bracket
-  let cursor_pos = getpos('.')
-  if abs(line('.') - line("''")) >= distance_til_jump
-    norm m'
-  endif
-  keepjumps call setpos('.', cursor_pos)
-endfun
-nnoremap <silent> { :call <SID>BracketsLessJumpy('{')<CR>
-nnoremap <silent> } :call <SID>BracketsLessJumpy('}')<CR>
-
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
 nnoremap <silent> <C-p> <C-o>
@@ -512,6 +503,12 @@ inoremap <expr> <C-e> col('.')>strlen(getline('.'))<Bar><Bar>pumvisible()?"\<lt>
 " expand-o-brackets
 inoremap {<Tab> {<CR>}<Esc>O
 inoremap {;<Tab> {<CR>};<Esc>O
+
+" convenient pairs
+inoremap "" ""<Left>
+inoremap (( ()<Left>
+inoremap [[ []<Left>
+inoremap {{ {}<Left>
 
 " change directories (minor time saver)
 nnoremap cd :cd<Space>
