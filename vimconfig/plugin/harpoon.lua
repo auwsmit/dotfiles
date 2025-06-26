@@ -1,4 +1,4 @@
-local ok, mod = pcall(require, 'nvim-treesitter')
+local ok, mod = pcall(require, 'harpoon')
 
 if ok then
     local harpoon = require("harpoon")

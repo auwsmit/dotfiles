@@ -1,5 +1,5 @@
 nnoremap <space>r :MRUToggle<cr>
-nnoremap <space>R :FZFMru<space>
+nnoremap <space>R :FZFMru<cr>
 
 " other plugins use d, so use x to delete instead
 augroup config_mru

@@ -4,10 +4,10 @@ let g:spear_delete_invalid_files = 0
 let g:spear_quit_on_save = 1
 let g:spear_save_on_change = 0
 let g:spear_next_prev_cycle = 0
-let g:spear_convert_backslashes = 1
+let g:spear_convert_backslashes = 0
 let g:spear_use_floating_window = 1
 
-let g:spear_use_floating_window = 0
+let g:spear_use_floating_window = 1
 
 nnoremap <silent> <Space>A  :call spear#add_file()<CR>
 nnoremap <silent> <Space>X  :call spear#remove_file()<CR>
