@@ -16,6 +16,7 @@ if s:is_windows
 elseif has('nvim')
   let g:myvimdir ="~/.config/nvim"
 endif
+let g:myvimdir = expand(g:myvimdir)
 
 " }}}
 " PLUGINS {{{
@@ -32,7 +33,11 @@ Plug 'tpope/vim-fugitive'   " vim + git integration
 Plug 'yegappan/mru'         " most recent file list
 " Plug 'Y:\Git\mru'           " most recent file list
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
-Plug 'justinmk/vim-dirvish' " minimal file explorer
+if has('nvim')
+  Plug 'stevearc/oil.nvim'    " cool file explorer
+else
+  Plug 'justinmk/vim-dirvish' " minimal file explorer
+endif
 Plug 'preservim/nerdtree',  " file tree viewer
       \ { 'on': ['NERDTreeToggle', 'NERDTreeFind', 'NERDTree'] }
 Plug 'junegunn/fzf',        " general fuzzy finder
@@ -102,7 +107,7 @@ endif
 " APPEARANCE/UI PLUGINS {{{
 
 Plug 'xtal8/traces.vim'           " previews patterns for ex commands
-Plug 'sjl/badwolf'                " my favorite colorscheme
+Plug 'auwsmit/baddoggo'           " personal fork of Bad Wolf by Steve Losh
 Plug 'auwsmit/vim-active-numbers' " line numbers follow the current window
 Plug 'itchyny/lightline.vim'      " prettier statusbar
 Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' } " distraction free editing
@@ -134,6 +139,21 @@ endif
 
 " initialize vim-plug
 call plug#end()
+
+" Source plugin configs {{{
+fun! SrcConfigPlugins()
+  let configs = glob(g:myvimdir.'/plugin_configs/*',0,1)
+  for config in configs
+    let plugin_name = fnamemodify(config,':t')[:-5]
+    let type = config[-3:]
+    let src = (type == 'vim') ? 'source ' : 'luafile '
+    if isdirectory(g:myvimdir.'/plugged/'.plugin_name)
+      exec src . config
+    endif
+  endfor
+endfun
+call SrcConfigPlugins()
+" }}}
 
 " }}}
 " GENERAL SETTINGS {{{
@@ -249,23 +269,9 @@ else
   set listchars+=eol:¬
 endif
 
-" colorscheme and fallbacks if there are no
-" plugins or if incompatible for some reason
-if has('nvim')
-  " restore original highlight groups
-  colorscheme vim
-endif
-silent! colorscheme badwolf
 fun! VimrcColorFallback(color) abort
   if !exists('g:colors_name')
-    if has('nvim')
-      colorscheme default
-    endif
-    syntax enable
     exec 'silent! colorscheme ' . a:color
-  elseif g:colors_name == 'vim'
-    unlet g:colors_name
-    call VimrcColorFallback(a:color)
   endif
 endfun
 call VimrcColorFallback('unokai')
@@ -356,11 +362,10 @@ fun! s:ScrollMakesJump()
     norm m'
   endif
 endfun
-" centered scrolling
-noremap <silent> <C-u> <C-u>zz:call <SID>ScrollMakesJump()<CR>
-noremap <silent> <C-d> <C-d>zz:call <SID>ScrollMakesJump()<CR>
-noremap <silent> <C-f> <C-f>zz:call <SID>ScrollMakesJump()<CR>
-noremap <silent> <C-b> <C-b>zz:call <SID>ScrollMakesJump()<CR>
+noremap <silent> <C-u> <C-u>:call <SID>ScrollMakesJump()<CR>
+noremap <silent> <C-d> <C-d>:call <SID>ScrollMakesJump()<CR>
+noremap <silent> <C-f> <C-f>:call <SID>ScrollMakesJump()<CR>
+noremap <silent> <C-b> <C-b>:call <SID>ScrollMakesJump()<CR>
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
@@ -373,17 +378,14 @@ nnoremap <Tab> za
 nnoremap <S-Tab> zM
 
 " open current file's directory
-nnoremap - :e <C-r>=fnameescape(expand('%:p:h'))<CR>/<CR>
+nnoremap - :exec 'edit '.expand('%:h')<CR>
 
 " open current working directory
-nnoremap + :e .<CR>
+nnoremap + :edit .<CR>
 
 " | and _ for split windows
 nnoremap <expr><silent> \| !v:count ? "<C-w>v<C-w><right>" : '\|'
 nnoremap <expr><silent> _  !v:count ? "<C-w>s<C-w><down>"  : '_'
-
-" j exists
-nnoremap <CR> <NOP>
 
 " no accidental command window (q:) {{{
 " explanation: using 'nnoremap q: <NOP>' gives my
@@ -447,7 +449,7 @@ fun! s:GotoPluginConfig()
     " last slash in single quotes on a Plug line
     let pattern = "Plug.*'[^']*[\\/]\\zs[^']*\\ze'"
     let name = matchstr(getline('.'), pattern)
-    let path_to_plugin = resolve(expand(g:myvimdir)).'/plugin/'.name
+    let path_to_plugin = resolve(g:myvimdir).'/plugin_configs/'.name
     if filereadable(path_to_plugin.'.vim')
       echo 'Found config for ' . name
       exec 'edit ' . fnameescape(path_to_plugin.'.vim')
@@ -505,10 +507,10 @@ inoremap {<Tab> {<CR>}<Esc>O
 inoremap {;<Tab> {<CR>};<Esc>O
 
 " convenient pairs
-inoremap "" ""<Left>
-inoremap (( ()<Left>
-inoremap [[ []<Left>
-inoremap {{ {}<Left>
+inoremap "<Tab> ""<Left>
+inoremap (<Tab> ()<Left>
+inoremap [<Tab> []<Left>
+inoremap {<Tab> {}<Left>
 
 " change directories (minor time saver)
 nnoremap cd :cd<Space>
