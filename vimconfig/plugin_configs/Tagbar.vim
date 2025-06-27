@@ -1,6 +1,2 @@
-if !isdirectory(expand('%:h') .'/../plugged/Tagbar')
-  finish
-endif
-
 nnoremap <space>t :TagbarOpen fj<cr>
 nnoremap <space>T :TagbarToggle<cr>

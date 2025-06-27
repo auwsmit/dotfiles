@@ -7,7 +7,6 @@
 
 let s:is_windows = (has('win32')  || has('win64'))
 let s:has_python = (has('python') || has('python3'))
-let s:is_win_git = has_key(environ(), "MINGW_PREFIX") && has_key(environ(), "EXEPATH")
 
 " detect .vim directory
 let g:myvimdir ="~/.vim"
@@ -20,7 +19,7 @@ let g:myvimdir = expand(g:myvimdir)
 
 " }}}
 " PLUGINS {{{
-" plugin config files can be found under g:myvimdir/plugin
+" plugin config files can be found under g:myvimdir/plugin_configs
 " press <Enter> on a line below to goto its config file
 
 " setup vim-plug
@@ -146,6 +145,9 @@ fun! SrcConfigPlugins()
   for config in configs
     let plugin_name = fnamemodify(config,':t')[:-5]
     let type = config[-3:]
+    if !has('nvim') && type == 'lua'
+      continue
+    endif
     let src = (type == 'vim') ? 'source ' : 'luafile '
     if isdirectory(g:myvimdir.'/plugged/'.plugin_name)
       exec src . config
@@ -278,12 +280,6 @@ call VimrcColorFallback('unokai')
 call VimrcColorFallback('habamax')
 call VimrcColorFallback('desert')
 
-" git bash on windows has weird (poor) colors, so this looks best
-if s:is_win_git
-  colorscheme evening
-  silent! call lightline#disable()
-endif
-
 " my statusline
 execute 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
 
@@ -321,7 +317,7 @@ augroup END
 
 " }}}
 " KEY MAPPINGS {{{
-" plugin related maps can be found in g:myvimdir/plugin files
+" plugin related maps can be found in g:myvimdir/plugin_configs
 
 " REMAPS OF DEFAULTS {{{
 " it's good to remember these in case I'm stuck with vanilla vi/vim
