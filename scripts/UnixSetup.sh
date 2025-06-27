@@ -3,7 +3,6 @@
 
 # === VARIABLES ===
 
-# YOUR USERNAME GOES HERE:
 read -p "Enter username: " username
 
 home=/home/$username
@@ -72,29 +71,3 @@ fi
 
 # .bashrc
 make_link_and_backup $repo_dir/.bashrc $home/.bashrc $backup_dir
-
-# like a decade out of date, will probably delete
-# # .bash_profile redirects to .bashrc
-# make_link_and_backup \
-#   ~/.bash_profile $repo_dir/.bashrc $backup_dir
-# .bash_profile redirects to .bashrc
-
-# make_link_and_backup \
-#   ~/.bash_profile $repo_dir/.bashrc $backup_dir
-
-# # .xinitrc
-# make_link_and_backup \
-#   ~/.xinitrc $repo_dir/.xinitrc $backup_dir
-
-# # .xprofile
-# make_link_and_backup \
-#   ~/.xprofile $repo_dir/.xprofile $backup_dir
-
-# # lilyterm
-# my_mkdir ~/.config/lilyterm
-# make_link_and_backup \
-#   ~/.config/lilyterm/default.conf $repo_dir/lilyterm.conf $backup_dir/lilyterm
-
-# # .xbindkeysrc
-# make_link_and_backup \
-#   ~/.xbindkeysrc $repo_dir/.xbindkeysrc $backup_dir
