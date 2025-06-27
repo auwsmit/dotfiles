@@ -48,11 +48,8 @@ if has('nvim')
   Plug 'nvim-lua/plenary.nvim'
   Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
 endif
-if s:is_windows
-  Plug 'Y:\Git\vim-spear'
-else
-  Plug 'auwsmit/vim-spear'
-endif
+" Plug 'Y:\Git\vim-spear'
+Plug 'auwsmit/vim-spear'
 
 " }}}
 " OPERATOR PLUGINS {{{
@@ -140,7 +137,7 @@ endif
 call plug#end()
 
 " Source plugin configs {{{
-fun! SrcConfigPlugins()
+fun! SourcePluginConfigs()
   let configs = glob(g:myvimdir.'/plugin_configs/*',0,1)
   for config in configs
     let plugin_name = fnamemodify(config,':t')[:-5]
@@ -154,7 +151,7 @@ fun! SrcConfigPlugins()
     endif
   endfor
 endfun
-call SrcConfigPlugins()
+call SourcePluginConfigs()
 " }}}
 
 " }}}
@@ -198,7 +195,7 @@ endif
 " command-line completion settings
 set wildmenu
 set wildmode=full
-set wildoptions+=fuzzy
+silent! set wildoptions+=fuzzy
 set wildignore+=.hg,.git,.svn                    " Version control
 set wildignore+=*.aux,*.out,*.toc                " LaTeX intermediate files
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg   " binary images
