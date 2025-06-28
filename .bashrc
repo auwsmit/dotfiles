@@ -12,11 +12,13 @@ esac
 eval "$(fzf --bash)"
 
 # minimal prompt
-PS1='[\u] \W \$ '
+PS1='\t \w \$ '
 
 # infinite .bash_history
 HISTSIZE=
 HISTFILESIZE=
+
+export EDITOR=vim
 
 # automatically change directories if a directory is the sole argument
 shopt -s autocd
@@ -24,7 +26,18 @@ shopt -s autocd
 ## ALIASES ##
 
 alias ll='ls -lah'
-alias la='la -a'
+alias la='ls -a'
+
+alias gs='git status'
+alias gd='git diff'
+alias ga='git add'
+alias gc='git commit'
+alias gl='git log'
+alias gpull='git pull'
+alias gpush='git push'
 
 # list unique history
 alias uhist='history | awk "{\$1=\"\"; print substr(\$0,2)}" | sort -u'
+
+# up X (where X is a number) to go up X directories
+up() { cd $(eval printf '../'%.0s {1..$1}); }

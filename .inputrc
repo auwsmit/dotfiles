@@ -1,13 +1,18 @@
 # no beep
 set bell-style none
 
-# show completions first tab
+# show completions on first tab press
 set show-all-if-ambiguous on
 
-# highlight matching parenthesis
-set match-parens on
+# more precise ctrl-w
+set bind-tty-special-chars off
+"\C-w": backward-kill-word
 
-# better search history
+# tab and s-tab to cycle completion results
+Tab: menu-complete
+"\e[Z": menu-complete-backward
+
+# better search history completion
 "\e[A": history-search-backward
 "\e[B": history-search-forward
 
