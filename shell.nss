@@ -1,0 +1,1 @@
+C:/Program Files/NileSoft Shell/shell.nss
