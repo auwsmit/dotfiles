@@ -33,7 +33,7 @@ Plug 'yegappan/mru'         " most recent file list
 " Plug 'Y:\Git\mru'           " most recent file list
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
 if has('nvim')
-  Plug 'stevearc/oil.nvim'    " cool file explorer
+  Plug 'stevearc/oil.nvim'    " minimal file explorer++
 else
   Plug 'justinmk/vim-dirvish' " minimal file explorer
 endif
@@ -145,8 +145,9 @@ fun! SourcePluginConfigs()
     if !has('nvim') && type == 'lua'
       continue
     endif
+    let rtp_check = (s:is_windows ? '\plugged\' : '/plugged/').plugin_name
     let src = (type == 'vim') ? 'source ' : 'luafile '
-    if isdirectory(g:myvimdir.'/plugged/'.plugin_name)
+    if stridx(&runtimepath, rtp_check) != -1
       exec src . config
     endif
   endfor
