@@ -6,46 +6,25 @@ case $- in
       *) return;;
 esac
 
-## FUNCTIONS ##
-
-# Check if a command exists
-cmd_exists () {
-  type "$1" >> /dev/null 2>&1 ;
-}
-
 ## SETTINGS ##
 
-# Set up fzf key bindings and fuzzy completion
+# set up fzf key bindings and fuzzy completion
 eval "$(fzf --bash)"
 
-# Minimal prompt
-if [ "$(whoami)" = "root" ]; then
-  PS1=' \W # '
-else
-  PS1=' \W $ '
-fi
+# minimal prompt
+PS1='[\u] \W \$ '
 
-# Don't put duplicate lines in history
-# HISTCONTROL=ignoredups
-
-# Infinite .bash_history
+# infinite .bash_history
 HISTSIZE=
 HISTFILESIZE=
 
-# Automatically change directories if a directory is the sole argument
+# automatically change directories if a directory is the sole argument
 shopt -s autocd
-
-# Readline completes if it matches with the current prefix
-# bind '"\e[A"':history-search-backward 2> /dev/null
-# bind '"\e[B"':history-search-forward 2> /dev/null
-bind '"\e[A"':history-search-backward
-bind '"\e[B"':history-search-forward
 
 ## ALIASES ##
 
-# Run personal enviro. by default
-alias sudo='sudo -E'
-alias root='sudo'
+alias ll='ls -lah'
+alias la='la -a'
 
-# sudo the last command
-alias fuck='sudo $(history -p \!\!)'
+# list unique history
+alias uhist='history | awk "{\$1=\"\"; print substr(\$0,2)}" | sort -u'

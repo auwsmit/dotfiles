@@ -54,7 +54,6 @@ if [ -e $home/.vimrc ]; then
   mv -i $home/.vimrc $backup_dir
 fi
 
-
 # neovim
 my_mkdir $home/.config
 my_mkdir $home/.local/share
@@ -71,3 +70,5 @@ fi
 
 # .bashrc
 make_link_and_backup $repo_dir/.bashrc $home/.bashrc $backup_dir
+# .inputrc
+make_link_and_backup $repo_dir/.inputrc $home/.inputrc $backup_dir

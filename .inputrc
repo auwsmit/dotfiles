@@ -1,0 +1,16 @@
+# no beep
+set bell-style none
+
+# show completions first tab
+set show-all-if-ambiguous on
+
+# highlight matching parenthesis
+set match-parens on
+
+# better search history
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+
+# ensure C-r works
+"\C-r": reverse-search-history
+
