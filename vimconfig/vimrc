@@ -29,8 +29,9 @@ call plug#begin()
 
 Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
 Plug 'tpope/vim-fugitive'   " vim + git integration
-Plug 'yegappan/mru'         " most recent file list
-" Plug 'Y:\Git\mru'           " most recent file list
+" Plug 'yegappan/mru'         " most recent file list
+Plug 'auwsmit/mru', { 'branch': 'split-in-current-window' }
+" Plug 'Y:\Git\mru'
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
 if has('nvim')
   Plug 'stevearc/oil.nvim'    " minimal file explorer++
@@ -145,7 +146,10 @@ fun! SourcePluginConfigs()
     if !has('nvim') && type == 'lua'
       continue
     endif
-    let rtp_check = (s:is_windows ? '\plugged\' : '/plugged/').plugin_name
+    " " flexible checking
+    " let rtp_check = (s:is_windows ? '\' : '/').plugin_name
+    " rigid checking
+    let rtp_check = (s:is_windows ? 'plugged\' : 'plugged/').plugin_name
     let src = (type == 'vim') ? 'source ' : 'luafile '
     if stridx(&runtimepath, rtp_check) != -1
       exec src . config
@@ -356,20 +360,17 @@ fun! s:ScrollMakesJump()
     norm m'
   endif
 endfun
-noremap <silent> <C-u> <C-u>:call <SID>ScrollMakesJump()<CR>
-noremap <silent> <C-d> <C-d>:call <SID>ScrollMakesJump()<CR>
-noremap <silent> <C-f> <C-f>:call <SID>ScrollMakesJump()<CR>
-noremap <silent> <C-b> <C-b>:call <SID>ScrollMakesJump()<CR>
+nnoremap <silent> <C-u> <C-u>:call <SID>ScrollMakesJump()<CR>
+nnoremap <silent> <C-d> <C-d>:call <SID>ScrollMakesJump()<CR>
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
 nnoremap <silent> <C-p> <C-o>
 nnoremap <silent> <C-n> <C-i>
 
-" org-style fold viewing
-" TODO: make functions that are more accurate
-nnoremap <Tab> za
-nnoremap <S-Tab> zM
+" fold navigation
+nnoremap <Tab> zj
+nnoremap <S-Tab> zk
 
 " open current file's directory
 nnoremap - :exec 'edit '.expand('%:h')<CR>
