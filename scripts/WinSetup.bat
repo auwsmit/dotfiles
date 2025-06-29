@@ -13,6 +13,8 @@ set repo_dir=%~dp0..\
 set home_dir=%userprofile%\
 set backup_dir=%home_dir%old_dotfiles\
 
+:: TODO move old backup folder into backup folder
+
 :: create backup folder for already existing dotfiles
 if exist { "%home_dir%%~1" } () else (
 mkdir "%backup_dir%"

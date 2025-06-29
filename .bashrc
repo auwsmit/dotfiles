@@ -33,8 +33,8 @@ alias gd='git diff'
 alias ga='git add'
 alias gc='git commit'
 alias gl='git log'
-alias gpull='git pull'
-alias gpush='git push'
+alias gpll='git pull'
+alias gpsh='git push'
 
 # list unique history
 alias uhist='history | awk "{\$1=\"\"; print substr(\$0,2)}" | sort -u'

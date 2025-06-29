@@ -150,6 +150,7 @@ fun! SourcePluginConfigs()
     " let rtp_check = (s:is_windows ? '\' : '/').plugin_name
     " rigid checking
     let rtp_check = (s:is_windows ? 'plugged\' : 'plugged/').plugin_name
+    " TODO rtp + plugged folder check
     let src = (type == 'vim') ? 'source ' : 'luafile '
     if stridx(&runtimepath, rtp_check) != -1
       exec src . config
@@ -775,6 +776,13 @@ nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
 
 " quick scratch buffer
 nnoremap <Space>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
+
+" open :terminal consistently
+if has('nvim')
+  nnoremap <Space>t :split +term<CR>a
+else
+  nnoremap <Space>t :term<CR>
+endif
 
 " open command prompt at vim's current directory
 if s:is_windows

@@ -5,6 +5,8 @@
 
 read -p "Enter username: " username
 
+# TODO fix edge case where /home/ isnt the home directory
+# home=~
 home=/home/$username
 # Any of previous config files will be found here.
 #           V  V  V  V  V  V
@@ -44,6 +46,8 @@ make_link_and_backup () {
 
 # === MAIN CODE ===
 
+# TODO move old dotfiles into backup folder
+
 # make backup directory for already existing files
 my_mkdir $backup_dir
 
@@ -72,3 +76,5 @@ fi
 make_link_and_backup $repo_dir/.bashrc $home/.bashrc $backup_dir
 # .inputrc
 make_link_and_backup $repo_dir/.inputrc $home/.inputrc $backup_dir
+
+# TODO if backup folder is empty, delete it
