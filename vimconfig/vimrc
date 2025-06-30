@@ -282,7 +282,28 @@ endif
 if has('termguicolors')
   set termguicolors
 endif
+" Disable Background Color Erase (BCE) so that color schemes
+" render properly when inside 256-color tmux and GNU screen.
+if &term =~ '256color'
+  set t_ut=
+endif
 
+if !has('nvim') && s:is_windows
+  " fix weird cursor issues on windows terminals
+  " needs to be after termguicolors and t_Co are set
+  let &t_SI = "\e[6 q"
+  let &t_SR = "\e[4 q"
+  let &t_EI = "\e[2 q"
+  let &t_ti .= "\e[1 q"
+  let &t_te .= "\e[0 q"
+endif
+
+silent! set guifont=Fantasque\ Sans\ Mono:h10
+if &guifont == ''
+  set guifont=Consolas:h10
+endif
+
+silent! colorscheme baddoggo
 fun! VimrcColorFallback(color) abort
   if !exists('g:colors_name')
     exec 'silent! colorscheme ' . a:color
@@ -295,12 +316,6 @@ call VimrcColorFallback('desert')
 " my statusline
 execute 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
 
-" Disable Background Color Erase (BCE) so that color schemes
-" render properly when inside 256-color tmux and GNU screen.
-if &term =~ '256color'
-  set t_ut=
-endif
-
 augroup vimrc_appearance_and_formatting
   au!
 
@@ -310,8 +325,6 @@ augroup vimrc_appearance_and_formatting
   if s:is_windows
     " Maximize window
     au GUIEnter * simalt ~x
-    " Fonts: glorious notepad default
-    set guifont=Consolas:h10
   endif
 
   " resize vim-windows when program window is resized
