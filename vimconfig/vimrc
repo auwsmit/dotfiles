@@ -44,7 +44,7 @@ Plug 'junegunn/fzf',        " general fuzzy finder
       \ { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'     " fzf + vim integration
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
-Plug 'majutsushi/Tagbar',  { 'on': ['TagbarToggle', 'TagbarOpen'] } " tag explorer
+Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " tag explorer
 if has('nvim')
   Plug 'nvim-lua/plenary.nvim'
   Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
