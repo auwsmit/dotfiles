@@ -78,7 +78,7 @@ Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
 Plug 'justinmk/vim-ipmotion'     " { } move over folds
 
 " TODO: fuse these three into one personal search plugin
-Plug 'romainl/vim-cool'          " auto-clear search highlight
+" Plug 'romainl/vim-cool'          " auto-clear search highlight
 Plug 'junegunn/vim-slash'        " improved search
 Plug 'henrik/vim-indexed-search' " show total results (works on older versions of vim)
 
@@ -195,13 +195,22 @@ set clipboard^=unnamedplus,unnamed
 set foldopen-=block
 set shortmess-=S
 set shortmess+=F
-if s:is_windows
-  set makeprg=build.bat
-endif
 silent! set mouse=a
 set vb t_vb=
 if exists('&belloff')
   set belloff=all
+endif
+
+if s:is_windows
+  set makeprg=build.bat
+  if executable('wsl')
+    " windows has a good shell afterall. it just takes an
+    " entire linux distro running through a compatibility layer :)
+    set shell=wsl.exe
+  endif
+  if executable('grep')
+    set grepprg=grep\ -n
+  endif
 endif
 
 " command-line completion settings
@@ -233,9 +242,6 @@ if has('persistent_undo')
   let &undodir=s:tempdir .'undo//'
 endif
 
-if s:is_windows && executable('grep')
-  set grepprg=grep\ -n
-endif
 
 " Neovide config
 if exists("g:neovide")
@@ -388,9 +394,9 @@ nnoremap <silent> <C-d> <C-d>:call <SID>ScrollMakesJump()<CR>
 nnoremap <silent> <C-p> <C-o>
 nnoremap <silent> <C-n> <C-i>
 
-" fold navigation
-nnoremap <Tab> zj
-nnoremap <S-Tab> zk
+" fast scroll
+map <Tab> <C-d>
+map <S-Tab> <C-u>
 
 " open current file's directory
 nnoremap - :exec 'edit '.expand('%:h')<CR>
@@ -523,12 +529,6 @@ inoremap <expr> <C-e> col('.')>strlen(getline('.'))<Bar><Bar>pumvisible()?"\<lt>
 inoremap {<Tab> {<CR>}<Esc>O
 inoremap {;<Tab> {<CR>};<Esc>O
 
-" convenient pairs
-inoremap "<Tab> ""<Left>
-inoremap (<Tab> ()<Left>
-inoremap [<Tab> []<Left>
-inoremap {<Tab> {}<Left>
-
 " change directories (minor time saver)
 nnoremap cd :cd<Space>
 
@@ -559,6 +559,25 @@ noremap <S-left>  <C-w><
 noremap <S-up>    <C-w>+
 noremap <S-down>  <C-w>-
 noremap <S-right> <C-w>>
+
+" change font size for gui
+fun! s:ChangeFontSize(type)
+  if &guifont == '' | return | endif
+  let font = &guifont
+  let scale = 0
+  if a:type == '0'
+    let scale = 10
+  else
+    let scale = matchstr(font, '\d\+$')
+    let scale = scale + (a:type == '+' ? 1 : -1)
+    if scale == 0 | return | endif
+  endif
+  let font = matchstr(font, '.\{-}\ze\d\+$')
+  let &guifont = font.scale
+endfun
+nnoremap <silent> <C-=> :call <SID>ChangeFontSize('+')<CR>
+nnoremap <silent> <C--> :call <SID>ChangeFontSize('-')<CR>
+nnoremap <silent> <C-0> :call <SID>ChangeFontSize('0')<CR>
 
 " unimpaired.vim inspired
 " toggle centering the cursor
@@ -720,13 +739,22 @@ xnoremap <Space> <NOP>
 
 " shortcuts
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
-nnoremap <Space>o <C-w>o
+"              🐄     🐄
 nnoremap <Space>c <C-w>c
-nnoremap <Space>w <C-w>
+nnoremap <Space>o <C-w>o
+nnoremap <Space>w <C-w>w
 nnoremap <Space>; :
 if maparg('<Space><Space>','n') == ''
   nnoremap <Space><Space> :
 endif
+
+" open :terminal consistently
+if has('nvim')
+  nnoremap <Space>t :split +term<CR>a
+else
+  nnoremap <Space>t :term<CR>
+endif
+
 
 " :help under the cursor, also adds to command history
 function! s:HelpWithHistory(type)
@@ -800,18 +828,6 @@ nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
 
 " quick scratch buffer
 nnoremap <Space>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
-
-" open :terminal consistently
-if has('nvim')
-  nnoremap <Space>t :split +term<CR>a
-else
-  nnoremap <Space>t :term<CR>
-endif
-
-" open command prompt at vim's current directory
-if s:is_windows
-  nnoremap <Space>C :!start cmd /k cd %:p:h<CR>
-endif
 
 " }}}
 
