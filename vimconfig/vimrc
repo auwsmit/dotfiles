@@ -148,11 +148,10 @@ fun! SourcePluginConfigs()
       continue
     endif
     let slash = s:is_windows ? '\' : '/'
-    let rtp_check = stridx(&runtimepath, (slash.plugin_name))
-    let dir_check = isdirectory(g:myvimdir.'/plugged/'.plugin_name)
+    let plugin_dir = g:myvimdir.'/plugged/'.plugin_name
     let src = (type == 'vim') ? 'source ' : 'luafile '
-    " if plugin is both in runtimepath and currently installed
-    if (rtp_check != -1) && dir_check
+    " if plugin is currently installed
+    if isdirectory(plugin_dir)
       exec src . config
     endif
   endfor
@@ -269,9 +268,12 @@ set splitright
 set noshowmode
 if has('linebreak')
   set showbreak=«
-  silent! set breakindent
+  set breakindent
 else
   set listchars+=eol:¬
+endif
+if has('termguicolors')
+  set termguicolors
 endif
 
 fun! VimrcColorFallback(color) abort
