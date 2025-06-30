@@ -25,6 +25,13 @@ my_mkdir() {
   chown $username:$username $1
 }
 
+make_backup () {
+  if [ -e $1 ]; then
+    my_mkdir $2
+    mv -i $1 $2
+  fi
+}
+
 # $1 target of the link
 # $2 file to link and backup,
 # $3 path for backup
@@ -32,10 +39,7 @@ make_link_and_backup () {
   # delete previous symbolic link if it exists
   if [ -L $2 ]; then rm $2; fi
   # backup the previous file/folder if it exists
-  if [ -e $2 ]; then
-    my_mkdir $3
-    mv -i $2 $3
-  fi
+  make_backup $2 $3
   # make symbolic link
   # for folder
   if [ -d $1 ]; then
@@ -76,11 +80,12 @@ fi
 # neovim
 my_mkdir $home/.config
 my_mkdir $home/.local/share
-make_link_and_backup $repo_dir/vimconfig $home/.config/nvim      $backup_dir/.config
-make_link_and_backup $repo_dir/vimconfig $home/.local/share/nvim $backup_dir/.local/share
-if [ ! -e $home/.config/nvim/init.vim ] ; then
-  ln -s $repo_dir/vimconfig/vimrc $repo_dir/vimconfig/init.vim
-fi
+make_link_and_backup $repo_dir/vimconfig $home/.config/nvim $backup_dir/.config
+make_backup $home/.local/share/nvim $backup_dir/.local/share
+my_mkdir $home/.local/share/nvim
+my_mkdir $repo_dir/vimconfig/neoplugged
+ln -s -d $repo_dir/vimconfig/neoplugged $home/.local/share/nvim/plugged
+ln -s $repo_dir/vimconfig/vimrc $repo_dir/vimconfig/init.vim
 
 # .bashrc
 make_link_and_backup $repo_dir/.bashrc $home/.bashrc $backup_dir

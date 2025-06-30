@@ -22,8 +22,8 @@ REM =========
 REM make backup folder for already existing files
 if exist  "%backup_dir%" (
     REM backup any previously existing old_dotfiles
-    move "%backup_dir%" "%home_dir%older_dotfiles"
-    mkdir "%backup_dir"
+    rename "%backup_dir%" "older_dotfiles"
+    mkdir "%backup_dir%"
     move "%home_dir%older_dotfiles" "%backup_dir%"
 ) else (
 mkdir "%backup_dir%"
@@ -41,7 +41,9 @@ REM Neovim
 CALL :Backup "%home_dir%AppData\Local\" "nvim" "AppData\Local"
 CALL :Backup "%home_dir%AppData\Local\" "nvim-data" "AppData\Local"
 mklink /d "%home_dir%AppData\Local\nvim" "%repo_dir%vimconfig"
-mklink /d "%home_dir%AppData\Local\nvim-data" "%repo_dir%vimconfig"
+mkdir "%home_dir%AppData\Local\nvim-data"
+mkdir "%repo_dir%vimconfig\neoplugged"
+mklink /d "%home_dir%AppData\Local\nvim-data\plugged" "%repo_dir%vimconfig\neoplugged"
 mklink "%repo_dir%vimconfig\init.vim" "%repo_dir%vimconfig\vimrc"
 
 REM NileSoft Shell
