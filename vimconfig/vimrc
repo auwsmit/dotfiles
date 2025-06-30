@@ -86,9 +86,9 @@ Plug 'henrik/vim-indexed-search' " show total results (works on older versions o
 " SNIPPET/COMPLETION PLUGINS {{{
 
 Plug 'ervandew/supertab'  " tab autocomplete
-if s:has_python
-  Plug 'SirVer/UltiSnips' " snippets manager
-endif
+" if s:has_python
+"   Plug 'SirVer/UltiSnips' " snippets manager
+" endif
 
 " }}}
 " FORMAT/SYNTAX PLUGINS {{{
@@ -125,6 +125,7 @@ Plug 'tpope/vim-unimpaired'     " tons of useful [x/]x mappings
 Plug 'Konfekt/FastFold'         " optimize how Vim updates folds
 Plug 'farmergreg/vim-lastplace' " reopen files at last position
 Plug 'xolox/vim-session'        " simplified session management
+let g:session_autosave = 0      " no auto-save prompt on first install
 Plug 'xolox/vim-misc'           " vim-session dependency
 Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' } " visual undo tree
