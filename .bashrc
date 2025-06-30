@@ -1,11 +1,3 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
-
-# If not running interactively, don't do anything
-case $- in
-    *i*) ;;
-      *) return;;
-esac
-
 ## SETTINGS ##
 
 # set up fzf key bindings and fuzzy completion
@@ -39,5 +31,5 @@ alias gpsh='git push'
 # list unique history
 alias uhist='history | awk "{\$1=\"\"; print substr(\$0,2)}" | sort -u'
 
-# up X (where X is a number) to go up X directories
+# up X to go up X directories
 up() { cd $(eval printf '../'%.0s {1..$1}); }
