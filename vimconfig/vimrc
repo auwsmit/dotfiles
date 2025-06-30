@@ -93,7 +93,7 @@ Plug 'ervandew/supertab'  " tab autocomplete
 " }}}
 " FORMAT/SYNTAX PLUGINS {{{
 
-Plug 'nicwest/vim-camelsnek'
+Plug 'nicwest/vim-camelsnek' " convert between camel and snake case
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } " align text operator
 if has('nvim')
@@ -144,11 +144,18 @@ fun! SourcePluginConfigs()
   for config in configs
     let plugin_name = fnamemodify(config,':t')[:-5]
     let type = config[-3:]
+    " skip lua configs for vim
     if !has('nvim') && type == 'lua'
       continue
     endif
     let slash = s:is_windows ? '\' : '/'
-    let plugin_dir = g:myvimdir.'/plugged/'.plugin_name
+    let plugin_dir = ''
+    " keep separate plugins for vim and nvim
+    if has('nvim')
+      let plugin_dir = stdpath('data').'/plugged/'.plugin_name
+    else
+      let plugin_dir = g:myvimdir.'/plugged/'.plugin_name
+    endif
     let src = (type == 'vim') ? 'source ' : 'luafile '
     " if plugin is currently installed
     if isdirectory(plugin_dir)
@@ -305,16 +312,13 @@ augroup vimrc_appearance_and_formatting
     au GUIEnter * simalt ~x
     " Fonts: glorious notepad default
     set guifont=Consolas:h10
-  else
-    " Unix deserves a nicer font
-    set guifont=DejaVu\ Sans\ Mono\ 10
   endif
 
   " resize vim-windows when program window is resized
   au VimResized * wincmd =
 
   " this makes the trailing space indicator invisible
-  " while typing, otherwise it would drive me crazy
+  " while typing, otherwise it can be distracting
   au InsertEnter * set listchars-=trail:■
   au InsertLeave * set listchars+=trail:■
 
@@ -390,32 +394,32 @@ nnoremap <expr><silent> _  !v:count ? "<C-w>s<C-w><down>"  : '_'
 " 'q to quit' map a slight pause, so this is a convoluted
 " way of disabling q: without using any map commands.
 " also :<C-f> still works
-"
-" zee history and zee commands, oui oui
 augroup vimrc_cmdwin_map
   au!
   let g:cmdwinmap = 0
   au CmdwinLeave * let g:cmdwinmap = 0
   au CmdwinEnter * exec expand(g:cmdwinmap ? '' : 'quit')
 augroup END
-fun! s:FixCtrlF_Autogroup()
+fun! s:FixCtrlF_SetAutocmd()
   let g:cmdwinmap = 1
-  augroup fix_cmd_ctrl_f
+  augroup vimrc_fix_cmd_ctrl_f
     au!
-    au CmdlineLeave * call <SID>FixCtrlF()
+    au CmdlineLeave * call <SID>FixCtrlF_ClearAutocmd()
   augroup END
+  " re-enter command-mode
+  call feedkeys(':','tn')
 endfun
-fun s:FixCtrlF()
+fun! s:FixCtrlF_ClearAutocmd()
   let g:cmdwinmap = 0
-  augroup fix_cmd_ctrl_f
+  augroup vimrc_fix_cmd_ctrl_f
     au!
   augroup END
 endfun
-" }}}
+" zee history and zee commands, oui oui }}}
 nnoremap z: :let g:cmdwinmap=1<CR>q:
 nnoremap z/ :let g:cmdwinmap=1<CR>q/
-nnoremap : :call <SID>FixCtrlF_Autogroup()<CR>:<C-u>
-xnoremap : :<C-u>call <SID>FixCtrlF_Autogroup()<CR>gv:
+nnoremap <silent> : :call <SID>FixCtrlF_SetAutocmd()<CR>
+xnoremap <silent> : :<C-u>call <SID>FixCtrlF_SetAutocmd()<CR>gv
 
 " move by wrapped lines instead of line numbers, unless the motion is counted
 " also set a mark for movements across 5 lines or more
@@ -424,13 +428,15 @@ nnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
 xnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
 xnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
 
+" swap gp and p:
 " automatically jump to the end of pasted text
-" useful for pasting multi-lines of text
+" useful for pasting multiple lines of text
 xnoremap p p`]
 nnoremap p p`]
+nnoremap gp p
 
 " visually select the last change or yank
-nnoremap gp `[v`]
+nnoremap gV `[v`]
 
 " move visual selections around without yank/paste
 xnoremap <silent> <Up>   :move-2<CR>gv=gv
@@ -566,7 +572,7 @@ fun! s:helpmaps() abort
     nnoremap <buffer> <CR> <C-]>
   endif
 endfun
-augroup improved_help_maps
+augroup vimrc_improved_help_maps
   au!
   au BufEnter *.txt call s:helpmaps()
 augroup END
@@ -665,24 +671,27 @@ fun! s:SetupInsertUndoBreaks()
   inoremap <buffer> ! !<C-g>u
   inoremap <buffer> ? ?<C-g>u
 endfun
-augroup auto_insert_undo_breaks
+augroup vimrc_auto_insert_undo_breaks
   au!
   au FileType txt,markdown call <SID>SetupInsertUndoBreaks()
 augroup END
 "}}}
 
-" sane terminal escape
+" consistent and sane terminal escape
 if has('nvim')
-  tnoremap <Esc> <C-\><C-n>
-  tnoremap <C-[> <C-\><C-n>
-  tnoremap <C-]> <C-\><C-n>
-  tnoremap <C-g> <C-\><C-n>
+  " set change marks for command output
+  " allows for gp (custom mapping to select last change)
+  " to select the last command's output
+  let s:t_esc = '<C-\><C-n>k$m]j$'
+  exec "tnoremap <CR> ".
+        \ s:t_esc .":call setpos(\"'[\",[0,line('.')+1,0,0])<CR>a<CR>"
 elseif has('terminal')
-  tnoremap <Esc> <C-w>N
-  tnoremap <C-[> <C-w>N
-  tnoremap <C-]> <C-w>N
-  tnoremap <C-g> <C-w>N
+  let s:t_esc = '<C-w>N'
 endif
+exec 'tnoremap <Esc> '. s:t_esc
+exec 'tnoremap <C-[> '. s:t_esc
+exec 'tnoremap <C-]> '. s:t_esc
+exec 'tnoremap <C-g> '. s:t_esc
 
 " }}}
 " LEADER MAPS {{{
