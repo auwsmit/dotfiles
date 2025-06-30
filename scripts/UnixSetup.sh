@@ -3,26 +3,30 @@
 
 # === VARIABLES ===
 
-read -p "Enter username: " username
+username="$(whoami)"
+if [ $username == "root" ]; then
+  read -p "Enter username: " username
+  home=/home/$username
+else
+  home=~
+fi
 
-# TODO fix edge case where /home/ isnt the home directory
-# home=~
-home=/home/$username
-# Any of previous config files will be found here.
+# Any previous config files will be found here.
 #           V  V  V  V  V  V
 backup_dir=$home/.old_dotfiles
-repo_dir=$(cd .. && pwd)
+script_dir="$(dirname "$(realpath "$0")")"
+repo_dir=$script_dir/..
 
 # === FUNCTIONS ===
 
-# without this, folders would be owned by root
+# only needed if script is ran as root
 my_mkdir() {
   mkdir -p $1
   chown $username:$username $1
 }
 
 # $1 target of the link
-# $2 thing to link and backup,
+# $2 file to link and backup,
 # $3 path for backup
 make_link_and_backup () {
   # delete previous symbolic link if it exists
@@ -46,10 +50,21 @@ make_link_and_backup () {
 
 # === MAIN CODE ===
 
-# TODO move old dotfiles into backup folder
+# check if home directory is valid
+if [ ! -e $home ]; then
+  echo "Invalid home directory. Edit the script and run again."
+  exit 1
+fi
 
 # make backup directory for already existing files
-my_mkdir $backup_dir
+if [ -e $backup_dir ]; then
+  # backup any previously existing old_dotfiles
+  mv $backup_dir $home/.older_dotfiles
+  my_mkdir $backup_dir
+  mv $home/.older_dotfiles $backup_dir
+else
+  my_mkdir $backup_dir
+fi
 
 # vim
 make_link_and_backup $repo_dir/vimconfig $home/.vim $backup_dir
@@ -63,11 +78,6 @@ my_mkdir $home/.config
 my_mkdir $home/.local/share
 make_link_and_backup $repo_dir/vimconfig $home/.config/nvim      $backup_dir/.config
 make_link_and_backup $repo_dir/vimconfig $home/.local/share/nvim $backup_dir/.local/share
-# since we're already making a link for .config/nvim,
-# just make a fake init.vim in the repo
-if [ -L $repo_dir/init.vim ] ; then
-  rm $repo_dir/init.vim
-fi
 if [ ! -e $home/.config/nvim/init.vim ] ; then
   ln -s $repo_dir/vimconfig/vimrc $repo_dir/vimconfig/init.vim
 fi
@@ -77,4 +87,7 @@ make_link_and_backup $repo_dir/.bashrc $home/.bashrc $backup_dir
 # .inputrc
 make_link_and_backup $repo_dir/.inputrc $home/.inputrc $backup_dir
 
-# TODO if backup folder is empty, delete it
+# if backup folder is empty, delete it
+if [ -z "$(ls -A $backup_dir)" ]; then
+  rmdir $backup_dir
+fi
