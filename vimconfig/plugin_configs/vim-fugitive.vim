@@ -10,6 +10,8 @@ nnoremap <space>GP :G push
 fun! s:fugitive_maps()
   nnoremap <buffer> q :bdelete<cr>
   nnoremap <buffer> gq q
+  " because of my weird custom :
+  nnoremap <buffer> : :
 endfun
 
 augroup config_Fugitive
