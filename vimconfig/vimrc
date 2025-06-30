@@ -146,13 +146,12 @@ fun! SourcePluginConfigs()
     if !has('nvim') && type == 'lua'
       continue
     endif
-    " " flexible checking
-    " let rtp_check = (s:is_windows ? '\' : '/').plugin_name
-    " rigid checking
-    let rtp_check = (s:is_windows ? 'plugged\' : 'plugged/').plugin_name
-    " TODO rtp + plugged folder check
+    let slash = s:is_windows ? '\' : '/'
+    let rtp_check = stridx(&runtimepath, (slash.plugin_name))
+    let dir_check = isdirectory(g:myvimdir.'/plugged/'.plugin_name)
     let src = (type == 'vim') ? 'source ' : 'luafile '
-    if stridx(&runtimepath, rtp_check) != -1
+    " if plugin is both in runtimepath and currently installed
+    if (rtp_check != -1) && dir_check
       exec src . config
     endif
   endfor
