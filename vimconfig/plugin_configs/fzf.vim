@@ -1,18 +1,16 @@
 let g:fzf_command_prefix = 'Fzf'
 
-nnoremap <space>- :FZF <c-r>=fnameescape(expand('%:p:h'))<cr>/<cr>
-nnoremap <space>+ :FZF<cr>
-nnoremap <space>b :FzfBuffers<cr>
-nnoremap <space>fr :FzfHistory<cr>
-nnoremap <space>ff :FZF<space>
-nnoremap <space>fl :FzfLines<cr>
-nnoremap <space>fb :FzfBLines<cr>
-nnoremap <space>ft :FzfTags<cr>
-nnoremap <space>f: :FzfHistory:<cr>
-nnoremap <space>f/ :FzfHistory/<cr>
-nnoremap <space>fg :FzfGFiles<cr>
-nnoremap <space>fs :FzfGFiles?<cr>
-nnoremap <space><space> :FzfCommands<cr>
+nnoremap <Space>F :FZF <C-r>=fnameescape(expand('%:p:h'))<CR>
+nnoremap <Space>- :FZF <C-r>=fnameescape(expand('%:p:h'))<CR>/<CR>
+nnoremap <Space>b :FzfBuffers<CR>
+nnoremap <Space>fl :FzfLines<CR>
+nnoremap <Space>fb :FzfBLines<CR>
+nnoremap <Space>f: :FzfHistory:<CR>
+nnoremap <Space>f/ :FzfHistory/<CR>
+nnoremap <Space>fg :FzfGFiles<CR>
+nnoremap <Space>fs :FzfGFiles?<CR>
+nnoremap <Space>ff :FZF<Space>
+nnoremap <Space><Space> :FzfCommands<CR>
 
 " adapt to colorscheme
 let g:fzf_colors =

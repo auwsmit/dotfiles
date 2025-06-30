@@ -1,7 +1,8 @@
+let MRU_Max_Entries = 1000
 let g:MRU_Split_Current_Window = 1
 
 nnoremap <space>r :MRUToggle<cr>
-nnoremap <space>R :FZFMru<cr>
+nnoremap <space>fr :FZFMru<cr>
 
 augroup config_mru
   au!
