@@ -5,14 +5,15 @@
 
 " STARTUP {{{
 
-let s:is_windows = (has('win32')  || has('win64'))
+let s:is_nvim = has('nvim')
+let s:is_windows = has('win32')
 let s:has_python = (has('python') || has('python3'))
 
 " detect .vim directory
 let g:myvimdir ="~/.vim"
 if s:is_windows
   let g:myvimdir ="~/vimfiles"
-elseif has('nvim')
+elseif s:is_nvim
   let g:myvimdir ="~/.config/nvim"
 endif
 let g:myvimdir = expand(g:myvimdir)
@@ -33,7 +34,7 @@ Plug 'tpope/vim-fugitive'   " vim + git integration
 Plug 'auwsmit/mru', { 'branch': 'split-in-current-window' }
 " Plug 'Y:\Git\mru'
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
-if has('nvim')
+if s:is_nvim
   Plug 'stevearc/oil.nvim'    " minimal file explorer++
 else
   Plug 'justinmk/vim-dirvish' " minimal file explorer
@@ -45,7 +46,7 @@ Plug 'junegunn/fzf',        " general fuzzy finder
 Plug 'junegunn/fzf.vim'     " fzf + vim integration
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " tag explorer
-if has('nvim')
+if s:is_nvim
   Plug 'nvim-lua/plenary.nvim'
   Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
 endif
@@ -96,7 +97,7 @@ Plug 'ervandew/supertab'  " tab autocomplete
 Plug 'nicwest/vim-camelsnek' " convert between camel and snake case
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } " align text operator
-if has('nvim')
+if s:is_nvim
   " Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 endif
 
@@ -145,13 +146,13 @@ fun! SourcePluginConfigs()
     let plugin_name = fnamemodify(config,':t')[:-5]
     let type = config[-3:]
     " skip lua configs for vim
-    if !has('nvim') && type == 'lua'
+    if !s:is_nvim && type == 'lua'
       continue
     endif
     let slash = s:is_windows ? '\' : '/'
     let plugin_dir = ''
     " keep separate plugins for vim and nvim
-    if has('nvim')
+    if s:is_nvim
       let plugin_dir = stdpath('data').'/plugged/'.plugin_name
     else
       let plugin_dir = g:myvimdir.'/plugged/'.plugin_name
@@ -221,7 +222,7 @@ set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX garbage
 
 " backups, swapfiles, & undofiles in one place
-let s:tempdir=expand(g:myvimdir .(has('nvim') ? '/neotmp/' : '/tmp/'))
+let s:tempdir=expand(g:myvimdir .(s:is_nvim ? '/neotmp/' : '/tmp/'))
 if !isdirectory(s:tempdir)
   call mkdir(s:tempdir, 'p')
   call mkdir(s:tempdir.'backup', 'p')
@@ -290,7 +291,7 @@ if &term =~ '256color'
   set t_ut=
 endif
 
-if !has('nvim') && s:is_windows
+if !s:is_nvim && s:is_windows
   " fix weird cursor issues on windows terminals
   " needs to be after termguicolors and t_Co are set
   let &t_SI = "\e[6 q"
@@ -355,9 +356,8 @@ nnoremap Y y$
 " U as a more sensible redo
 nnoremap U <C-r>
 
-" Q to replay the q register
-" I have never wanted to use Ex mode.
-nnoremap Q @q
+" TODO: pending
+nnoremap Q <NOP>
 
 " Split line (opposite of J) {{{
 fun! s:SplitLine()
@@ -380,17 +380,27 @@ fun! s:ScrollMakesJump()
     norm m'
   endif
 endfun
-nnoremap <silent> <C-u> <C-u>:call <SID>ScrollMakesJump()<CR>
-nnoremap <silent> <C-d> <C-d>:call <SID>ScrollMakesJump()<CR>
+nnoremap <silent> <C-u> :call <SID>ScrollMakesJump()<CR><C-u>
+nnoremap <silent> <C-d> :call <SID>ScrollMakesJump()<CR><C-d>
+
+" smaller scroll
+" assumes virtualedit is enabled
+fun! s:TabScroll(scroll)
+  " also make a jump after enough distance
+  call s:ScrollMakesJump()
+  let topline = line('w0')
+  let diff = line('.') - topline
+  let scroll_map = (a:scroll == 'e') ? "\<C-e>" : "\<C-y>"
+  exec 'norm! '. (winheight(0)/4) . scroll_map
+  exec 'keepjumps norm! H'.diff.'j'
+endfun
+noremap <silent> <Tab>   :call <SID>TabScroll('e')<CR>
+noremap <silent> <S-Tab> :call <SID>TabScroll('y')<CR>
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
 nnoremap <silent> <C-p> <C-o>
 nnoremap <silent> <C-n> <C-i>
-
-" fast scroll
-map <Tab> <C-d>
-map <S-Tab> <C-u>
 
 " open current file's directory
 nnoremap - :exec 'edit '.expand('%:h')<CR>
@@ -444,9 +454,10 @@ xnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
 " swap gp and p:
 " automatically jump to the end of pasted text
 " useful for pasting multiple lines of text
-xnoremap p p`]
 nnoremap p p`]
+xnoremap p p`]
 nnoremap gp p
+xnoremap gp p
 
 " visually select the last change or yank
 nnoremap gV `[v`]
@@ -527,7 +538,7 @@ inoremap {;<Tab> {<CR>};<Esc>O
 nnoremap cd :cd<Space>
 
 " alt quit
-nnoremap <C-s-Q> :qall<CR>
+nnoremap <C-S-Q> :qall<CR>
 
 " quickly manage buffers {{{
 fun! s:buflist_proper_esc()
@@ -610,7 +621,6 @@ command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
 nnoremap yoS :call <SID>ToggleSyntaxHighlighting()<CR>
 
 " improved help mappings {{{
-" (q to quit from Junegunn's vimrc)
 fun! s:helpmaps() abort
   if &buftype == 'help'
     nnoremap <buffer> q :bd<CR>
@@ -725,7 +735,7 @@ augroup END
 "}}}
 
 " consistent and sane terminal escape {{{
-if has('nvim')
+if s:is_nvim
   " set change marks for command output
   " allows for gp (custom mapping to select last change)
   " to select the last command's output
@@ -754,26 +764,33 @@ nnoremap <Space> <NOP>
 xnoremap <Space> <NOP>
 
 " shortcuts
-nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
-"              🐄     🐄
+" windows      🐄     🐄
 nnoremap <Space>c <C-w>c
 nnoremap <Space>o <C-w>o
 nnoremap <Space>w <C-w>w
+
+" commands
 nnoremap <Space>; :
+" check if FZF command search is mapped
 if maparg('<Space><Space>','n') == ''
   nnoremap <Space><Space> :
 endif
 
+" edit vimrc, resolve symlinks to goto dotfiles repo
+" I've probably pressed this command over a million times
+nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
+
 " open :terminal consistently {{{
-let s:spacet_map = 'nnoremap <Space>t :'
-if has('nvim')
-  let s:spacet_map .= 'split +term\ '.
+" wsl is so cool but also messed up because MS sucks
+let s:space_t_map = 'nnoremap <Space>t :'
+if s:is_nvim
+  let s:space_t_map .= 'split +term\ '.
         \ (s:is_windows ? 'wsl.exe' : '') .'<CR>a'
 else
-  let s:spacet_map .= 'term '. (s:is_windows ? 'wsl.exe' : '') .'<CR>'
+  let s:space_t_map .= 'term '. (s:is_windows ? 'wsl.exe' : '') .'<CR>'
 endif
 " }}}
-exec s:spacet_map
+exec s:space_t_map
 
 " :help under the cursor, also adds to command history {{{
 function! s:HelpWithHistory(type)
@@ -791,15 +808,17 @@ endfunction
 nnoremap <Space>H :call <SID>HelpWithHistory('word')<CR>
 xnoremap <Space>H :call <SID>HelpWithHistory('visual')<CR>
 
+" the alt-tab of vim windows {{{
 fun! s:GotoPreviousWindow()
   let cur_win = winnr()
   wincmd p
-  if winnr() == cur_win
-    wincmd w
-  endif
+  if winnr() == cur_win | wincmd w | endif
 endfun
-" reliable CTRL-W_p (if previous window is gone, move to next window)
+" reliable CTRL-W_p (if previous window is gone, move to next window) }}}
 nnoremap <silent> <Space><Tab> :call <SID>GotoPreviousWindow()<CR>
+
+" quick scratch buffer
+nnoremap <Space>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches
@@ -846,9 +865,6 @@ endfun
 nnoremap <silent> <Space>l :call ToggleList("Location List", 'l')<CR>
 nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
 
-" quick scratch buffer
-nnoremap <Space>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
-
 " }}}
 
 " }}}
@@ -874,7 +890,7 @@ endfun " }}}
 command! DoubleView call <SID>DoubleView()
 
 " basic custom text objects
-" "inside symbol" and "a symbol"
+" 'inside symbol' and 'a symbol'
 let s:separators = exists('g:loaded_targets') ? [ '`', '%']
       \ : [ '_', '.', ':', ',', ';', '<Bar>', '/', '<Bslash>', '*', '+', '%', '`' ]
 for char in s:separators
