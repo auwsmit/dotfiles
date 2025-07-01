@@ -29,7 +29,7 @@ alias gpll='git pull'
 alias gpsh='git push'
 
 # list unique history
-alias uhist='history | awk "{\$1=\"\"; print substr(\$0,2)}" | sort -u'
+alias uhist='history | awk "{\$1=\"\"; print substr(\$0,2)}" | awk "!seen[\$0]++"'
 
 # up X to go up X directories
 up() { cd $(eval printf '../'%.0s {1..$1}); }

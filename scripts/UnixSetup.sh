@@ -90,3 +90,5 @@ ln -s $repo_dir/vimconfig/vimrc $repo_dir/vimconfig/init.vim
 if [ -z "$(ls -A $backup_dir)" ]; then
   rmdir $backup_dir
 fi
+
+# TODO prompt vim plugin install
