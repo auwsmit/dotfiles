@@ -83,7 +83,7 @@ backup_orig $home/.vimrc $backup_dir
 my_mkdir $home/.config
 my_mkdir $home/.local/share
 make_link_and_backup $repo_dir/vimconfig     $home/.config/nvim       $backup_dir/.config
-make_link_and_backup $home/.local/share/nvim $backup_dir/.local/share $backup_dir/.config
+make_link_and_backup $repo_dir/vimconfig $home/.local/share/nvim $backup_dir/.local/share
 ln -s $repo_dir/vimconfig/vimrc $repo_dir/vimconfig/init.vim
 
 # if backup folder is empty, delete it
