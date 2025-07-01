@@ -2,9 +2,13 @@ REM @echo off
 REM This script create symlinks from my dotfiles repo to the proper places
 REM Also stores any old config files in a backup folder just in case
 
+REM WARNING: might need admin access to modify certain folders
+
 REM Any previous config files will be found here:
 REM  V  V  V  V  V  V  V  V  V  V
 REM C:\Users\username\old_dotfiles
+
+
 
 REM VARIABLES
 REM =========
@@ -15,7 +19,8 @@ set repo_dir=%~dp0..\
 set home_dir=%userprofile%\
 set backup_dir=%home_dir%old_dotfiles\
 
-REM =========
+
+
 REM MAIN CODE
 REM =========
 
@@ -30,21 +35,19 @@ mkdir "%backup_dir%"
 )
 
 REM Vim
-CALL :Backup "%home_dir%" "vimfiles" ""
-mklink /d  "%home_dir%vimfiles" "%repo_dir%vimconfig"
+CALL :Backup "%home_dir%"         "vimfiles" ""
+mklink /d    "%home_dir%vimfiles" "%repo_dir%vimconfig"
 
 REM Vim in git bash
-CALL :Backup "%home_dir%" ".vim" ""
-mklink /d  "%home_dir%.vim" "%repo_dir%vimconfig"
+CALL :Backup   "%home_dir%"     ".vim" ""
+mklink /d      "%home_dir%.vim" "%repo_dir%vimconfig"
 
 REM Neovim
-CALL :Backup "%home_dir%AppData\Local\" "nvim" "AppData\Local"
+CALL :Backup "%home_dir%AppData\Local\" "nvim"      "AppData\Local"
 CALL :Backup "%home_dir%AppData\Local\" "nvim-data" "AppData\Local"
-mklink /d "%home_dir%AppData\Local\nvim" "%repo_dir%vimconfig"
-mkdir "%home_dir%AppData\Local\nvim-data"
-mkdir "%repo_dir%vimconfig\neoplugged"
-mklink /d "%home_dir%AppData\Local\nvim-data\plugged" "%repo_dir%vimconfig\neoplugged"
-mklink "%repo_dir%vimconfig\init.vim" "%repo_dir%vimconfig\vimrc"
+mklink /d "%home_dir%AppData\Local\nvim"      "%repo_dir%vimconfig"
+mklink /d "%home_dir%AppData\Local\nvim-data" "%repo_dir%vimconfig"
+mklink    "%repo_dir%vimconfig\init.vim"      "%repo_dir%vimconfig\vimrc"
 
 REM NileSoft Shell
 CALL :Backup "C:\Program Files\NileSoft Shell\" "shell.nss" "Nilesoft Shell"
@@ -55,9 +58,10 @@ dir /b /s /a "%home_dir%old_dotfiles" | findstr .>nul || (
     rmdir "%home_dir%old_dotfiles"
 )
 
-REM ================
 REM END OF MAIN CODE
 REM ================
+
+
 
 REM FUNCTIONS
 REM =========

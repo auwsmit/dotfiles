@@ -25,7 +25,7 @@ my_mkdir() {
   chown $username:$username $1
 }
 
-make_backup () {
+backup_orig () {
   if [ -e $1 ]; then
     my_mkdir $2
     mv -i $1 $2
@@ -39,7 +39,7 @@ make_link_and_backup () {
   # delete previous symbolic link if it exists
   if [ -L $2 ]; then rm $2; fi
   # backup the previous file/folder if it exists
-  make_backup $2 $3
+  backup_orig $2 $3
   # make symbolic link
   # for folder
   if [ -d $1 ]; then
@@ -70,27 +70,21 @@ else
   my_mkdir $backup_dir
 fi
 
+# primary dotfiles
+make_link_and_backup $repo_dir/.bashrc $home/.bashrc $backup_dir
+make_link_and_backup $repo_dir/.inputrc $home/.inputrc $backup_dir
+
 # vim
 make_link_and_backup $repo_dir/vimconfig $home/.vim $backup_dir
 # check for stray vimrc
-if [ -e $home/.vimrc ]; then
-  mv -i $home/.vimrc $backup_dir
-fi
+backup_orig $home/.vimrc $backup_dir
 
 # neovim
 my_mkdir $home/.config
 my_mkdir $home/.local/share
-make_link_and_backup $repo_dir/vimconfig $home/.config/nvim $backup_dir/.config
-make_backup $home/.local/share/nvim $backup_dir/.local/share
-my_mkdir $home/.local/share/nvim
-my_mkdir $repo_dir/vimconfig/neoplugged
-ln -s -d $repo_dir/vimconfig/neoplugged $home/.local/share/nvim/plugged
+make_link_and_backup $repo_dir/vimconfig     $home/.config/nvim       $backup_dir/.config
+make_link_and_backup $home/.local/share/nvim $backup_dir/.local/share $backup_dir/.config
 ln -s $repo_dir/vimconfig/vimrc $repo_dir/vimconfig/init.vim
-
-# .bashrc
-make_link_and_backup $repo_dir/.bashrc $home/.bashrc $backup_dir
-# .inputrc
-make_link_and_backup $repo_dir/.inputrc $home/.inputrc $backup_dir
 
 # if backup folder is empty, delete it
 if [ -z "$(ls -A $backup_dir)" ]; then

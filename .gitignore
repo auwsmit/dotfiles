@@ -3,6 +3,7 @@ tags
 tags.*
 
 # local files
+init.vim
 vimconfig/.netrwhist
 vimconfig/log
 vimconfig/session/
@@ -12,9 +13,7 @@ vimconfig/neotmp/
 vimconfig/lua/
 vimconfig/shada/
 vimconfig/plugged/
-vimconfig/neoplugged/
 vimconfig/lua/
 vimconfig/harpoon.json
 vimconfig/harpoon/
 vimconfig/spear_data/
-init.vim
