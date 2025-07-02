@@ -1,4 +1,7 @@
-vim.cmd("if !has('nvim') | finish | endif")
+if vim.fn.has('nvim') then
+-- if not vim.fn.has('nvim') then
+    return
+end
 
 local harpoon = require("harpoon")
 

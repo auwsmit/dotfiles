@@ -1,13 +1,13 @@
 if !has('nvim') | finish | endif
 
-lua << ENDLUA
+lua << EOF
 require("oil").setup({
   view_options = {
     -- Show files and directories that start with "."
     show_hidden = true
   }
 })
-ENDLUA
+EOF
 
 augroup config_oil
   au!
