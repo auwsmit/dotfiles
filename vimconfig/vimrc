@@ -191,11 +191,10 @@ set synmaxcol=1024
 set nrformats-=octal
 set virtualedit=all
 set sessionoptions-=options
-set sessionoptions-=folds
 set clipboard^=unnamedplus,unnamed
 set foldopen-=block
 set shortmess-=S
-set shortmess+=F
+set shortmess+=aF
 silent! set mouse=a
 set vb t_vb=
 if exists('&belloff')
@@ -291,9 +290,9 @@ if &term =~ '256color'
   set t_ut=
 endif
 
+" fix weird cursor issues on windows terminals
+" needs to be after termguicolors and t_Co are set
 if !s:is_nvim && s:is_windows
-  " fix weird cursor issues on windows terminals
-  " needs to be after termguicolors and t_Co are set
   let &t_SI = "\e[6 q"
   let &t_SR = "\e[4 q"
   let &t_EI = "\e[2 q"
@@ -357,7 +356,7 @@ nnoremap Y y$
 nnoremap U <C-r>
 
 " TODO: pending
-nnoremap Q <NOP>
+noremap Q <NOP>
 
 " Split line (opposite of J) {{{
 fun! s:SplitLine()
@@ -382,20 +381,23 @@ fun! s:ScrollMakesJump()
 endfun
 nnoremap <silent> <C-u> :call <SID>ScrollMakesJump()<CR><C-u>
 nnoremap <silent> <C-d> :call <SID>ScrollMakesJump()<CR><C-d>
+nnoremap <silent> <C-b> :call <SID>ScrollMakesJump()<CR><C-u>
+nnoremap <silent> <C-f> :call <SID>ScrollMakesJump()<CR><C-d>
 
-" smaller scroll
-" assumes virtualedit is enabled
+" fast and easy 1/4th page scroll
 fun! s:TabScroll(scroll)
   " also make a jump after enough distance
   call s:ScrollMakesJump()
-  let topline = line('w0')
-  let diff = line('.') - topline
-  let scroll_map = (a:scroll == 'e') ? "\<C-e>" : "\<C-y>"
-  exec 'norm! '. (winheight(0)/4) . scroll_map
-  exec 'keepjumps norm! H'.diff.'j'
+  let prev_pos_l  = winline()-1
+  let prev_pos_c  = virtcol('.')-1
+  let scroll_size = (winheight(0)/4)
+  let scroll_map  = (a:scroll == 'down') ? "\<C-e>" : "\<C-y>"
+  exec 'norm! '. scroll_size . scroll_map
+  exec 'keepjumps norm! H'.((prev_pos_l == 0) ? '' : prev_pos_l.'j').
+        \              '0'.((prev_pos_c == 0) ? '' : prev_pos_c.'l')
 endfun
-noremap <silent> <Tab>   :call <SID>TabScroll('e')<CR>
-noremap <silent> <S-Tab> :call <SID>TabScroll('y')<CR>
+noremap <silent> <Tab>   :call <SID>TabScroll('down')<CR>
+noremap <silent> <S-Tab> :call <SID>TabScroll('up')<CR>
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
@@ -409,8 +411,8 @@ nnoremap - :exec 'edit '.expand('%:h')<CR>
 nnoremap + :edit .<CR>
 
 " | and _ for split windows
-nnoremap <expr><silent> \| !v:count ? "<C-w>v<C-w><right>" : '\|'
-nnoremap <expr><silent> _  !v:count ? "<C-w>s<C-w><down>"  : '_'
+nnoremap <expr><silent> \| !v:count ? "<C-w>v<C-w><Right>" : '\|'
+nnoremap <expr><silent> _  !v:count ? "<C-w>s<C-w><Down>"  : '_'
 
 " no accidental command window (q:) {{{
 " explanation: using 'nnoremap q: <NOP>' gives my
@@ -451,8 +453,8 @@ nnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
 xnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
 xnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
 
-" swap gp and p:
-" automatically jump to the end of pasted text
+" swap gp and p
+" jump to the end of pasted text by default
 " useful for pasting multiple lines of text
 nnoremap p p`]
 xnoremap p p`]
@@ -530,9 +532,9 @@ cnoremap <Esc> <C-c>
 inoremap <C-a> <C-o>^
 inoremap <expr> <C-e> col('.')>strlen(getline('.'))<Bar><Bar>pumvisible()?"\<lt>C-E>":"\<lt>End>"
 
-" expand-o-brackets
-inoremap {<Tab> {<CR>}<Esc>O
-inoremap {;<Tab> {<CR>};<Esc>O
+" " expand-o-brackets
+" inoremap {<Tab> {<CR>}<Esc>O
+" inoremap {;<Tab> {<CR>};<Esc>O
 
 " change directories (minor time saver)
 nnoremap cd :cd<Space>
@@ -557,14 +559,14 @@ nnoremap gb :call <SID>buflist_proper_esc()<CR>:ls<CR>:b<Space>
 nnoremap gB :call <SID>buflist_proper_esc()<CR>:ls!<CR>:b<Space>
 
 " resizing windows
-noremap <C-left>  5<C-w><
-noremap <C-up>    5<C-w>+
-noremap <C-down>  5<C-w>-
-noremap <C-right> 5<C-w>>
-noremap <S-left>  <C-w><
-noremap <S-up>    <C-w>+
-noremap <S-down>  <C-w>-
-noremap <S-right> <C-w>>
+noremap <C-Left>  5<C-w><
+noremap <C-Up>    5<C-w>+
+noremap <C-Down>  5<C-w>-
+noremap <C-Right> 5<C-w>>
+noremap <S-Left>  <C-w><
+noremap <S-Up>    <C-w>+
+noremap <S-Down>  <C-w>-
+noremap <S-Right> <C-w>>
 
 " resize font for gui {{{
 let s:default_scale = matchstr(&guifont, '\d\+$')
@@ -624,8 +626,9 @@ nnoremap yoS :call <SID>ToggleSyntaxHighlighting()<CR>
 fun! s:helpmaps() abort
   if &buftype == 'help'
     nnoremap <buffer> q :bd<CR>
-    nnoremap <silent><buffer> <Tab> :call search("\|\\S\\+\|")<CR>
-    nnoremap <silent><buffer> <S-Tab> :call search("\|\\S\\+\|",'b')<CR>
+    " navigate links
+    nnoremap <silent><buffer> <C-j> :call search("\|\\S\\+\|")<CR>
+    nnoremap <silent><buffer> <C-k> :call search("\|\\S\\+\|",'b')<CR>
     nnoremap <buffer> <CR> <C-]>
   endif
 endfun
@@ -781,14 +784,15 @@ endif
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
 
 " open :terminal consistently {{{
-" wsl is so cool but also messed up because MS sucks
 let s:space_t_map = 'nnoremap <Space>t :'
+let s:term_cmd = "--cd <C-r>=expand('%:p:h')"
+let s:space_t_map .= 'split +term\ '.
+      \ (s:is_windows ? 'wsl.exe' : '') . s:term_cmd .'<CR>'
 if s:is_nvim
-  let s:space_t_map .= 'split +term\ '.
-        \ (s:is_windows ? 'wsl.exe' : '') .'<CR>a'
-else
-  let s:space_t_map .= 'term '. (s:is_windows ? 'wsl.exe' : '') .'<CR>'
-endif
+  augroup vimrc_term_edit_on_open
+    au!
+    au TermOpen * normal! a
+  augroup END
 " }}}
 exec s:space_t_map
 
@@ -821,7 +825,7 @@ nnoremap <silent> <Space><Tab> :call <SID>GotoPreviousWindow()<CR>
 nnoremap <Space>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
 
 " populate the location list with last search results
-" useful for seeing the exact number of matches
+" useful for seeing the exact number of matches for big searches
 nnoremap <Space>? :lvim //g %<CR>
 
 " search for all numbers
