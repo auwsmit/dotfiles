@@ -1,11 +1,12 @@
-nnoremap <space>GS :G<cr>
-nnoremap <space>GD :Gdiffsplit<cr>
-nnoremap <space>Gd :Gdiffsplit HEAD<cr>
-nnoremap <space>GW :Gwrite<cr>
-nnoremap <space>GC :G commit<cr>
-nnoremap <space>GL :G log<cr>
-nnoremap <space>GG :Ggrep<space>
-nnoremap <space>GP :G push
+nnoremap <space>gs :G<cr>
+nnoremap <space>gd :Gdiffsplit<cr>
+nnoremap <space>gD :Gdiffsplit HEAD<cr>
+nnoremap <space>gw :Gwrite<cr>
+nnoremap <space>gu :G restore --staged %<cr>
+nnoremap <space>gc :G commit<cr>
+nnoremap <space>gl :G log<cr>
+nnoremap <space>gp :G push
+nnoremap <space>gg :Ggrep<space>
 
 fun! s:fugitive_maps()
   nnoremap <buffer> q :bdelete<cr>
