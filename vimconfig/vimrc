@@ -739,9 +739,11 @@ augroup END
 
 " consistent and sane terminal escape {{{
 if s:is_nvim
-  " set change marks for command output
-  " allows for gp (custom mapping to select last change)
-  " to select the last command's output
+  " - TODO fix when only 1 line
+  " - set change marks for command output
+  " - allows for gV (custom mapping to select last change)
+  "   to select the last command's output
+  " - similar idea to ':read !'
   let s:t_esc = '<C-\><C-n>k$m]j$'
   exec "tnoremap <CR> ".
         \ s:t_esc .":call setpos(\"'[\",[0,line('.')+1,0,0])<CR>a<CR>"
@@ -790,7 +792,7 @@ let s:space_t_map .= 'term'. (s:is_nvim ? '\ ' : ' ') .
 if s:is_nvim
   augroup vimrc_term_edit_on_open
     au!
-    au TermOpen * normal! a
+    " au TermOpen * normal! a
   augroup END
 endif
 " }}}
