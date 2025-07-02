@@ -191,7 +191,7 @@ set synmaxcol=1024
 set nrformats-=octal
 set virtualedit=all
 set sessionoptions-=options
-set clipboard^=unnamedplus,unnamed
+set clipboard^=unnamed
 set foldopen-=block
 set shortmess-=S
 set shortmess+=aF
@@ -301,7 +301,11 @@ if !s:is_nvim && s:is_windows
 endif
 
 " trying out a fancy custom font
-silent! set guifont=Fantasque\ Sans\ Mono:h10
+if s:is_windows
+  silent! set guifont=Fantasque\ Sans\ Mono:h10
+else
+  silent! set guifont=Fantasque\ Sans\ Mono:h11
+endif
 
 silent! colorscheme baddoggo
 fun! VimrcColorFallback(color) abort
@@ -385,16 +389,29 @@ nnoremap <silent> <C-b> :call <SID>ScrollMakesJump()<CR><C-u>
 nnoremap <silent> <C-f> :call <SID>ScrollMakesJump()<CR><C-d>
 
 " fast and easy 1/4th page scroll
+" TODO fix with diffs
 fun! s:TabScroll(scroll)
   " also make a jump after enough distance
   call s:ScrollMakesJump()
-  let prev_pos_l  = winline()-1
-  let prev_pos_c  = virtcol('.')-1
+  let is_down = (a:scroll == 'down')
+  let l_diff  = line('.') - line('w0')
+  let prev_pos_c  = virtcol('.')
   let scroll_size = (winheight(0)/4)
-  let scroll_map  = (a:scroll == 'down') ? "\<C-e>" : "\<C-y>"
-  exec 'norm! '. scroll_size . scroll_map
-  exec 'keepjumps norm! H'.((prev_pos_l == 0) ? '' : prev_pos_l.'j').
-        \              '0'.((prev_pos_c == 0) ? '' : prev_pos_c.'l')
+  let scroll_map  = is_down ? "\<C-e>" : "\<C-y>"
+  let at_limit    = is_down ? (line('w$') != line('$')) :
+        \                     (line('w0') != 1)
+  if at_limit
+    exec 'norm! '. scroll_size . scroll_map
+    call setpos('.',[0, line('w0')+l_diff, prev_pos_c, 0])
+    if is_down
+      let prev_pos = getpos('.')
+      keepjumps normal! Lzb
+      call setpos('.',prev_pos)
+    endif
+  else
+    exec is_down ? '' : 'let scroll_size = -scroll_size'
+    call setpos('.',[0, line('.')+scroll_size, prev_pos_c, 0])
+  endif
 endfun
 noremap <silent> <Tab>   :call <SID>TabScroll('down')<CR>
 noremap <silent> <S-Tab> :call <SID>TabScroll('up')<CR>
@@ -460,9 +477,6 @@ nnoremap p p`]
 xnoremap p p`]
 nnoremap gp p
 xnoremap gp p
-
-" visually select the last change or yank
-nnoremap gV `[v`]
 
 " move visual selections around without yank/paste
 xnoremap <silent> <Up>   :move-2<CR>gv=gv
@@ -722,6 +736,38 @@ cnoremap :: <C-r>=fnameescape(expand('%:p:h'))<CR>/
 cnoremap <expr>  <Tab>    getcmdtype() =~ '[?/]' ? '<C-g>' : feedkeys('<Tab>', 'int')[1]
 cnoremap <expr>  <S-Tab>  getcmdtype() =~ '[?/]' ? '<C-t>' : feedkeys('<S-Tab>', 'int')[1]
 
+" visually select the last change or yank
+nnoremap gV `[v`]
+
+" consistent and sane terminal escape
+if s:is_nvim
+  let s:t_esc = '<C-\><C-n>'
+elseif has('terminal')
+  let s:t_esc = '<C-w>N'
+endif
+" select the last :terminal's output, similar to `:read!` {{{
+" - allows for gV to select the last command's output as the last change
+let s:vimrc_term_cmd_mark = 0
+fun! s:TermMakeCmdMark(is_start)
+  if !a:is_start && !s:vimrc_term_cmd_mark | return | endif
+  if a:is_start == 1
+    call setpos("'[", [0, line('.')+1, 0, 0])
+    let s:vimrc_term_cmd_mark = 1
+  else
+    call setpos("']", [0, line('.')-1, col([line('.')-1,'$']), 0])
+    let s:vimrc_term_cmd_mark = 0
+  endif
+endfun
+let s:tmark_start = ":call <SID>TermMakeCmdMark(1)"
+let s:tmark_end   = ":call <SID>TermMakeCmdMark(0)"
+exec 'tnoremap <CR>  '. s:t_esc . s:tmark_start .'<CR>a<CR>'
+let s:t_esc .= s:tmark_end.'<CR>'
+exec 'tnoremap <C-[> '. s:t_esc
+exec 'tnoremap <C-]> '. s:t_esc
+exec 'tnoremap <C-g> '. s:t_esc
+exec 'tnoremap <Esc> '. s:t_esc
+" }}}
+
 " automatically create undo breaks in insert mode {{{
 " it's better to just build the habit of exiting and entering
 " insert mode in small chunks, but still gonna try this out.
@@ -737,23 +783,6 @@ augroup vimrc_auto_insert_undo_breaks
 augroup END
 "}}}
 
-" consistent and sane terminal escape {{{
-if s:is_nvim
-  " - TODO fix when only 1 line
-  " - set change marks for command output
-  " - allows for gV (custom mapping to select last change)
-  "   to select the last command's output
-  " - similar idea to ':read !'
-  let s:t_esc = '<C-\><C-n>k$m]j$'
-  exec "tnoremap <CR> ".
-        \ s:t_esc .":call setpos(\"'[\",[0,line('.')+1,0,0])<CR>a<CR>"
-elseif has('terminal')
-  let s:t_esc = '<C-w>N'
-endif
-exec 'tnoremap <C-[> '. s:t_esc
-exec 'tnoremap <C-]> '. s:t_esc
-exec 'tnoremap <C-g> '. s:t_esc
-exec 'tnoremap <Esc> '. s:t_esc
 " }}}
 
 " }}}
@@ -785,14 +814,14 @@ endif
 " I've probably pressed this command over a million times
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
 
-" open :terminal consistently {{{
+" :terminal consistency with vim and nvim {{{
 let s:space_t_map  = 'nnoremap <Space>t :'. (s:is_nvim ? 'split +' : '')
-let s:space_t_map .= 'term'. (s:is_nvim ? '\ ' : ' ') .
+let s:space_t_map .= 'term'. (s:is_nvim ? '\ ' : ' ++close') .
       \ (s:is_windows && executable('wsl') ? 'wsl.exe' : '') .'<CR>'
 if s:is_nvim
   augroup vimrc_term_edit_on_open
     au!
-    " au TermOpen * normal! a
+    au TermOpen * normal! a
   augroup END
 endif
 " }}}
