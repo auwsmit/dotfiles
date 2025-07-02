@@ -784,15 +784,15 @@ endif
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
 
 " open :terminal consistently {{{
-let s:space_t_map = 'nnoremap <Space>t :'
-let s:term_cmd = "--cd <C-r>=expand('%:p:h')"
-let s:space_t_map .= 'split +term\ '.
-      \ (s:is_windows ? 'wsl.exe' : '') . s:term_cmd .'<CR>'
+let s:space_t_map  = 'nnoremap <Space>t :'. (s:is_nvim ? 'split +' : '')
+let s:space_t_map .= 'term'. (s:is_nvim ? '\ ' : ' ') .
+      \ (s:is_windows && executable('wsl') ? 'wsl.exe' : '') .'<CR>'
 if s:is_nvim
   augroup vimrc_term_edit_on_open
     au!
     au TermOpen * normal! a
   augroup END
+endif
 " }}}
 exec s:space_t_map
 
