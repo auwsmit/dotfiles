@@ -4,18 +4,29 @@
 eval "$(fzf --bash)"
 
 # minimal prompt
-PS1='\t \w \$ '
+# PS1 = [grey]HH:MM [green]directory [red]prompt sign
+PS1='\[\e[38;5;247m\]\A\[\e[0m\] \[\e[38;5;154m\]\w\[\e[0m\] \[\e[38;5;197m\]\$\[\e[0m\] '
+
+# with yellow username
+# PS1='\[\e[38;5;247m\]\A\[\e[0m\] \[\e[38;5;220m\]\u\[\e[0m\] \[\e[38;5;76m\]\w\[\e[0m\] \[\e[38;5;197m\]\$\[\e[0m\] '
 
 # infinite .bash_history
 HISTSIZE=
 HISTFILESIZE=
 
-export EDITOR=vim
+if command -v "nvim" &>/dev/null; then
+    veditor=nvim
+else
+    veditor=vim
+fi
+export EDITOR=$veditor
 
 # automatically change directories if a directory is the sole argument
 shopt -s autocd
 
 ## ALIASES ##
+
+alias ..='cd ..'
 
 alias ll='ls -lah'
 alias la='ls -a'
