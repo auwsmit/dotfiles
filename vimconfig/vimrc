@@ -31,14 +31,11 @@ call plug#begin()
 Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
 Plug 'tpope/vim-fugitive'   " vim + git integration
 " Plug 'yegappan/mru'         " most recent file list
-Plug 'auwsmit/mru', { 'branch': 'split-in-current-window' }
-" Plug 'Y:\Git\mru'
+Plug 'auwsmit/mru', { 'branch': 'open-file-bugfix' }
+Plug 'Y:\Git\mru'
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
-if s:is_nvim
-  Plug 'stevearc/oil.nvim'    " minimal file explorer++
-else
-  Plug 'justinmk/vim-dirvish' " minimal file explorer
-endif
+Plug 'stevearc/oil.nvim'    " minimal file explorer++
+Plug 'justinmk/vim-dirvish' " minimal file explorer
 Plug 'preservim/nerdtree',  " file tree viewer
       \ { 'on': ['NERDTreeToggle', 'NERDTreeFind', 'NERDTree'] }
 Plug 'junegunn/fzf',        " general fuzzy finder
@@ -46,10 +43,8 @@ Plug 'junegunn/fzf',        " general fuzzy finder
 Plug 'junegunn/fzf.vim'     " fzf + vim integration
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " tag explorer
-if s:is_nvim
-  Plug 'nvim-lua/plenary.nvim'
-  Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
-endif
+Plug 'nvim-lua/plenary.nvim'
+Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
 " Plug 'Y:\Git\vim-spear'
 Plug 'auwsmit/vim-spear'
 
@@ -97,9 +92,7 @@ Plug 'ervandew/supertab'  " tab autocomplete
 Plug 'nicwest/vim-camelsnek' " convert between camel and snake case
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } " align text operator
-if s:is_nvim
-  " Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-endif
+" Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 " " }}}
 " APPEARANCE/UI PLUGINS {{{
@@ -150,13 +143,7 @@ fun! SourcePluginConfigs()
       continue
     endif
     let slash = s:is_windows ? '\' : '/'
-    let plugin_dir = ''
-    " keep separate plugins for vim and nvim
-    if s:is_nvim
-      let plugin_dir = stdpath('data').'/plugged/'.plugin_name
-    else
-      let plugin_dir = g:myvimdir.'/plugged/'.plugin_name
-    endif
+    let plugin_dir = g:myvimdir.'/plugged/'.plugin_name
     let src = (type == 'vim') ? 'source ' : 'luafile '
     " if plugin is currently installed
     if isdirectory(plugin_dir)
@@ -322,9 +309,6 @@ execute 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
 
 augroup vimrc_appearance_and_formatting
   au!
-
-  " " more accurate syntax highlighting
-  " au FileType vim syntax sync fromstart
 
   if s:is_windows
     " Maximize window
