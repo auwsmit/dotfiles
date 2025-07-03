@@ -64,15 +64,15 @@ dir /b /s /a "%home_dir%old_dotfiles" | findstr .>nul || (
 :start
 set choice=
 set /p choice=Install vim plugins? [y/n]:
-IF NOT '%choice%'=='' set choice=%choice:~0,1%
-IF '%choice%'=='y' GOTO yes
-IF '%choice%'=='n' GOTO no
-GOTO start
+if not '%choice%'=='' set choice=%choice:~0,1%
+if '%choice%'=='y' goto yes
+if '%choice%'=='n' goto no
+goto start
 :no
-EXIT
+exit
 :yes
 nvim -c "PlugInstall | quitall"
-EXIT
+exit
 :: }}}
 
 :: END OF MAIN CODE
