@@ -8,7 +8,7 @@ PS1='\[\e[38;5;102m\]\A\[\e[0m\] \[\e[38;5;154m\]\w\[\e[0m\] \[\e[38;5;197m\]\$\
 # disable ctrl-s
 stty -ixon
 
-# automatically change directories if a directory is the sole argument
+# automatically change directories if directory is the sole argument
 shopt -s autocd
 
 # infinite .bash_history
@@ -20,27 +20,54 @@ else
     bashrc_editor=vim
 fi
 export EDITOR=$bashrc_editor
+unset bashrc_editor
 
 # set up fzf key bindings and fuzzy completion
 eval "$(fzf --bash)"
 
 ## ALIASES ##
 
+# safer file management
+alias mv='mv -i'
+alias rm='rm -i'
+alias cp='cp -i'
+alias mkdir='mkdir -vp'
+alias rmdir='rmdir -v'
+
+# human readable, seriously why isn't this the default
+alias du='du -h'
+alias df='df -h'
+alias free='free -h'
+
+# colors
+alias ls='ls --color=auto'
+alias less='less --use-color'
+alias grep='grep --color=auto'
+alias diff='diff --color=auto'
+
+# shortcuts
 alias ..='cd ..'
+alias ll='ls --color=auto -lAh'
+alias la='ls --color=auto -A'
+alias e='$EDITOR'
+alias q='exit'
 
-alias ll='ls -lah'
-alias la='ls -a'
-
-# sudo with personal env and aliases
-alias sume='sudo -E '
-
+# git shortcuts
 alias gs='git status'
 alias gd='git diff'
 alias ga='git add'
+alias gu='git restore --staged'
 alias gc='git commit'
+alias gcm='git commit -m'
 alias gl='git log'
+alias gL='git log --oneline --graph --decorate'
 alias gp='git pull'
 alias gP='git push'
+alias gb='git branch'
+alias gco='git checkout'
+
+# sudo with personal env and aliases
+alias sume='sudo -E '
 
 # simple list of unique history
 alias uhist='history | awk "{\$1=\"\"; print substr(\$0,2)}" | awk "!seen[\$0]++"'
@@ -61,12 +88,11 @@ bashrc_sync_wsl_dotfiles() {
 if command -v "cmd.exe" &>/dev/null; then
     alias gsync='bashrc_sync_wsl_dotfiles'
     alias cdwd='cd /mnt/y/Git/dotfiles'
+else
+    unset bashrc_sync_wsl_dotfiles
 fi
+# cd dotfiles
 alias cdd='cd ~/git/dotfiles'
 
 # up X to go up X directories
 up() { cd $(eval printf '../'%.0s {1..$1}); }
-
-
-## CLEAN-UP ##
-unset bashrc_editor
