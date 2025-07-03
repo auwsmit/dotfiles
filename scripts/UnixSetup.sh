@@ -99,7 +99,13 @@ fi
 while true; do
   read -p "Install vim plugins? [y/n]: " yn
   case $yn in
-    [Yy]* ) nvim -c "PlugInstall | quitall"; break;;
+    [Yy]* )
+      if command -v "nvim" &>/dev/null; then
+        nvim -c "PlugInstall | quitall"
+      else
+        vim -c "PlugInstall | quitall"
+      fi
+      break;;
     [Nn]* ) exit;;
     * ) ;;
   esac
