@@ -27,28 +27,32 @@ my_mkdir() {
 
 backup_orig () {
   if [ -e $1 ]; then
-    my_mkdir $2
-    mv -i $1 $2
+    my_mkdir $backup_dir/$2
+    mv -i $1 $backup_dir/$2
+  fi
+}
+
+# create/update symbolic link
+make_link () {
+  if [ -L $2 ]; then
+    rm $2
+  fi
+  if [ -d $1 ]; then
+    ln -s -d $1 $2
+  fi
+  if [ ! -d $1 ]; then
+    ln -s $1 $2
   fi
 }
 
 # $1 target of the link
 # $2 file to link and backup,
-# $3 path for backup
-make_link_and_backup () {
-  # delete previous symbolic link if it exists
-  if [ -L $2 ]; then rm $2; fi
-  # backup the previous file/folder if it exists
-  backup_orig $2 $3
-  # make symbolic link
-  # for folder
-  if [ -d $1 ]; then
-    ln -s -d $1 $2
+# $3 sub-path for backup folder (optional)
+backup_and_link () {
+  if [ ! -L $2 ]; then
+    backup_orig $2 $3
   fi
-  # for file
-  if [ ! -d $1 ]; then
-    ln -s $1 $2
-  fi
+  make_link $1 $2
   chown -h $username:$username $2
 }
 
@@ -71,24 +75,32 @@ else
 fi
 
 # primary dotfiles
-make_link_and_backup $repo_dir/.bashrc $home/.bashrc $backup_dir
-make_link_and_backup $repo_dir/.inputrc $home/.inputrc $backup_dir
+backup_and_link $repo_dir/.bashrc $home/.bashrc
+backup_and_link $repo_dir/.inputrc $home/.inputrc
 
 # vim
-make_link_and_backup $repo_dir/vimconfig $home/.vim $backup_dir
+backup_and_link $repo_dir/vimconfig $home/.vim
 # check for stray vimrc
-backup_orig $home/.vimrc $backup_dir
+backup_orig $home/.vimrc
 
 # neovim
 my_mkdir $home/.config
 my_mkdir $home/.local/share
-make_link_and_backup $repo_dir/vimconfig $home/.config/nvim      $backup_dir/.config
-make_link_and_backup $repo_dir/vimconfig $home/.local/share/nvim $backup_dir/.local/share
-ln -s $repo_dir/vimconfig/vimrc $repo_dir/vimconfig/init.vim
+backup_and_link $repo_dir/vimconfig       $home/.config/nvim           .config
+backup_and_link $repo_dir/vimconfig       $home/.local/share/nvim      .local/share
+make_link       $repo_dir/vimconfig/vimrc $repo_dir/vimconfig/init.vim
 
 # if backup folder is empty, delete it
 if [ -z "$(ls -A $backup_dir)" ]; then
   rmdir $backup_dir
 fi
 
-# TODO prompt vim plugin install
+# prompt installing vim plugins
+while true; do
+  read -p "Install vim plugins? [y/n]: " yn
+  case $yn in
+    [Yy]* ) nvim -c "PlugInstall | quitall"; break;;
+    [Nn]* ) exit;;
+    * ) ;;
+  esac
+done
