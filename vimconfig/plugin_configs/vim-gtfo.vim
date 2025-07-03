@@ -1,1 +1,1 @@
-let g:gtfo#terminals = { 'win' : 'C:\WINDOWS\system32\cmd.exe /k' }
+let g:gtfo#terminals = { 'win' : 'C:\Windows\System32\cmd.exe /k'}

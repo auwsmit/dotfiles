@@ -1,3 +1,6 @@
+-- disabled
+if 1 then return end
+
 if not vim.fn.has('nvim') then
     return
 end
