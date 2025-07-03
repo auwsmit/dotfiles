@@ -73,10 +73,9 @@ Plug 'junegunn/vim-after-object'
 Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
 Plug 'justinmk/vim-ipmotion'     " { } move over folds
 
-" TODO: fuse these three into one personal search plugin
-" Plug 'romainl/vim-cool'          " auto-clear search highlight
-Plug 'junegunn/vim-slash'        " improved search
-Plug 'henrik/vim-indexed-search' " show total results (works on older versions of vim)
+Plug 'romainl/vim-cool'          " auto-clear search highlight
+" Plug 'junegunn/vim-slash'        " improved search
+" Plug 'henrik/vim-indexed-search' " show total results (works on older versions of vim)
 
 " " }}}
 " SNIPPET/COMPLETION PLUGINS {{{
@@ -180,8 +179,6 @@ set virtualedit=all
 set sessionoptions-=options
 set clipboard^=unnamed
 set foldopen-=block
-set shortmess-=S
-set shortmess+=aF
 silent! set mouse=a
 set vb t_vb=
 if exists('&belloff')
@@ -243,7 +240,7 @@ set shiftwidth=4 softtabstop=-1 expandtab
 
 " indenting/formatting
 set autoindent
-set smartindent " TODO: try cindent
+set smartindent
 set encoding=utf-8
 
 " mostly aesthetic options
@@ -262,6 +259,9 @@ set numberwidth=1
 set ruler
 set splitright
 set noshowmode
+" TODO temp
+" set shortmess-=S
+set shortmess+=mrF
 if has('linebreak')
   set showbreak=«
   set breakindent
@@ -373,7 +373,7 @@ nnoremap <silent> <C-b> :call <SID>ScrollMakesJump()<CR><C-u>
 nnoremap <silent> <C-f> :call <SID>ScrollMakesJump()<CR><C-d>
 
 " fast and easy 1/4th page scroll
-" TODO fix with diffs
+" TODO fix edge case with diffs
 fun! s:TabScroll(scroll)
   " also make a jump after enough distance
   call s:ScrollMakesJump()
