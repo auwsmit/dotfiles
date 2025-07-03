@@ -32,7 +32,7 @@ Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
 Plug 'tpope/vim-fugitive'   " vim + git integration
 " Plug 'yegappan/mru'         " most recent file list
 Plug 'auwsmit/mru', { 'branch': 'open-file-bugfix' }
-Plug 'Y:\Git\mru'
+" Plug 'Y:\Git\mru'
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
 Plug 'stevearc/oil.nvim'    " minimal file explorer++
 Plug 'justinmk/vim-dirvish' " minimal file explorer
@@ -723,12 +723,16 @@ cnoremap <expr>  <S-Tab>  getcmdtype() =~ '[?/]' ? '<C-t>' : feedkeys('<S-Tab>',
 " visually select the last change or yank
 nnoremap gV `[v`]
 
-" consistent and sane terminal escape
+" consistent and sane terminal escape {{{
+" - press <Esc> to exit terminal mode
+" - press <C-\><C-\> to send an <Esc> to the terminal
+" - see the rest of the mapping in the next fold
 if s:is_nvim
   let s:t_esc = '<C-\><C-n>'
 elseif has('terminal')
   let s:t_esc = '<C-w>N'
 endif
+tnoremap <C-\><C-\> <Esc>
 " select the last :terminal's output, similar to `:read!` {{{
 " - allows for gV to select the last command's output as the last change
 let s:vimrc_term_cmd_mark = 0
@@ -744,12 +748,12 @@ fun! s:TermMakeCmdMark(is_start)
 endfun
 let s:tmark_start = ":call <SID>TermMakeCmdMark(1)"
 let s:tmark_end   = ":call <SID>TermMakeCmdMark(0)"
-exec 'tnoremap <CR>  '. s:t_esc . s:tmark_start .'<CR>a<CR>'
+exec 'tnoremap <silent> <CR>  '. s:t_esc . s:tmark_start .'<CR>a<CR>'
 let s:t_esc .= s:tmark_end.'<CR>'
-exec 'tnoremap <C-[> '. s:t_esc
-exec 'tnoremap <C-]> '. s:t_esc
-exec 'tnoremap <C-g> '. s:t_esc
-exec 'tnoremap <Esc> '. s:t_esc
+exec 'tnoremap <silent> <Esc> '. s:t_esc
+exec 'tnoremap <silent> <C-[> '. s:t_esc
+exec 'tnoremap <silent> <C-]> '. s:t_esc
+exec 'tnoremap <silent> <C-g> '. s:t_esc
 " }}}
 
 " automatically create undo breaks in insert mode {{{
@@ -800,7 +804,7 @@ nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
 
 " :terminal consistency with vim and nvim {{{
 let s:space_t_map  = 'nnoremap <Space>t :'. (s:is_nvim ? 'split +' : '')
-let s:space_t_map .= 'term'. (s:is_nvim ? '\ ' : ' ++close') .
+let s:space_t_map .= 'term'. (s:is_nvim ? '\ ' : ' ++close ') .
       \ (s:is_windows && executable('wsl') ? 'wsl.exe' : '') .'<CR>'
 if s:is_nvim
   augroup vimrc_term_edit_on_open
