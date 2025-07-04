@@ -33,33 +33,42 @@ if exist  "%backup_dir%" (
 ) else (
 mkdir "%backup_dir%"
 )
-:: }}}
 
-:: Vim
+:: }}}
+:: Vim {{{
 call :Backup "%home_dir%"         "vimfiles" ""
 call :Link   "%home_dir%vimfiles" "%repo_dir%vimconfig"
 
-:: Vim in git bash
+:: }}}
+:: Vim in git bash {{{
 call :Backup "%home_dir%"     ".vim" ""
 call :Link   "%home_dir%.vim" "%repo_dir%vimconfig"
 
+:: }}}
 :: Neovim {{{
 call :Backup "%home_dir%AppData\Local\"          "nvim"         "AppData\Local"
 call :Backup "%home_dir%AppData\Local\"          "nvim-data"    "AppData\Local"
 call :Link   "%home_dir%AppData\Local\nvim"      "%repo_dir%vimconfig"
 call :Link   "%home_dir%AppData\Local\nvim-data" "%repo_dir%vimconfig"
 call :Link   "%repo_dir%vimconfig\init.vim"      "%repo_dir%vimconfig\vimrc"
-:: }}}
 
-:: NileSoft Shell
-call :Backup "C:\Program Files\NileSoft Shell\"    "shell.nss"    "Nilesoft Shell"
+:: }}}
+:: Alacritty {{{
+call :Backup "C:\Users\Austin\AppData\Roaming\alacritty\"   "alacritty.toml"   ""
+call :Link "C:\Users\Austin\AppData\Roaming\alacritty\alacritty.toml" "%repo_dir%alacritty_windows.toml"
+
+:: }}}
+:: NileSoft Shell {{{
+call :Backup "C:\Program Files\NileSoft Shell\"   "shell.nss"   "NileSoft Shell"
 call :Link   "C:\Program Files\NileSoft Shell\shell.nss" "%repo_dir%shell.nss"
 
-:: delete backup folder if nothing was backed up
-dir /b /s /a "%home_dir%old_dotfiles" | findstr .>nul || (
+:: }}}
+:: delete backup folder if nothing was backed up {{{
+dir "%home_dir%old_dotfiles" |  find "0 File(s)" | find "0 bytes" && (
     rmdir "%home_dir%old_dotfiles"
 )
 
+:: }}}
 :: prompt installing vim plugins {{{
 :start
 set choice=
@@ -73,8 +82,8 @@ exit
 :yes
 nvim -c "PlugInstall | quitall"
 exit
-:: }}}
 
+:: }}}
 :: END OF MAIN CODE
 :: ================
 
@@ -84,9 +93,8 @@ exit
 
 exit /B %errorlevel%
 
-:: Backup file or directory to backup folder
+:: Backup file or directory to backup folder {{{
 :Backup
-:: {{{
 set file_dir=%~1
 set filename=%~2
 set backup_path=%~3
@@ -103,11 +111,10 @@ if exist "%file_dir%%filename%"  (
     MOVE /-y "%file_dir%%filename%" "%backup_dir%%backup_path%"
 )
 exit /B 0
-:: }}}
 
-:: Remove old link before making a new one
+:: }}}
+:: Remove old link before making a new one {{{
 :Link
-:: {{{
 set link=%~1
 set target=%~2
 if exist "%link%"  (
