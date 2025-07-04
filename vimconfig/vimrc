@@ -625,8 +625,8 @@ fun! s:helpmaps() abort
   if &buftype == 'help'
     nnoremap <buffer> q :bd<CR>
     " navigate links
-    nnoremap <silent><buffer> <C-j> :call search("\|\\S\\+\|")<CR>
-    nnoremap <silent><buffer> <C-k> :call search("\|\\S\\+\|",'b')<CR>
+    nnoremap <silent><buffer> <C-j> m':call search("\|\\S\\+\|")<CR>
+    nnoremap <silent><buffer> <C-k> m':call search("\|\\S\\+\|",'b')<CR>
     nnoremap <buffer> <CR> <C-]>
   endif
 endfun

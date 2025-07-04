@@ -1,1 +1,1 @@
-let g:peekaboo_delay = 350
+let g:peekaboo_delay = 1000

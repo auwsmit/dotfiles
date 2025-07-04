@@ -1,14 +1,21 @@
 " disable auto updating settings for harpoon
 let g:actnum_autoupdate = 0
 
-" tpope's unimpaired also updates active numbers
+" tpope's unimpaired style bindings
+fun s:toggle()
+  if &nonu && &nornu
+    SetActiveNumbers nu rnu
+  else
+    SetActiveNumbers nonu nornu
+endfun
 fun! s:ActiveNumberUnimpaired()
-  nnoremap yon :SetActiveNumbers number!<cr>
-  nnoremap [on :SetActiveNumbers number<cr>
-  nnoremap ]on :SetActiveNumbers nonumber<cr>
-  nnoremap yor :SetActiveNumbers relativenumber!<cr>
-  nnoremap [or :SetActiveNumbers relativenumber<cr>
-  nnoremap ]or :SetActiveNumbers norelativenumber<cr>
+  nnoremap <silent> yoa :call <SID>toggle()<CR>
+  nnoremap <silent> yon :SetActiveNumbers number!<CR>
+  nnoremap <silent> yor :SetActiveNumbers relativenumber!<CR>
+  " nnoremap <silent> [on :SetActiveNumbers number<CR>
+  " nnoremap <silent> ]on :SetActiveNumbers nonumber<CR>
+  " nnoremap <silent> [or :SetActiveNumbers relativenumber<CR>
+  " nnoremap <silent> ]or :SetActiveNumbers norelativenumber<CR>
 endfun
 
 augroup active_number_config
