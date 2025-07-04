@@ -72,27 +72,35 @@ alias sume='sudo -E '
 # simple list of unique history
 alias uhist='history | awk "{\$1=\"\"; print substr(\$0,2)}" | awk "!seen[\$0]++"'
 
-# synchronize Windows and WSL dotfiles at the same time
-bashrc_sync_wsl_dotfiles() {
-    local temp_wd=$(pwd)
-    if [ -e /mnt/y/Git/dotfiles ]; then
-        cd /mnt/y/Git/dotfiles
-        git pull
-    fi
-    if [ -e ~/git/dotfiles ]; then
-        cd ~/git/dotfiles
-        git pull
-    fi
-    cd $temp_wd
-}
-if command -v "cmd.exe" &>/dev/null; then
-    alias gsync='bashrc_sync_wsl_dotfiles'
-    alias cdwd='cd /mnt/y/Git/dotfiles'
-else
-    unset bashrc_sync_wsl_dotfiles
-fi
+# up X to go up X directories
+up() { cd $(eval printf '../'%.0s {1..$1}); }
+
 # cd dotfiles
 alias cdd='cd ~/git/dotfiles'
 
-# up X to go up X directories
-up() { cd $(eval printf '../'%.0s {1..$1}); }
+# WSL specific mappings
+if command -v "cmd.exe" &>/dev/null; then
+    # synchronize Windows and WSL dotfiles at the same time
+    bashrc_sync_wsl_dotfiles() {
+        local temp_wd=$(pwd)
+        if [ -e /mnt/y/Git/dotfiles ]; then
+            cd /mnt/y/Git/dotfiles
+            git pull
+        fi
+        if [ -e ~/git/dotfiles ]; then
+            cd ~/git/dotfiles
+            git pull
+        fi
+        cd $temp_wd
+    }
+    alias gsync='bashrc_sync_wsl_dotfiles'
+    alias cdwd='cd /mnt/y/Git/dotfiles'
+    alias dir='cmd.exe /c dir.exe'
+    alias pwsh='powershell.exe'
+    alias pwshc='powershell.exe -Command'
+    alias cmd='cmd.exe'
+    alias cmdc='cmd.exe /c'
+else
+    unset bashrc_sync_wsl_dotfiles
+fi
+
