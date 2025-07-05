@@ -94,7 +94,7 @@ if command -v "cmd.exe" &>/dev/null; then
         cd $temp_wd
     }
     alias gsync='bashrc_sync_wsl_dotfiles'
-    alias cdwd='cd /mnt/y/Git/dotfiles'
+    alias cdwd='cd /mnt/y/git/dotfiles'
     alias dir='cmd.exe /c dir.exe'
     alias pwsh='powershell.exe'
     alias pwshc='powershell.exe -Command'
