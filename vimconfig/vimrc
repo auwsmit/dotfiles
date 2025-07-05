@@ -462,9 +462,19 @@ xnoremap p p`]
 nnoremap gp p
 xnoremap gp p
 
-" move visual selections around without yank/paste
-xnoremap <silent> <Up>   :move-2<CR>gv=gv
-xnoremap <silent> <Down> :move'>+<CR>gv=gv
+" move selected lines up or down with no reindenting
+" we'll see of I actually use this
+fun! s:MoveLines(dir)
+  let old_reg = @"
+  let old_col = col('.')
+  normal! gv
+  exec 'normal! '. (a:dir == 'down' ? 'dp' : 'dkP')
+  exec 'normal! 0'. old_col .'l'
+  normal! '[V']
+  let @" = old_reg
+endfun
+xnoremap <Up> :<C-u>call <SID>MoveLines('up')<CR>
+xnoremap <Down> :<C-u>call <SID>MoveLines('down')<CR>
 
 " i_CTRL-[ finger slip
 inoremap <C-]> <Esc>
