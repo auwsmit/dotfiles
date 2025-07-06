@@ -72,10 +72,8 @@ Plug 'junegunn/vim-after-object'
 
 Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
 Plug 'justinmk/vim-ipmotion'     " { } move over folds
-
 Plug 'romainl/vim-cool'          " auto-clear search highlight
-" Plug 'junegunn/vim-slash'        " improved search
-" Plug 'henrik/vim-indexed-search' " show total results (works on older versions of vim)
+Plug 'henrik/vim-indexed-search' " show search count & centered search
 
 " " }}}
 " SNIPPET/COMPLETION PLUGINS {{{
@@ -247,8 +245,7 @@ if has('linebreak')
 else
   set listchars+=eol:¬
 endif
-" TODO disabled until search plugin is finished
-" set shortmess-=S
+set shortmess-=S  " show search count [1/99]
 set shortmess+=mrF
 set cpoptions+=$
 set foldlevel=999
@@ -636,15 +633,21 @@ nnoremap yoS :call <SID>ToggleSyntaxHighlighting()<CR>
 " }}}
 
 " improved help mappings {{{
+" TODO: match 'word' but not *'word'*
+"       do not match ^'word'
+fun! s:helpsearch(dir)
+  let link_match = '|\S\+|'
+  let opt_match  = '''\S\+'''
+  call search(link_match.'\|'.opt_match,'p'.a:dir)
+endfun fun
 fun! s:helpmaps() abort
   if &buftype == 'help'
     nnoremap <buffer> q :bd<CR>
     " navigate links
-    " TODO: modify to match 'options'
-    "       match 'word' but not *'word'*
-    "       do not match ^'word'
-    nnoremap <silent><buffer> <C-j> m':call search("\|\\S\\+\|")<CR>
-    nnoremap <silent><buffer> <C-k> m':call search("\|\\S\\+\|",'b')<CR>
+    nnoremap <silent><buffer> <C-j> :call <SID>helpsearch('')<CR>
+    nnoremap <silent><buffer> <C-k> :call <SID>helpsearch('b')<CR>
+    " nnoremap <silent><buffer> <C-j> m':call search("\|\\S\\+\|")<CR>
+    " nnoremap <silent><buffer> <C-k> m':call search("\|\\S\\+\|",'b')<CR>
     nnoremap <buffer> <CR> <C-]>
   endif
 endfun
