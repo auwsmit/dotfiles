@@ -198,17 +198,6 @@ set wildignore+=*.spl                            " compiled spelling word lists
 set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX garbage
 
-if s:is_windows
-  set makeprg=build.bat
-  " TODO: check for rg
-  if !s:is_nvim && executable('rg')
-    set grepprg=rg\ --vimgrep\ -uu
-  elseif !s:is_nvim && executable('grep')
-      set grepprg=grep\ -n
-    endif
-  endif
-endif
-
 " backups, swapfiles, & undofiles in one place
 let s:tempdir=expand(g:myvimdir .(s:is_nvim ? '/neotmp/' : '/tmp/'))
 if !isdirectory(s:tempdir)
@@ -283,7 +272,7 @@ if &term =~ '256color'
 endif
 
 " bring back cursor colors in nvim
-if s:has_nvim
+if s:is_nvim
   set guicursor=n-v-c-sm:block-Cursor/lCursor,i-ci-ve:ver25-Cursor/lCursor,r-cr-o:hor20-Cursor/lCursor,t:block-blinkon500-blinkoff500-TermCursor
 endif
 

@@ -1,4 +1,12 @@
-nnoremap <silent> <space>L }:call lightline#toggle()<cr>``
+" showmode is redundant, so disable it when lightline is enabled
+set noshowmode
+
+" toggle lightline mapping
+fun! s:also_showmode_toggle()
+  call lightline#toggle()
+  exec 'set '. (&statusline =~ '%{lightline' ? 'no' : '') . 'showmode'
+endfun
+nnoremap <silent> <Space>L :call <SID>also_showmode_toggle()<CR>
 
 " layout + compatibility with other plugins {{{
 let g:lightline = {
@@ -80,3 +88,5 @@ fun! TagbarStatusFunc(current, sort, fname, ...) abort
   let g:lightline.fname = a:fname
   return lightline#statusline(0)
 endfun
+" }}}
+" vim: set foldmethod=marker:
