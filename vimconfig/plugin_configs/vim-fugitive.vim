@@ -10,7 +10,9 @@ nnoremap <space>gg :Ggrep<space>
 
 fun! s:fugitive_maps()
   nnoremap <buffer> q :bdelete<cr>
-  nnoremap <buffer> gq q
+  if &ft != 'gitcommit'
+    nnoremap <buffer> gq q
+  endif
   " because of my weird custom :
   nnoremap <buffer> : :
 endfun
