@@ -273,7 +273,8 @@ endif
 
 " bring back cursor colors in nvim
 if s:is_nvim
-  set guicursor=n-v-c-sm:block-Cursor/lCursor,i-ci-ve:ver25-Cursor/lCursor,r-cr-o:hor20-Cursor/lCursor,t:block-blinkon500-blinkoff500-TermCursor
+  set guicursor=n-v-c-sm:block-Cursor/lCursor,i-ci-ve:ver25-Cursor/lCursor,
+        \r-cr-o:hor20-Cursor/lCursor,t:block-blinkon500-blinkoff500-TermCursor
 endif
 
 " fix weird cursor issues on windows terminals
@@ -371,7 +372,7 @@ nnoremap <silent> <C-f> :call <SID>ScrollMakesJump()<CR><C-d>
 " fast and easy 1/4th page scroll
 " TODO fix edge case with diffs
 fun! s:TabScroll(scroll)
-  " also make a jump after enough distance
+  " make a jump after enough distance
   call s:ScrollMakesJump()
   let is_down = (a:scroll == 'down')
   let l_diff  = line('.') - line('w0')
@@ -461,8 +462,7 @@ xnoremap gp p
 " move selected lines up or down with no reindenting {{{
 " we'll see of I actually use this
 fun! s:MoveLines(dir)
-  let old_reg = @"
-  let old_col = col('.')-1
+  let [old_reg, old_col] = [@", col('.')-1]
   normal! gv
   exec 'normal! '. (a:dir == 'down' ? 'dp' : 'dkP')
   normal! '[V']
@@ -574,11 +574,12 @@ noremap <S-Down>  <C-w>-
 noremap <S-Right> <C-w>>
 
 " resize font for gui {{{
+" TODO: detect when no font scale is given
+" default size 10 or 12
 let s:default_scale = matchstr(&guifont, '\d\+$')
 fun! s:ChangeFontSize(type)
   if &guifont == '' | return | endif
-  let font = &guifont
-  let scale = -1
+  let [font, scale] = [&guifont, -1]
   if a:type == '0'
     let scale = s:default_scale
   else
@@ -611,9 +612,13 @@ if s:is_windows
 endif
 " }}}
 
-" unimpaired.vim inspired
+" unimpaired.vim inspired {{{
 " toggle centering the cursor
 nnoremap yoz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>
+
+" toggle both relative and normal numbers
+nnoremap yoN :exec 'set '.(!&nu && !&rnu ? 'nu rnu' : 'nonu nornu')<CR>
+      \:echo 'set '.(&nu ? 'number relativenumber' : 'nonumber norelativenumber')<CR>
 
 " toggle syntax highlighting {{{
 " useful when Vim is crippled by its inefficient highlighting
@@ -628,6 +633,7 @@ endfun
 command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
 " }}}
 nnoremap yoS :call <SID>ToggleSyntaxHighlighting()<CR>
+" }}}
 
 " improved help mappings {{{
 fun! s:helpmaps() abort
