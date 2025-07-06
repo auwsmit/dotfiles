@@ -157,15 +157,15 @@ call SourcePluginConfigs()
 " }}}
 " GENERAL SETTINGS {{{
 
-" convenient options
+" convenience / quality of life
 set incsearch
-set ignorecase
-set smartcase
-set gdefault
+set ignorecase smartcase " be careful with :g and :s
 set autoread
 set path+=**
+set virtualedit=all
+set clipboard^=unnamed " make system clipboard the default register
 
-" sensible options for me
+" sensible options
 set hidden
 set lazyredraw
 set showcmd
@@ -175,12 +175,9 @@ set sidescroll=8
 set backspace=indent,eol,start
 set history=10000
 set undolevels=10000
-set complete=.,w,b,t
 set synmaxcol=1024
 set nrformats-=octal
-set virtualedit=all
-set sessionoptions-=options
-set clipboard^=unnamed
+set sessionoptions-=options " only save local options
 set foldopen-=block
 silent! set mouse=a
 set vb t_vb=
@@ -188,14 +185,8 @@ if exists('&belloff')
   set belloff=all
 endif
 
-if s:is_windows
-  set makeprg=build.bat
-  if executable('grep')
-    set grepprg=grep\ -n
-  endif
-endif
-
-" command-line completion settings
+" completion settings
+set complete=.,w,b,t " ignore unloaded buffers for autocomplete
 set wildmenu
 set wildmode=full
 silent! set wildoptions+=fuzzy
@@ -206,6 +197,17 @@ set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest " compiled object files
 set wildignore+=*.spl                            " compiled spelling word lists
 set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX garbage
+
+if s:is_windows
+  set makeprg=build.bat
+  " TODO: check for rg
+  if !s:is_nvim && executable('rg')
+    set grepprg=rg\ --vimgrep\ -uu
+  elseif !s:is_nvim && executable('grep')
+      set grepprg=grep\ -n
+    endif
+  endif
+endif
 
 " backups, swapfiles, & undofiles in one place
 let s:tempdir=expand(g:myvimdir .(s:is_nvim ? '/neotmp/' : '/tmp/'))
@@ -224,7 +226,6 @@ if has('persistent_undo')
   let &undodir=s:tempdir .'undo//'
 endif
 
-
 " Neovide config
 if exists("g:neovide")
   " no distracting animations
@@ -237,40 +238,41 @@ endif
 " some settings will be overwritten when certain filetypes are detected
 " see: filetype-indent-on, ftplugins, & after-directory
 
-" default tab settings (vim-sleuth will usually override this)
-set smarttab
-set shiftwidth=4 softtabstop=-1 expandtab
-
 " indenting/formatting
-set autoindent
-set smartindent
+set autoindent smartindent " try cindent instead
 set encoding=utf-8
 
+" default tab settings (vim-sleuth will usually override this)
+set shiftwidth=4 softtabstop=-1 expandtab
+set smarttab " smarter tab insertion/deletion
+
 " mostly aesthetic options
-set hlsearch
-set cpoptions+=$
-set foldlevel=999
-set foldmethod=indent
-set guioptions=
-set laststatus=2
-set linebreak
-set list
-set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
-set cursorline
 set number relativenumber
 set numberwidth=1
-set ruler
-set splitright
-set noshowmode
-" TODO temp
-" set shortmess-=S
-set shortmess+=mrF
+set cursorline
+set list listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
+set linebreak
 if has('linebreak')
   set showbreak=«
   set breakindent
 else
   set listchars+=eol:¬
 endif
+" TODO disabled until search plugin is finished
+" set shortmess-=S
+set shortmess+=mrF
+set cpoptions+=$
+set foldlevel=999
+set foldmethod=indent
+set guioptions=
+
+" statusline when lightline is disabled or unavailable
+execute 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
+
+" sensible behavior
+set hlsearch
+set laststatus=2 ruler
+set splitright
 if has('termguicolors')
   set termguicolors
 endif
@@ -278,6 +280,11 @@ endif
 " render properly when inside 256-color tmux and GNU screen.
 if &term =~ '256color'
   set t_ut=
+endif
+
+" bring back cursor colors in nvim
+if s:has_nvim
+  set guicursor=n-v-c-sm:block-Cursor/lCursor,i-ci-ve:ver25-Cursor/lCursor,r-cr-o:hor20-Cursor/lCursor,t:block-blinkon500-blinkoff500-TermCursor
 endif
 
 " fix weird cursor issues on windows terminals
@@ -307,24 +314,21 @@ call VimrcColorFallback('unokai')
 call VimrcColorFallback('habamax')
 call VimrcColorFallback('desert')
 
-" my statusline
-execute 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
-
 augroup vimrc_appearance_and_formatting
   au!
-
-  if s:is_windows
-    " Maximize window
-    au GUIEnter * simalt ~x
-  endif
-
-  " resize vim-windows when program window is resized
-  au VimResized * wincmd =
 
   " this makes the trailing space indicator invisible
   " while typing, otherwise it can be distracting
   au InsertEnter * set listchars-=trail:■
   au InsertLeave * set listchars+=trail:■
+
+  " resize vim-windows when program window is resized
+  au VimResized * wincmd =
+
+  if s:is_windows
+    " Maximize window
+    au GUIEnter * simalt ~x
+  endif
 
 augroup END
 
@@ -625,9 +629,12 @@ nnoremap yoz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>
 " toggle syntax highlighting {{{
 " useful when Vim is crippled by its inefficient highlighting
 fun! s:ToggleSyntaxHighlighting() abort
-  let folds = &foldlevel
+  let [folds, prev_fold_closed] = [&foldlevel, foldclosed('.')]
   execute 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
   let &foldlevel=folds
+  while (foldclosed('.') != -1) && (foldclosed('.') != prev_fold_closed)
+    normal! za
+  endwhile
 endfun
 command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
 " }}}
@@ -638,6 +645,9 @@ fun! s:helpmaps() abort
   if &buftype == 'help'
     nnoremap <buffer> q :bd<CR>
     " navigate links
+    " TODO: modify to match 'options'
+    "       match 'word' but not *'word'*
+    "       do not match ^'word'
     nnoremap <silent><buffer> <C-j> m':call search("\|\\S\\+\|")<CR>
     nnoremap <silent><buffer> <C-k> m':call search("\|\\S\\+\|",'b')<CR>
     nnoremap <buffer> <CR> <C-]>
