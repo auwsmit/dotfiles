@@ -31,7 +31,7 @@ call plug#begin()
 Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
 Plug 'tpope/vim-fugitive'   " vim + git integration
 " Plug 'yegappan/mru'         " most recent file list
-Plug 'auwsmit/mru', { 'branch': 'open-file-bugfix' }
+Plug 'auwsmit/mru', { 'branch': 'personal-use' }
 " Plug 'Y:\Git\mru'
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
 Plug 'stevearc/oil.nvim'    " minimal file explorer++
@@ -156,17 +156,19 @@ call SourcePluginConfigs()
 " }}}
 " GENERAL SETTINGS {{{
 
-" sensible options for me
-set hidden
+" convenient options
 set incsearch
 set ignorecase
 set smartcase
-set autoread
-set lazyredraw
 set gdefault
+set autoread
+set path+=**
+
+" sensible options for me
+set hidden
+set lazyredraw
 set showcmd
 set nostartofline
-set path+=**
 set modeline
 set sidescroll=8
 set backspace=indent,eol,start
@@ -462,24 +464,25 @@ xnoremap p p`]
 nnoremap gp p
 xnoremap gp p
 
-" move selected lines up or down with no reindenting
+" move selected lines up or down with no reindenting {{{
 " we'll see of I actually use this
 fun! s:MoveLines(dir)
   let old_reg = @"
-  let old_col = col('.')
+  let old_col = col('.')-1
   normal! gv
   exec 'normal! '. (a:dir == 'down' ? 'dp' : 'dkP')
-  exec 'normal! 0'. old_col .'l'
   normal! '[V']
+  exec 'normal! 0'. (old_col != 0 ? (old_col .'l') : '')
   let @" = old_reg
 endfun
-xnoremap <Up> :<C-u>call <SID>MoveLines('up')<CR>
-xnoremap <Down> :<C-u>call <SID>MoveLines('down')<CR>
+" }}}
+xnoremap <Up> <Esc>:call <SID>MoveLines('up')<CR>
+xnoremap <Down> <Esc>:call <SID>MoveLines('down')<CR>
 
 " i_CTRL-[ finger slip
 inoremap <C-]> <Esc>
 
-" edit or create plugin config {{{
+" <CR> in vimrc to edit or create plugin config {{{
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
 fun! s:GotoPluginConfig()
   if getline('.') =~ "Plug '.*'"
@@ -510,16 +513,16 @@ endfun
 
 fun! s:PluginConfigMapper()
   let current_file = expand('%:t')
-  if current_file == 'init.vim' || current_file == 'vimrc'
+  if current_file =~ 'init\.\(vim\|lua\)$' || current_file == 'vimrc'
     nnoremap <silent><buffer> <CR> :call <SID>GotoPluginConfig()<CR>
   endif
 endfun
 
-" }}}
 augroup vimrc_view_plugin_config
   au!
   au FileType vim call <SID>PluginConfigMapper()
 augroup END
+" }}}
 
 " }}}
 " STANDARD MAPS {{{
@@ -554,7 +557,7 @@ nnoremap <C-S-Q> :qall<CR>
 fun! s:buflist_proper_esc()
   " otherwise you need to press esc twice
   cnoremap <silent> <buffer> <Esc> <C-u><Esc><Esc>:call <SID>buflist_remove_maps()<CR>
-  cnoremap <silent> <buffer> <C-g> <C-u><Esc><Esc>:call <SID>buflist_remove_maps()<CR>
+  cnoremap <silent> <buffer> <C-g> <C-u><Es><Esc>:call <SID>buflist_remove_maps()<CR>
   cnoremap <silent> <buffer> <CR> <CR>:call <SID>buflist_remove_maps()<CR>
 endfun
 fun! s:buflist_remove_maps()
@@ -608,8 +611,7 @@ endif
 if s:is_windows
   augroup vimrc_fix_gvim_maps
     au VimEnter * if has('gui_running') && exists('*test_mswin_event')
-          \     |   call test_mswin_event('set_keycode_trans_strategy',
-          \                              {'strategy': 'experimental'})
+          \     |   call test_mswin_event('set_keycode_trans_strategy', {'strategy': 'experimental'})
           \     | endif
   augroup END
 endif
@@ -832,6 +834,10 @@ function! s:HelpWithHistory(type)
     let text = getline('.')[col("'<")-1:col("'>")-1]
   elseif a:type == 'word'
     let text = expand('<cword>')
+  endif
+  " check for 'option's
+  if getline('.') =~ "^\s*set"
+    let text = "'". text
   endif
   let cmd = 'help ' . text
   call histadd(':', cmd)
