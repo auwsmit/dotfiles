@@ -114,7 +114,8 @@ Plug 'junegunn/vim-peekaboo'    " preview registers
 Plug 'tpope/vim-rsi'            " readline key maps for cmd and ins mode
 Plug 'tpope/vim-repeat'         " allows plugins to . repeat easier
 Plug 'tpope/vim-sleuth'         " auto-detect tab settings per-file
-Plug 'tpope/vim-unimpaired'     " tons of useful [x/]x mappings
+" Plug 'tpope/vim-unimpaired'     " tons of useful [x/]x mappings
+Plug 'auwsmit/vim-unimpaired', { 'branch': 'readonly-register-paste' }
 Plug 'Konfekt/FastFold'         " optimize how Vim updates folds
 Plug 'farmergreg/vim-lastplace' " reopen files at last position
 Plug 'xolox/vim-session'        " simplified session management
