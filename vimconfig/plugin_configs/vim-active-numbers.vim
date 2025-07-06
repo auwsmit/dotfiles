@@ -1,15 +1,18 @@
-" disable auto updating settings for harpoon
-let g:actnum_autoupdate = 0
+" " disable auto updating settings for harpoon
+" let g:actnum_autoupdate = 0
 
 " tpope's unimpaired style bindings
-fun s:toggle()
-  if &nonu && &nornu
-    SetActiveNumbers nu rnu
-  else
-    SetActiveNumbers nonu nornu
-endfun
+
+" " disabled for now
+" fun s:toggle()
+"   if !&nu && !&rnu
+"     SetActiveNumbers nu rnu
+"   else
+"     SetActiveNumbers nonu nornu
+" endfun
+
 fun! s:ActiveNumberUnimpaired()
-  nnoremap <silent> yoa :call <SID>toggle()<CR>
+  nnoremap <silent> yoa :ActiveNumbers<CR>
   nnoremap <silent> yon :SetActiveNumbers number!<CR>
   nnoremap <silent> yor :SetActiveNumbers relativenumber!<CR>
   " nnoremap <silent> [on :SetActiveNumbers number<CR>
