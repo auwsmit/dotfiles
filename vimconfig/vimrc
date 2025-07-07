@@ -589,23 +589,8 @@ fun! s:ChangeFontSize(type)
 endfun
 if has('gui_running')
   nnoremap <silent> <C-0> :call <SID>ChangeFontSize('0')<CR>
-  if exists('g:neovide')
-    nnoremap <silent> <C-=> :call <SID>ChangeFontSize('+')<CR>
-    nnoremap <silent> <C--> :call <SID>ChangeFontSize('-')<CR>
-  else
-    nnoremap <silent> <C-9> :call <SID>ChangeFontSize('+')<CR>
-    nnoremap <silent> <C-8> :call <SID>ChangeFontSize('-')<CR>
-  endif
-endif
-" enable experimental gvim keycode-translation
-" so the above <C-number> mappings work
-" (neovide is so much better than gvim)
-if s:is_windows
-  augroup vimrc_fix_gvim_maps
-    au VimEnter * if has('gui_running') && exists('*test_mswin_event')
-          \     |   call test_mswin_event('set_keycode_trans_strategy', {'strategy': 'experimental'})
-          \     | endif
-  augroup END
+  nnoremap <silent> <C-=> :call <SID>ChangeFontSize('+')<CR>
+  nnoremap <silent> <C--> :call <SID>ChangeFontSize('-')<CR>
 endif
 " }}}
 
@@ -632,30 +617,34 @@ command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
 nnoremap yoS :call <SID>ToggleSyntaxHighlighting()<CR>
 " }}}
 
-" improved help mappings {{{
-" TODO: match 'word' but not *'word'*
-"       do not match ^'word'
-fun! s:helpsearch(dir)
-  let link_match = '|\S\+|'
-  let opt_match  = '''\S\+'''
-  call search(link_match.'\|'.opt_match,'p'.a:dir)
-endfun fun
-fun! s:helpmaps() abort
-  if &buftype == 'help'
-    nnoremap <buffer> q :bd<CR>
-    " navigate links
-    nnoremap <silent><buffer> <C-j> :call <SID>helpsearch('')<CR>
-    nnoremap <silent><buffer> <C-k> :call <SID>helpsearch('b')<CR>
-    " nnoremap <silent><buffer> <C-j> m':call search("\|\\S\\+\|")<CR>
-    " nnoremap <silent><buffer> <C-k> m':call search("\|\\S\\+\|",'b')<CR>
-    nnoremap <buffer> <CR> <C-]>
-  endif
-endfun
-augroup vimrc_improved_help_maps
-  au!
-  au BufEnter *.txt call s:helpmaps()
-augroup END
-" }}}
+" " improved help mappings {{{
+" fun! s:helpsearch(dir)
+" 'test'
+"   let link_match = '|\S\+|'
+"   let opt_match = '''S\+'''
+"   " do not match *'option'*s
+"   let opt_match = '\*\@<!'.opt_match
+"   " do not match lines beginning with 'option'
+"   let opt_match = ''
+"   let opt_antimatch = '' " it's beautiful
+"   call search(link_match.'\|'.opt_match1,'s'.a:dir)
+" endfun fun
+" fun! s:helpmaps() abort
+"   if &buftype == 'help'
+"     nnoremap <buffer> q :bd<CR>
+"     " navigate links
+"     nnoremap <silent><buffer> <C-j> :call <SID>helpsearch('')<CR>
+"     nnoremap <silent><buffer> <C-k> :call <SID>helpsearch('b')<CR>
+"     " nnoremap <silent><buffer> <C-j> m':call search("\|\\S\\+\|")<CR>
+"     " nnoremap <silent><buffer> <C-k> m':call search("\|\\S\\+\|",'b')<CR>
+"     nnoremap <buffer> <CR> <C-]>
+"   endif
+" endfun
+" augroup vimrc_improved_help_maps
+"   au!
+"   au BufEnter *.txt call s:helpmaps()
+" augroup END
+" " }}}
 
 " Source vimscript operator {{{
 " Nice for quick vimscript testing.
@@ -858,8 +847,7 @@ xnoremap <Space>H :call <SID>HelpWithHistory('visual')<CR>
 
 " the alt-tab of vim windows {{{
 fun! s:GotoPreviousWindow()
-  let cur_win = winnr()
-  wincmd p
+  let cur_win = winnr() | wincmd p
   if winnr() == cur_win | wincmd w | endif
 endfun
 " reliable CTRL-W_p (if previous window is gone, move to next window) }}}
