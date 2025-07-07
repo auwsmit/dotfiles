@@ -253,7 +253,7 @@ set foldmethod=indent
 set guioptions=
 
 " statusline when lightline is disabled or unavailable
-execute 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
+execute |set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]|
 
 " sensible behavior
 set hlsearch
@@ -617,34 +617,36 @@ command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
 nnoremap yoS :call <SID>ToggleSyntaxHighlighting()<CR>
 " }}}
 
-" " improved help mappings {{{
-" fun! s:helpsearch(dir)
-" 'test'
-"   let link_match = '|\S\+|'
-"   let opt_match = '''S\+'''
-"   " do not match *'option'*s
-"   let opt_match = '\*\@<!'.opt_match
-"   " do not match lines beginning with 'option'
-"   let opt_match = ''
-"   let opt_antimatch = '' " it's beautiful
-"   call search(link_match.'\|'.opt_match1,'s'.a:dir)
-" endfun fun
-" fun! s:helpmaps() abort
-"   if &buftype == 'help'
-"     nnoremap <buffer> q :bd<CR>
-"     " navigate links
-"     nnoremap <silent><buffer> <C-j> :call <SID>helpsearch('')<CR>
-"     nnoremap <silent><buffer> <C-k> :call <SID>helpsearch('b')<CR>
-"     " nnoremap <silent><buffer> <C-j> m':call search("\|\\S\\+\|")<CR>
-"     " nnoremap <silent><buffer> <C-k> m':call search("\|\\S\\+\|",'b')<CR>
-"     nnoremap <buffer> <CR> <C-]>
-"   endif
-" endfun
-" augroup vimrc_improved_help_maps
-"   au!
-"   au BufEnter *.txt call s:helpmaps()
-" augroup END
-" " }}}
+" improved help mappings {{{
+fun! s:helpsearch(dir, origin = [])
+  let link_match = '|\S\+|'
+  let opt_match = '\*\@<!''\l\l\+'''
+  let old_pos = getpos('.')
+  call search(link_match.'\|'.opt_match,'s'.a:dir)
+  let new_pos = getpos('.')
+  if getline('.')[0] == "'"
+    " skip lines starting with '
+    if (new_pos != old_pos)
+      call s:helpsearch(a:dir, a:origin)
+    else
+      setpos('.', ((a:origin != []) ? a:origin : old_pos))
+    endif
+  endif
+endfun
+fun! s:helpmaps() abort
+  if &buftype == 'help'
+    nnoremap <buffer> q :bd<CR>
+    " navigate links
+    nnoremap <silent><buffer> <C-j> :call <SID>helpsearch('')<CR>
+    nnoremap <silent><buffer> <C-k> :call <SID>helpsearch('b')<CR>
+    nnoremap <buffer> <CR> <C-]>
+  endif
+endfun
+augroup vimrc_improved_help_maps
+  au!
+  au BufEnter *.txt call s:helpmaps()
+augroup END
+" }}}
 
 " Source vimscript operator {{{
 " Nice for quick vimscript testing.
@@ -925,7 +927,8 @@ fun! s:DoubleView() abort
 endfun " }}}
 command! DoubleView call <SID>DoubleView()
 
-" basic custom text objects
+" TODO: replace these with better ones
+" very basic custom text objects
 " 'inside symbol' and 'a symbol'
 let s:separators = exists('g:loaded_targets') ? [ '`', '%']
       \ : [ '_', '.', ':', ',', ';', '<Bar>', '/', '<Bslash>', '*', '+', '%', '`' ]
