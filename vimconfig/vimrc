@@ -327,15 +327,19 @@ augroup END
 " go back to last buffer
 nnoremap <BS> <C-^>
 
-" Y yanks until EOL, more like D and C
+" Y yanks until eol, more like D and C
 " yy still yanks the whole line
 nnoremap Y y$
 
 " U as a more sensible redo
 nnoremap U <C-r>
 
-" TODO: pending
-noremap Q <NOP>
+" Q to replay q register
+nnoremap Q @q
+xnoremap Q :normal @q<CR>
+
+" linewise register replay (nvim default for vim)
+xnoremap <expr> @ mode() ==# 'V' ? ':normal! @'.getcharstr().'<CR>' : '@'
 
 " Split line (opposite of J) {{{
 fun! s:SplitLine()
