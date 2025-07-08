@@ -1,4 +1,4 @@
-" default
+" defaults
 let g:spear_delete_blank_lines = 0
 let g:spear_delete_invalid_files = 0
 let g:spear_quit_on_save = 1
@@ -9,15 +9,22 @@ let g:spear_use_floating_window = 1
 
 let g:spear_use_floating_window = 0
 
-nnoremap <silent> <Space>A  :call spear#add_file()<CR>
-nnoremap <silent> <Space>X  :call spear#remove_file()<CR>
-nnoremap <silent> <C-s>     :call spear#toggle_menu()<CR>
-nnoremap <silent> <C-h>     :call spear#open_file(1)<CR>
-nnoremap <silent> <C-j>     :call spear#open_file(2)<CR>
-nnoremap <silent> <C-k>     :call spear#open_file(3)<CR>
-nnoremap <silent> <C-l>     :call spear#open_file(4)<CR>
-nnoremap <silent> <C-Right> :call spear#next_prev_file('next')<CR>
-nnoremap <silent> <C-Left>  :call spear#next_prev_file('prev')<CR>
+fun! s:SpearMaps()
+  nnoremap <silent> <Space>A  :call spear#add_file()<CR>
+  nnoremap <silent> <Space>X  :call spear#remove_file()<CR>
+  nnoremap <silent> <C-s>     :call spear#toggle_menu()<CR>
+  nnoremap <silent> <C-h>     :call spear#open_file(1)<CR>
+  nnoremap <silent> <C-j>     :call spear#open_file(2)<CR>
+  nnoremap <silent> <C-k>     :call spear#open_file(3)<CR>
+  nnoremap <silent> <C-l>     :call spear#open_file(4)<CR>
+  nnoremap <silent> <C-Right> :call spear#next_prev_file('next')<CR>
+  nnoremap <silent> <C-Left>  :call spear#next_prev_file('prev')<CR>
+endfun
+
+augroup config_spear
+  au!
+  au VimEnter * call s:SpearMaps()
+augroup END
 
 " let g:spear_create_commands = 1
 " nnoremap <silent> <space>A :SpearAdd<cr>
