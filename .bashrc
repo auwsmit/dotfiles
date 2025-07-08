@@ -50,6 +50,7 @@ alias ..='cd ..'
 alias ll='ls --color=auto -lAh'
 alias la='ls --color=auto -A'
 alias e='$EDITOR'
+alias v='vim'
 alias q='exit'
 
 # git shortcuts
@@ -100,6 +101,8 @@ if command -v "cmd.exe" &>/dev/null; then
     alias pwshc='powershell.exe -Command'
     alias cmd='cmd.exe'
     alias cmdc='cmd.exe /c'
+    alias we='cmd.exe /c nvim'
+    alias wv='cmd.exe /c vim'
 else
     unset bashrc_sync_wsl_dotfiles
 fi
