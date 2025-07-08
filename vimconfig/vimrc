@@ -448,10 +448,8 @@ xnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
 " swap gp and p
 " jump to the end of pasted text by default
 " useful for pasting multiple lines of text
-nnoremap p p`]
-xnoremap p p`]
-nnoremap gp p
-xnoremap gp p
+noremap p p`]
+noremap gp p
 
 " move selected lines up or down with no reindenting {{{
 " we'll see of I actually use this
@@ -800,8 +798,7 @@ map <S-Space> <Space>
 map <S-Space><S-Space> <Space><Space>
 
 " don't move my cursor plz
-nnoremap <Space> <NOP>
-xnoremap <Space> <NOP>
+noremap <Space> <NOP>
 
 " shortcuts
 " windows      🐄     🐄
