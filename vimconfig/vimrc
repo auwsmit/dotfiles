@@ -158,13 +158,14 @@ call SourcePluginConfigs()
 " convenience / quality of life
 set incsearch
 set ignorecase smartcase " be careful with :g and :s
-set autoread
 set path+=**
 set virtualedit=all
 set clipboard^=unnamed " make system clipboard the default register
 
-" sensible options
+" sensible
 set hidden
+set autoread
+set gdefault
 set lazyredraw
 set showcmd
 set nostartofline
@@ -183,7 +184,7 @@ if exists('&belloff')
   set belloff=all
 endif
 
-" completion settings
+" completion
 set complete=.,w,b,t " ignore unloaded buffers for autocomplete
 set wildmenu
 set wildmode=full
@@ -213,13 +214,6 @@ if has('persistent_undo')
   let &undodir=s:tempdir .'undo//'
 endif
 
-" Neovide config
-if exists("g:neovide")
-  " no distracting animations
-  let g:neovide_cursor_animation_length = 0
-  let g:neovide_scroll_animation_length = 0
-endif
-
 " }}}
 " APPEARANCE AND FORMATTING {{{
 " some settings will be overwritten when certain filetypes are detected
@@ -233,7 +227,7 @@ set encoding=utf-8
 set shiftwidth=4 softtabstop=-1 expandtab
 set smarttab " smarter tab insertion/deletion
 
-" mostly aesthetic options
+" UI/aesthetic
 set number relativenumber
 set numberwidth=1
 set cursorline
@@ -253,9 +247,22 @@ set foldmethod=indent
 set guioptions=
 
 " statusline when lightline is disabled or unavailable
-execute |set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]|
+exec 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
 
-" sensible behavior
+silent! colorscheme baddoggo
+fun! VimrcColorFallback(color) abort
+  if !exists('g:colors_name')
+    exec 'silent! colorscheme '. a:color
+  endif
+endfun
+call VimrcColorFallback('unokai')
+call VimrcColorFallback('habamax')
+call VimrcColorFallback('desert')
+
+" trying out a fancy custom font
+let &guifont = 'Fantasque Sans Mono:h'.(s:is_windows ? 10 : 11)
+
+" sensible
 set hlsearch
 set laststatus=2 ruler
 set splitright
@@ -284,22 +291,12 @@ if !s:is_nvim && s:is_windows
   let &t_te .= "\e[0 q"
 endif
 
-" trying out a fancy custom font
-if s:is_windows
-  silent! set guifont=Fantasque\ Sans\ Mono:h10
-else
-  silent! set guifont=Fantasque\ Sans\ Mono:h11
+" Neovide config
+if exists("g:neovide")
+  " no distracting animations
+  let g:neovide_cursor_animation_length = 0
+  let g:neovide_scroll_animation_length = 0
 endif
-
-silent! colorscheme baddoggo
-fun! VimrcColorFallback(color) abort
-  if !exists('g:colors_name')
-    exec 'silent! colorscheme '. a:color
-  endif
-endfun
-call VimrcColorFallback('unokai')
-call VimrcColorFallback('habamax')
-call VimrcColorFallback('desert')
 
 augroup vimrc_appearance_and_formatting
   au!
@@ -472,6 +469,7 @@ xnoremap <Down> <Esc>:call <SID>MoveLines('down')<CR>
 
 " i_CTRL-[ finger slip
 inoremap <C-]> <Esc>
+cnoremap <C-]> <Esc>
 
 " <CR> in vimrc to edit or create plugin config {{{
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
@@ -545,20 +543,20 @@ nnoremap cd :cd<Space>
 nnoremap <C-S-Q> :qall<CR>
 
 " quickly manage buffers {{{
-fun! s:buflist_proper_esc()
+fun! s:BuflistProperEsc()
   " otherwise you need to press esc twice
-  cnoremap <silent> <buffer> <Esc> <C-u><Esc><Esc>:call <SID>buflist_remove_maps()<CR>
-  cnoremap <silent> <buffer> <C-g> <C-u><Es><Esc>:call <SID>buflist_remove_maps()<CR>
-  cnoremap <silent> <buffer> <CR> <CR>:call <SID>buflist_remove_maps()<CR>
+  cnoremap <silent> <buffer> <Esc> <C-u><Esc><Esc>:call <SID>BuflistRemoveMaps()<CR>
+  cnoremap <silent> <buffer> <C-g> <C-u><Es><Esc>:call <SID>BuflistRemoveMaps()<CR>
+  cnoremap <silent> <buffer> <CR> <CR>:call <SID>BuflistRemoveMaps()<CR>
 endfun
-fun! s:buflist_remove_maps()
+fun! s:BuflistRemoveMaps()
   silent! cunmap <buffer> <Esc>
   silent! cunmap <buffer> <C-g>
   silent! cunmap <buffer> <CR>
 endfun
 " }}}
-nnoremap gb :call <SID>buflist_proper_esc()<CR>:ls<CR>:b<Space>
-nnoremap gB :call <SID>buflist_proper_esc()<CR>:ls!<CR>:b<Space>
+nnoremap gb :call <SID>BuflistProperEsc()<CR>:ls<CR>:b<Space>
+nnoremap gB :call <SID>BuflistProperEsc()<CR>:ls!<CR>:b<Space>
 
 " resizing windows
 noremap <C-Left>  5<C-w><
@@ -571,23 +569,31 @@ noremap <S-Down>  <C-w>-
 noremap <S-Right> <C-w>>
 
 " resize font for gui {{{
-" TODO: detect when no font scale is given
-" default size 10 or 12
-let s:default_scale = matchstr(&guifont, '\d\+$')
-fun! s:ChangeFontSize(type)
-  if &guifont == '' | return | endif
-  let [font, scale] = [&guifont, -1]
-  if a:type == '0'
-    let scale = s:default_scale
-  else
-    let scale = matchstr(font, '\d\+$')
-    let scale = scale + (a:type == '+' ? 1 : -1)
-    if scale == 0 | return | endif
-  endif
-  let font = matchstr(font, '.\{-}\ze\d\+$')
-  let &guifont = font.scale
+" not compatible with multiple guifont options
+let s:default_size = matchstr(&guifont, ':h\zs\d\+\ze')
+if s:default_size == '' | let s:default_size = 12 | endif
+fun! s:UpdateGuiFont()
+  let s:gfont = (s:is_windows ? 'Consolas' : 'Monospace')
+  let s:gfont .= ':h'.s:default_size
+  let &guifont = (&guifont == '') ? (s:gfont) : (&guifont.':h'.s:default_size)
 endfun
-if has('gui_running')
+if s:default_size == '' | call s:UpdateGuiFont() | endif
+fun! s:ChangeFontSize(type)
+  if &guifont == '' | call s:UpdateGuiFont() | endif
+  let [font, size] = [&guifont, -1]
+  if a:type == '0'
+    let size = s:default_size
+  else
+    let size = matchstr(font, '\d\+$')
+    if size == '' | let size = s:default_size | endif
+    let size = size + (a:type == '+' ? 1 : -1)
+    if size == 0  | return | endif
+    echom 'size: '.size
+  endif
+  let font = matchstr(font, '[^:]*')
+  let &guifont = font.':h'.size
+endfun
+if has('gui_running') " might need different maps for gvim
   nnoremap <silent> <C-0> :call <SID>ChangeFontSize('0')<CR>
   nnoremap <silent> <C-=> :call <SID>ChangeFontSize('+')<CR>
   nnoremap <silent> <C--> :call <SID>ChangeFontSize('-')<CR>
@@ -606,7 +612,7 @@ nnoremap yoN :exec 'set '.(!&nu && !&rnu ? 'nu rnu' : 'nonu nornu')<CR>
 " useful when Vim is crippled by its inefficient highlighting
 fun! s:ToggleSyntaxHighlighting() abort
   let [folds, prev_fold_closed] = [&foldlevel, foldclosed('.')]
-  execute 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
+  exec 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
   let &foldlevel=folds
   while (foldclosed('.') != -1) && (foldclosed('.') != prev_fold_closed)
     normal! za
@@ -618,33 +624,33 @@ nnoremap yoS :call <SID>ToggleSyntaxHighlighting()<CR>
 " }}}
 
 " improved help mappings {{{
-fun! s:helpsearch(dir, origin = [])
+fun! s:HelpSearch(dir, origin = [])
   let link_match = '|\S\+|'
   let opt_match = '\*\@<!''\l\l\+'''
   let old_pos = getpos('.')
-  call search(link_match.'\|'.opt_match,'s'.a:dir)
+  call search(link_match.'\|'.opt_match, a:dir)
   let new_pos = getpos('.')
   if getline('.')[0] == "'"
     " skip lines starting with '
     if (new_pos != old_pos)
-      call s:helpsearch(a:dir, a:origin)
+      call s:HelpSearch(a:dir, a:origin)
     else
       setpos('.', ((a:origin != []) ? a:origin : old_pos))
     endif
   endif
 endfun
-fun! s:helpmaps() abort
+fun! s:HelpMaps() abort
   if &buftype == 'help'
     nnoremap <buffer> q :bd<CR>
     " navigate links
-    nnoremap <silent><buffer> <C-j> :call <SID>helpsearch('')<CR>
-    nnoremap <silent><buffer> <C-k> :call <SID>helpsearch('b')<CR>
+    nnoremap <silent><buffer> <C-j> m':call <SID>HelpSearch('')<CR>
+    nnoremap <silent><buffer> <C-k> m':call <SID>HelpSearch('b')<CR>
     nnoremap <buffer> <CR> <C-]>
   endif
 endfun
 augroup vimrc_improved_help_maps
   au!
-  au BufEnter *.txt call s:helpmaps()
+  au BufEnter *.txt call s:HelpMaps()
 augroup END
 " }}}
 
@@ -655,13 +661,13 @@ fun! s:SourceVimscript(type) abort
   let &selection = "inclusive"
   let reg_save = @"
   if a:type == 'line'
-    silent execute "normal! '[V']y"
+    silent exec "normal! '[V']y"
   elseif a:type == 'char'
-    silent execute "normal! `[v`]y"
+    silent exec "normal! `[v`]y"
   elseif a:type == "visual"
-    silent execute "normal! gvy"
+    silent exec "normal! gvy"
   elseif a:type == "currentline"
-    silent execute "normal! yy"
+    silent exec "normal! yy"
   endif
   let @" = substitute(@", '\n\s*\\', '', 'g')
   " source the content
@@ -828,7 +834,7 @@ endif
 exec s:space_t_map
 
 " :help under the cursor, also adds to command history {{{
-function! s:HelpWithHistory(type)
+fun! s:HelpWithHistory(type)
   let text = ''
   if a:type == 'visual'
     let text = getline('.')[col("'<")-1:col("'>")-1]
@@ -841,8 +847,8 @@ function! s:HelpWithHistory(type)
   endif
   let cmd = 'help ' . text
   call histadd(':', cmd)
-  execute cmd
-endfunction
+  exec cmd
+endfun
 " }}}
 nnoremap <Space>H :call <SID>HelpWithHistory('word')<CR>
 xnoremap <Space>H :call <SID>HelpWithHistory('visual')<CR>
