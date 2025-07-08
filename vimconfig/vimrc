@@ -561,14 +561,14 @@ nnoremap gb :call <SID>BuflistProperEsc()<CR>:ls<CR>:b<Space>
 nnoremap gB :call <SID>BuflistProperEsc()<CR>:ls!<CR>:b<Space>
 
 " resizing windows
-noremap <C-Left>  5<C-w><
-noremap <C-Up>    5<C-w>+
-noremap <C-Down>  5<C-w>-
-noremap <C-Right> 5<C-w>>
-noremap <S-Left>  <C-w><
-noremap <S-Up>    <C-w>+
-noremap <S-Down>  <C-w>-
-noremap <S-Right> <C-w>>
+noremap <S-Left>  5<C-w><
+noremap <S-Up>    5<C-w>+
+noremap <S-Down>  5<C-w>-
+noremap <S-Right> 5<C-w>>
+noremap <C-S-Left>  <C-w><
+noremap <C-S-Up>    <C-w>+
+noremap <C-S-Down>  <C-w>-
+noremap <C-S-Right> <C-w>>
 
 " resize font for gui {{{
 " not compatible with multiple guifont options
@@ -843,9 +843,7 @@ fun! s:HelpWithHistory(type)
     let text = expand('<cword>')
   endif
   " check for 'option's
-  if getline('.') =~ "^\s*set"
-    let text = "'". text
-  endif
+  if getline('.') =~ "^\s*set" | let text = "'". text | endif
   let cmd = 'help ' . text
   call histadd(':', cmd)
   exec cmd
@@ -854,12 +852,13 @@ endfun
 nnoremap <Space>H :call <SID>HelpWithHistory('word')<CR>
 xnoremap <Space>H :call <SID>HelpWithHistory('visual')<CR>
 
-" the alt-tab of vim windows {{{
+" Go to previous window {{{
+" reliable CTRL-W_p (if previous window is gone, move to next window)
 fun! s:GotoPreviousWindow()
   let cur_win = winnr() | wincmd p
   if winnr() == cur_win | wincmd w | endif
 endfun
-" reliable CTRL-W_p (if previous window is gone, move to next window) }}}
+" }}}
 nnoremap <silent> <Space><Tab> :call <SID>GotoPreviousWindow()<CR>
 
 " quick scratch buffer
@@ -867,14 +866,7 @@ nnoremap <Space>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches
-nnoremap <Space>? :lvim //g %<CR>
-
-" search for all numbers
-nnoremap <Space>/# /\v\d+<CR>
-
-" search for brackets
-nnoremap <Space>/[ ?[{}]<CR>
-nnoremap <Space>/] /[{}]<CR>
+nnoremap <Space>/ :lvim //g %<CR>
 
 " toggle location & quickfix lists {{{
 " (from vimwiki)
@@ -887,17 +879,16 @@ endfun
 
 fun! ToggleList(bufname, pfx) abort
   let buflist = GetBufferList()
-  for bufnum in map(filter(split(buflist, '\n'),
-        \ 'v:val =~ "'.a:bufname.'"'),
-        \ 'str2nr(matchstr(v:val, "\\d\\+"))')
+  for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'),
+        \           'str2nr(matchstr(v:val, "\\d\\+"))')
     if bufwinnr(bufnum) != -1
       execute(a:pfx.'close')
       return
     endif
   endfor
-  if a:pfx == 'l' && len(getloclist(0)) == 0
-    echohl ErrorMsg
-    echo "Location List is Empty."
+  if (a:pfx == 'l' && len(getloclist(0)) == 0) ||
+        \ (a:pfx == 'c' && len(getqflist()) == 0)
+    echohl ErrorMsg | echo a:bufname." is empty." | echohl None
     return
   endif
   let winnr = winnr()
