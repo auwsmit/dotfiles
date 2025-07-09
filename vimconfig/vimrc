@@ -79,6 +79,8 @@ Plug 'henrik/vim-indexed-search' " show search count & centered search
 " SNIPPET/COMPLETION PLUGINS {{{
 
 Plug 'ervandew/supertab'  " tab autocomplete
+Plug 'github/copilot.vim'           " AI completion
+Plug 'DanBradbury/copilot-chat.vim' " AI chat
 " if s:has_python
 "   Plug 'SirVer/UltiSnips' " snippets manager
 " endif
@@ -225,7 +227,7 @@ set encoding=utf-8
 
 " default tab settings (vim-sleuth will usually override this)
 set shiftwidth=4 softtabstop=-1 expandtab
-set smarttab " smarter tab insertion/deletion
+set smarttab
 
 " UI/aesthetic
 set number relativenumber
@@ -242,7 +244,7 @@ endif
 set shortmess-=S  " show search count [1/99]
 set shortmess+=mrF
 set cpoptions+=$
-set foldlevel=999
+set foldlevel=999 " start with folds closed
 set foldmethod=indent
 set guioptions=
 
@@ -469,9 +471,9 @@ endfun
 xnoremap <Up> <Esc>:call <SID>MoveLines('up')<CR>
 xnoremap <Down> <Esc>:call <SID>MoveLines('down')<CR>
 
-" i_CTRL-[ finger slip
-inoremap <C-]> <Esc>
-cnoremap <C-]> <Esc>
+" " i_CTRL-[ finger slip
+" inoremap <C-]> <Esc>
+" cnoremap <C-]> <Esc>
 
 " <CR> in vimrc to edit or create plugin config {{{
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
@@ -504,7 +506,7 @@ endfun
 
 fun! s:PluginConfigMapper()
   let current_file = expand('%:t')
-  if current_file =~ 'init\.\(vim\|lua\)$' || current_file == 'vimrc'
+  if current_file =~ 'init.vim' || current_file == 'vimrc'
     nnoremap <silent><buffer> <CR> :call <SID>GotoPluginConfig()<CR>
   endif
 endfun
@@ -772,7 +774,7 @@ exec 'tnoremap <silent> <CR>  '. s:t_esc . s:tmark_start .'<CR>a<CR>'
 let s:t_esc .= s:tmark_end.'<CR>'
 exec 'tnoremap <silent> <Esc> '. s:t_esc
 exec 'tnoremap <silent> <C-[> '. s:t_esc
-exec 'tnoremap <silent> <C-]> '. s:t_esc
+" exec 'tnoremap <silent> <C-]> '. s:t_esc
 exec 'tnoremap <silent> <C-g> '. s:t_esc
 " }}}
 
