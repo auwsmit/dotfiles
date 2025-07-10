@@ -90,6 +90,9 @@ backup_and_link $repo_dir/vimconfig       $home/.config/nvim           .config
 backup_and_link $repo_dir/vimconfig       $home/.local/share/nvim      .local/share
 make_link       $repo_dir/vimconfig/vimrc $repo_dir/vimconfig/init.vim
 
+# git completion
+make_link $repo_dir/git-completion.bash $home/git-completion.bash
+
 # if backup folder is empty, delete it
 if [ -z "$(ls -A $backup_dir)" ]; then
   rmdir $backup_dir

@@ -53,20 +53,32 @@ alias e='$EDITOR'
 alias v='vim'
 alias q='exit'
 
-# git shortcuts
-alias gs='git status'
-alias gd='git diff'
-alias ga='git add'
-alias gu='git restore --staged'
-alias gc='git commit'
-alias gcm='git commit -m'
-alias gl='git log'
-alias gL='git log --oneline --graph --decorate'
-alias gp='git pull'
-alias gP='git push'
-alias gb='git branch'
-alias gco='git checkout'
-
+# git shortcuts (updated July/2025)
+if [ -e ~/git-completion.bash ]; then
+    source ~/git-completion.bash
+    alias gs='git status'
+    alias gd='git diff'
+    __git_complete gd _git_diff
+    alias ga='git add'
+    __git_complete ga _git_add
+    alias gu='git restore --staged'
+    __git_complete gu _git_restore
+    alias gc='git commit'
+    alias gca='git commit -a'
+    alias gcm='git commit -m'
+    alias gl='git log'
+    __git_complete gl _git_log
+    alias gL='git log --oneline --graph --decorate'
+    __git_complete gL _git_log
+    alias gp='git pull'
+    __git_complete gp _git_pull
+    alias gP='git push'
+    __git_complete gP _git_push
+    alias gb='git branch'
+    __git_complete gb _git_branch
+    alias gco='git checkout'
+    __git_complete gco _git_checkout
+fi
 # sudo with personal env and aliases
 alias sume='sudo -E '
 
