@@ -370,12 +370,11 @@ nnoremap <silent> <C-b> :call <SID>ScrollMakesJump()<CR><C-u>
 nnoremap <silent> <C-f> :call <SID>ScrollMakesJump()<CR><C-d>
 
 " fast and easy 1/4th page scroll
-" TODO fix edge case with diffs
 fun! s:TabScroll(scroll)
   " make a jump after enough distance
   call s:ScrollMakesJump()
   let is_down = (a:scroll == 'down')
-  let l_diff  = line('.') - line('w0')
+  let l_diff  = winline() - 1
   let prev_pos_c  = virtcol('.')
   let scroll_size = (winheight(0)/4)
   let scroll_map  = is_down ? "\<C-e>" : "\<C-y>"
@@ -383,15 +382,15 @@ fun! s:TabScroll(scroll)
         \                     (line('w0') != 1)
   if at_limit
     exec 'norm! '. scroll_size . scroll_map
-    call setpos('.',[0, line('w0')+l_diff, prev_pos_c, 0])
+    call setpos('.', [0, line('w0')+l_diff, prev_pos_c, 0])
     if is_down
       let prev_pos = getpos('.')
       keepjumps normal! Lzb
-      call setpos('.',prev_pos)
+      call setpos('.', prev_pos)
     endif
   else
     exec is_down ? '' : 'let scroll_size = -scroll_size'
-    call setpos('.',[0, line('.')+scroll_size, prev_pos_c, 0])
+    call setpos('.', [0, line('.')+scroll_size, prev_pos_c, 0])
   endif
 endfun
 noremap <silent> <Tab>   :call <SID>TabScroll('down')<CR>
