@@ -1,5 +1,5 @@
 let MRU_Max_Entries = 1000
-let g:MRU_Split_Current_Window = 1
+let MRU_Convert_Slashes = 1
 
 nnoremap <space>r :MRUToggle<cr>
 nnoremap <space>fr :FZFMru<cr>

@@ -76,11 +76,11 @@ Plug 'romainl/vim-cool'          " auto-clear search highlight
 Plug 'henrik/vim-indexed-search' " show search count & centered search
 
 " " }}}
-" SNIPPET/COMPLETION PLUGINS {{{
+" COMPLETION/SNIPPET PLUGINS {{{
 
 Plug 'ervandew/supertab'  " tab autocomplete
-Plug 'github/copilot.vim'           " AI completion
-Plug 'DanBradbury/copilot-chat.vim' " AI chat
+Plug 'github/copilot.vim'           " AI suggestions
+Plug 'DanBradbury/copilot-chat.vim' " AI chat window
 " if s:has_python
 "   Plug 'SirVer/UltiSnips' " snippets manager
 " endif
