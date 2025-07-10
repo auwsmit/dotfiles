@@ -1,5 +1,6 @@
-" " disable auto updating settings for harpoon
-" let g:actnum_autoupdate = 0
+" disable auto updating settings for harpoon
+" TODO: ???
+let g:actnum_autoupdate = 0
 
 " tpope's unimpaired style bindings
 
@@ -11,6 +12,8 @@
 "     SetActiveNumbers nonu nornu
 " endfun
 
+let g:actnum_exclude =
+      \ [ 'unite', 'tagbar', 'startify', 'undotree', 'gundo', 'vimshell', 'w3m', 'copilot_chat' ]
 fun! s:ActiveNumberUnimpaired()
   nnoremap <silent> yoa :ActiveNumbers<CR>
   nnoremap <silent> yon :SetActiveNumbers number!<CR>
@@ -21,7 +24,7 @@ fun! s:ActiveNumberUnimpaired()
   " nnoremap <silent> ]or :SetActiveNumbers norelativenumber<CR>
 endfun
 
-augroup active_number_config
+augroup config_active_numbers
   au!
   au VimEnter * call <sid>ActiveNumberUnimpaired()
 augroup END
