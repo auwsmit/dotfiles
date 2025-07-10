@@ -1,5 +1,4 @@
-" DWIW Open old or new Copilot Chat
-fun! s:OpenCopilotChat()
+fun! s:ToggleCopilotChat()
   if bufname('%') =~ '^CopilotChat-\d\+'
     close
   else
@@ -9,4 +8,4 @@ fun! s:OpenCopilotChat()
   endif
 endfun
 
-nnoremap <silent> <Space>* :call <SID>OpenCopilotChat()<CR>
+nnoremap <silent> <Space>* :call <SID>ToggleCopilotChat()<CR>
