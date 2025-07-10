@@ -72,7 +72,7 @@ Plug 'junegunn/vim-after-object'
 
 Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
 Plug 'justinmk/vim-ipmotion'     " { } move over folds
-Plug 'romainl/vim-cool'          " auto-clear search highlight
+Plug 'romainl/vim-cool'          " autoclear search highlighting
 Plug 'henrik/vim-indexed-search' " show search count & centered search
 
 " " }}}
@@ -107,9 +107,7 @@ Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
 " }}}
 " MISC/CONVENIENCE PLUGINS " {{{
 
-if v:version > 800
-  Plug 'romainl/vim-qf' " sensible quickfix improvements
-endif
+Plug 'romainl/vim-qf' " sensible quickfix improvements
 Plug 'junegunn/vim-peekaboo'    " preview registers
 Plug 'tpope/vim-rsi'            " readline key maps for cmd and ins mode
 Plug 'tpope/vim-repeat'         " allows plugins to . repeat easier
@@ -157,7 +155,7 @@ call SourcePluginConfigs()
 " }}}
 " GENERAL SETTINGS {{{
 
-" convenience / quality of life
+" convenience/quality of life
 set incsearch
 set ignorecase smartcase " be careful with :g and :s
 set path+=**
@@ -343,6 +341,10 @@ xnoremap Q :normal @q<CR>
 " linewise register replay (nvim default for vim)
 xnoremap <expr> @ mode() ==# 'V' ? ':normal! @'.getcharstr().'<CR>' : '@'
 
+" Ctrl-l also clears search highlighting
+nnoremap <silent> <C-l> :nohlsearch<CR><C-l>
+xnoremap <silent> <C-l> :<C-u>nohlsearch<CR><C-l>gv
+
 " Split line (opposite of J) {{{
 fun! s:SplitLine()
   exec "normal! i\<CR>\<Esc>^gk"
@@ -358,43 +360,30 @@ nnoremap <silent> <Plug>(MySplitLine) :call <SID>SplitLine()<CR>
 nmap S <Plug>(MySplitLine)
 
 " make a new jump if scrolled far away
-fun! s:ScrollMakesJump()
+let s:prev_scroll_line = -1
+fun! s:ScrollMakesJump(type)
   let distance_til_jump = 150
-  if abs(line('.') - line("''")) >= distance_til_jump
+  if line('.') != s:prev_scroll_line ||
+        \ abs(line('.') - line("''")) >= distance_til_jump
     norm m'
   endif
+  exec 'exec "normal! \<C-'.a:type.'>"'
+  let s:prev_scroll_line = line('.')
 endfun
-nnoremap <silent> <C-u> :call <SID>ScrollMakesJump()<CR><C-u>
-nnoremap <silent> <C-d> :call <SID>ScrollMakesJump()<CR><C-d>
-nnoremap <silent> <C-b> :call <SID>ScrollMakesJump()<CR><C-u>
-nnoremap <silent> <C-f> :call <SID>ScrollMakesJump()<CR><C-d>
+nnoremap <silent> <C-u> :call <SID>ScrollMakesJump('u')<CR>
+nnoremap <silent> <C-d> :call <SID>ScrollMakesJump('d')<CR>
+nnoremap <silent> <C-b> :call <SID>ScrollMakesJump('b')<CR>
+nnoremap <silent> <C-f> :call <SID>ScrollMakesJump('f')<CR>
 
-" fast and easy 1/4th page scroll
-fun! s:TabScroll(scroll)
-  " make a jump after enough distance
-  call s:ScrollMakesJump()
-  let is_down = (a:scroll == 'down')
-  let l_diff  = winline() - 1
-  let prev_pos_c  = virtcol('.')
-  let scroll_size = (winheight(0)/4)
-  let scroll_map  = is_down ? "\<C-e>" : "\<C-y>"
-  let at_limit    = is_down ? (line('w$') != line('$')) :
-        \                     (line('w0') != 1)
-  if at_limit
-    exec 'norm! '. scroll_size . scroll_map
-    call setpos('.', [0, line('w0')+l_diff, prev_pos_c, 0])
-    if is_down
-      let prev_pos = getpos('.')
-      keepjumps normal! Lzb
-      call setpos('.', prev_pos)
-    endif
-  else
-    exec is_down ? '' : 'let scroll_size = -scroll_size'
-    call setpos('.', [0, line('.')+scroll_size, prev_pos_c, 0])
-  endif
+" fast 1/4th page scroll
+fun! s:TabScroll(type)
+  let t_scroll = &scroll
+  let &scroll = winheight(winnr()) / 4
+  exec 'normal ' a:type == 'd' ? "\<C-d>" : "\<C-u>"
+  let &scroll = t_scroll
 endfun
-noremap <silent> <Tab>   :call <SID>TabScroll('down')<CR>
-noremap <silent> <S-Tab> :call <SID>TabScroll('up')<CR>
+nnoremap <silent> <Tab>   :call <SID>TabScroll('d')<CR>
+nnoremap <silent> <S-Tab> :call <SID>TabScroll('u')<CR>
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
@@ -470,10 +459,6 @@ endfun
 xnoremap <Up> <Esc>:call <SID>MoveLines('up')<CR>
 xnoremap <Down> <Esc>:call <SID>MoveLines('down')<CR>
 
-" " i_CTRL-[ finger slip
-" inoremap <C-]> <Esc>
-" cnoremap <C-]> <Esc>
-
 " <CR> in vimrc to edit or create plugin config {{{
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
 fun! s:GotoPluginConfig()
@@ -516,6 +501,9 @@ augroup vimrc_view_plugin_config
 augroup END
 " }}}
 
+" silence error for non-existing tags or accidental <C-]>
+nnoremap <C-]> :exec "silent! normal! \<C<kMinus>]>"<CR>
+
 " }}}
 " STANDARD MAPS {{{
 
@@ -549,23 +537,41 @@ nnoremap <C-S-Q> :qall<CR>
 fun! s:BuflistProperEsc()
   " otherwise you need to press esc twice
   cnoremap <silent> <buffer> <Esc> <C-u><Esc><Esc>:call <SID>BuflistRemoveMaps()<CR>
-  cnoremap <silent> <buffer> <C-g> <C-u><Es><Esc>:call <SID>BuflistRemoveMaps()<CR>
+  cnoremap <silent> <buffer> <C-[> <C-u><Esc><Esc>:call <SID>BuflistRemoveMaps()<CR>
   cnoremap <silent> <buffer> <CR> <CR>:call <SID>BuflistRemoveMaps()<CR>
 endfun
 fun! s:BuflistRemoveMaps()
   silent! cunmap <buffer> <Esc>
-  silent! cunmap <buffer> <C-g>
+  silent! cunmap <buffer> <C-[>
   silent! cunmap <buffer> <CR>
 endfun
 " }}}
 nnoremap gb :call <SID>BuflistProperEsc()<CR>:ls<CR>:b<Space>
 nnoremap gB :call <SID>BuflistProperEsc()<CR>:ls!<CR>:b<Space>
 
+" :help under the cursor, mnemonic is 'Get Help' {{{
+fun! s:HelpWithHistory(type)
+  let text = ''
+  if a:type == 'visual'
+    let text = getline('.')[col("'<")-1:col("'>")-1]
+  elseif a:type == 'word'
+    let text = expand('<cword>')
+  endif
+  " check for 'option's
+  if getline('.') =~ "^\s*set" | let text = "'". text | endif
+  let cmd = 'help ' . text
+  call histadd(':', cmd)
+  exec cmd
+endfun
+" }}}
+nnoremap gh :call <SID>HelpWithHistory('word')<CR>
+xnoremap gh :call <SID>HelpWithHistory('visual')<CR>
+
 " resizing windows
-noremap <S-Left>  5<C-w><
-noremap <S-Up>    5<C-w>+
-noremap <S-Down>  5<C-w>-
-noremap <S-Right> 5<C-w>>
+noremap <S-Left>  10<C-w><
+noremap <S-Up>    10<C-w>+
+noremap <S-Down>  10<C-w>-
+noremap <S-Right> 10<C-w>>
 noremap <C-S-Left>  <C-w><
 noremap <C-S-Up>    <C-w>+
 noremap <C-S-Down>  <C-w>-
@@ -747,13 +753,13 @@ nnoremap gV `[v`]
 " consistent and sane terminal escape {{{
 " - press <Esc> to exit terminal mode
 " - press <C-\><C-\> to send an <Esc> to the terminal
-" - see the rest of the mapping in the next fold
 if s:is_nvim
   let s:t_esc = '<C-\><C-n>'
 elseif has('terminal')
   let s:t_esc = '<C-w>N'
 endif
 tnoremap <C-\><C-\> <Esc>
+" }}}
 " select the last :terminal's output, similar to `:read!` {{{
 " - allows for gV to select the last command's output as the last change
 let s:vimrc_term_cmd_mark = 0
@@ -773,7 +779,6 @@ exec 'tnoremap <silent> <CR>  '. s:t_esc . s:tmark_start .'<CR>a<CR>'
 let s:t_esc .= s:tmark_end.'<CR>'
 exec 'tnoremap <silent> <Esc> '. s:t_esc
 exec 'tnoremap <silent> <C-[> '. s:t_esc
-" exec 'tnoremap <silent> <C-]> '. s:t_esc
 exec 'tnoremap <silent> <C-g> '. s:t_esc
 " }}}
 
@@ -793,8 +798,6 @@ augroup END
 "}}}
 
 " }}}
-
-" }}}
 " LEADER MAPS {{{
 " space is my leader
 
@@ -811,6 +814,26 @@ nnoremap <Space>c <C-w>c
 nnoremap <Space>o <C-w>o
 nnoremap <Space>w <C-w>w
 
+" vim-plug shortcuts {{{
+fun! s:VimPlugShortcuts()
+  let choice = confirm('vim-plug:', "&Install\n&Update\n&Clean\n&Quit",4)
+  if     choice == 1 | PlugInstall
+  elseif choice == 2 | PlugUpdate
+  elseif choice == 3 | PlugClean
+  endif
+endfun
+" }}}
+nnoremap <silent> <Space>P :call <SID>VimPlugShortcuts()<CR>
+
+" Go to previous window {{{
+" reliable CTRL-W_p (if previous window is gone, move to next window)
+fun! s:GotoPreviousWindow()
+  let cur_win = winnr() | wincmd p
+  if winnr() == cur_win | wincmd w | endif
+endfun
+" }}}
+nnoremap <silent> <Space><Tab> :call <SID>GotoPreviousWindow()<CR>
+
 " commands
 nnoremap <Space>; :
 " check if FZF command search is mapped
@@ -821,6 +844,9 @@ endif
 " edit vimrc, resolve symlinks to goto dotfiles repo
 " I've probably pressed this command over a million times
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
+
+" quick scratch buffer
+nnoremap <Space>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
 
 " :terminal consistency with vim and nvim {{{
 let s:space_t_map  = 'nnoremap <Space>t :'. (s:is_nvim ? 'split +' : '')
@@ -835,40 +861,6 @@ endif
 " }}}
 exec s:space_t_map
 
-" :help under the cursor, also adds to command history {{{
-fun! s:HelpWithHistory(type)
-  let text = ''
-  if a:type == 'visual'
-    let text = getline('.')[col("'<")-1:col("'>")-1]
-  elseif a:type == 'word'
-    let text = expand('<cword>')
-  endif
-  " check for 'option's
-  if getline('.') =~ "^\s*set" | let text = "'". text | endif
-  let cmd = 'help ' . text
-  call histadd(':', cmd)
-  exec cmd
-endfun
-" }}}
-nnoremap <Space>H :call <SID>HelpWithHistory('word')<CR>
-xnoremap <Space>H :call <SID>HelpWithHistory('visual')<CR>
-
-" Go to previous window {{{
-" reliable CTRL-W_p (if previous window is gone, move to next window)
-fun! s:GotoPreviousWindow()
-  let cur_win = winnr() | wincmd p
-  if winnr() == cur_win | wincmd w | endif
-endfun
-" }}}
-nnoremap <silent> <Space><Tab> :call <SID>GotoPreviousWindow()<CR>
-
-" quick scratch buffer
-nnoremap <Space>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
-
-" populate the location list with last search results
-" useful for seeing the exact number of matches for big searches
-nnoremap <Space>/ :lvim //g %<CR>
-
 " toggle location & quickfix lists {{{
 " (from vimwiki)
 fun! GetBufferList() abort
@@ -877,7 +869,6 @@ fun! GetBufferList() abort
   redir END
   return buflist
 endfun
-
 fun! ToggleList(bufname, pfx) abort
   let buflist = GetBufferList()
   for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'),
@@ -901,6 +892,10 @@ endfun
 " }}}
 nnoremap <silent> <Space>l :call ToggleList("Location List", 'l')<CR>
 nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
+
+" populate the location list with last search results
+" useful for seeing the exact number of matches for big searches
+nnoremap <Space>/ :lvim //g %<CR>
 
 " }}}
 
@@ -942,5 +937,3 @@ endfor
 cabbrev ctw s/\s\+$//e
 
 " }}}
-
-
