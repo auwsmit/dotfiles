@@ -31,8 +31,8 @@ call plug#begin()
 Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
 Plug 'tpope/vim-fugitive'   " vim + git integration
 " Plug 'yegappan/mru'         " most recent file list
-Plug 'auwsmit/mru', { 'branch': 'personal-use' }
-" Plug 'Y:\Git\mru'
+" Plug 'auwsmit/mru', { 'branch': 'personal-use' }
+Plug 'Y:\Git\mru'
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
 Plug 'stevearc/oil.nvim'    " minimal file explorer++
 Plug 'justinmk/vim-dirvish' " minimal file explorer
@@ -71,8 +71,8 @@ Plug 'junegunn/vim-after-object'
 " MOTION/NAVIGATION PLUGINS {{{
 
 Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
-" Plug 'justinmk/vim-ipmotion'     " { } move over folds
-Plug 'Y:\Git\vim-ipmotion'
+Plug 'justinmk/vim-ipmotion'     " { } move over folds
+" Plug 'Y:\Git\vim-ipmotion'
 Plug 'romainl/vim-cool'          " autoclear search highlighting
 Plug 'henrik/vim-indexed-search' " show search count & centered search
 
@@ -903,6 +903,28 @@ nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches
 nnoremap <Space>/ :lvim //g %<CR>
+
+" weird idea: <nop> all unused space mappings for safety. {{{
+" - sometimes I accidentally press <space>C and change the line, for example
+" - can also quickly show which <space> maps are available
+fun! s:SafeSpaceMaps()
+  let keys = 'qwertyuiop[]asdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'
+  let keys .= '`~!@#$%^&*()-=_+[]{};:''"<,>./?'
+  " let open = ''
+  for i in range(0,len(keys)-1)
+    let map = '<Space>'.keys[i]
+    if maparg(map, 'n') == ''
+      exec 'nnoremap '. map .' <NOP>'
+      " let open .= keys[i]
+    endif
+  endfor
+  " echom 'Keys: '. open .' are available for <Space> maps.'
+endfun
+augroup vimrc_safespace_maps " teehee
+  au!
+  au VimEnter * call s:SafeSpaceMaps()
+augroup END
+" }}}
 
 " }}}
 
