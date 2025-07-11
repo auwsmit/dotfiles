@@ -31,8 +31,7 @@ call plug#begin()
 Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
 Plug 'tpope/vim-fugitive'   " vim + git integration
 " Plug 'yegappan/mru'         " most recent file list
-" Plug 'auwsmit/mru', { 'branch': 'personal-use' }
-Plug 'Y:\Git\mru'
+Plug 'auwsmit/mru', { 'branch': 'personal-use' }
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
 Plug 'stevearc/oil.nvim'    " minimal file explorer++
 Plug 'justinmk/vim-dirvish' " minimal file explorer
@@ -71,8 +70,7 @@ Plug 'junegunn/vim-after-object'
 " MOTION/NAVIGATION PLUGINS {{{
 
 Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
-Plug 'justinmk/vim-ipmotion'     " { } move over folds
-" Plug 'Y:\Git\vim-ipmotion'
+Plug 'auwsmit/vim-ipmotion'     " { } move over folds
 Plug 'romainl/vim-cool'          " autoclear search highlighting
 Plug 'henrik/vim-indexed-search' " show search count & centered search
 
