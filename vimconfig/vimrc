@@ -71,7 +71,8 @@ Plug 'junegunn/vim-after-object'
 " MOTION/NAVIGATION PLUGINS {{{
 
 Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
-Plug 'justinmk/vim-ipmotion'     " { } move over folds
+" Plug 'justinmk/vim-ipmotion'     " { } move over folds
+Plug 'Y:\Git\vim-ipmotion'
 Plug 'romainl/vim-cool'          " autoclear search highlighting
 Plug 'henrik/vim-indexed-search' " show search count & centered search
 
@@ -241,7 +242,7 @@ else
 endif
 set shortmess-=S  " show search count [1/99]
 set shortmess+=mrF
-set cpoptions+=$
+" set cpoptions+=$
 set foldlevel=999 " start with folds closed
 set foldmethod=indent
 set guioptions=
@@ -387,8 +388,8 @@ nnoremap <silent> <S-Tab> :call <SID>TabScroll('u')<CR>
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
-nnoremap <silent> <C-p> <C-o>
-nnoremap <silent> <C-n> <C-i>
+nnoremap <silent> <C-p> <C-o>zv
+nnoremap <silent> <C-n> <C-i>zv
 
 " open current file's directory
 nnoremap - :exec 'edit '.expand('%:h')<CR>
@@ -781,6 +782,12 @@ exec 'tnoremap <silent> <Esc> '. s:t_esc
 exec 'tnoremap <silent> <C-[> '. s:t_esc
 exec 'tnoremap <silent> <C-g> '. s:t_esc
 " }}}
+
+" minor terminal shortcut to run commands from normal mode
+augroup vimrc_term_run_shortcut
+  au!
+  exec 'au Term'.(s:is_nvim ? '' : 'inal').'Open * nnoremap <buffer> <CR> a<CR>'
+augroup END
 
 " automatically create undo breaks in insert mode {{{
 " it's better to just build the habit of exiting and entering
