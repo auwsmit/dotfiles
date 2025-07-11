@@ -1,8 +1,8 @@
 [general]
 working_directory = "Y:/git/"
 
-[terminal]
-shell = "wsl"
+# [terminal]
+# shell = "wsl"
 
 [window]
 [window.dimensions]
