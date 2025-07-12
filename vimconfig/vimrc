@@ -36,7 +36,6 @@ Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
 Plug 'stevearc/oil.nvim'    " minimal file explorer++
 Plug 'justinmk/vim-dirvish' " minimal file explorer
 Plug 'preservim/nerdtree',  " file tree viewer
-      \ { 'on': ['NERDTreeToggle', 'NERDTreeFind', 'NERDTree'] }
 Plug 'junegunn/fzf',        " general fuzzy finder
       \ { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'     " fzf + vim integration
@@ -99,9 +98,9 @@ Plug 'xtal8/traces.vim'           " previews patterns for ex commands
 Plug 'auwsmit/baddoggo'           " personal fork of Bad Wolf by Steve Losh
 Plug 'auwsmit/vim-active-numbers' " line numbers follow the current window
 Plug 'itchyny/lightline.vim'      " prettier statusbar
-Plug 'junegunn/goyo.vim',   { 'on': 'Goyo' } " distraction free editing
-Plug 'Yggdroot/indentLine', { 'on': ['IndentLinesEnable', 'IndentLinesToggle'] } " indent indicators
-Plug 'junegunn/rainbow_parentheses.vim', { 'on': 'RainbowParentheses' }
+Plug 'junegunn/goyo.vim',         " distraction free editing
+Plug 'Yggdroot/indentLine',       " indent indicators
+Plug 'junegunn/rainbow_parentheses.vim'
 
 " }}}
 " MISC/CONVENIENCE PLUGINS " {{{
