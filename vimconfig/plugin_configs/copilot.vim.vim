@@ -1,11 +1,11 @@
-" toggle Copilot suggestions/autocomplete
-nnoremap <expr> yoC ':Copilot '.(g:copilot#Enabled() ? 'disable' : 'enable').'<CR>'
-
 " disabled by default
 augroup config_copilot
   au!
   au VimEnter * Copilot disable
 augroup END
+
+" toggle Copilot suggestions/autocomplete
+nnoremap <expr> yoC ':Copilot '.(g:copilot#Enabled() ? 'disable' : 'enable').'<CR>'
 
 " use C-j to enable suggestions for current insert mode
 fun! s:CopilotInsertMode()
