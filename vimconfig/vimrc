@@ -69,7 +69,7 @@ Plug 'junegunn/vim-after-object'
 " MOTION/NAVIGATION PLUGINS {{{
 
 Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
-Plug 'auwsmit/vim-ipmotion'     " { } move over folds
+Plug 'auwsmit/vim-ipmotion'      " { } move over folds
 Plug 'romainl/vim-cool'          " autoclear search highlighting
 Plug 'henrik/vim-indexed-search' " show search count & centered search
 
@@ -117,11 +117,13 @@ Plug 'farmergreg/vim-lastplace' " reopen files at last position
 Plug 'xolox/vim-session'        " simplified session management
 let g:session_autosave = 0      " no auto-save prompt on first install
 Plug 'xolox/vim-misc'           " vim-session dependency
+Plug 'mbbill/undotree'          " visual undo tree
 Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
-Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' } " visual undo tree
 if executable('ctags')
   Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
 endif
+" TODO: setup maps and checkitout
+" Plug 'vimwiki/vimwiki'
 
 " }}}
 
@@ -579,14 +581,16 @@ noremap <C-S-Right> <C-w>>
 " not compatible with multiple guifont options
 let s:default_size = matchstr(&guifont, ':h\zs\d\+\ze')
 if s:default_size == '' | let s:default_size = 12 | endif
-fun! s:UpdateGuiFont()
+fun! s:CheckGuiFont()
+  if &guifont | return | endif
   let s:gfont = (s:is_windows ? 'Consolas' : 'Monospace')
   let s:gfont .= ':h'.s:default_size
-  let &guifont = (&guifont == '') ? (s:gfont) : (&guifont.':h'.s:default_size)
+  let &guifont = (&guifont == '') ? (s:gfont) :
+        \ (&guifont.':h'.s:default_size)
 endfun
-if s:default_size == '' | call s:UpdateGuiFont() | endif
+call s:CheckGuiFont()
 fun! s:ChangeFontSize(type)
-  if &guifont == '' | call s:UpdateGuiFont() | endif
+  call s:CheckGuiFont()
   let [font, size] = [&guifont, -1]
   if a:type == '0'
     let size = s:default_size
@@ -853,9 +857,12 @@ nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
 nnoremap <Space>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
 
 " :terminal consistency with vim and nvim {{{
-let s:space_t_map  = 'nnoremap <Space>t :'. (s:is_nvim ? 'split +' : '')
-let s:space_t_map .= 'term'. (s:is_nvim ? '\ ' : ' ++close ') .
-      \ (s:is_windows && executable('wsl') ? 'wsl.exe' : '') .'<CR>'
+if s:is_nvim
+  let s:space_t_map = 'nnoremap <Space>t :split +term\ '
+else
+  let s:space_t_map = 'nnoremap <Space>t :term ++close '
+endif
+let s:space_t_map .= (s:is_windows && executable('wsl') ? 'wsl.exe' : '') .'<CR>'
 if s:is_nvim
   augroup vimrc_term_edit_on_open
     au!
@@ -903,19 +910,15 @@ nnoremap <Space>/ :lvim //g %<CR>
 
 " weird idea: <nop> all unused space mappings for safety. {{{
 " - sometimes I accidentally press <space>C and change the line, for example
-" - can also quickly show which <space> maps are available
 fun! s:SafeSpaceMaps()
   let keys = 'qwertyuiop[]asdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'
   let keys .= '`~!@#$%^&*()-=_+[]{};:''"<,>./?'
-  " let open = ''
   for i in range(0,len(keys)-1)
     let map = '<Space>'.keys[i]
     if maparg(map, 'n') == ''
       exec 'nnoremap '. map .' <NOP>'
-      " let open .= keys[i]
     endif
   endfor
-  " echom 'Keys: '. open .' are available for <Space> maps.'
 endfun
 augroup vimrc_safespace_maps " teehee
   au!
