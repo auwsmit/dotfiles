@@ -123,7 +123,7 @@ if executable('ctags')
   Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
 endif
 " TODO: setup maps and checkitout
-" Plug 'vimwiki/vimwiki'
+Plug 'vimwiki/vimwiki'
 
 " }}}
 
@@ -161,6 +161,7 @@ set ignorecase smartcase " be careful with :g and :s
 set path+=**
 set virtualedit=all
 set clipboard^=unnamed " make system clipboard the default register
+set timeoutlen=3000
 
 " sensible
 set hidden
