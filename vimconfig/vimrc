@@ -105,12 +105,12 @@ Plug 'junegunn/rainbow_parentheses.vim'
 " }}}
 " MISC/CONVENIENCE PLUGINS " {{{
 
-Plug 'romainl/vim-qf' " sensible quickfix improvements
-Plug 'junegunn/vim-peekaboo'    " preview registers
-Plug 'tpope/vim-rsi'            " readline key maps for cmd and ins mode
-Plug 'tpope/vim-repeat'         " allows plugins to . repeat easier
-Plug 'tpope/vim-sleuth'         " auto-detect tab settings per-file
-" Plug 'tpope/vim-unimpaired'     " tons of useful [x/]x mappings
+Plug 'romainl/vim-qf'        " sensible quickfix improvements
+Plug 'junegunn/vim-peekaboo' " preview registers
+Plug 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
+Plug 'tpope/vim-repeat'      " allows plugins to . repeat easier
+Plug 'tpope/vim-sleuth'      " auto-detect tab settings per-file
+" Plug 'tpope/vim-unimpaired'  " many useful [x/]x mappings
 Plug 'auwsmit/vim-unimpaired', { 'branch': 'readonly-register-paste' }
 Plug 'Konfekt/FastFold'         " optimize how Vim updates folds
 Plug 'farmergreg/vim-lastplace' " reopen files at last position
@@ -118,16 +118,13 @@ Plug 'xolox/vim-session'        " simplified session management
 let g:session_autosave = 0      " no auto-save prompt on first install
 Plug 'xolox/vim-misc'           " vim-session dependency
 Plug 'mbbill/undotree'          " visual undo tree
+Plug 'vimwiki/vimwiki'          " for taking and organizing notes
 Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
-if executable('ctags')
-  Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
-endif
-" TODO: setup maps and checkitout
-Plug 'vimwiki/vimwiki'
+Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
 
 " }}}
 
-" initialize vim-plug
+" initialize vim-plug plugins
 call plug#end()
 
 " Source plugin configs {{{
@@ -301,7 +298,6 @@ endif
 
 augroup vimrc_appearance_and_formatting
   au!
-
   " this makes the trailing space indicator invisible
   " while typing, otherwise it can be distracting
   au InsertEnter * set listchars-=trail:■
@@ -314,7 +310,6 @@ augroup vimrc_appearance_and_formatting
     " Maximize window
     au GUIEnter * simalt ~x
   endif
-
 augroup END
 
 " }}}
@@ -388,8 +383,8 @@ nnoremap <silent> <S-Tab> :call <SID>TabScroll('u')<CR>
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
-nnoremap <silent> <C-p> <C-o>zv
-nnoremap <silent> <C-n> <C-i>zv
+nnoremap <silent> <C-p> <C-o>zvzz
+nnoremap <silent> <C-n> <C-i>zvzz
 
 " open current file's directory
 nnoremap - :exec 'edit '.expand('%:h')<CR>
@@ -764,7 +759,8 @@ endif
 tnoremap <C-\><C-\> <Esc>
 " }}}
 " select the last :terminal's output, similar to `:read!` {{{
-" - allows for gV to select the last command's output as the last change
+" - allows for gV (see above mapping) to select
+"   the last command's output as the last change
 let s:vimrc_term_cmd_mark = 0
 fun! s:TermMakeCmdMark(is_start)
   if !a:is_start && !s:vimrc_term_cmd_mark | return | endif
@@ -828,8 +824,7 @@ fun! s:VimPlugShortcuts()
   let choice = confirm('vim-plug:', "&Install\n&Update\n&Clean\n&Quit",4)
   if     choice == 1 | PlugInstall
   elseif choice == 2 | PlugUpdate
-  elseif choice == 3 | PlugClean
-  endif
+  elseif choice == 3 | PlugClean | endif
 endfun
 " }}}
 nnoremap <silent> <Space>P :call <SID>VimPlugShortcuts()<CR>
@@ -837,14 +832,13 @@ nnoremap <silent> <Space>P :call <SID>VimPlugShortcuts()<CR>
 " Go to previous window {{{
 " reliable CTRL-W_p (if previous window is gone, move to next window)
 fun! s:GotoPreviousWindow()
+  if &ft == 'undotree'  | wincmd l | return | endif
   let cur_win = winnr() | wincmd p
   if winnr() == cur_win | wincmd w | endif
 endfun
 " }}}
 nnoremap <silent> <Space><Tab> :call <SID>GotoPreviousWindow()<CR>
 
-" commands
-nnoremap <Space>; :
 " check if FZF command search is mapped
 if maparg('<Space><Space>','n') == ''
   nnoremap <Space><Space> :
@@ -855,7 +849,12 @@ endif
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
 
 " quick scratch buffer
-nnoremap <Space>S :enew<CR>:setl bt=nofile bh=hide noswf<CR>:set ft=
+let s:scratch_bufn = 0
+fun! s:CreateScratchBuffer()
+  enew | setlocal bt=nofile bh=hide noswf
+  exec 'file Scratch \#'.s:scratch_bufn | let s:scratch_bufn += 1
+endfun
+nnoremap <Space>S :call <SID>CreateScratchBuffer()<CR>:set ft=
 
 " :terminal consistency with vim and nvim {{{
 if s:is_nvim
@@ -874,7 +873,7 @@ endif
 exec s:space_t_map
 
 " toggle location & quickfix lists {{{
-" (from vimwiki)
+" (from vim tips wiki)
 fun! GetBufferList() abort
   redir =>buflist
   silent! ls!
@@ -904,6 +903,9 @@ endfun
 " }}}
 nnoremap <silent> <Space>l :call ToggleList("Location List", 'l')<CR>
 nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
+
+" paste last ex command output
+nnoremap <Space>;p :put =execute('<C-r>:')<CR>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches
