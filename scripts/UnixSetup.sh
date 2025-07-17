@@ -75,8 +75,12 @@ else
 fi
 
 # primary dotfiles
-backup_and_link $repo_dir/.bashrc $home/.bashrc
-backup_and_link $repo_dir/.inputrc $home/.inputrc
+backup_and_link $repo_dir/.bashrc    $home/.bashrc
+backup_and_link $repo_dir/.inputrc   $home/.inputrc
+backup_and_link $repo_dir/.tmux.conf $home/.tmux.conf
+backup_orig $home/.tmux
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+~/.tmux/plugins/tpm/bin/install_plugins
 
 # vim
 backup_and_link $repo_dir/vimconfig $home/.vim
