@@ -1,5 +1,5 @@
-if vim.fn.has('nvim') then
--- if not vim.fn.has('nvim') then
+if vim.fn.has('nvim') then -- currently disabled
+-- if not vim.fn.has('nvim') then -- enabled
     return
 end
 

@@ -96,7 +96,8 @@ Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } "
 
 Plug 'xtal8/traces.vim'           " previews patterns for ex commands
 Plug 'auwsmit/baddoggo'           " personal fork of Bad Wolf by Steve Losh
-Plug 'auwsmit/vim-active-numbers' " line numbers follow the current window
+" Plug 'auwsmit/vim-active-numbers' " line numbers follow the current window
+Plug '~/git/vim-active-numbers'
 Plug 'itchyny/lightline.vim'      " prettier statusbar
 Plug 'junegunn/goyo.vim',         " distraction free editing
 Plug 'Yggdroot/indentLine',       " indent indicators
@@ -157,7 +158,7 @@ set incsearch
 set ignorecase smartcase " be careful with :g and :s
 set path+=**
 set virtualedit=all
-set clipboard^=unnamed " make system clipboard the default register
+set clipboard^=unnamed,unnamedplus " make system clipboard the default register
 set timeoutlen=3000
 
 " sensible
@@ -832,7 +833,6 @@ nnoremap <silent> <Space>P :call <SID>VimPlugShortcuts()<CR>
 " Go to previous window {{{
 " reliable CTRL-W_p (if previous window is gone, move to next window)
 fun! s:GotoPreviousWindow()
-  if &ft == 'undotree'  | wincmd l | return | endif
   let cur_win = winnr() | wincmd p
   if winnr() == cur_win | wincmd w | endif
 endfun
@@ -848,13 +848,14 @@ endif
 " I've probably pressed this command over a million times
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
 
-" quick scratch buffer
+" quick scratch buffers
 let s:scratch_bufn = 0
 fun! s:CreateScratchBuffer()
-  enew | setlocal bt=nofile bh=hide noswf
-  exec 'file Scratch \#'.s:scratch_bufn | let s:scratch_bufn += 1
+  let ex = ':enew | setlocal bt=nofile bh=hide noswf'
+  let ex .= ' | file Scratch \#'.s:scratch_bufn | let s:scratch_bufn += 1
+  return ex . ' | set ft='
 endfun
-nnoremap <Space>S :call <SID>CreateScratchBuffer()<CR>:set ft=
+nnoremap <expr> <Space>s <SID>CreateScratchBuffer()
 
 " :terminal consistency with vim and nvim {{{
 if s:is_nvim
