@@ -96,8 +96,7 @@ Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } "
 
 Plug 'xtal8/traces.vim'           " previews patterns for ex commands
 Plug 'auwsmit/baddoggo'           " personal fork of Bad Wolf by Steve Losh
-" Plug 'auwsmit/vim-active-numbers' " line numbers follow the current window
-Plug '~/git/vim-active-numbers'
+Plug 'auwsmit/vim-active-numbers' " line numbers follow the current window
 Plug 'itchyny/lightline.vim'      " prettier statusbar
 Plug 'junegunn/goyo.vim',         " distraction free editing
 Plug 'Yggdroot/indentLine',       " indent indicators
@@ -863,7 +862,8 @@ if s:is_nvim
 else
   let s:space_t_map = 'nnoremap <Space>t :term ++close '
 endif
-let s:space_t_map .= (s:is_windows && executable('wsl') ? 'wsl.exe' : '') .'<CR>'
+" let s:space_t_map .= (s:is_windows && executable('wsl') ? 'wsl.exe' : '') .'<CR>'
+let s:space_t_map .= (s:is_windows ? 'powershell.exe' : '') .'<CR>'
 if s:is_nvim
   augroup vimrc_term_edit_on_open
     au!
@@ -907,6 +907,16 @@ nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
 
 " paste last ex command output
 nnoremap <Space>;p :put =execute('<C-r>:')<CR>
+
+fun! s:RunLocalBuild()
+  let proj_name = fnamemodify(getcwd(), ':t')
+  " let dotexe = '.\bin\Debug\'.proj_name.'.exe'
+  let dotexe = '.\build\raylib-game-template\Debug\raylib-game-template.exe'
+  if filereadable(dotexe) | exec '!'.dotexe | endif
+endfun
+" nnoremap <Space>!R :make \| call <SID>RunLocalBuild()<CR>
+nnoremap <Space>!r :call <SID>RunLocalBuild()<CR>
+nnoremap <Space>!R :exec '!cmake --build build' \| call <SID>RunLocalBuild()<CR>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches

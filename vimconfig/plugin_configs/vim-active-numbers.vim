@@ -1,6 +1,5 @@
 " disable auto updating settings for harpoon
-" TODO: ???
-let g:actnum_autoupdate = 0
+let g:activenumbers_autoupdate = 0
 
 " tpope's unimpaired style bindings
 
