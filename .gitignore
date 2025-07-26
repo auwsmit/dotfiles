@@ -8,6 +8,7 @@ vimconfig/.netrwhist
 vimconfig/log
 vimconfig/session/
 vimconfig/sessions/
+vimconfig/swap/
 vimconfig/tmp/
 vimconfig/neotmp/
 vimconfig/lua/
