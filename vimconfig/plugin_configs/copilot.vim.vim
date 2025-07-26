@@ -1,7 +1,7 @@
 " disabled by default
 augroup config_copilot
   au!
-  au VimEnter * Copilot disable
+  au VimEnter * silent! Copilot disable
 augroup END
 
 " toggle Copilot suggestions/autocomplete

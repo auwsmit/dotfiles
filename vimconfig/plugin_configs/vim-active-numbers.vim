@@ -11,7 +11,7 @@ let g:activenumbers_autoupdate = 0
 "     SetActiveNumbers nonu nornu
 " endfun
 
-let g:actnum_exclude =
+let g:activenumbers_exclude =
       \ [ 'unite', 'tagbar', 'startify', 'undotree', 'gundo', 'vimshell', 'w3m', 'copilot_chat' ]
 fun! s:ActiveNumberUnimpaired()
   nnoremap <silent> yoa :ActiveNumbers<CR>

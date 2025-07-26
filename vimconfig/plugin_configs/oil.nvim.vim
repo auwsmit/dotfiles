@@ -1,4 +1,4 @@
-if !has('nvim') | finish | endif
+finish "disabled
 
 lua << EOF
 require("oil").setup({

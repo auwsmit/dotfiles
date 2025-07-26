@@ -1,3 +1,5 @@
+if has('nvim') | finish | endif
+
 augroup config_RainbowParens
   au!
 

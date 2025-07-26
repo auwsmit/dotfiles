@@ -6,8 +6,9 @@ nnoremap <space>fr :FZFMru<cr>
 
 augroup config_mru
   au!
-" other plugins use d, so use x to delete instead
+  " other plugins use d, so use x to delete instead
   au FileType mru map <buffer> x dlh
+  au FileType mru map <buffer> q :MRUToggle<CR>
 
   " convenience and consistency with other plugins like FZF
   au FileType mru noremap <buffer> <C-j> j
