@@ -26,7 +26,7 @@ set backup_dir=%home_dir%old_dotfiles\
 
 :: make backup folder for already existing files {{{
 if exist  "%backup_dir%" (
-    :: backup any previously existing old_dotfiles
+    REM backup any previously existing old_dotfiles
     rename "%backup_dir%" "older_dotfiles"
     mkdir "%backup_dir%"
     move "%home_dir%older_dotfiles" "%backup_dir%"
