@@ -33,7 +33,6 @@ Plug 'tpope/vim-fugitive'   " vim + git integration
 " Plug 'yegappan/mru'         " most recent file list
 Plug 'auwsmit/mru', { 'branch': 'personal-use' }
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
-Plug 'stevearc/oil.nvim'    " minimal file explorer++
 Plug 'justinmk/vim-dirvish' " minimal file explorer
 Plug 'preservim/nerdtree',  " file tree viewer
 Plug 'junegunn/fzf',        " general fuzzy finder
@@ -94,13 +93,15 @@ Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } "
 " " }}}
 " APPEARANCE/UI PLUGINS {{{
 
-Plug 'xtal8/traces.vim'           " previews patterns for ex commands
-Plug 'auwsmit/baddoggo'           " personal fork of Bad Wolf by Steve Losh
-Plug 'auwsmit/vim-active-numbers' " line numbers follow the current window
-Plug 'itchyny/lightline.vim'      " prettier statusbar
-Plug 'junegunn/goyo.vim',         " distraction free editing
-Plug 'Yggdroot/indentLine',       " indent indicators
-Plug 'junegunn/rainbow_parentheses.vim'
+Plug 'xtal8/traces.vim'            " previews patterns for ex commands
+Plug 'auwsmit/baddoggo'            " personal fork of Bad Wolf by Steve Losh
+Plug 'auwsmit/vim-active-numbers'  " line numbers follow the current window
+Plug 'itchyny/lightline.vim'       " prettier statusbar
+Plug 'junegunn/goyo.vim',          " distraction free editing
+Plug 'Yggdroot/indentLine',        " indent indicators
+Plug 'catgoose/nvim-colorizer.lua' " highlight colorcodes
+" Plug 'junegunn/rainbow_parentheses.vim'
+" Plug 'HiPhish/rainbow-delimiters.nvim'
 
 " }}}
 " MISC/CONVENIENCE PLUGINS " {{{
@@ -407,14 +408,14 @@ augroup vimrc_cmdwin_map
   au CmdwinLeave * let g:cmdwinmap = 0
   au CmdwinEnter * exec expand(g:cmdwinmap ? '' : 'quit')
 augroup END
-fun! s:FixCtrlF_SetAutocmd()
+fun! s:FixCtrlF_SetAutocmd(type)
   let g:cmdwinmap = 1
   augroup vimrc_fix_cmd_ctrl_f
     au!
     au CmdlineLeave * call <SID>FixCtrlF_ClearAutocmd()
   augroup END
   " re-enter command-mode
-  call feedkeys(':','tn')
+  call feedkeys(a:type,'tn')
 endfun
 fun! s:FixCtrlF_ClearAutocmd()
   let g:cmdwinmap = 0
@@ -425,8 +426,10 @@ endfun
 " zee history and zee commands, oui oui }}}
 nnoremap z: :let g:cmdwinmap=1<CR>q:
 nnoremap z/ :let g:cmdwinmap=1<CR>q/
-nnoremap <silent> : :call <SID>FixCtrlF_SetAutocmd()<CR>
-xnoremap <silent> : :<C-u>call <SID>FixCtrlF_SetAutocmd()<CR>gv
+nnoremap <silent> : :call <SID>FixCtrlF_SetAutocmd(':')<CR>
+xnoremap <silent> : :<C-u>call <SID>FixCtrlF_SetAutocmd(':')<CR>gv
+nnoremap <silent> / :call <SID>FixCtrlF_SetAutocmd('/')<CR>
+xnoremap <silent> / :<C-u>call <SID>FixCtrlF_SetAutocmd('/')<CR>gv
 
 " move by wrapped lines instead of line numbers, unless the motion is counted
 " also set a mark for movements across 5 lines or more
@@ -739,7 +742,11 @@ xnoremap <silent> R :<C-u>call <SID>set_reg(v:register)<Bar>call <SID>replace_wi
 " %% expands to current buffer file name
 " :: expands to current buffer file path
 cnoremap %% <C-r>=fnameescape(expand('%'))<CR>
-cnoremap :: <C-r>=fnameescape(expand('%:p:h'))<CR>/
+if s:is_windows
+  cnoremap :: <C-r>=fnameescape(substitute(expand('%:p:h'),'/','\','g'))<CR>\
+else
+  cnoremap :: <C-r>=fnameescape(expand('%:p:h'))<CR>/
+endif
 
 " browse search results while searching with tab/s-tab
 cnoremap <expr>  <Tab>    getcmdtype() =~ '[?/]' ? '<C-g>' : feedkeys('<Tab>', 'int')[1]
@@ -908,15 +915,10 @@ nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
 " paste last ex command output
 nnoremap <Space>;p :put =execute('<C-r>:')<CR>
 
-fun! s:RunLocalBuild()
-  let proj_name = fnamemodify(getcwd(), ':t')
-  " let dotexe = '.\bin\Debug\'.proj_name.'.exe'
-  let dotexe = '.\build\raylib-game-template\Debug\raylib-game-template.exe'
-  if filereadable(dotexe) | exec '!'.dotexe | endif
-endfun
-" nnoremap <Space>!R :make \| call <SID>RunLocalBuild()<CR>
-nnoremap <Space>!r :call <SID>RunLocalBuild()<CR>
-nnoremap <Space>!R :exec '!cmake --build build' \| call <SID>RunLocalBuild()<CR>
+" quickly compile and run game
+nnoremap <Space>m :make<CR>
+nnoremap <Space>! :!game<CR>
+nnoremap <Space>M :make<CR>:!game<CR>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches
