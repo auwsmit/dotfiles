@@ -17,11 +17,7 @@ fun! s:FugitiveMaps()
   endif
   " because of my weird custom :
   nnoremap <buffer> : :
-  " minor shortcuts
-  nmap <buffer> <C-j> )
-  xmap <buffer> <C-j> )
-  nmap <buffer> <C-k> (
-  xmap <buffer> <C-k> (
+  " minor shortcut
   nmap <buffer> ; =
   xmap <buffer> ; =
 endfun

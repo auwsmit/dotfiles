@@ -2,8 +2,8 @@ let g:session_autosave = 0
 let g:session_autoload = 0
 let g:session_persist_colors = 0
 
-nnoremap <Space>SS :SaveSession<Space>
-nnoremap <Space>SO :OpenSession<Space>
+nnoremap <Space>SS :SaveSession<CR>
+nnoremap <Space>SO :OpenSession<CR>
 
 augroup config_sessions
   au!

@@ -6,6 +6,10 @@ nnoremap <space>fr :FZFMru<cr>
 
 augroup config_mru
   au!
+
+  " I use U for redo
+  au VimEnter * nnoremap <C-r> :MRUToggle<cr>
+
   " other plugins use d, so use x to delete instead
   au FileType mru map <buffer> x dlh
   au FileType mru map <buffer> q :MRUToggle<CR>
