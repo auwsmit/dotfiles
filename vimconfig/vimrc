@@ -70,7 +70,7 @@ Plug 'junegunn/vim-after-object'
 Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
 Plug 'auwsmit/vim-ipmotion'      " { } move over folds
 Plug 'romainl/vim-cool'          " autoclear search highlighting
-Plug 'henrik/vim-indexed-search' " show search count & centered search
+" Plug 'henrik/vim-indexed-search' " show search count & centered search
 
 " " }}}
 " COMPLETION/SNIPPET PLUGINS {{{
@@ -99,7 +99,7 @@ Plug 'auwsmit/vim-active-numbers'  " line numbers follow the current window
 Plug 'itchyny/lightline.vim'       " prettier statusbar
 Plug 'junegunn/goyo.vim',          " distraction free editing
 Plug 'Yggdroot/indentLine',        " indent indicators
-Plug 'catgoose/nvim-colorizer.lua' " highlight colorcodes
+" Plug 'catgoose/nvim-colorizer.lua' " highlight colorcodes
 " Plug 'junegunn/rainbow_parentheses.vim'
 " Plug 'HiPhish/rainbow-delimiters.nvim'
 
@@ -853,6 +853,7 @@ endif
 " edit vimrc, resolve symlinks to goto dotfiles repo
 " I've probably pressed this command over a million times
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
+nnoremap <silent><Space>V :exec 'tabedit '.resolve($MYVIMRC)<CR>
 
 " quick scratch buffers
 let s:scratch_bufn = 0
@@ -966,7 +967,7 @@ fun! s:DoubleView() abort
 endfun " }}}
 command! DoubleView call <SID>DoubleView()
 
-" TODO: replace these with better ones
+" TODO: make these more robust or find alternatives
 " very basic custom text objects
 " 'inside symbol' and 'a symbol'
 let s:separators = exists('g:loaded_targets') ? [ '`', '%']
