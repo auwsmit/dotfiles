@@ -1,6 +1,6 @@
 " *** THESE SETTINGS ALSO APPLY TO CPP FILES ***
 
-setlocal foldmethod=indent
+setlocal foldmethod=syntax
 
 " (0 - Indent 0 characters after an open parenthesis
 " Example: if (c1 && (c2 ||
