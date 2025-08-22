@@ -111,8 +111,7 @@ Plug 'junegunn/vim-peekaboo' " preview registers
 Plug 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
 Plug 'tpope/vim-repeat'      " allows plugins to . repeat easier
 Plug 'tpope/vim-sleuth'      " auto-detect tab settings per-file
-" Plug 'tpope/vim-unimpaired'  " many useful [x/]x mappings
-Plug 'auwsmit/vim-unimpaired', { 'branch': 'readonly-register-paste' }
+Plug 'tpope/vim-unimpaired'  " many useful [x/]x mappings
 Plug 'Konfekt/FastFold'         " optimize how Vim updates folds
 Plug 'farmergreg/vim-lastplace' " reopen files at last position
 Plug 'xolox/vim-session'        " simplified session management
@@ -391,7 +390,7 @@ nnoremap <silent> <C-n> <C-i>zvzz
 nnoremap - :exec 'edit '.expand('%:h')<CR>
 
 " open current working directory
-nnoremap + :edit .<CR>
+nnoremap + :exec ':edit '.getcwd()<CR>
 
 " | and _ for split windows
 nnoremap <expr><silent> \| !v:count ? "<C-w>v<C-w><Right>" : '\|'
@@ -523,8 +522,8 @@ inoremap <C-a> <C-o>^
 inoremap <expr> <C-e> col('.')>strlen(getline('.'))<Bar><Bar>pumvisible()?"\<lt>C-E>":"\<lt>End>"
 
 " " expand-o-brackets
-" inoremap {<Tab> {<CR>}<Esc>O
-" inoremap {;<Tab> {<CR>};<Esc>O
+inoremap {<Tab> {<CR>}<Esc>O
+inoremap {;<Tab> {<CR>};<Esc>O
 
 " change directories (minor time saver)
 nnoremap cd :cd<Space>
