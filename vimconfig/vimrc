@@ -44,6 +44,7 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
 " Plug 'Y:\Git\vim-spear'
 Plug 'auwsmit/vim-spear'
+Plug 'Kris2k/A.vim'
 
 " }}}
 " OPERATOR PLUGINS {{{
@@ -521,7 +522,7 @@ cnoremap <Esc> <C-c>
 inoremap <C-a> <C-o>^
 inoremap <expr> <C-e> col('.')>strlen(getline('.'))<Bar><Bar>pumvisible()?"\<lt>C-E>":"\<lt>End>"
 
-" " expand-o-brackets
+" expand-o-brackets
 inoremap {<Tab> {<CR>}<Esc>O
 inoremap {;<Tab> {<CR>};<Esc>O
 
@@ -917,8 +918,8 @@ nnoremap <Space>;p :put =execute('<C-r>:')<CR>
 
 " quickly compile and run game
 nnoremap <Space>m :make<CR>
-nnoremap <Space>! :!game<CR>
-nnoremap <Space>M :make<CR>:!game<CR>
+nnoremap <Space>! :!pong<CR>
+nnoremap <Space>M :make<CR>:!pong<CR>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches
