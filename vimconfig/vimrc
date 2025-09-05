@@ -71,7 +71,7 @@ Plug 'junegunn/vim-after-object'
 Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
 Plug 'auwsmit/vim-ipmotion'      " { } move over folds
 Plug 'romainl/vim-cool'          " autoclear search highlighting
-" Plug 'henrik/vim-indexed-search' " show search count & centered search
+Plug 'henrik/vim-indexed-search' " show search count & centered search
 
 " " }}}
 " COMPLETION/SNIPPET PLUGINS {{{
@@ -113,7 +113,7 @@ Plug 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
 Plug 'tpope/vim-repeat'      " allows plugins to . repeat easier
 Plug 'tpope/vim-sleuth'      " auto-detect tab settings per-file
 Plug 'tpope/vim-unimpaired'  " many useful [x/]x mappings
-Plug 'Konfekt/FastFold'         " optimize how Vim updates folds
+" Plug 'Konfekt/FastFold'         " optimize how Vim updates folds
 Plug 'farmergreg/vim-lastplace' " reopen files at last position
 Plug 'xolox/vim-session'        " simplified session management
 let g:session_autosave = 0      " no auto-save prompt on first install
@@ -518,6 +518,10 @@ xnoremap <C-g> <Esc>
 cnoremap <Esc> <C-c>
 cnoremap <Esc> <C-c>
 
+" butter fingers
+inoremap <C-p> <C-[>
+inoremap <C-]> <C-[>
+
 " from tpope's rsi
 inoremap <C-a> <C-o>^
 inoremap <expr> <C-e> col('.')>strlen(getline('.'))<Bar><Bar>pumvisible()?"\<lt>C-E>":"\<lt>End>"
@@ -917,9 +921,8 @@ nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
 nnoremap <Space>;p :put =execute('<C-r>:')<CR>
 
 " quickly compile and run game
-nnoremap <Space>m :make<CR>
-nnoremap <Space>! :!pong<CR>
-nnoremap <Space>M :make<CR>:!pong<CR>
+nnoremap <Space>m :make clean \| make CC=clang<CR>
+nnoremap <Space>M :make clean \| make run CC=clang<CR>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches
