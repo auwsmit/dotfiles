@@ -248,6 +248,10 @@ set guioptions=
 " statusline when lightline is disabled or unavailable
 exec 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
 
+" syntax performance settings
+" I would use treesitter but it has a few issues I'd need to fix first
+syntax sync ccomment
+
 silent! colorscheme baddoggo
 fun! VimrcColorFallback(color) abort
   if !exists('g:colors_name')
@@ -848,6 +852,9 @@ fun! s:GotoPreviousWindow()
 endfun
 " }}}
 nnoremap <silent> <Space><Tab> :call <SID>GotoPreviousWindow()<CR>
+
+" reload current file
+nnoremap <Space>e :edit<CR>
 
 " check if FZF command search is mapped
 if maparg('<Space><Space>','n') == ''

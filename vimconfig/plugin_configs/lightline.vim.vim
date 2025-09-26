@@ -89,4 +89,9 @@ fun! TagbarStatusFunc(current, sort, fname, ...) abort
   return lightline#statusline(0)
 endfun
 " }}}
+
+augroup config_lightline
+  au!
+  au VimEnter * call lightline#enable()
+augroup END
 " vim: set foldmethod=marker:
