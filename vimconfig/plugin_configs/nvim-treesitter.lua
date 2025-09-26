@@ -12,7 +12,10 @@ require 'nvim-treesitter.configs'.setup {
 
     -- CUSTOM TREE SITTER SYNTAX
     -- =========================
+    -- Note: this is for my colorscheme Bad Doggo
+    -- TODO: add to colorscheme repo along with scheme file
 
+    -- Vim and C
     vim.api.nvim_create_autocmd("FileType", {
         pattern = {"vim", "c"},
         callback = function()
@@ -21,6 +24,8 @@ require 'nvim-treesitter.configs'.setup {
             vim.api.nvim_set_hl(0, '@variable.parameter', {})
         end,
     }),
+
+    -- Vim
     vim.api.nvim_create_autocmd("FileType", {
         pattern = {"vim"},
         callback = function()
@@ -28,11 +33,24 @@ require 'nvim-treesitter.configs'.setup {
             vim.api.nvim_set_hl(0, '@function.macro', {})
         end,
     }),
+
+    -- C
     vim.api.nvim_create_autocmd("FileType", {
-        pattern = {"c"},
+        pattern = {"c", "cpp"},
         callback = function()
-            -- highlight builtin types
+            -- highlight builtin types, e.g. char, int, void etc
             vim.api.nvim_set_hl(0, '@type.builtin', { link = 'Type' })
+            -- no highlighting struct members
+            vim.api.nvim_set_hl(0, '@property', {})
+        end,
+    }),
+
+    -- Lua
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = {"lua"},
+        callback = function()
+            -- no highlighting table members
+            vim.api.nvim_set_hl(0, '@variable.member', {})
         end,
     })
 }
