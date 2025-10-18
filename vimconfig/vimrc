@@ -30,21 +30,18 @@ call plug#begin()
 
 Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
 Plug 'tpope/vim-fugitive'   " vim + git integration
-" Plug 'yegappan/mru'         " most recent file list
-Plug 'auwsmit/mru', { 'branch': 'personal-use' }
+" Plug 'yegappan/mru'       " most recent file list
+Plug 'auwsmit/mru', { 'branch': 'personal-use' } " TODO remake simpler mru
 Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
 Plug 'justinmk/vim-dirvish' " minimal file explorer
-Plug 'preservim/nerdtree',  " file tree viewer
-Plug 'junegunn/fzf',        " general fuzzy finder
-      \ { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
 Plug 'junegunn/fzf.vim'     " fzf + vim integration
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " tag explorer
 Plug 'nvim-lua/plenary.nvim'
 Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
-" Plug 'Y:\Git\vim-spear'
 Plug 'auwsmit/vim-spear'
-Plug 'Kris2k/A.vim'
+Plug 'derekwyatt/vim-fswitch' " swap between header and source files
 
 " }}}
 " OPERATOR PLUGINS {{{
@@ -79,7 +76,7 @@ Plug 'henrik/vim-indexed-search' " show search count & centered search
 Plug 'ervandew/supertab'  " tab autocomplete
 Plug 'github/copilot.vim'           " AI suggestions
 Plug 'DanBradbury/copilot-chat.vim' " AI chat window
-" if s:has_python
+" if s:has_python " TODO find or make replacement snippet plugin?
 "   Plug 'SirVer/UltiSnips' " snippets manager
 " endif
 
@@ -89,7 +86,7 @@ Plug 'DanBradbury/copilot-chat.vim' " AI chat window
 Plug 'nicwest/vim-camelsnek' " convert between camel and snake case
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } " align text operator
-" Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 " " }}}
 " APPEARANCE/UI PLUGINS {{{
@@ -101,8 +98,6 @@ Plug 'itchyny/lightline.vim'       " prettier statusbar
 Plug 'junegunn/goyo.vim',          " distraction free editing
 Plug 'Yggdroot/indentLine',        " indent indicators
 " Plug 'catgoose/nvim-colorizer.lua' " highlight colorcodes
-" Plug 'junegunn/rainbow_parentheses.vim'
-" Plug 'HiPhish/rainbow-delimiters.nvim'
 
 " }}}
 " MISC/CONVENIENCE PLUGINS " {{{
@@ -113,7 +108,6 @@ Plug 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
 Plug 'tpope/vim-repeat'      " allows plugins to . repeat easier
 Plug 'tpope/vim-sleuth'      " auto-detect tab settings per-file
 Plug 'tpope/vim-unimpaired'  " many useful [x/]x mappings
-" Plug 'Konfekt/FastFold'         " optimize how Vim updates folds
 Plug 'farmergreg/vim-lastplace' " reopen files at last position
 Plug 'xolox/vim-session'        " simplified session management
 let g:session_autosave = 0      " no auto-save prompt on first install
@@ -586,29 +580,27 @@ noremap <C-S-Right> <C-w>>
 
 " resize font for gui {{{
 " not compatible with multiple guifont options
-let s:default_size = matchstr(&guifont, ':h\zs\d\+\ze')
+let s:default_size = matchstr(&guifont, '\d\+$')
 if s:default_size == '' | let s:default_size = 12 | endif
-fun! s:CheckGuiFont()
-  if &guifont | return | endif
+fun! s:SetGuiFont()
+  if &guifont != '' | return | endif
   let s:gfont = (s:is_windows ? 'Consolas' : 'Monospace')
   let s:gfont .= ':h'.s:default_size
   let &guifont = (&guifont == '') ? (s:gfont) :
         \ (&guifont.':h'.s:default_size)
 endfun
-call s:CheckGuiFont()
+call s:SetGuiFont()
 fun! s:ChangeFontSize(type)
-  call s:CheckGuiFont()
-  let [font, size] = [&guifont, -1]
+  let font = matchstr(&guifont, '[^:]*')
+  let size = matchstr(&guifont, '\d\+$')
   if a:type == '0'
     let size = s:default_size
   else
-    let size = matchstr(font, '\d\+$')
     if size == '' | let size = s:default_size | endif
     let size = size + (a:type == '+' ? 1 : -1)
     if size == 0  | return | endif
     echom 'size: '.size
   endif
-  let font = matchstr(font, '[^:]*')
   let &guifont = font.':h'.size
 endfun
 if has('gui_running') " might need different maps for gvim
@@ -866,6 +858,30 @@ endif
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
 nnoremap <silent><Space>V :exec 'tabedit '.resolve($MYVIMRC)<CR>
 
+" simple swap between C header and source files
+function! SwitchHeaderSource()
+  let dir = expand('%:p:h')
+  let base = expand('%:t:r')
+  let ext = expand('%:e')
+  let pairs = {'c': '.h', 'cpp': '.hpp', 'h': '.c', 'hpp': '.cpp'}
+  let target = has_key(pairs, ext) ? base . pairs[ext] : ''
+  if target == '' | return | endif
+
+  " recursively search up n down
+  let alt_file_down = findfile(target, dir."/**")
+  let alt_file_up = findfile(target, dir.";")
+  if filereadable(alt_file_down) | execute 'edit ' . alt_file_down
+  elseif filereadable(alt_file_up) | execute 'edit ' . alt_file_up
+  else | echohl WarningMsg | echom "Couldn't find " . target | echohl None
+  endif
+endfunction
+
+augroup vimrc_c_headerswap
+  au!
+  au FileType c,cpp nnoremap <buffer><silent> <Space>a :call SwitchHeaderSource()<CR>
+augroup END
+
+
 " quick scratch buffers
 let s:scratch_bufn = 0
 fun! s:CreateScratchBuffer()
@@ -923,13 +939,15 @@ endfun
 " }}}
 nnoremap <silent> <Space>l :call ToggleList("Location List", 'l')<CR>
 nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
+" clear lists
+nnoremap <Space>C :cexpr [] <Bar> lexpr []<CR>
 
 " paste last ex command output
 nnoremap <Space>;p :put =execute('<C-r>:')<CR>
 
 " quickly compile and run game
-nnoremap <Space>m :make clean \| make CC=clang<CR>
-nnoremap <Space>M :make clean \| make run CC=clang<CR>
+nnoremap <Space>m :make clean all<CR>
+nnoremap <Space>M :make clean run<CR>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches

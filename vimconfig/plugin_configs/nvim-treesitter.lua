@@ -8,7 +8,7 @@ end
 require 'nvim-treesitter.configs'.setup {
     ensure_installed = { "lua", "python", "c", "cpp" },
     highlight = { enable = true },
-    indent = { enable = true },
+    indent = { enable = false },
 
     -- CUSTOM TREE SITTER SYNTAX
     -- =========================
@@ -42,6 +42,8 @@ require 'nvim-treesitter.configs'.setup {
             vim.api.nvim_set_hl(0, '@type.builtin', { link = 'Type' })
             -- no highlighting struct members
             vim.api.nvim_set_hl(0, '@property', {})
+            -- no highlighting struct member declarations
+            vim.api.nvim_set_hl(0, '@variable.member', {})
         end,
     }),
 

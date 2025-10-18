@@ -21,4 +21,3 @@ setlocal foldmethod=indent
 "          func()
 
 setlocal cino=(0,l1,t0
-

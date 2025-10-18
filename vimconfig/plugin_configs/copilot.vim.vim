@@ -5,9 +5,11 @@ augroup config_copilot
 augroup END
 
 " toggle Copilot suggestions/autocomplete
+" (personally I find this extremely distracting)
 nnoremap <expr> yoC ':Copilot '.(g:copilot#Enabled() ? 'disable' : 'enable').'<CR>'
 
 " use C-j to enable suggestions for current insert mode
+" (my attempt to make suggestions less distracting and more explicit)
 fun! s:CopilotInsertMode()
   if g:copilot#Enabled() | return | endif
   Copilot enable
