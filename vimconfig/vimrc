@@ -41,7 +41,6 @@ Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " tag explorer
 Plug 'nvim-lua/plenary.nvim'
 Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
 Plug 'auwsmit/vim-spear'
-Plug 'derekwyatt/vim-fswitch' " swap between header and source files
 
 " }}}
 " OPERATOR PLUGINS {{{
@@ -442,26 +441,11 @@ xnoremap <expr> k (v:count >= 5 ? "m'" . v:count : '').(v:count? 'k' : 'gk')
 noremap p p`]
 noremap gp p
 
-" move selected lines up or down with no reindenting {{{
-" we'll see of I actually use this
-fun! s:MoveLines(dir)
-  let [old_reg, old_col] = [@", col('.')-1]
-  normal! gv
-  exec 'normal! '. (a:dir == 'down' ? 'dp' : 'dkP')
-  normal! '[V']
-  exec 'normal! 0'. (old_col != 0 ? (old_col .'l') : '')
-  let @" = old_reg
-endfun
-" }}}
-xnoremap <Up> <Esc>:call <SID>MoveLines('up')<CR>
-xnoremap <Down> <Esc>:call <SID>MoveLines('down')<CR>
-
 " <CR> in vimrc to edit or create plugin config {{{
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
 fun! s:GotoPluginConfig()
   if getline('.') =~ "Plug '.*'"
-    " this pattern matches whatever is after the
-    " last slash in single quotes on a Plug line
+    " this pattern matches whatever is after the last slash in single quotes on a Plug line
     let pattern = "Plug.*'[^']*[\\/]\\zs[^']*\\ze'"
     let name = matchstr(getline('.'), pattern)
     let path_to_plugin = resolve(g:myvimdir).'/plugin_configs/'.name
@@ -526,10 +510,6 @@ inoremap <expr> <C-e> col('.')>strlen(getline('.'))<Bar><Bar>pumvisible()?"\<lt>
 
 " expand-o-brackets
 inoremap {<Tab> {<CR>}<Esc>O
-inoremap {;<Tab> {<CR>};<Esc>O
-
-" change directories (minor time saver)
-nnoremap cd :cd<Space>
 
 " alt quit
 nnoremap <C-S-Q> :qall<CR>
@@ -794,21 +774,6 @@ augroup vimrc_term_run_shortcut
   exec 'au Term'.(s:is_nvim ? '' : 'inal').'Open * nnoremap <buffer> <CR> a<CR>'
 augroup END
 
-" automatically create undo breaks in insert mode {{{
-" it's better to just build the habit of exiting and entering
-" insert mode in small chunks, but still gonna try this out.
-fun! s:SetupInsertUndoBreaks()
-  inoremap <buffer> . .<C-g>u
-  inoremap <buffer> , ,<C-g>u
-  inoremap <buffer> ! !<C-g>u
-  inoremap <buffer> ? ?<C-g>u
-endfun
-augroup vimrc_auto_insert_undo_breaks
-  au!
-  au FileType txt,markdown call <SID>SetupInsertUndoBreaks()
-augroup END
-"}}}
-
 " }}}
 " LEADER MAPS {{{
 " space is my leader
@@ -858,7 +823,7 @@ endif
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
 nnoremap <silent><Space>V :exec 'tabedit '.resolve($MYVIMRC)<CR>
 
-" simple swap between C header and source files
+" simple swap between C header and source files {{{
 function! SwitchHeaderSource()
   let dir = expand('%:p:h')
   let base = expand('%:t:r')
@@ -868,14 +833,15 @@ function! SwitchHeaderSource()
   if target == '' | return | endif
 
   " recursively search up n down
-  let alt_file_down = findfile(target, dir."/**")
   let alt_file_up = findfile(target, dir.";")
-  if filereadable(alt_file_down) | execute 'edit ' . alt_file_down
-  elseif filereadable(alt_file_up) | execute 'edit ' . alt_file_up
+  let alt_file_down = findfile(target, dir."/**")
+  if filereadable(alt_file_up) | execute 'edit ' . alt_file_up
+  elseif filereadable(alt_file_down) | execute 'edit ' . alt_file_down
   else | echohl WarningMsg | echom "Couldn't find " . target | echohl None
   endif
 endfunction
 
+" }}}
 augroup vimrc_c_headerswap
   au!
   au FileType c,cpp nnoremap <buffer><silent> <Space>a :call SwitchHeaderSource()<CR>
@@ -893,9 +859,9 @@ nnoremap <expr> <Space>s <SID>CreateScratchBuffer()
 
 " :terminal consistency with vim and nvim {{{
 if s:is_nvim
-  let s:space_t_map = 'nnoremap <Space>t :split +term\ '
+  let s:space_t_map = ':split +term\ '
 else
-  let s:space_t_map = 'nnoremap <Space>t :term ++close '
+  let s:space_t_map = ':term ++close '
 endif
 " let s:space_t_map .= (s:is_windows && executable('wsl') ? 'wsl.exe' : '') .'<CR>'
 let s:space_t_map .= (s:is_windows ? 'powershell.exe' : '') .'<CR>'
@@ -906,7 +872,7 @@ if s:is_nvim
   augroup END
 endif
 " }}}
-exec s:space_t_map
+exec 'nnoremap <Space>t '. s:space_t_map
 
 " toggle location & quickfix lists {{{
 " (from vim tips wiki)
@@ -939,8 +905,8 @@ endfun
 " }}}
 nnoremap <silent> <Space>l :call ToggleList("Location List", 'l')<CR>
 nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
-" clear lists
-nnoremap <Space>C :cexpr [] <Bar> lexpr []<CR>
+" clear location+quickfix lists
+nnoremap <Space>C :lexpr [] <Bar> cexpr []<CR>
 
 " paste last ex command output
 nnoremap <Space>;p :put =execute('<C-r>:')<CR>
