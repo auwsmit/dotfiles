@@ -13,5 +13,5 @@ augroup config_indentLine
   "
   " it's probably caused by some conflict with some other part of my config,
   " but I'm too lazy to figure out the root of the problem, and this works fine
-  au VimEnter * syntax on
+  au VimEnter * exec filereadable(expand('%')) ? 'edit | IndentLinesEnable' : ''
 augroup END

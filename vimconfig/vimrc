@@ -91,7 +91,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " APPEARANCE/UI PLUGINS {{{
 
 Plug 'xtal8/traces.vim'            " previews patterns for ex commands
-Plug 'auwsmit/baddoggo'            " personal fork of Bad Wolf by Steve Losh
+Plug 'auwsmit/badwolf-nvim'        " personal fork of Bad Wolf by Steve Losh
 Plug 'auwsmit/vim-active-numbers'  " line numbers follow the current window
 Plug 'itchyny/lightline.vim'       " prettier statusbar
 Plug 'junegunn/goyo.vim',          " distraction free editing
@@ -321,6 +321,16 @@ augroup END
 " go back to last buffer
 nnoremap <BS> <C-^>
 
+" swap ^/$ and H/L
+nnoremap H ^
+xnoremap H ^
+nnoremap L $
+xnoremap L $
+nnoremap ^ H
+xnoremap ^ H
+nnoremap $ L
+xnoremap $ L
+
 " Y yanks until eol, more like D and C
 " yy still yanks the whole line
 nnoremap Y y$
@@ -491,6 +501,7 @@ nnoremap <C-]> :exec "silent! normal! \<C<kMinus>]>"<CR>
 " :help works fine, thanks
 noremap <F1> <NOP>
 inoremap <F1> <NOP>
+
 " Emacs blasphemy
 inoremap <C-g> <Esc>
 cnoremap <C-g> <C-c>
@@ -828,7 +839,7 @@ function! SwitchHeaderSource()
   let dir = expand('%:p:h')
   let base = expand('%:t:r')
   let ext = expand('%:e')
-  let pairs = {'c': '.h', 'cpp': '.hpp', 'h': '.c', 'hpp': '.cpp'}
+  let pairs = {'c': '.h', 'h': '.c'}
   let target = has_key(pairs, ext) ? base . pairs[ext] : ''
   if target == '' | return | endif
 
@@ -911,6 +922,10 @@ nnoremap <Space>C :lexpr [] <Bar> cexpr []<CR>
 " paste last ex command output
 nnoremap <Space>;p :put =execute('<C-r>:')<CR>
 
+" substitute word under cursor
+nnoremap <Space>;s :%s/\C<C-r>=expand("<lt>cword>")<CR>/
+xnoremap <Space>;s y:%s/\V\C<C-r>"/
+
 " quickly compile and run game
 nnoremap <Space>m :make clean all<CR>
 nnoremap <Space>M :make clean run<CR>
@@ -918,24 +933,6 @@ nnoremap <Space>M :make clean run<CR>
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches
 nnoremap <Space>/ :lvim //g %<CR>
-
-" weird idea: <nop> all unused space mappings for safety. {{{
-" - sometimes I accidentally press <space>C and change the line, for example
-fun! s:SafeSpaceMaps()
-  let keys = 'qwertyuiop[]asdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'
-  let keys .= '`~!@#$%^&*()-=_+[]{};:''"<,>./?'
-  for i in range(0,len(keys)-1)
-    let map = '<Space>'.keys[i]
-    if maparg(map, 'n') == ''
-      exec 'nnoremap '. map .' <NOP>'
-    endif
-  endfor
-endfun
-augroup vimrc_safespace_maps " teehee
-  au!
-  au VimEnter * call s:SafeSpaceMaps()
-augroup END
-" }}}
 
 " }}}
 
