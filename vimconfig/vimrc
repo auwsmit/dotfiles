@@ -308,6 +308,9 @@ augroup vimrc_appearance_and_formatting
     " Maximize window
     au GUIEnter * simalt ~x
   endif
+
+  " prefer glsl over fsharp
+  " au BufRead *.fs set ft=glsl
 augroup END
 
 " }}}
@@ -320,16 +323,6 @@ augroup END
 
 " go back to last buffer
 nnoremap <BS> <C-^>
-
-" swap ^/$ and H/L
-nnoremap H ^
-xnoremap H ^
-nnoremap L $
-xnoremap L $
-nnoremap ^ H
-xnoremap ^ H
-nnoremap $ L
-xnoremap $ L
 
 " Y yanks until eol, more like D and C
 " yy still yanks the whole line
@@ -506,6 +499,10 @@ inoremap <F1> <NOP>
 inoremap <C-g> <Esc>
 cnoremap <C-g> <C-c>
 xnoremap <C-g> <Esc>
+
+" Windows blasphemy
+inoremap <C-BS> <C-w>
+cnoremap <C-BS> <C-w>
 
 " don't run commands without my consent
 cnoremap <Esc> <C-c>
