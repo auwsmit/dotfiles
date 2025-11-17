@@ -19,6 +19,8 @@ remove (find = '"Edit with Photos"')
 remove (find = '"Edit with Paint"')
 remove (find = '"Scan with Microsoft Defender"')
 remove (find = '"Open with Visual Studio"')
+remove (find = '"Create with Designer"')
+remove (find = '"Resize with Image Resizer"')
 remove (find = '*VLC*')
 remove (find = '*Vim*')
 

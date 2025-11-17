@@ -19,10 +19,19 @@ x = 0
 y = -1
 
 [keyboard]
+
+# New Window
+# ctrl+shift+N
 [[keyboard.bindings]]
 key = "N"
 mods = "Control|Shift"
 action = "CreateNewWindow"
+
+# Ctrl+Backspace to delete word
+[[keyboard.bindings]]
+key = "Back"
+mods = "Control"
+chars = "\u0017"
 
 # Campbell colorscheme {{{
 # (Windows 10/11 default)
