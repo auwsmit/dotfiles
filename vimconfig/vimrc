@@ -170,6 +170,7 @@ set synmaxcol=1024
 set nrformats-=octal
 set sessionoptions-=options " only save local options
 set foldopen-=block
+set errorformat^=make:\ ***\ %m " this is not a file...
 silent! set mouse=a
 set vb t_vb=
 if exists('&belloff')
@@ -308,9 +309,6 @@ augroup vimrc_appearance_and_formatting
     " Maximize window
     au GUIEnter * simalt ~x
   endif
-
-  " prefer glsl over fsharp
-  " au BufRead *.fs set ft=glsl
 augroup END
 
 " }}}

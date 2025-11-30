@@ -8,6 +8,7 @@ let g:dirvish_mode = ':sort ,^.*[\/],'
 augroup config_dirvish
   au!
   au VimEnter * nnoremap - <Plug>(dirvish_up)
+  au VimEnter * nnoremap + :exec ':Dirvish '.getcwd()<CR>
   au VimEnter * highlight link DirvishSuffix Define
 
   " lemme use my ctrl-p and ctrl-n jump list mappings
