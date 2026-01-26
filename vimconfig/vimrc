@@ -38,8 +38,8 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
 Plug 'junegunn/fzf.vim'     " fzf + vim integration
 Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
 Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " tag explorer
-Plug 'nvim-lua/plenary.nvim'
-Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
+" Plug 'nvim-lua/plenary.nvim'
+" Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
 Plug 'auwsmit/vim-spear'
 
 " }}}
@@ -73,8 +73,8 @@ Plug 'henrik/vim-indexed-search' " show search count & centered search
 " COMPLETION/SNIPPET PLUGINS {{{
 
 Plug 'ervandew/supertab'  " tab autocomplete
-Plug 'github/copilot.vim'           " AI suggestions
-Plug 'DanBradbury/copilot-chat.vim' " AI chat window
+" Plug 'github/copilot.vim'           " AI suggestions
+" Plug 'DanBradbury/copilot-chat.vim' " AI chat window
 " if s:has_python " TODO find or make replacement snippet plugin?
 "   Plug 'SirVer/UltiSnips' " snippets manager
 " endif
@@ -85,14 +85,18 @@ Plug 'DanBradbury/copilot-chat.vim' " AI chat window
 Plug 'nicwest/vim-camelsnek' " convert between camel and snake case
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
 Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } " align text operator
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' }
+Plug 'Tetralux/odin.vim' " better odin syntax (TODO make personal fork)
+Plug 'neovim/nvim-lspconfig'
+Plug 'DanielGavin/ols'
+
 
 " " }}}
 " APPEARANCE/UI PLUGINS {{{
 
 Plug 'xtal8/traces.vim'            " previews patterns for ex commands
 Plug 'auwsmit/badwolf-nvim'        " personal fork of Bad Wolf by Steve Losh
-Plug 'auwsmit/vim-active-numbers'  " line numbers follow the current window
+" Plug 'auwsmit/vim-active-numbers'  " line numbers follow the current window
 Plug 'itchyny/lightline.vim'       " prettier statusbar
 Plug 'junegunn/goyo.vim',          " distraction free editing
 Plug 'Yggdroot/indentLine',        " indent indicators
@@ -114,7 +118,7 @@ Plug 'xolox/vim-misc'           " vim-session dependency
 Plug 'mbbill/undotree'          " visual undo tree
 Plug 'vimwiki/vimwiki'          " for taking and organizing notes
 Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
-Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
+" Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
 
 " }}}
 
@@ -170,7 +174,7 @@ set synmaxcol=1024
 set nrformats-=octal
 set sessionoptions-=options " only save local options
 set foldopen-=block
-set errorformat^=make:\ ***\ %m " this is not a file...
+" set errorformat^=make[1]:\ ***\ %m " this is not a file...
 silent! set mouse=a
 set vb t_vb=
 if exists('&belloff')
@@ -217,7 +221,7 @@ set autoindent smartindent " try cindent instead
 set encoding=utf-8
 
 " default tab settings (vim-sleuth will usually override this)
-set shiftwidth=4 softtabstop=-1 expandtab
+set tabstop=4 shiftwidth=4 softtabstop=-1 expandtab
 set smarttab
 
 " UI/aesthetic
@@ -242,11 +246,10 @@ set guioptions=
 " statusline when lightline is disabled or unavailable
 exec 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
 
-" syntax performance settings
-" I would use treesitter but it has a few issues I'd need to fix first
+" native syntax performance settings
 syntax sync ccomment
 
-silent! colorscheme baddoggo
+silent! colorscheme badwolf
 fun! VimrcColorFallback(color) abort
   if !exists('g:colors_name')
     exec 'silent! colorscheme '. a:color
@@ -723,6 +726,7 @@ endf
 " }}}
 nnoremap <silent> dr  :<C-u>call <SID>set_reg(v:register)<Bar>set opfunc=<SID>replace_without_yank<CR>g@
 nnoremap <silent> drr :<C-u>call <SID>set_reg(v:register)<CR>0:<C-u>set opfunc=<SID>replace_without_yank<CR>g@$
+nmap     <silent> dR dr$
 xnoremap <silent> R :<C-u>call <SID>set_reg(v:register)<Bar>call <SID>replace_without_yank('visual')<CR>
 
 " %% expands to current buffer file name
@@ -934,7 +938,7 @@ nnoremap <Space>/ :lvim //g %<CR>
 " }}}
 " MISCELLANEOUS {{{
 " Other functions, commands, settings,
-" etc.  that don't fit elsewhere go here
+" etc. that don't fit elsewhere go here
 
 " DoubleView {{{
 " Vertically split the current buffer into two windows which will stay
