@@ -12,8 +12,11 @@ end
 -- })
 
 require 'nvim-treesitter.configs'.setup {
-    ensure_installed = { "lua", "python", "c", "cpp" },
-    highlight = { enable = true },
+    ensure_installed = { "lua", "python", "c", "cpp", "odin" },
+    highlight = {
+        enable = false,
+        disable = { "odin" },
+    },
     indent = { enable = false },
 }
 

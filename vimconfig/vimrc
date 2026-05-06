@@ -88,7 +88,8 @@ Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } "
 Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' }
 Plug 'Tetralux/odin.vim' " better odin syntax (TODO make personal fork)
 Plug 'neovim/nvim-lspconfig'
-Plug 'DanielGavin/ols'
+Plug 'saghen/blink.cmp', { 'tag': 'v1.*' }
+" Plug 'DanielGavin/ols'
 
 
 " " }}}
@@ -111,6 +112,7 @@ Plug 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
 Plug 'tpope/vim-repeat'      " allows plugins to . repeat easier
 Plug 'tpope/vim-sleuth'      " auto-detect tab settings per-file
 Plug 'tpope/vim-unimpaired'  " many useful [x/]x mappings
+Plug 'tpope/vim-dispatch'  " many useful [x/]x mappings
 Plug 'farmergreg/vim-lastplace' " reopen files at last position
 Plug 'xolox/vim-session'        " simplified session management
 let g:session_autosave = 0      " no auto-save prompt on first install
@@ -162,7 +164,7 @@ set timeoutlen=3000
 set hidden
 set autoread
 set gdefault
-set lazyredraw
+" set lazyredraw
 set showcmd
 set nostartofline
 set modeline
@@ -228,7 +230,7 @@ set smarttab
 set number relativenumber
 set numberwidth=1
 set cursorline
-set list listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:■
+set list listchars=tab:┊\ ,extends:›,precedes:‹,nbsp:·,trail:■
 set linebreak
 if has('linebreak')
   set showbreak=«
@@ -247,9 +249,9 @@ set guioptions=
 exec 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
 
 " native syntax performance settings
-syntax sync ccomment
+syntax sync fromstart
 
-silent! colorscheme badwolf
+silent! colorscheme baddoggo
 fun! VimrcColorFallback(color) abort
   if !exists('g:colors_name')
     exec 'silent! colorscheme '. a:color
@@ -300,6 +302,10 @@ endif
 
 augroup vimrc_appearance_and_formatting
   au!
+  " " no listchars during selection
+  " au ModeChanged [vV\x16]*:* if !&expandtab | set list | endif
+  " au ModeChanged *:[vV\x16]* if !&expandtab | set nolist | endif
+
   " this makes the trailing space indicator invisible
   " while typing, otherwise it can be distracting
   au InsertEnter * set listchars-=trail:■
@@ -395,8 +401,8 @@ nnoremap - :exec 'edit '.expand('%:h')<CR>
 nnoremap + :exec ':edit '.getcwd()<CR>
 
 " | and _ for split windows
-nnoremap <expr><silent> \| !v:count ? "<C-w>v<C-w><Right>" : '\|'
-nnoremap <expr><silent> _  !v:count ? "<C-w>s<C-w><Down>"  : '_'
+nnoremap <expr><silent> \| !v:count ? "<C-w>v" : '\|'
+nnoremap <expr><silent> _  !v:count ? "<C-w>s"  : '_'
 
 " no accidental command window (q:) {{{
 " explanation: using 'nnoremap q: <NOP>' gives my
@@ -510,7 +516,7 @@ cnoremap <Esc> <C-c>
 cnoremap <Esc> <C-c>
 
 " butter fingers
-inoremap <C-p> <C-[>
+" inoremap <C-p> <C-[>
 inoremap <C-]> <C-[>
 
 " from tpope's rsi
@@ -922,12 +928,8 @@ nnoremap <Space>C :lexpr [] <Bar> cexpr []<CR>
 nnoremap <Space>;p :put =execute('<C-r>:')<CR>
 
 " substitute word under cursor
-nnoremap <Space>;s :%s/\C<C-r>=expand("<lt>cword>")<CR>/
-xnoremap <Space>;s y:%s/\V\C<C-r>"/
-
-" quickly compile and run game
-nnoremap <Space>m :make clean all<CR>
-nnoremap <Space>M :make clean run<CR>
+nnoremap <Space>;s :%s/\C<Bslash><lt><C-r>=expand("<lt>cword>")<CR><Bslash>>/
+xnoremap <Space>;s y:%s/\V\C<Bslash><lt><C-r>"<Bslash>>/
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches

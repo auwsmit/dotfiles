@@ -6,7 +6,7 @@ let g:indentLine_fileType = ['']
 
 augroup config_indentLine
   au!
-  au FileType c,cpp IndentLinesEnable
+  au FileType c,cpp,odin IndentLinesEnable
 
   " workaround to fix weird bug where indent lines are incorrectly colored for
   " the initial file until the buffer is reloaded.
