@@ -7,22 +7,14 @@ let g:spear_next_prev_cycle = 0
 let g:spear_convert_backslashes = 0
 let g:spear_use_floating_window = 1
 
-fun! s:SpearMaps()
-  nnoremap <silent> <C-s>     :call spear#toggle_menu()<CR>
-  nnoremap <silent> <Space>A  :call spear#add_file()<CR>
-  nnoremap <silent> <Space>X  :call spear#remove_file()<CR>
-  for i in range(1, 9)
-    exec 'nnoremap <silent> <Space>'.i.' :call spear#open_file('.i.')<CR>'
-  endfor
-  nnoremap <silent> <C-Right> :call spear#next_prev_file('next')<CR>
-  nnoremap <silent> <C-Left>  :call spear#next_prev_file('prev')<CR>
-endfun
-call s:SpearMaps()
-
-augroup config_spear
-  au!
-  au VimEnter * call s:SpearMaps()
-augroup END
+nnoremap <silent> <Space>A  :call spear#add_file()<CR>
+nnoremap <silent> <Space>X  :call spear#remove_file()<CR>
+nnoremap <silent> <C-s>     :call spear#toggle_menu()<CR>
+for i in range(0, 9)
+  exec 'nnoremap <silent> <Space>'.i.' :call spear#open_file('.i.')<CR>'
+endfor
+nnoremap <silent> <C-Right> :call spear#next_prev_file('next')<CR>
+nnoremap <silent> <C-Left>  :call spear#next_prev_file('prev')<CR>
 
 " let g:spear_create_commands = 1
 " nnoremap <silent> <space>A :SpearAdd<cr>

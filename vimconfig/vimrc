@@ -7,7 +7,6 @@
 
 let s:is_nvim = has('nvim')
 let s:is_windows = has('win32')
-let s:has_python = (has('python') || has('python3'))
 
 " detect .vim directory
 let g:myvimdir ="~/.vim"
@@ -23,104 +22,101 @@ let g:myvimdir = expand(g:myvimdir)
 " plugin config files can be found under g:myvimdir/plugin_configs
 " press <Enter> on a line below to goto its config file
 
+" vim-plug wrapper to help load config files
+let g:plugin_log = ''
+function! PlugWrapper(repo, ...)
+  let g:plugin_log .= a:repo . ","
+  exec 'Plug ' . string(a:repo) . (a:0 > 0 ? ', ' . string(a:1) : '')
+endfunction
+command! -nargs=+ -bar Plugin call PlugWrapper(<args>)
+
 " setup vim-plug
 call plug#begin()
 
 " FILE/BUFFER PLUGINS {{{
 
-Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
-Plug 'tpope/vim-fugitive'   " vim + git integration
-" Plug 'yegappan/mru'       " most recent file list
-Plug 'auwsmit/mru', { 'branch': 'personal-use' } " TODO remake simpler mru
-Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
-Plug 'justinmk/vim-dirvish' " minimal file explorer
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
-Plug 'junegunn/fzf.vim'     " fzf + vim integration
-Plug 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
-Plug 'majutsushi/Tagbar',  { 'on': 'TagbarToggle' } " tag explorer
-" Plug 'nvim-lua/plenary.nvim'
-" Plug 'ThePrimeagen/harpoon', { 'branch': 'harpoon2' }
-Plug 'auwsmit/vim-spear'
+Plugin 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
+Plugin 'tpope/vim-fugitive'   " vim + git integration
+Plugin 'auwsmit/mru', { 'branch': 'personal-use' } " TODO remake simpler mru
+Plugin 'justinmk/vim-gtfo'    " open gui explorer or terminal
+Plugin 'justinmk/vim-dirvish' " minimal file explorer
+Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
+Plugin 'junegunn/fzf.vim'     " fzf + vim integration
+Plugin 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
+Plugin 'auwsmit/vim-spear'
+Plugin 'auwsmit/vim-oldfiles-improved'
 
 " }}}
 " OPERATOR PLUGINS {{{
 
-Plug 'tpope/vim-commentary'   " comment mappings
-Plug 'machakann/vim-sandwich' " modify surrounding text eg: () and ''
-Plug 'tommcdo/vim-exchange'   " exchange two pieces of text
+Plugin 'tpope/vim-commentary'   " comment mappings
+Plugin 'machakann/vim-sandwich' " modify surrounding text eg: () and ''
+Plugin 'tommcdo/vim-exchange'   " exchange two pieces of text
+Plugin 'nicwest/vim-camelsnek'  " convert between camel and snake case
 
 " }}}
 " TEXT OBJECT PLUGINS {{{
 
-Plug 'kana/vim-niceblock'
-Plug 'kana/vim-textobj-user'         |
-      \ Plug 'kana/vim-textobj-line'  |
-      \ Plug 'kana/vim-textobj-entire' |
-      \ Plug 'kana/vim-textobj-indent'  |
-      \ Plug 'kana/vim-textobj-function' |
-      \ Plug 'coderifous/textobj-word-column.vim'
-Plug 'junegunn/vim-after-object'
+Plugin 'wellle/targets.vim'
+Plugin 'kana/vim-niceblock'
+Plugin 'kana/vim-textobj-user'             |
+      \ Plugin 'kana/vim-textobj-line'     |
+      \ Plugin 'kana/vim-textobj-entire'   |
+      \ Plugin 'kana/vim-textobj-indent'   |
+      \ Plugin 'kana/vim-textobj-function' |
+      \ Plugin 'coderifous/textobj-word-column.vim'
+Plugin 'junegunn/vim-after-object'
 
 " " }}}
 " MOTION/NAVIGATION PLUGINS {{{
 
-Plug 'chaoren/vim-wordmotion'    " makes vim's 'word's more precise
-Plug 'auwsmit/vim-ipmotion'      " { } move over folds
-Plug 'romainl/vim-cool'          " autoclear search highlighting
-Plug 'henrik/vim-indexed-search' " show search count & centered search
+Plugin 'chaoren/vim-wordmotion'    " makes vim 'word' more precise
+Plugin 'auwsmit/vim-ipmotion'      " { } move over folds
+Plugin 'romainl/vim-cool'          " autoclear search highlighting
+Plugin 'henrik/vim-indexed-search' " show search count & centered search
 
 " " }}}
 " COMPLETION/SNIPPET PLUGINS {{{
 
-Plug 'ervandew/supertab'  " tab autocomplete
-" Plug 'github/copilot.vim'           " AI suggestions
-" Plug 'DanBradbury/copilot-chat.vim' " AI chat window
-" if s:has_python " TODO find or make replacement snippet plugin?
-"   Plug 'SirVer/UltiSnips' " snippets manager
-" endif
+Plugin 'ervandew/supertab'  " tab autocomplete
 
 " }}}
 " FORMAT/SYNTAX PLUGINS {{{
 
-Plug 'nicwest/vim-camelsnek' " convert between camel and snake case
-Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
-Plug 'junegunn/vim-easy-align',   { 'on': ['<Plug>(EasyAlign)', 'EasyAlign'] } " align text operator
-Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' }
-Plug 'Tetralux/odin.vim' " better odin syntax (TODO make personal fork)
-Plug 'neovim/nvim-lspconfig'
-Plug 'saghen/blink.cmp', { 'tag': 'v1.*' }
-" Plug 'DanielGavin/ols'
+Plugin 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
+Plugin 'junegunn/vim-easy-align' " align text operator
+Plugin 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' } " treesitter grammars
+Plugin 'neovim/nvim-lspconfig' " many LSP configs
+Plugin 'saghen/blink.cmp', { 'tag': 'v1.*' } " LSP completion plugin
+Plugin 'Tetralux/odin.vim' " better odin syntax (TODO make personal fork)
 
-
-" " }}}
+" }}}
 " APPEARANCE/UI PLUGINS {{{
 
-Plug 'xtal8/traces.vim'            " previews patterns for ex commands
-Plug 'auwsmit/badwolf-nvim'        " personal fork of Bad Wolf by Steve Losh
-" Plug 'auwsmit/vim-active-numbers'  " line numbers follow the current window
-Plug 'itchyny/lightline.vim'       " prettier statusbar
-Plug 'junegunn/goyo.vim',          " distraction free editing
-Plug 'Yggdroot/indentLine',        " indent indicators
-" Plug 'catgoose/nvim-colorizer.lua' " highlight colorcodes
+Plugin 'auwsmit/vim-baddog'    " personal fork of Bad Wolf by Steve Losh
+Plugin 'xtal8/traces.vim'      " previews patterns for ex commands
+Plugin 'itchyny/lightline.vim' " prettier statusbar
+Plugin 'junegunn/goyo.vim',    " distraction free editing
+Plugin 'Yggdroot/indentLine',  " indent indicators
 
 " }}}
 " MISC/CONVENIENCE PLUGINS " {{{
 
-Plug 'romainl/vim-qf'        " sensible quickfix improvements
-Plug 'junegunn/vim-peekaboo' " preview registers
-Plug 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
-Plug 'tpope/vim-repeat'      " allows plugins to . repeat easier
-Plug 'tpope/vim-sleuth'      " auto-detect tab settings per-file
-Plug 'tpope/vim-unimpaired'  " many useful [x/]x mappings
-Plug 'tpope/vim-dispatch'  " many useful [x/]x mappings
-Plug 'farmergreg/vim-lastplace' " reopen files at last position
-Plug 'xolox/vim-session'        " simplified session management
-let g:session_autosave = 0      " no auto-save prompt on first install
-Plug 'xolox/vim-misc'           " vim-session dependency
-Plug 'mbbill/undotree'          " visual undo tree
-Plug 'vimwiki/vimwiki'          " for taking and organizing notes
-Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
-" Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
+Plugin 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
+Plugin 'tpope/vim-repeat'      " allows plugins to . repeat easier
+Plugin 'tpope/vim-sleuth'      " auto-detect tab settings per-file
+Plugin 'tpope/vim-unimpaired'  " many useful [x/]x mappings
+Plugin 'tpope/vim-dispatch'    " many useful [x/]x mappings
+Plugin 'mbbill/undotree'       " visual undo tree
+Plugin 'farmergreg/vim-lastplace' " reopen files at last position
+Plugin 'ludovicchabant/vim-gutentags' " auto-generate and update tags
+Plugin 'romainl/vim-qf'        " sensible quickfix improvements
+Plugin 'junegunn/vim-peekaboo' " preview registers
+Plugin 'xolox/vim-session'     " simplified session management
+let g:session_autosave = 0     " no auto-save prompt on first install
+Plugin 'xolox/vim-misc'        " vim-session dependency
+Plugin 'vimwiki/vimwiki'       " for taking and organizing notes
+Plugin 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
 
 " }}}
 
@@ -128,7 +124,7 @@ Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
 call plug#end()
 
 " Source plugin configs {{{
-fun! SourcePluginConfigs()
+fun! SourcePlugConfigs()
   let configs = glob(g:myvimdir.'/plugin_configs/*',0,1)
   for config in configs
     let plugin_name = fnamemodify(config,':t')[:-5]
@@ -141,12 +137,12 @@ fun! SourcePluginConfigs()
     let plugin_dir = g:myvimdir.'/plugged/'.plugin_name
     let src = (type == 'vim') ? 'source ' : 'luafile '
     " if plugin is currently installed
-    if isdirectory(plugin_dir)
+    if isdirectory(plugin_dir) && g:plugin_log=~plugin_name
       exec src . config
     endif
   endfor
 endfun
-call SourcePluginConfigs()
+call SourcePlugConfigs()
 " }}}
 
 " }}}
@@ -196,18 +192,16 @@ set wildignore+=*.spl                            " compiled spelling word lists
 set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX garbage
 
-" backups, swapfiles, & undofiles in one place
+" backups & undofiles in one place
+set noswapfile
 let s:tempdir=expand(g:myvimdir .(s:is_nvim ? '/neotmp/' : '/tmp/'))
 if !isdirectory(s:tempdir)
   call mkdir(s:tempdir, 'p')
   call mkdir(s:tempdir.'backup', 'p')
-  call mkdir(s:tempdir.'swap', 'p')
   call mkdir(s:tempdir.'undo', 'p')
 endif
 set backup
 let &backupdir=s:tempdir .'backup//'
-set swapfile
-let &directory=s:tempdir .'swap//'
 if has('persistent_undo')
   set undofile
   let &undodir=s:tempdir .'undo//'
@@ -251,7 +245,7 @@ exec 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
 " native syntax performance settings
 syntax sync fromstart
 
-silent! colorscheme baddoggo
+silent! colorscheme baddog
 fun! VimrcColorFallback(color) abort
   if !exists('g:colors_name')
     exec 'silent! colorscheme '. a:color
@@ -295,16 +289,13 @@ endif
 
 " Neovide config
 if exists("g:neovide")
-  " no distracting animations
-  let g:neovide_cursor_animation_length = 0
-  let g:neovide_scroll_animation_length = 0
+  " faster animations
+  let g:neovide_cursor_animation_length = 0.1
+  let g:neovide_scroll_animation_length = 0.1
 endif
 
 augroup vimrc_appearance_and_formatting
   au!
-  " " no listchars during selection
-  " au ModeChanged [vV\x16]*:* if !&expandtab | set list | endif
-  " au ModeChanged *:[vV\x16]* if !&expandtab | set nolist | endif
 
   " this makes the trailing space indicator invisible
   " while typing, otherwise it can be distracting
@@ -404,40 +395,6 @@ nnoremap + :exec ':edit '.getcwd()<CR>
 nnoremap <expr><silent> \| !v:count ? "<C-w>v" : '\|'
 nnoremap <expr><silent> _  !v:count ? "<C-w>s"  : '_'
 
-" no accidental command window (q:) {{{
-" explanation: using 'nnoremap q: <NOP>' gives my
-" 'q to quit' map a slight pause, so this is a convoluted
-" way of disabling q: without using any map commands.
-" also :<C-f> still works
-augroup vimrc_cmdwin_map
-  au!
-  let g:cmdwinmap = 0
-  au CmdwinLeave * let g:cmdwinmap = 0
-  au CmdwinEnter * exec expand(g:cmdwinmap ? '' : 'quit')
-augroup END
-fun! s:FixCtrlF_SetAutocmd(type)
-  let g:cmdwinmap = 1
-  augroup vimrc_fix_cmd_ctrl_f
-    au!
-    au CmdlineLeave * call <SID>FixCtrlF_ClearAutocmd()
-  augroup END
-  " re-enter command-mode
-  call feedkeys(a:type,'tn')
-endfun
-fun! s:FixCtrlF_ClearAutocmd()
-  let g:cmdwinmap = 0
-  augroup vimrc_fix_cmd_ctrl_f
-    au!
-  augroup END
-endfun
-" zee history and zee commands, oui oui }}}
-nnoremap z: :let g:cmdwinmap=1<CR>q:
-nnoremap z/ :let g:cmdwinmap=1<CR>q/
-nnoremap <silent> : :call <SID>FixCtrlF_SetAutocmd(':')<CR>
-xnoremap <silent> : :<C-u>call <SID>FixCtrlF_SetAutocmd(':')<CR>gv
-nnoremap <silent> / :call <SID>FixCtrlF_SetAutocmd('/')<CR>
-xnoremap <silent> / :<C-u>call <SID>FixCtrlF_SetAutocmd('/')<CR>gv
-
 " move by wrapped lines instead of line numbers, unless the motion is counted
 " also set a mark for movements across 5 lines or more
 nnoremap <expr> j (v:count >= 5 ? "m'" . v:count : '').(v:count? 'j' : 'gj')
@@ -453,10 +410,11 @@ noremap gp p
 
 " <CR> in vimrc to edit or create plugin config {{{
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
-fun! s:GotoPluginConfig()
-  if getline('.') =~ "Plug '.*'"
-    " this pattern matches whatever is after the last slash in single quotes on a Plug line
-    let pattern = "Plug.*'[^']*[\\/]\\zs[^']*\\ze'"
+fun! s:GotoPlugConfig()
+  if getline('.') =~ "Plugin '.*'"
+    " this pattern matches the plugin name for a Plug line
+    " e.g. Plug 'foo/bar.nvim' becomes the string 'bar.nvim'
+    let pattern = "Plugin.*'.*[\\/]\\zs[^\\/']\\+\\ze[\\/]*'"
     let name = matchstr(getline('.'), pattern)
     let path_to_plugin = resolve(g:myvimdir).'/plugin_configs/'.name
     if filereadable(path_to_plugin.'.vim')
@@ -479,16 +437,16 @@ fun! s:GotoPluginConfig()
   endif
 endfun
 
-fun! s:PluginConfigMapper()
+fun! s:PlugConfigMapper()
   let current_file = expand('%:t')
   if current_file =~ 'init.vim' || current_file == 'vimrc'
-    nnoremap <silent><buffer> <CR> :call <SID>GotoPluginConfig()<CR>
+    nnoremap <silent><buffer> <CR> :call <SID>GotoPlugConfig()<CR>
   endif
 endfun
 
 augroup vimrc_view_plugin_config
   au!
-  au FileType vim call <SID>PluginConfigMapper()
+  au FileType vim call <SID>PlugConfigMapper()
 augroup END
 " }}}
 
@@ -516,7 +474,6 @@ cnoremap <Esc> <C-c>
 cnoremap <Esc> <C-c>
 
 " butter fingers
-" inoremap <C-p> <C-[>
 inoremap <C-]> <C-[>
 
 " from tpope's rsi
@@ -841,35 +798,45 @@ nnoremap <silent><Space>V :exec 'tabedit '.resolve($MYVIMRC)<CR>
 
 " simple swap between C header and source files {{{
 function! SwitchHeaderSource()
-  let dir = expand('%:p:h')
   let base = expand('%:t:r')
-  let ext = expand('%:e')
-  let pairs = {'c': '.h', 'h': '.c'}
-  let target = has_key(pairs, ext) ? base . pairs[ext] : ''
-  if target == '' | return | endif
+  let ext  = expand('%:e')
+  let pairs = {
+    \ 'c':   ['h'],
+    \ 'cpp': ['hpp', 'h'],
+    \ 'h':   ['c', 'cpp',],
+    \ }
+  if !has_key(pairs, ext) | return | endif
 
-  " recursively search up n down
-  let alt_file_up = findfile(target, dir.";")
-  let alt_file_down = findfile(target, dir."/**")
-  if filereadable(alt_file_up) | execute 'edit ' . alt_file_up
-  elseif filereadable(alt_file_down) | execute 'edit ' . alt_file_down
-  else | echohl WarningMsg | echom "Couldn't find " . target | echohl None
-  endif
+  let search_dirs = [
+    \ expand('%:p:h'),
+    \ expand('%:p:h:h'),
+    \ getcwd(),
+    \ ]
+
+  for dir in search_dirs
+    for candidate_ext in pairs[ext]
+      let path = dir . '/' . base . '.' . candidate_ext
+      if filereadable(path)
+        execute 'edit ' . fnameescape(path)
+        return
+      endif
+    endfor
+  endfor
+
+  echohl WarningMsg | echom "Couldn't find alternate file" | echohl None
 endfunction
-
 " }}}
 augroup vimrc_c_headerswap
   au!
   au FileType c,cpp nnoremap <buffer><silent> <Space>a :call SwitchHeaderSource()<CR>
 augroup END
 
-
 " quick scratch buffers
 let s:scratch_bufn = 0
 fun! s:CreateScratchBuffer()
   let ex = ':enew | setlocal bt=nofile bh=hide noswf'
   let ex .= ' | file Scratch \#'.s:scratch_bufn | let s:scratch_bufn += 1
-  return ex . ' | set ft='
+  return ex .' | set ft='. &ft
 endfun
 nnoremap <expr> <Space>s <SID>CreateScratchBuffer()
 
@@ -973,5 +940,15 @@ endfor
 
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
+
+if s:is_nvim
+  augroup vimrc_clean_shada_tmp
+    au!
+    au VimLeave *
+          \ for f in glob(g:myvimdir . '/shada/main.shada.tmp.*', 0, 1) |
+          \   call delete(f) |
+          \ endfor
+  augroup END
+endif
 
 " }}}

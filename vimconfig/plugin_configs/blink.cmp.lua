@@ -7,6 +7,9 @@ require('blink.cmp').setup({
         -- set to 'none' to disable the 'default' preset
         preset = 'default',
 
+        -- enable experimental signature helper
+        signature = { enabled = true },
+
         ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
         ['<C-e>'] = { 'hide', 'fallback' },
 

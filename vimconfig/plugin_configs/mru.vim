@@ -1,7 +1,7 @@
 let MRU_Max_Entries = 1000
 let MRU_Convert_Slashes = 1
 
-nnoremap <space>r :MRUToggle<cr>
+nnoremap <space>R :MRUToggle<cr>
 nnoremap <space>fr :FZFMru<cr>
 
 augroup config_mru

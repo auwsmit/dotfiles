@@ -1,14 +1,12 @@
-let g:fzf_command_prefix = 'Fzf'
-
-nnoremap <Space>F :FZF <C-r>=fnameescape(expand('%:p:h'))<CR>
-nnoremap <Space>- :FZF <C-r>=fnameescape(expand('%:p:h'))<CR>/<CR>
-nnoremap <Space>b :FzfBuffers<CR>
-nnoremap <Space>fl :FzfLines<CR>
-nnoremap <Space>fb :FzfBLines<CR>
-nnoremap <Space>f: :FzfHistory:<CR>
-nnoremap <Space>f/ :FzfHistory/<CR>
-nnoremap <Space>fg :FzfGFiles<CR>
-nnoremap <Space>fs :FzfGFiles?<CR>
+nnoremap <Space>F  :FZF <C-r>=fnameescape(expand('%:p:h'))<CR>
+nnoremap <Space>-  :FZF <C-r>=fnameescape(expand('%:p:h'))<CR>/<CR>
+nnoremap <Space>b  :Buffers<CR>
+nnoremap <Space>fl :Lines<CR>
+nnoremap <Space>fb :BLines<CR>
+nnoremap <Space>f: :History:<CR>
+nnoremap <Space>f/ :History/<CR>
+nnoremap <Space>fg :GFiles<CR>
+nnoremap <Space>fs :GFiles?<CR>
 nnoremap <Space>ff :FZF<Space>
 nnoremap <Space><Space> :FzfCommands<CR>
 
