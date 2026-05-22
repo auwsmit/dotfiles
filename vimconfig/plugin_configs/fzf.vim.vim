@@ -30,6 +30,6 @@ if exists("g:neovide")
     au!
     au FileType fzf let g:neovide_cursor_animation_length = 0
           \ | tnoremap <buffer> <C-[> <C-c>
-    au BufWinLeave fzf let g:neovide_cursor_animation_length = 0.1
+    au BufWinLeave * if &ft == 'fzf' | let g:neovide_cursor_animation_length = 0.1 | endif
   augroup END
 endif

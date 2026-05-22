@@ -9,108 +9,100 @@ let s:is_nvim = has('nvim')
 let s:is_windows = has('win32')
 
 " detect .vim directory
-let g:myvimdir ="~/.vim"
 if s:is_windows
-  let g:myvimdir ="~/vimfiles"
+  let g:myvimdir = expand("~/vimfiles")
 elseif s:is_nvim
-  let g:myvimdir ="~/.config/nvim"
+  let g:myvimdir = expand("~/.config/nvim")
+else " vim on unix
+  let g:myvimdir = expand("~/.vim")
 endif
-let g:myvimdir = expand(g:myvimdir)
 
 " }}}
 " PLUGINS {{{
 " plugin config files can be found under g:myvimdir/plugin_configs
 " press <Enter> on a line below to goto its config file
 
-" vim-plug wrapper to help load config files
-let s:plugin_log = ''
-fun! PlugWrapper(repo, ...)
-  let s:plugin_log .= a:repo . ","
-  exec 'Plug ' . string(a:repo) . (a:0 > 0 ? ', ' . string(a:1) : '')
-endfun
-command! -nargs=+ -bar Plgn call PlugWrapper(<args>)
-
 " setup vim-plug
 call plug#begin()
 
 " FILE/BUFFER PLUGINS {{{
 
-Plgn 'tpope/vim-eunuch'              " shell commands, e.g. :Remove & :Move & :Chmod
-Plgn 'tpope/vim-fugitive'            " vim + git integration
-Plgn 'justinmk/vim-gtfo'             " open gui explorer or terminal
-Plgn 'justinmk/vim-dirvish'          " minimal file explorer
-Plgn 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
-Plgn 'junegunn/fzf.vim'              " fzf + vim integration
-Plgn 'mhinz/vim-sayonara',           " simple buffer/window closing with gs/gS
-Plgn 'auwsmit/vim-spear'             " per-project file bookmarks
-Plgn 'auwsmit/vim-oldfiles-improved' " open recent files
+Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
+Plug 'tpope/vim-fugitive'   " vim + git integration
+Plug 'justinmk/vim-gtfo'    " open gui explorer or terminal
+Plug 'justinmk/vim-dirvish' " minimal file explorer
+Plug 'auwsmit/vim-spear'    " per-project file bookmarks
+Plug 'auwsmit/vim-oldfiles-improved' " open recent files
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
+Plug 'junegunn/fzf.vim'     " fzf + vim integration
+Plug 'mhinz/vim-sayonara',  " simple buffer/window closing with gs/gS
 
 " }}}
 " OPERATOR PLUGINS {{{
 
-Plgn 'tpope/vim-commentary'   " comment mappings
-Plgn 'machakann/vim-sandwich' " modify surrounding text eg: () and ''
-Plgn 'tommcdo/vim-exchange'   " exchange two pieces of text
-Plgn 'nicwest/vim-camelsnek'  " convert between camel and snake case
+Plug 'tpope/vim-commentary'   " comment mappings
+Plug 'machakann/vim-sandwich' " modify surrounding text eg: () and ''
+Plug 'tommcdo/vim-exchange'   " exchange two pieces of text
+Plug 'nicwest/vim-camelsnek'  " convert between camel and snake case
 
 " }}}
 " TEXT OBJECT PLUGINS {{{
 
-Plgn 'kana/vim-niceblock'        " improved visual insert/append
-Plgn 'kana/vim-textobj-user'     " custom text object helper
-Plgn 'kana/vim-textobj-line'     " il/al
-Plgn 'kana/vim-textobj-entire'   " ie/ae
-Plgn 'kana/vim-textobj-indent'   " ii/ai
-Plgn 'kana/vim-textobj-function' " if/af
-Plgn 'junegunn/vim-after-object' " after a= and a:
-Plgn 'coderifous/textobj-word-column.vim' " ic/ac, iC, aC
+Plug 'kana/vim-niceblock'        " improved visual insert/append
+Plug 'kana/vim-textobj-user'     " custom text object helper
+Plug 'kana/vim-textobj-line'     " il/al
+Plug 'kana/vim-textobj-entire'   " ie/ae
+Plug 'kana/vim-textobj-indent'   " ii/ai
+Plug 'kana/vim-textobj-function' " if/af
+Plug 'junegunn/vim-after-object' " after a= and a:
+Plug 'coderifous/textobj-word-column.vim' " ic/ac, iC, aC
 
 " }}}
 " MOTION PLUGINS {{{
 
-Plgn 'chaoren/vim-wordmotion'    " makes vim 'word' more precise
-Plgn 'auwsmit/vim-ipmotion'      " { } move over folds
-Plgn 'romainl/vim-cool'          " autoclear search highlighting
+Plug 'chaoren/vim-wordmotion'    " makes vim 'word' more precise
+Plug 'auwsmit/vim-ipmotion'      " { } move over folds
 
 " }}}
 " FORMAT/SYNTAX PLUGINS {{{
 
-Plgn 'junegunn/vim-easy-align'          " align text operator
-Plgn 'xtal8/traces.vim'                 " previews pattern while typing ex commands
-Plgn 'preservim/tagbar'                 " tag explorer/overview panel
-Plgn 'auwsmit/vim-baddog'               " personal fork of sjl/badwolf colorscheme
-Plgn 'auwsmit/odin.vim'                 " personal fork of Tetralux/odin.vim and habamax/vim-odin
-Plgn 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
-Plgn 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' } " treesitter grammars
+Plug 'junegunn/vim-easy-align' " align text operator
+Plug 'preservim/tagbar'        " tag explorer/overview panel
+Plug 'xtal8/traces.vim'        " previews pattern while typing ex commands
+Plug 'auwsmit/vim-baddog'      " personal fork of sjl/badwolf colorscheme
+Plug 'auwsmit/odin.vim'        " personal fork of Tetralux/odin.vim and habamax/vim-odin
+Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
+Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' } " treesitter grammars
 
 " }}}
 " LSP PLUGINS {{{
 
-Plgn 'neovim/nvim-lspconfig'               " many LSP configs
-Plgn 'saghen/blink.cmp', { 'tag': 'v1.*' } " sane + smart LSP completion
-Plgn 'rafamadriz/friendly-snippets'        " snippets that integrate with blink
-Plgn 'mason-org/mason.nvim'                " LSP manager
+Plug 'neovim/nvim-lspconfig'               " many LSP configs
+Plug 'saghen/blink.cmp', { 'tag': 'v1.*' } " sane + smart LSP completion
+Plug 'rafamadriz/friendly-snippets'        " snippets that integrate with blink
+Plug 'mason-org/mason.nvim'                " LSP installer
 
 " }}}
 " MISC/CONVENIENCE PLUGINS " {{{
 
-Plgn 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
-Plgn 'tpope/vim-repeat'      " allows plugins to . repeat easier
-Plgn 'tpope/vim-sleuth'      " auto-detect tab settings per-file
-Plgn 'tpope/vim-unimpaired'  " many useful [x/]x mappings
-Plgn 'tpope/vim-dispatch'    " useful building/compiling features
-Plgn 'ervandew/supertab'     " tab autocomplete
-Plgn 'itchyny/lightline.vim' " prettier statusbar
-Plgn 'mbbill/undotree'       " visual undo tree
-Plgn 'romainl/vim-qf'        " sensible quickfix improvements
-Plgn 'vimwiki/vimwiki'       " for taking and organizing notes
-Plgn 'Yggdroot/indentLine'   " indent indicators (for spaces)
-Plgn 'junegunn/vim-peekaboo' " preview registers
-Plgn 'junegunn/goyo.vim',    " distraction free editing
-Plgn 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
-Plgn 'farmergreg/vim-lastplace' " reopen files at last position
-Plgn 'henrik/vim-indexed-search' " show search count & centered search
-Plgn 'ludovicchabant/vim-gutentags' " auto-generate and update tags
+Plug 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
+Plug 'tpope/vim-repeat'      " allows plugins to . repeat easier
+Plug 'tpope/vim-sleuth'      " auto-detect tab settings per-file
+Plug 'tpope/vim-unimpaired'  " many useful [x/]x mappings
+Plug 'tpope/vim-dispatch'    " useful building/compiling features
+Plug 'ervandew/supertab'     " tab autocomplete
+Plug 'itchyny/lightline.vim' " prettier statusbar
+Plug 'mbbill/undotree'       " visual undo tree
+Plug 'romainl/vim-qf'        " sensible quickfix improvements
+Plug 'vimwiki/vimwiki', { 'on': 'VimwikiIndex', 'for': 'mediawiki' } " for taking and organizing notes
+Plug 'Yggdroot/indentLine'   " indent indicators (for spaces)
+Plug 'junegunn/vim-peekaboo' " preview registers
+Plug 'junegunn/goyo.vim',    " distraction free editing
+Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
+Plug 'farmergreg/vim-lastplace' " reopen files at last position
+Plug 'romainl/vim-cool'          " autoclear search highlighting
+Plug 'henrik/vim-indexed-search' " show search count & centered search
+Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
 
 " }}}
 
@@ -120,18 +112,18 @@ call plug#end()
 " Source plugin configs {{{
 fun! SourcePlugConfigs()
   let configs = glob(g:myvimdir.'/plugin_configs/*',0,1)
+  let slash = s:is_windows ? '\' : '/'
   for config in configs
-    let plugin_name = fnamemodify(config,':t')[:-5]
     let type = config[-3:]
     " skip lua configs for vim
     if !s:is_nvim && type == 'lua' | continue | endif
-    let slash = s:is_windows ? '\' : '/'
+
+    let plugin_name = fnamemodify(config,':t')[:-5]
     let plugin_dir = g:myvimdir.'/plugged/'.plugin_name
     let src = (type == 'vim') ? 'source ' : 'luafile '
-    " if plugin is currently installed
-    if isdirectory(plugin_dir) && s:plugin_log=~plugin_name
-      exec src . config
-    endif
+
+    " run config if plugin is currently installed
+    if isdirectory(plugin_dir) | exec src . config | endif
   endfor
 endfun
 call SourcePlugConfigs()
@@ -409,10 +401,10 @@ noremap gp p
 " <CR> in vimrc to edit or create plugin config {{{
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
 fun! s:GotoPlugConfig()
-  if getline('.') =~ "Plgn '.*'"
+  if getline('.') =~ "Plug '.*'"
     " this pattern matches the plugin name for a Plug line
     " e.g. Plug 'foo/bar.nvim' becomes the string 'bar.nvim'
-    let pattern = "Plgn.*'.*[\\/]\\zs[^\\/']\\+\\ze[\\/]*'"
+    let pattern = "Plug.*'.*[\\/]\\zs[^\\/']\\+\\ze[\\/]*'"
     let name = matchstr(getline('.'), pattern)
     let path_to_plugin = resolve(g:myvimdir).'/plugin_configs/'.name
     if filereadable(path_to_plugin.'.vim')

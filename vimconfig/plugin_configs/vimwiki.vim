@@ -1,7 +1,7 @@
 " vimwiki has way too many mappings, so disable them all.
 " I can define my own as I need them
 let g:vimwiki_key_mappings = { 'all_maps': 0, }
-nmap <Space>W <Plug>VimwikiIndex
+nnoremap <silent> <Space>W :VimwikiIndex<CR>
 nmap <Space><Backspace> <Plug>VimwikiGoBackLink
 
 augroup config_vimwiki
