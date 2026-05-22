@@ -1,14 +1,13 @@
 nnoremap <Space>F  :FZF <C-r>=fnameescape(expand('%:p:h'))<CR>
 nnoremap <Space>-  :FZF <C-r>=fnameescape(expand('%:p:h'))<CR>/<CR>
+nnoremap <Space>+  :FZF<CR>
 nnoremap <Space>b  :Buffers<CR>
-nnoremap <Space>fl :Lines<CR>
-nnoremap <Space>fb :BLines<CR>
+nnoremap <Space>fl :BLines<CR>
+nnoremap <Space>fL :Lines<CR>
 nnoremap <Space>f: :History:<CR>
 nnoremap <Space>f/ :History/<CR>
 nnoremap <Space>fg :GFiles<CR>
-nnoremap <Space>fs :GFiles?<CR>
-nnoremap <Space>ff :FZF<Space>
-nnoremap <Space><Space> :FzfCommands<CR>
+nnoremap <Space>: :Commands<CR>
 
 " adapt to colorscheme
 let g:fzf_colors =

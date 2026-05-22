@@ -37,12 +37,11 @@ call plug#begin()
 
 Plugin 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
 Plugin 'tpope/vim-fugitive'   " vim + git integration
-Plugin 'auwsmit/mru', { 'branch': 'personal-use' } " TODO remake simpler mru
 Plugin 'justinmk/vim-gtfo'    " open gui explorer or terminal
 Plugin 'justinmk/vim-dirvish' " minimal file explorer
 Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
 Plugin 'junegunn/fzf.vim'     " fzf + vim integration
-Plugin 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing
+Plugin 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing with gs/gS
 Plugin 'auwsmit/vim-spear'
 Plugin 'auwsmit/vim-oldfiles-improved'
 
@@ -57,47 +56,40 @@ Plugin 'nicwest/vim-camelsnek'  " convert between camel and snake case
 " }}}
 " TEXT OBJECT PLUGINS {{{
 
-Plugin 'wellle/targets.vim'
-Plugin 'kana/vim-niceblock'
-Plugin 'kana/vim-textobj-user'             |
-      \ Plugin 'kana/vim-textobj-line'     |
-      \ Plugin 'kana/vim-textobj-entire'   |
-      \ Plugin 'kana/vim-textobj-indent'   |
-      \ Plugin 'kana/vim-textobj-function' |
-      \ Plugin 'coderifous/textobj-word-column.vim'
-Plugin 'junegunn/vim-after-object'
+Plugin 'kana/vim-niceblock' " improved visual insert/append
+Plugin 'kana/vim-textobj-user'              " custom text object helper
+Plugin 'kana/vim-textobj-line'              " il/al
+Plugin 'kana/vim-textobj-entire'            " ie/ae
+Plugin 'kana/vim-textobj-indent'            " ii/ai
+Plugin 'kana/vim-textobj-function'          " if/af
+Plugin 'coderifous/textobj-word-column.vim' " ic/ac, iC, aC
+Plugin 'junegunn/vim-after-object' " a=/aa=
 
-" " }}}
-" MOTION/NAVIGATION PLUGINS {{{
+" }}}
+" MOTION PLUGINS {{{
 
 Plugin 'chaoren/vim-wordmotion'    " makes vim 'word' more precise
 Plugin 'auwsmit/vim-ipmotion'      " { } move over folds
 Plugin 'romainl/vim-cool'          " autoclear search highlighting
-Plugin 'henrik/vim-indexed-search' " show search count & centered search
-
-" " }}}
-" COMPLETION/SNIPPET PLUGINS {{{
-
-Plugin 'ervandew/supertab'  " tab autocomplete
 
 " }}}
 " FORMAT/SYNTAX PLUGINS {{{
 
 Plugin 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
 Plugin 'junegunn/vim-easy-align' " align text operator
+Plugin 'xtal8/traces.vim'      " previews patterns for ex commands
 Plugin 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' } " treesitter grammars
 Plugin 'neovim/nvim-lspconfig' " many LSP configs
-Plugin 'saghen/blink.cmp', { 'tag': 'v1.*' } " LSP completion plugin
-Plugin 'Tetralux/odin.vim' " better odin syntax (TODO make personal fork)
+Plugin 'preservim/tagbar'
+Plugin 'auwsmit/vim-baddog'    " colorscheme, personal fork of sjl/badwolf
+Plugin 'auwsmit/odin.vim'      " syntax highlighting, personal fork of Tetralux/odin.vim
 
 " }}}
-" APPEARANCE/UI PLUGINS {{{
+" COMPLETION/SNIPPET PLUGINS {{{
 
-Plugin 'auwsmit/vim-baddog'    " personal fork of Bad Wolf by Steve Losh
-Plugin 'xtal8/traces.vim'      " previews patterns for ex commands
-Plugin 'itchyny/lightline.vim' " prettier statusbar
-Plugin 'junegunn/goyo.vim',    " distraction free editing
-Plugin 'Yggdroot/indentLine',  " indent indicators
+Plugin 'ervandew/supertab'                   " tab autocomplete
+Plugin 'saghen/blink.cmp', { 'tag': 'v1.*' } " sane + smart LSP completion
+Plugin 'rafamadriz/friendly-snippets'        " snippets that integrate with blink
 
 " }}}
 " MISC/CONVENIENCE PLUGINS " {{{
@@ -106,17 +98,19 @@ Plugin 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
 Plugin 'tpope/vim-repeat'      " allows plugins to . repeat easier
 Plugin 'tpope/vim-sleuth'      " auto-detect tab settings per-file
 Plugin 'tpope/vim-unimpaired'  " many useful [x/]x mappings
-Plugin 'tpope/vim-dispatch'    " many useful [x/]x mappings
+Plugin 'tpope/vim-dispatch'    " useful building/compiling features
+Plugin 'itchyny/lightline.vim' " prettier statusbar
 Plugin 'mbbill/undotree'       " visual undo tree
-Plugin 'farmergreg/vim-lastplace' " reopen files at last position
-Plugin 'ludovicchabant/vim-gutentags' " auto-generate and update tags
 Plugin 'romainl/vim-qf'        " sensible quickfix improvements
-Plugin 'junegunn/vim-peekaboo' " preview registers
-Plugin 'xolox/vim-session'     " simplified session management
-let g:session_autosave = 0     " no auto-save prompt on first install
-Plugin 'xolox/vim-misc'        " vim-session dependency
 Plugin 'vimwiki/vimwiki'       " for taking and organizing notes
+Plugin 'Yggdroot/indentLine'   " indent indicators (for spaces)
+Plugin 'junegunn/vim-peekaboo' " preview registers
+Plugin 'junegunn/goyo.vim',    " distraction free editing
 Plugin 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
+Plugin 'farmergreg/vim-lastplace' " reopen files at last position
+Plugin 'henrik/vim-indexed-search' " show search count & centered search
+Plugin 'ludovicchabant/vim-gutentags' " auto-generate and update tags
+
 
 " }}}
 
@@ -130,9 +124,7 @@ fun! SourcePlugConfigs()
     let plugin_name = fnamemodify(config,':t')[:-5]
     let type = config[-3:]
     " skip lua configs for vim
-    if !s:is_nvim && type == 'lua'
-      continue
-    endif
+    if !s:is_nvim && type == 'lua' | continue | endif
     let slash = s:is_windows ? '\' : '/'
     let plugin_dir = g:myvimdir.'/plugged/'.plugin_name
     let src = (type == 'vim') ? 'source ' : 'luafile '
@@ -247,16 +239,15 @@ syntax sync fromstart
 
 silent! colorscheme baddog
 fun! VimrcColorFallback(color) abort
-  if !exists('g:colors_name')
-    exec 'silent! colorscheme '. a:color
-  endif
+  if !exists('g:colors_name') | exec 'silent! colorscheme '. a:color | endif
 endfun
 call VimrcColorFallback('unokai')
 call VimrcColorFallback('habamax')
 call VimrcColorFallback('desert')
 
 " trying out a fancy custom font
-let &guifont = 'Fantasque Sans Mono:h'.(s:is_windows ? 10 : 11)
+set guifont=FantasqueSansM\ Nerd\ Font\ Mono:h10
+" set guifont=Fantasque\ Sans\ Mono:h10
 
 " sensible
 set hlsearch
@@ -302,7 +293,7 @@ augroup vimrc_appearance_and_formatting
   au InsertEnter * set listchars-=trail:■
   au InsertLeave * set listchars+=trail:■
 
-  " resize vim-windows when program window is resized
+  " resize vim windows when program window is resized
   au VimResized * wincmd =
 
   if s:is_windows
@@ -340,6 +331,10 @@ xnoremap <expr> @ mode() ==# 'V' ? ':normal! @'.getcharstr().'<CR>' : '@'
 nnoremap <silent> <C-l> :nohlsearch<CR><C-l>
 xnoremap <silent> <C-l> :<C-u>nohlsearch<CR><C-l>gv
 
+" substitute word under cursor
+nnoremap s :%s/\C<Bslash><lt><C-r>=expand("<lt>cword>")<CR><Bslash>>/
+xnoremap s y:%s/\V\C<Bslash><lt><C-r>"<Bslash>>/
+
 " Split line (opposite of J) {{{
 fun! s:SplitLine()
   exec "normal! i\<CR>\<Esc>^gk"
@@ -371,14 +366,17 @@ nnoremap <silent> <C-b> :call <SID>ScrollMakesJump('b')<CR>
 nnoremap <silent> <C-f> :call <SID>ScrollMakesJump('f')<CR>
 
 " fast 1/4th page scroll
-fun! s:TabScroll(type)
+fun! s:TabScroll(type, reselect)
   let t_scroll = &scroll
   let &scroll = winheight(winnr()) / 4
-  exec 'normal ' a:type == 'd' ? "\<C-d>" : "\<C-u>"
+  let key_press = (a:type == 'd' ? "\<C-d>" : "\<C-u>")
+  exec ':normal! '. a:reselect . key_press
   let &scroll = t_scroll
 endfun
-nnoremap <silent> <Tab>   :call <SID>TabScroll('d')<CR>
-nnoremap <silent> <S-Tab> :call <SID>TabScroll('u')<CR>
+nnoremap <silent> <Tab>   :call <SID>TabScroll('d','')<CR>
+nnoremap <silent> <S-Tab> :call <SID>TabScroll('u','')<CR>
+xnoremap <silent> <Tab>   :<C-u>call <SID>TabScroll('d','gv')<CR>
+xnoremap <silent> <S-Tab> :<C-u>call <SID>TabScroll('u','gv')<CR>
 
 " new jump list mnemonic: previous, next
 " (frees up CTRL-i AKA Tab)
@@ -501,24 +499,6 @@ endfun
 " }}}
 nnoremap gb :call <SID>BuflistProperEsc()<CR>:ls<CR>:b<Space>
 nnoremap gB :call <SID>BuflistProperEsc()<CR>:ls!<CR>:b<Space>
-
-" :help under the cursor, mnemonic is 'Get Help' {{{
-fun! s:HelpWithHistory(type)
-  let text = ''
-  if a:type == 'visual'
-    let text = getline('.')[col("'<")-1:col("'>")-1]
-  elseif a:type == 'word'
-    let text = expand('<cword>')
-  endif
-  " check for 'option's
-  if getline('.') =~ "^\s*set" | let text = "'". text | endif
-  let cmd = 'help ' . text
-  call histadd(':', cmd)
-  exec cmd
-endfun
-" }}}
-nnoremap gh :call <SID>HelpWithHistory('word')<CR>
-xnoremap gh :call <SID>HelpWithHistory('visual')<CR>
 
 " resizing windows
 noremap <S-Left>  10<C-w><
@@ -836,7 +816,7 @@ let s:scratch_bufn = 0
 fun! s:CreateScratchBuffer()
   let ex = ':enew | setlocal bt=nofile bh=hide noswf'
   let ex .= ' | file Scratch \#'.s:scratch_bufn | let s:scratch_bufn += 1
-  return ex .' | set ft='. &ft
+  return ex
 endfun
 nnoremap <expr> <Space>s <SID>CreateScratchBuffer()
 
@@ -892,11 +872,7 @@ nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
 nnoremap <Space>C :lexpr [] <Bar> cexpr []<CR>
 
 " paste last ex command output
-nnoremap <Space>;p :put =execute('<C-r>:')<CR>
-
-" substitute word under cursor
-nnoremap <Space>;s :%s/\C<Bslash><lt><C-r>=expand("<lt>cword>")<CR><Bslash>>/
-xnoremap <Space>;s y:%s/\V\C<Bslash><lt><C-r>"<Bslash>>/
+nnoremap <Space>:p :put =execute('<C-r>:')<CR>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches
@@ -926,21 +902,10 @@ fun! s:DoubleView() abort
 endfun " }}}
 command! DoubleView call <SID>DoubleView()
 
-" TODO: make these more robust or find alternatives
-" very basic custom text objects
-" 'inside symbol' and 'a symbol'
-let s:separators = exists('g:loaded_targets') ? [ '`', '%']
-      \ : [ '_', '.', ':', ',', ';', '<Bar>', '/', '<Bslash>', '*', '+', '%', '`' ]
-for char in s:separators
-  exec 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
-  exec 'onoremap i' . char . ' :normal vi' . char . '<CR>'
-  exec 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
-  exec 'onoremap a' . char . ' :normal va' . char . '<CR>'
-endfor
-
 " Clear Trailing White spaces
 cabbrev ctw s/\s\+$//e
 
+" Clean potential weird shada error files
 if s:is_nvim
   augroup vimrc_clean_shada_tmp
     au!

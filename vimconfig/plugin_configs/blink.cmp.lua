@@ -1,14 +1,11 @@
-if not vim.fn.has('nvim') then
-    return
-end
-
 require('blink.cmp').setup({
+    -- no command line blink
+    cmdline = { enabled = false },
+
+    -- set maps for supertab compatibility
     keymap = {
         -- set to 'none' to disable the 'default' preset
         preset = 'default',
-
-        -- enable experimental signature helper
-        signature = { enabled = true },
 
         ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
         ['<C-e>'] = { 'hide', 'fallback' },
@@ -41,12 +38,12 @@ require('blink.cmp').setup({
     completion = {
         documentation = { auto_show = false },
         trigger = { show_on_keyword = false },
-        menu = {
-            draw = {
-                -- You can customize the components to hide icons
-                columns = { { "label", "label_description", gap = 1 } },
-            },
-        },
+        -- menu = {
+        --     draw = {
+        --         -- You can customize the components to hide icons
+        --         columns = { { "label", "label_description", gap = 1 } },
+        --     },
+        -- },
     },
 
     sources = {
@@ -55,5 +52,8 @@ require('blink.cmp').setup({
 
     fuzzy = {
         implementation = "prefer_rust_with_warning"
-    }
+    },
+
+    -- enable experimental signature helper
+    signature = { enabled = true },
 })

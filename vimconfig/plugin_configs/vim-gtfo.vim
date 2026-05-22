@@ -1,7 +1,7 @@
-" if executable('wsl')
-"   let g:gtfo#terminals = { 'win' : 'C:\Windows\System32\wsl.exe'}
-" else
-"   let g:gtfo#terminals = { 'win' : 'C:\Windows\System32\cmd.exe /k'}
-" endif
-
-let g:gtfo#terminals = { 'win' : 'powershell -NoLogo -NoExit -Command'}
+" vim-gtfo overrides
+if has('win32')
+  nnoremap got :exec 'silent !start powershell -NoExit -Command "cd '.escape(expand('%:p:h'),' !').'"'<CR>
+  if executable('FPilot')
+    nnoremap gof :exec 'silent !start FPilot '.escape(expand('%:p'),' !')<CR>
+  endif
+endif

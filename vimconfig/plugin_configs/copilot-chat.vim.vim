@@ -1,1 +1,0 @@
-nnoremap <Space>* :CopilotChatToggle<CR>
