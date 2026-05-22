@@ -1,5 +1,3 @@
-finish "disabled
-
 lua << EOF
 require("oil").setup({
   view_options = {

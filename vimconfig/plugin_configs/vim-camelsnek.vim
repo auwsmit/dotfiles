@@ -1,5 +1,7 @@
+" example map: <Space>~p to convert word to pascal case
 let map_prefix = '<Space>~'
-let maps = ['~',    'c',     'b',      'k',     's']
+"           snake   pascal   camel     kebab    SNAKE
+let maps = ['~',    'p',     'c',      'k',     's']
 let cmds = ['Snek', 'Camel', 'CamelB', 'Kebab', 'Screm']
 
 for i in range(0,len(maps)-1)

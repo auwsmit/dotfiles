@@ -8,7 +8,8 @@ vim.lsp.enable('cpptools')  -- ^
 vim.diagnostic.enable(false)
 
 -- disable LSP semantic highlighting
-vim.api.nvim_create_autocmd("VimEnter", {
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "c,odin",
   callback = function()
     for _, group in ipairs(vim.fn.getcompletion("@lsp", "highlight")) do
       vim.api.nvim_set_hl(0, group, {})

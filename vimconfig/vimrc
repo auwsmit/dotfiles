@@ -23,11 +23,11 @@ let g:myvimdir = expand(g:myvimdir)
 " press <Enter> on a line below to goto its config file
 
 " vim-plug wrapper to help load config files
-let g:plugin_log = ''
-function! PlugWrapper(repo, ...)
-  let g:plugin_log .= a:repo . ","
+let s:plugin_log = ''
+fun! PlugWrapper(repo, ...)
+  let s:plugin_log .= a:repo . ","
   exec 'Plug ' . string(a:repo) . (a:0 > 0 ? ', ' . string(a:1) : '')
-endfunction
+endfun
 command! -nargs=+ -bar Plgn call PlugWrapper(<args>)
 
 " setup vim-plug
@@ -129,7 +129,7 @@ fun! SourcePlugConfigs()
     let plugin_dir = g:myvimdir.'/plugged/'.plugin_name
     let src = (type == 'vim') ? 'source ' : 'luafile '
     " if plugin is currently installed
-    if isdirectory(plugin_dir) && g:plugin_log=~plugin_name
+    if isdirectory(plugin_dir) && s:plugin_log=~plugin_name
       exec src . config
     endif
   endfor
@@ -152,7 +152,7 @@ set timeoutlen=3000
 set hidden
 set autoread
 set gdefault
-" set lazyredraw
+set lazyredraw
 set showcmd
 set nostartofline
 set modeline
@@ -484,21 +484,9 @@ inoremap {<Tab> {<CR>}<Esc>O
 " alt quit
 nnoremap <C-S-Q> :qall<CR>
 
-" quickly manage buffers {{{
-fun! s:BuflistProperEsc()
-  " otherwise you need to press esc twice
-  cnoremap <silent> <buffer> <Esc> <C-u><Esc><Esc>:call <SID>BuflistRemoveMaps()<CR>
-  cnoremap <silent> <buffer> <C-[> <C-u><Esc><Esc>:call <SID>BuflistRemoveMaps()<CR>
-  cnoremap <silent> <buffer> <CR> <CR>:call <SID>BuflistRemoveMaps()<CR>
-endfun
-fun! s:BuflistRemoveMaps()
-  silent! cunmap <buffer> <Esc>
-  silent! cunmap <buffer> <C-[>
-  silent! cunmap <buffer> <CR>
-endfun
-" }}}
-nnoremap gb :call <SID>BuflistProperEsc()<CR>:ls<CR>:b<Space>
-nnoremap gB :call <SID>BuflistProperEsc()<CR>:ls!<CR>:b<Space>
+" quick buffer switch (use tab completion)
+nnoremap gb :buffer<Space>
+nnoremap gB :buffer!<Space>
 
 " resizing windows
 noremap <S-Left>  10<C-w><
@@ -630,14 +618,14 @@ nnoremap <silent> g:: :call <SID>SourceVimscript("currentline")<CR>
 " - faster/more convenient than visual-replace
 " - does not modify ' mark
 " - DWIM behavior for linewise => characterwise
-func! s:trimws_ml(s) abort "trim whitespace across multiple lines
+fun! s:trimws_ml(s) abort "trim whitespace across multiple lines
   return substitute(a:s, '^\_s*\(.\{-}\)\_s*$', '\1', '')
 endf
 let s:rr_reg = '"'
-func! s:set_reg(reg_name) abort
+fun! s:set_reg(reg_name) abort
   let s:rr_reg = a:reg_name
 endf
-func! s:replace_without_yank(type) abort
+fun! s:replace_without_yank(type) abort
   let rr_orig = getreg(s:rr_reg, 1) "save registers and types to restore later.
   let rr_type = getregtype(s:rr_reg)
   let ur_orig = getreg('"', 1)
@@ -777,7 +765,7 @@ nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
 nnoremap <silent><Space>V :exec 'tabedit '.resolve($MYVIMRC)<CR>
 
 " simple swap between C header and source files {{{
-function! SwitchHeaderSource()
+fun! SwitchHeaderSource()
   let base = expand('%:t:r')
   let ext  = expand('%:e')
   let pairs = {
@@ -804,7 +792,7 @@ function! SwitchHeaderSource()
   endfor
 
   echohl WarningMsg | echom "Couldn't find alternate file" | echohl None
-endfunction
+endfun
 " }}}
 augroup vimrc_c_headerswap
   au!

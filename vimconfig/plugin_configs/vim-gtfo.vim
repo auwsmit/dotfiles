@@ -1,4 +1,4 @@
-" vim-gtfo overrides
+" vim-gtfo overrides.. maybe should expand and make PR for dirvish
 if has('win32')
   nnoremap got :exec 'silent !start powershell -NoExit -Command "cd '.escape(expand('%:p:h'),' !').'"'<CR>
   if executable('FPilot')
