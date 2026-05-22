@@ -28,89 +28,89 @@ function! PlugWrapper(repo, ...)
   let g:plugin_log .= a:repo . ","
   exec 'Plug ' . string(a:repo) . (a:0 > 0 ? ', ' . string(a:1) : '')
 endfunction
-command! -nargs=+ -bar Plugin call PlugWrapper(<args>)
+command! -nargs=+ -bar Plgn call PlugWrapper(<args>)
 
 " setup vim-plug
 call plug#begin()
 
 " FILE/BUFFER PLUGINS {{{
 
-Plugin 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
-Plugin 'tpope/vim-fugitive'   " vim + git integration
-Plugin 'justinmk/vim-gtfo'    " open gui explorer or terminal
-Plugin 'justinmk/vim-dirvish' " minimal file explorer
-Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
-Plugin 'junegunn/fzf.vim'     " fzf + vim integration
-Plugin 'mhinz/vim-sayonara', { 'on': 'Sayonara' } " simple buffer/window closing with gs/gS
-Plugin 'auwsmit/vim-spear'
-Plugin 'auwsmit/vim-oldfiles-improved'
+Plgn 'tpope/vim-eunuch'              " shell commands, e.g. :Remove & :Move & :Chmod
+Plgn 'tpope/vim-fugitive'            " vim + git integration
+Plgn 'justinmk/vim-gtfo'             " open gui explorer or terminal
+Plgn 'justinmk/vim-dirvish'          " minimal file explorer
+Plgn 'junegunn/fzf', { 'do': { -> fzf#install() } } " general fuzzy finder
+Plgn 'junegunn/fzf.vim'              " fzf + vim integration
+Plgn 'mhinz/vim-sayonara',           " simple buffer/window closing with gs/gS
+Plgn 'auwsmit/vim-spear'             " per-project file bookmarks
+Plgn 'auwsmit/vim-oldfiles-improved' " open recent files
 
 " }}}
 " OPERATOR PLUGINS {{{
 
-Plugin 'tpope/vim-commentary'   " comment mappings
-Plugin 'machakann/vim-sandwich' " modify surrounding text eg: () and ''
-Plugin 'tommcdo/vim-exchange'   " exchange two pieces of text
-Plugin 'nicwest/vim-camelsnek'  " convert between camel and snake case
+Plgn 'tpope/vim-commentary'   " comment mappings
+Plgn 'machakann/vim-sandwich' " modify surrounding text eg: () and ''
+Plgn 'tommcdo/vim-exchange'   " exchange two pieces of text
+Plgn 'nicwest/vim-camelsnek'  " convert between camel and snake case
 
 " }}}
 " TEXT OBJECT PLUGINS {{{
 
-Plugin 'kana/vim-niceblock' " improved visual insert/append
-Plugin 'kana/vim-textobj-user'              " custom text object helper
-Plugin 'kana/vim-textobj-line'              " il/al
-Plugin 'kana/vim-textobj-entire'            " ie/ae
-Plugin 'kana/vim-textobj-indent'            " ii/ai
-Plugin 'kana/vim-textobj-function'          " if/af
-Plugin 'coderifous/textobj-word-column.vim' " ic/ac, iC, aC
-Plugin 'junegunn/vim-after-object' " a=/aa=
+Plgn 'kana/vim-niceblock'        " improved visual insert/append
+Plgn 'kana/vim-textobj-user'     " custom text object helper
+Plgn 'kana/vim-textobj-line'     " il/al
+Plgn 'kana/vim-textobj-entire'   " ie/ae
+Plgn 'kana/vim-textobj-indent'   " ii/ai
+Plgn 'kana/vim-textobj-function' " if/af
+Plgn 'junegunn/vim-after-object' " after a= and a:
+Plgn 'coderifous/textobj-word-column.vim' " ic/ac, iC, aC
 
 " }}}
 " MOTION PLUGINS {{{
 
-Plugin 'chaoren/vim-wordmotion'    " makes vim 'word' more precise
-Plugin 'auwsmit/vim-ipmotion'      " { } move over folds
-Plugin 'romainl/vim-cool'          " autoclear search highlighting
+Plgn 'chaoren/vim-wordmotion'    " makes vim 'word' more precise
+Plgn 'auwsmit/vim-ipmotion'      " { } move over folds
+Plgn 'romainl/vim-cool'          " autoclear search highlighting
 
 " }}}
 " FORMAT/SYNTAX PLUGINS {{{
 
-Plugin 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
-Plugin 'junegunn/vim-easy-align' " align text operator
-Plugin 'xtal8/traces.vim'      " previews patterns for ex commands
-Plugin 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' } " treesitter grammars
-Plugin 'neovim/nvim-lspconfig' " many LSP configs
-Plugin 'preservim/tagbar'
-Plugin 'auwsmit/vim-baddog'    " colorscheme, personal fork of sjl/badwolf
-Plugin 'auwsmit/odin.vim'      " syntax highlighting, personal fork of Tetralux/odin.vim
+Plgn 'junegunn/vim-easy-align'          " align text operator
+Plgn 'xtal8/traces.vim'                 " previews pattern while typing ex commands
+Plgn 'preservim/tagbar'                 " tag explorer/overview panel
+Plgn 'auwsmit/vim-baddog'               " personal fork of sjl/badwolf colorscheme
+Plgn 'auwsmit/odin.vim'                 " personal fork of Tetralux/odin.vim and habamax/vim-odin
+Plgn 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
+Plgn 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' } " treesitter grammars
 
 " }}}
-" COMPLETION/SNIPPET PLUGINS {{{
+" LSP PLUGINS {{{
 
-Plugin 'ervandew/supertab'                   " tab autocomplete
-Plugin 'saghen/blink.cmp', { 'tag': 'v1.*' } " sane + smart LSP completion
-Plugin 'rafamadriz/friendly-snippets'        " snippets that integrate with blink
+Plgn 'neovim/nvim-lspconfig'               " many LSP configs
+Plgn 'saghen/blink.cmp', { 'tag': 'v1.*' } " sane + smart LSP completion
+Plgn 'rafamadriz/friendly-snippets'        " snippets that integrate with blink
+Plgn 'mason-org/mason.nvim'                " LSP manager
 
 " }}}
 " MISC/CONVENIENCE PLUGINS " {{{
 
-Plugin 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
-Plugin 'tpope/vim-repeat'      " allows plugins to . repeat easier
-Plugin 'tpope/vim-sleuth'      " auto-detect tab settings per-file
-Plugin 'tpope/vim-unimpaired'  " many useful [x/]x mappings
-Plugin 'tpope/vim-dispatch'    " useful building/compiling features
-Plugin 'itchyny/lightline.vim' " prettier statusbar
-Plugin 'mbbill/undotree'       " visual undo tree
-Plugin 'romainl/vim-qf'        " sensible quickfix improvements
-Plugin 'vimwiki/vimwiki'       " for taking and organizing notes
-Plugin 'Yggdroot/indentLine'   " indent indicators (for spaces)
-Plugin 'junegunn/vim-peekaboo' " preview registers
-Plugin 'junegunn/goyo.vim',    " distraction free editing
-Plugin 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
-Plugin 'farmergreg/vim-lastplace' " reopen files at last position
-Plugin 'henrik/vim-indexed-search' " show search count & centered search
-Plugin 'ludovicchabant/vim-gutentags' " auto-generate and update tags
-
+Plgn 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
+Plgn 'tpope/vim-repeat'      " allows plugins to . repeat easier
+Plgn 'tpope/vim-sleuth'      " auto-detect tab settings per-file
+Plgn 'tpope/vim-unimpaired'  " many useful [x/]x mappings
+Plgn 'tpope/vim-dispatch'    " useful building/compiling features
+Plgn 'ervandew/supertab'     " tab autocomplete
+Plgn 'itchyny/lightline.vim' " prettier statusbar
+Plgn 'mbbill/undotree'       " visual undo tree
+Plgn 'romainl/vim-qf'        " sensible quickfix improvements
+Plgn 'vimwiki/vimwiki'       " for taking and organizing notes
+Plgn 'Yggdroot/indentLine'   " indent indicators (for spaces)
+Plgn 'junegunn/vim-peekaboo' " preview registers
+Plgn 'junegunn/goyo.vim',    " distraction free editing
+Plgn 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
+Plgn 'farmergreg/vim-lastplace' " reopen files at last position
+Plgn 'henrik/vim-indexed-search' " show search count & centered search
+Plgn 'ludovicchabant/vim-gutentags' " auto-generate and update tags
 
 " }}}
 
@@ -409,10 +409,10 @@ noremap gp p
 " <CR> in vimrc to edit or create plugin config {{{
 " press Enter on [Plug 'author/plugin'] to create or open a local config file
 fun! s:GotoPlugConfig()
-  if getline('.') =~ "Plugin '.*'"
+  if getline('.') =~ "Plgn '.*'"
     " this pattern matches the plugin name for a Plug line
     " e.g. Plug 'foo/bar.nvim' becomes the string 'bar.nvim'
-    let pattern = "Plugin.*'.*[\\/]\\zs[^\\/']\\+\\ze[\\/]*'"
+    let pattern = "Plgn.*'.*[\\/]\\zs[^\\/']\\+\\ze[\\/]*'"
     let name = matchstr(getline('.'), pattern)
     let path_to_plugin = resolve(g:myvimdir).'/plugin_configs/'.name
     if filereadable(path_to_plugin.'.vim')
@@ -816,7 +816,7 @@ let s:scratch_bufn = 0
 fun! s:CreateScratchBuffer()
   let ex = ':enew | setlocal bt=nofile bh=hide noswf'
   let ex .= ' | file Scratch \#'.s:scratch_bufn | let s:scratch_bufn += 1
-  return ex
+  return ex . ' | set ft='
 endfun
 nnoremap <expr> <Space>s <SID>CreateScratchBuffer()
 

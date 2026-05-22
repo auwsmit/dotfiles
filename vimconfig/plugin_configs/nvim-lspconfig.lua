@@ -1,6 +1,9 @@
 -- enable LSPs
 vim.lsp.enable('ols')    -- for Odin
 
+vim.lsp.enable('clangd')    -- for C
+vim.lsp.enable('cpptools')  -- ^
+
 -- disable diagnostics (not specific to LSPs, but I dont use any diagnostics beyond :make atm)
 vim.diagnostic.enable(false)
 
