@@ -5,17 +5,9 @@
 
 " STARTUP {{{
 
-let s:is_nvim = has('nvim')
+let s:is_nvim    = has('nvim')
 let s:is_windows = has('win32')
-
-" detect .vim directory
-if s:is_windows
-  let g:myvimdir = expand("~/vimfiles")
-elseif s:is_nvim
-  let g:myvimdir = expand("~/.config/nvim")
-else " vim on unix
-  let g:myvimdir = expand("~/.vim")
-endif
+let g:myvimdir   = resolve(fnamemodify($MYVIMRC, ':h:p'))
 
 " }}}
 " PLUGINS {{{
@@ -25,7 +17,7 @@ endif
 " setup vim-plug
 call plug#begin()
 
-" FILE/BUFFER PLUGINS {{{
+" FILE / BUFFER PLUGINS {{{
 
 Plug 'tpope/vim-eunuch'     " shell commands, e.g. :Remove & :Move & :Chmod
 Plug 'tpope/vim-fugitive'   " vim + git integration
@@ -64,7 +56,7 @@ Plug 'chaoren/vim-wordmotion'    " makes vim 'word' more precise
 Plug 'auwsmit/vim-ipmotion'      " { } move over folds
 
 " }}}
-" FORMAT/SYNTAX PLUGINS {{{
+" FORMAT / SYNTAX PLUGINS {{{
 
 Plug 'junegunn/vim-easy-align' " align text operator
 Plug 'preservim/tagbar'        " tag explorer/overview panel
@@ -75,12 +67,13 @@ Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax hi
 Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' } " treesitter grammars
 
 " }}}
-" LSP PLUGINS {{{
+" LSP / COMPLETION PLUGINS {{{
 
 Plug 'neovim/nvim-lspconfig'               " many LSP configs
+Plug 'mason-org/mason.nvim'                " LSP installer
+Plug 'ervandew/supertab'                   " tab for insert completion
 Plug 'saghen/blink.cmp', { 'tag': 'v1.*' } " sane + smart LSP completion
 Plug 'rafamadriz/friendly-snippets'        " snippets that integrate with blink
-Plug 'mason-org/mason.nvim'                " LSP installer
 
 " }}}
 " MISC/CONVENIENCE PLUGINS " {{{
@@ -90,7 +83,6 @@ Plug 'tpope/vim-repeat'      " allows plugins to . repeat easier
 Plug 'tpope/vim-sleuth'      " auto-detect tab settings per-file
 Plug 'tpope/vim-unimpaired'  " many useful [x/]x mappings
 Plug 'tpope/vim-dispatch'    " useful building/compiling features
-Plug 'ervandew/supertab'     " tab autocomplete
 Plug 'itchyny/lightline.vim' " prettier statusbar
 Plug 'mbbill/undotree'       " visual undo tree
 Plug 'romainl/vim-qf'        " sensible quickfix improvements
@@ -126,8 +118,8 @@ fun! SourcePlugConfigs()
     if isdirectory(plugin_dir) | exec src . config | endif
   endfor
 endfun
-call SourcePlugConfigs()
 " }}}
+call SourcePlugConfigs()
 
 " }}}
 " GENERAL SETTINGS {{{
@@ -178,7 +170,7 @@ set wildignore+=*.DS_Store                       " OSX garbage
 
 " backups & undofiles in one place
 set noswapfile
-let s:tempdir=expand(g:myvimdir .(s:is_nvim ? '/neotmp/' : '/tmp/'))
+let s:tempdir=expand(g:myvimdir .(s:is_nvim ? '/tmp_nvim/' : '/tmp/'))
 if !isdirectory(s:tempdir)
   call mkdir(s:tempdir, 'p')
   call mkdir(s:tempdir.'backup', 'p')
@@ -229,7 +221,7 @@ exec 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
 " native syntax performance settings
 syntax sync fromstart
 
-silent! colorscheme baddog
+" silent! colorscheme baddog
 fun! VimrcColorFallback(color) abort
   if !exists('g:colors_name') | exec 'silent! colorscheme '. a:color | endif
 endfun
@@ -272,8 +264,8 @@ endif
 
 " Neovide config
 if exists("g:neovide")
-  " faster animations
-  let g:neovide_cursor_animation_length = 0.1
+  " less distracting animations
+  let g:neovide_cursor_animation_length = 0
   let g:neovide_scroll_animation_length = 0.1
 endif
 

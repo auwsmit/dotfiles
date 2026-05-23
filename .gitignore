@@ -10,7 +10,7 @@ vimconfig/session/
 vimconfig/sessions/
 vimconfig/swap/
 vimconfig/tmp/
-vimconfig/neotmp/
+vimconfig/tmp_nvim/
 vimconfig/lua/
 vimconfig/shada/
 vimconfig/plugged/
