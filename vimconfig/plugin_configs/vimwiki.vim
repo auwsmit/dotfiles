@@ -2,11 +2,11 @@
 " I can define my own as I need them
 let g:vimwiki_key_mappings = { 'all_maps': 0, }
 nnoremap <silent> <Space>W :VimwikiIndex<CR>
-nmap <Space><Backspace> <Plug>VimwikiGoBackLink
 
 augroup config_vimwiki
   au!
   au FileType vimwiki nmap <buffer> <CR> <Plug>VimwikiFollowLink
+  au FileType vimwiki nmap <Space><Backspace> <Plug>VimwikiGoBackLink
 augroup END
 
 " only use vimwiki in the vimwiki directory.

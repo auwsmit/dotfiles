@@ -10,7 +10,7 @@ nnoremap <silent> <Space>L :call <SID>also_showmode_toggle()<CR>
 
 " layout + compatibility with other plugins {{{
 let g:lightline = {
-      \ 'colorscheme': 'mycustom',
+      \ 'colorscheme': 'baddog',
       \ 'active': {
       \   'left': [ ['mode', 'paste'],
       \             ['gitbranch', 'filename'] ],

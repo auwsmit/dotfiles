@@ -36,6 +36,7 @@ Plug 'tpope/vim-commentary'   " comment mappings
 Plug 'machakann/vim-sandwich' " modify surrounding text eg: () and ''
 Plug 'tommcdo/vim-exchange'   " exchange two pieces of text
 Plug 'nicwest/vim-camelsnek'  " convert between camel and snake case
+Plug 'junegunn/vim-easy-align' " ga to align text
 
 " }}}
 " TEXT OBJECT PLUGINS {{{
@@ -46,7 +47,7 @@ Plug 'kana/vim-textobj-line'     " il/al
 Plug 'kana/vim-textobj-entire'   " ie/ae
 Plug 'kana/vim-textobj-indent'   " ii/ai
 Plug 'kana/vim-textobj-function' " if/af
-Plug 'junegunn/vim-after-object' " after a= and a:
+Plug 'junegunn/vim-after-object' " a= and a:
 Plug 'coderifous/textobj-word-column.vim' " ic/ac, iC, aC
 
 " }}}
@@ -56,11 +57,8 @@ Plug 'chaoren/vim-wordmotion'    " makes vim 'word' more precise
 Plug 'auwsmit/vim-ipmotion'      " { } move over folds
 
 " }}}
-" FORMAT / SYNTAX PLUGINS {{{
+" SYNTAX PLUGINS {{{
 
-Plug 'junegunn/vim-easy-align' " align text operator
-Plug 'preservim/tagbar'        " tag explorer/overview panel
-Plug 'xtal8/traces.vim'        " previews pattern while typing ex commands
 Plug 'auwsmit/vim-baddog'      " personal fork of sjl/badwolf colorscheme
 Plug 'auwsmit/odin.vim'        " personal fork of Tetralux/odin.vim and habamax/vim-odin
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
@@ -76,14 +74,15 @@ Plug 'saghen/blink.cmp', { 'tag': 'v1.*' } " sane + smart LSP completion
 Plug 'rafamadriz/friendly-snippets'        " snippets that integrate with blink
 
 " }}}
-" MISC/CONVENIENCE PLUGINS " {{{
+" MISC / CONVENIENCE PLUGINS " {{{
 
 Plug 'tpope/vim-rsi'         " readline key maps for cmd and ins mode
 Plug 'tpope/vim-repeat'      " allows plugins to . repeat easier
 Plug 'tpope/vim-sleuth'      " auto-detect tab settings per-file
-Plug 'tpope/vim-unimpaired'  " many useful [x/]x mappings
+Plug 'tpope/vim-unimpaired'  " many useful [x & ]x mappings
 Plug 'tpope/vim-dispatch'    " useful building/compiling features
 Plug 'itchyny/lightline.vim' " prettier statusbar
+Plug 'preservim/tagbar'      " tag explorer/overview panel
 Plug 'mbbill/undotree'       " visual undo tree
 Plug 'romainl/vim-qf'        " sensible quickfix improvements
 Plug 'vimwiki/vimwiki', { 'on': 'VimwikiIndex', 'for': 'mediawiki' } " for taking and organizing notes
@@ -102,13 +101,13 @@ Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
 call plug#end()
 
 " Source plugin configs {{{
-fun! SourcePlugConfigs()
-  let configs = glob(g:myvimdir.'/plugin_configs/*',0,1)
-  let slash = s:is_windows ? '\' : '/'
-  for config in configs
-    let type = config[-3:]
-    " skip lua configs for vim
-    if !s:is_nvim && type == 'lua' | continue | endif
+  fun! SourcePlugConfigs()
+    let configs = glob(g:myvimdir.'/plugin_configs/*',0,1)
+    let slash = s:is_windows ? '\' : '/'
+    for config in configs
+      let type = config[-3:]
+      " skip lua configs for vim
+      if !s:is_nvim && type == 'lua' | continue | endif
 
     let plugin_name = fnamemodify(config,':t')[:-5]
     let plugin_dir = g:myvimdir.'/plugged/'.plugin_name
@@ -200,7 +199,7 @@ set smarttab
 set number relativenumber
 set numberwidth=1
 set cursorline
-set list listchars=tab:┊\ ,extends:›,precedes:‹,nbsp:·,trail:■
+set list listchars=tab:┆\ ,extends:›,precedes:‹,nbsp:·,trail:■
 set linebreak
 if has('linebreak')
   set showbreak=«
@@ -210,8 +209,7 @@ else
 endif
 set shortmess-=S  " show search count [1/99]
 set shortmess+=mrF
-" set cpoptions+=$
-set foldlevel=999 " start with folds closed
+set foldlevel=999 " start with folds open
 set foldmethod=indent
 set guioptions=
 
@@ -221,7 +219,7 @@ exec 'set statusline=\ %<%f\ %h%m%r%=%y\ [%P]\ [%l,%v]'
 " native syntax performance settings
 syntax sync fromstart
 
-" silent! colorscheme baddog
+silent! colorscheme baddog
 fun! VimrcColorFallback(color) abort
   if !exists('g:colors_name') | exec 'silent! colorscheme '. a:color | endif
 endfun
@@ -265,8 +263,11 @@ endif
 " Neovide config
 if exists("g:neovide")
   " less distracting animations
-  let g:neovide_cursor_animation_length = 0
+  let g:neovide_cursor_animation_length = 0.1
   let g:neovide_scroll_animation_length = 0.1
+  let g:neovide_position_animation_length = 0
+  " let g:neovide_cursor_animate_command_line = v:false
+  " let g:neovide_cursor_hack = v:true
 endif
 
 augroup vimrc_appearance_and_formatting
@@ -315,9 +316,11 @@ xnoremap <expr> @ mode() ==# 'V' ? ':normal! @'.getcharstr().'<CR>' : '@'
 nnoremap <silent> <C-l> :nohlsearch<CR><C-l>
 xnoremap <silent> <C-l> :<C-u>nohlsearch<CR><C-l>gv
 
-" substitute word under cursor
-nnoremap s :%s/\C<Bslash><lt><C-r>=expand("<lt>cword>")<CR><Bslash>>/
-xnoremap s y:%s/\V\C<Bslash><lt><C-r>"<Bslash>>/
+" substitute word or selection under cursor
+nnoremap sw :%s/\C<Bslash><lt><C-r>=expand("<lt>cword>")<CR><Bslash>>/
+nnoremap ss :%s/\C<C-r>=expand("<lt>cword>")<CR>/
+xnoremap sw "9y:%s/\V\C<Bslash><lt><C-r>"<Bslash>>/
+xnoremap ss "9y:%s/\V\C<C-r>"/
 
 " Split line (opposite of J) {{{
 fun! s:SplitLine()
@@ -354,7 +357,7 @@ fun! s:TabScroll(type, reselect)
   let t_scroll = &scroll
   let &scroll = winheight(winnr()) / 4
   let key_press = (a:type == 'd' ? "\<C-d>" : "\<C-u>")
-  exec ':normal! '. a:reselect . key_press
+  exec ':normal '. a:reselect . key_press
   let &scroll = t_scroll
 endfun
 nnoremap <silent> <Tab>   :call <SID>TabScroll('d','')<CR>
@@ -556,7 +559,7 @@ endfun
 fun! s:HelpMaps() abort
   if &buftype == 'help'
     nnoremap <buffer> q :bd<CR>
-    " navigate links
+    " navigate help links
     nnoremap <silent><buffer> <C-j> m':call <SID>HelpSearch('')<CR>
     nnoremap <silent><buffer> <C-k> m':call <SID>HelpSearch('b')<CR>
     nnoremap <buffer> <CR> <C-]>
@@ -644,13 +647,12 @@ nnoremap <silent> drr :<C-u>call <SID>set_reg(v:register)<CR>0:<C-u>set opfunc=<
 nmap     <silent> dR dr$
 xnoremap <silent> R :<C-u>call <SID>set_reg(v:register)<Bar>call <SID>replace_without_yank('visual')<CR>
 
-" %% expands to current buffer file name
-" :: expands to current buffer file path
-cnoremap %% <C-r>=fnameescape(expand('%'))<CR>
+" expands to buffer/file name and its directory
+cnoremap <C-r><C-f> <C-r>=fnameescape(expand('%'))<CR>
 if s:is_windows
-  cnoremap :: <C-r>=fnameescape(substitute(expand('%:p:h'),'/','\','g'))<CR>\
+  cnoremap <C-r><C-d> <C-r>=fnameescape(substitute(expand('%:p:h'),'/','\','g'))<CR>\
 else
-  cnoremap :: <C-r>=fnameescape(expand('%:p:h'))<CR>/
+  cnoremap <C-r><C-d> <C-r>=fnameescape(expand('%:p:h'))<CR>/
 endif
 
 " browse search results while searching with tab/s-tab
@@ -737,11 +739,6 @@ nnoremap <silent> <Space><Tab> :call <SID>GotoPreviousWindow()<CR>
 
 " reload current file
 nnoremap <Space>e :edit<CR>
-
-" check if FZF command search is mapped
-if maparg('<Space><Space>','n') == ''
-  nnoremap <Space><Space> :
-endif
 
 " edit vimrc, resolve symlinks to goto dotfiles repo
 " I've probably pressed this command over a million times
