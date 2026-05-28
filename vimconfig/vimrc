@@ -48,7 +48,7 @@ Plug 'kana/vim-textobj-entire'   " ie/ae
 Plug 'kana/vim-textobj-indent'   " ii/ai
 Plug 'kana/vim-textobj-function' " if/af
 Plug 'junegunn/vim-after-object' " a= and a:
-Plug 'coderifous/textobj-word-column.vim' " ic/ac, iC, aC
+Plug 'coderifous/textobj-word-column.vim' " ic/ac, iC/aC
 
 " }}}
 " MOTION PLUGINS {{{
@@ -84,14 +84,15 @@ Plug 'tpope/vim-dispatch'    " useful building/compiling features
 Plug 'itchyny/lightline.vim' " prettier statusbar
 Plug 'preservim/tagbar'      " tag explorer/overview panel
 Plug 'mbbill/undotree'       " visual undo tree
+Plug 'romainl/vim-cool'      " autoclear search highlighting
 Plug 'romainl/vim-qf'        " sensible quickfix improvements
+Plug 'romainl/vim-redir'     " paste command output into a scratch buffer
 Plug 'vimwiki/vimwiki', { 'on': 'VimwikiIndex', 'for': 'mediawiki' } " for taking and organizing notes
 Plug 'Yggdroot/indentLine'   " indent indicators (for spaces)
 Plug 'junegunn/vim-peekaboo' " preview registers
 Plug 'junegunn/goyo.vim',    " distraction free editing
 Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
 Plug 'farmergreg/vim-lastplace' " reopen files at last position
-Plug 'romainl/vim-cool'          " autoclear search highlighting
 Plug 'henrik/vim-indexed-search' " show search count & centered search
 Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
 
@@ -103,7 +104,6 @@ call plug#end()
 " Source plugin configs {{{
   fun! SourcePlugConfigs()
     let configs = glob(g:myvimdir.'/plugin_configs/*',0,1)
-    let slash = s:is_windows ? '\' : '/'
     for config in configs
       let type = config[-3:]
       " skip lua configs for vim
@@ -135,7 +135,6 @@ set timeoutlen=3000
 set hidden
 set autoread
 set gdefault
-set lazyredraw
 set showcmd
 set nostartofline
 set modeline
@@ -188,6 +187,7 @@ endif
 " see: filetype-indent-on, ftplugins, & after-directory
 
 " indenting/formatting
+
 set autoindent smartindent " try cindent instead
 set encoding=utf-8
 
@@ -230,6 +230,7 @@ call VimrcColorFallback('desert')
 " trying out a fancy custom font
 set guifont=FantasqueSansM\ Nerd\ Font\ Mono:h10
 " set guifont=Fantasque\ Sans\ Mono:h10
+" set guifont=Consolas:h10
 
 " sensible
 set hlsearch
@@ -263,7 +264,7 @@ endif
 " Neovide config
 if exists("g:neovide")
   " less distracting animations
-  let g:neovide_cursor_animation_length = 0.1
+  let g:neovide_cursor_animation_length = 0
   let g:neovide_scroll_animation_length = 0.1
   let g:neovide_position_animation_length = 0
   " let g:neovide_cursor_animate_command_line = v:false
@@ -400,14 +401,14 @@ fun! s:GotoPlugConfig()
     " this pattern matches the plugin name for a Plug line
     " e.g. Plug 'foo/bar.nvim' becomes the string 'bar.nvim'
     let pattern = "Plug.*'.*[\\/]\\zs[^\\/']\\+\\ze[\\/]*'"
-    let name = matchstr(getline('.'), pattern)
-    let path_to_plugin = resolve(g:myvimdir).'/plugin_configs/'.name
-    if filereadable(path_to_plugin.'.vim')
-      echo 'Found config for ' . name
-      exec 'edit ' . fnameescape(path_to_plugin.'.vim')
-    elseif filereadable(path_to_plugin.'.lua')
-      echo 'Found config for ' . name
-      exec 'edit ' . fnameescape(path_to_plugin.'.lua')
+    let plugin_name = matchstr(getline('.'), pattern)
+    let path_to_config = resolve(g:myvimdir).'/plugin_configs/'.plugin_name
+    if filereadable(path_to_config.'.vim')
+      echo 'Found config for ' . plugin_name
+      exec 'edit ' . fnameescape(path_to_config.'.vim')
+    elseif filereadable(path_to_config.'.lua')
+      echo 'Found config for ' . plugin_name
+      exec 'edit ' . fnameescape(path_to_config.'.lua')
     else
       let msg = 'No plugin config found. Would you like to create one?'
       let choice1 = confirm(msg,"&No\n&yes",1)
@@ -415,8 +416,8 @@ fun! s:GotoPlugConfig()
         let choice2 = confirm('',"&Vim\nor &lua",1)
         let ftype = choice2 == 1 ? '.vim' : '.lua'
         redraw
-        echo 'Editing local config for ' . name
-        exec 'edit ' . fnameescape(path_to_plugin.ftype)
+        echo 'Editing local config for ' . plugin_name
+        exec 'edit ' . fnameescape(path_to_config.ftype)
       endif
     endif
   endif
@@ -662,15 +663,12 @@ cnoremap <expr>  <S-Tab>  getcmdtype() =~ '[?/]' ? '<C-t>' : feedkeys('<S-Tab>',
 " visually select the last change or yank
 nnoremap gV `[v`]
 
-" consistent and sane terminal escape {{{
-" - press <Esc> to exit terminal mode
-" - press <C-\><C-\> to send an <Esc> to the terminal
+" consistent terminal escape {{{
+" - press <C-\><C-\> to go back to normal mode
 if s:is_nvim
-  let s:t_esc = '<C-\><C-n>'
-elseif has('terminal')
-  let s:t_esc = '<C-w>N'
+  let s:t_esc = has('terminal') ? '<C-w>N' : '<C-\><C-n>'
 endif
-tnoremap <C-\><C-\> <Esc>
+exec 'tnoremap <C-\><C-\> ' . s:t_esc
 " }}}
 " select the last :terminal's output, similar to `:read!` {{{
 " - allows for gV (see above mapping) to select
@@ -690,9 +688,6 @@ let s:tmark_start = ":call <SID>TermMakeCmdMark(1)"
 let s:tmark_end   = ":call <SID>TermMakeCmdMark(0)"
 exec 'tnoremap <silent> <CR>  '. s:t_esc . s:tmark_start .'<CR>a<CR>'
 let s:t_esc .= s:tmark_end.'<CR>'
-exec 'tnoremap <silent> <Esc> '. s:t_esc
-exec 'tnoremap <silent> <C-[> '. s:t_esc
-exec 'tnoremap <silent> <C-g> '. s:t_esc
 " }}}
 
 " minor terminal shortcut to run commands from normal mode
@@ -756,6 +751,7 @@ fun! SwitchHeaderSource()
     \ }
   if !has_key(pairs, ext) | return | endif
 
+  " check current file's directory, its parent, and then the cwd
   let search_dirs = [
     \ expand('%:p:h'),
     \ expand('%:p:h:h'),
@@ -780,7 +776,7 @@ augroup vimrc_c_headerswap
   au FileType c,cpp nnoremap <buffer><silent> <Space>a :call SwitchHeaderSource()<CR>
 augroup END
 
-" quick scratch buffers
+" quick persistent scratch buffers
 let s:scratch_bufn = 0
 fun! s:CreateScratchBuffer()
   let ex = ':enew | setlocal bt=nofile bh=hide noswf'
@@ -839,9 +835,6 @@ nnoremap <silent> <Space>l :call ToggleList("Location List", 'l')<CR>
 nnoremap <silent> <Space>q :call ToggleList("Quickfix List", 'c')<CR>
 " clear location+quickfix lists
 nnoremap <Space>C :lexpr [] <Bar> cexpr []<CR>
-
-" paste last ex command output
-nnoremap <Space>:p :put =execute('<C-r>:')<CR>
 
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches
