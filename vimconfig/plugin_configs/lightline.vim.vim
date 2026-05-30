@@ -23,7 +23,7 @@ let g:lightline = {
       \ },
       \ 'component': {
       \   'percent': '%3{LightLinePercent()}',
-      \   'filename': '%{LightLineFilename(1)}',
+      \   'filename': '%<%{LightLineFilename(1)}',
       \   'filename_i': '%{LightLineFilename(0)}',
       \   'lineinfo': '%l,%c',
       \   'lineinfo_i': '%l/%L'
@@ -37,6 +37,8 @@ let g:lightline = {
       \ },
       \ 'subseparator': { 'left': '|', 'right': '|' }
       \ }
+
+let g:lightline.component_function_visible_condition = { 'mode': 1 }
 
 let g:lightline.mode_map = {
       \ 'n' : ' N ', 'i' : ' I ',

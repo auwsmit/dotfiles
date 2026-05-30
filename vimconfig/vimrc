@@ -54,13 +54,15 @@ Plug 'coderifous/textobj-word-column.vim' " ic/ac, iC/aC
 " MOTION PLUGINS {{{
 
 Plug 'chaoren/vim-wordmotion'    " makes vim 'word' more precise
-Plug 'auwsmit/vim-ipmotion'      " { } move over folds
+Plug 'auwsmit/vim-ipmotion'      " { } move over closed folds
 
 " }}}
 " SYNTAX PLUGINS {{{
 
 Plug 'auwsmit/vim-baddog'      " personal fork of sjl/badwolf colorscheme
+" Plug 'https://codeberg.org/mindhopper/nvim-odin'
 Plug 'auwsmit/odin.vim'        " personal fork of Tetralux/odin.vim and habamax/vim-odin
+Plug 'Yggdroot/indentLine'     " indent indicators (for spaces)
 Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
 Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' } " treesitter grammars
 
@@ -87,8 +89,8 @@ Plug 'mbbill/undotree'       " visual undo tree
 Plug 'romainl/vim-cool'      " autoclear search highlighting
 Plug 'romainl/vim-qf'        " sensible quickfix improvements
 Plug 'romainl/vim-redir'     " paste command output into a scratch buffer
+Plug 'g0xA52A2A/sf.vim'      " better :grep and :make commands
 Plug 'vimwiki/vimwiki', { 'on': 'VimwikiIndex', 'for': 'mediawiki' } " for taking and organizing notes
-Plug 'Yggdroot/indentLine'   " indent indicators (for spaces)
 Plug 'junegunn/vim-peekaboo' " preview registers
 Plug 'junegunn/goyo.vim',    " distraction free editing
 Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
@@ -144,7 +146,7 @@ set history=10000
 set undolevels=10000
 set synmaxcol=1024
 set nrformats-=octal
-set sessionoptions-=options " only save local options
+set sessionoptions+=options,localoptions
 set foldopen-=block
 " set errorformat^=make[1]:\ ***\ %m " this is not a file...
 silent! set mouse=a
@@ -199,7 +201,7 @@ set smarttab
 set number relativenumber
 set numberwidth=1
 set cursorline
-set list listchars=tab:┆\ ,extends:›,precedes:‹,nbsp:·,trail:■
+set list listchars=tab:┆\ \ ,extends:›,precedes:‹,nbsp:·,trail:■
 set linebreak
 if has('linebreak')
   set showbreak=«
@@ -207,7 +209,6 @@ if has('linebreak')
 else
   set listchars+=eol:¬
 endif
-set shortmess-=S  " show search count [1/99]
 set shortmess+=mrF
 set foldlevel=999 " start with folds open
 set foldmethod=indent
@@ -316,12 +317,6 @@ xnoremap <expr> @ mode() ==# 'V' ? ':normal! @'.getcharstr().'<CR>' : '@'
 " Ctrl-l also clears search highlighting
 nnoremap <silent> <C-l> :nohlsearch<CR><C-l>
 xnoremap <silent> <C-l> :<C-u>nohlsearch<CR><C-l>gv
-
-" substitute word or selection under cursor
-nnoremap sw :%s/\C<Bslash><lt><C-r>=expand("<lt>cword>")<CR><Bslash>>/
-nnoremap ss :%s/\C<C-r>=expand("<lt>cword>")<CR>/
-xnoremap sw "9y:%s/\V\C<Bslash><lt><C-r>"<Bslash>>/
-xnoremap ss "9y:%s/\V\C<C-r>"/
 
 " Split line (opposite of J) {{{
 fun! s:SplitLine()
@@ -520,7 +515,7 @@ endif
 
 " unimpaired.vim inspired {{{
 " toggle centering the cursor
-nnoremap yoz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>
+nnoremap yoz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>zz
 
 " toggle both relative and normal numbers
 nnoremap yoN :exec 'set '.(!&nu && !&rnu ? 'nu rnu' : 'nonu nornu')<CR>
@@ -713,16 +708,6 @@ nnoremap <Space>c <C-w>c
 nnoremap <Space>o <C-w>o
 nnoremap <Space>w <C-w>w
 
-" vim-plug shortcuts {{{
-fun! s:VimPlugShortcuts()
-  let choice = confirm('vim-plug:', "&Install\n&Update\n&Clean\n&Quit",4)
-  if     choice == 1 | PlugInstall
-  elseif choice == 2 | PlugUpdate
-  elseif choice == 3 | PlugClean | endif
-endfun
-" }}}
-nnoremap <silent> <Space>P :call <SID>VimPlugShortcuts()<CR>
-
 " Go to previous window {{{
 " reliable CTRL-W_p (if previous window is gone, move to next window)
 fun! s:GotoPreviousWindow()
@@ -739,6 +724,25 @@ nnoremap <Space>e :edit<CR>
 " I've probably pressed this command over a million times
 nnoremap <silent><Space>v :exec 'edit '.resolve($MYVIMRC)<CR>
 nnoremap <silent><Space>V :exec 'tabedit '.resolve($MYVIMRC)<CR>
+
+" substitute word or selection under cursor
+nnoremap <Space>sw :%s/\C<Bslash><lt><C-r>=expand("<lt>cword>")<CR><Bslash>>/
+nnoremap <Space>ss :%s/\C<C-r>=expand("<lt>cword>")<CR>/
+xnoremap <Space>sw "9y:%s/\V\C<Bslash><lt><C-r>"<Bslash>>/
+xnoremap <Space>ss "9y:%s/\V\C<C-r>"/
+
+" quick persistent scratch buffers
+let s:scratch_bufn = 0
+fun! s:CreateScratchBuffer()
+  let ex = ':enew | setlocal bt=nofile bh=hide noswf'
+  let ex .= ' | file Scratch \#'.s:scratch_bufn | let s:scratch_bufn += 1
+  return ex . ' | set ft='
+endfun
+nnoremap <expr> <Space>sb <SID>CreateScratchBuffer()
+
+" simple session management
+exec 'nnoremap <Space>SS :mksession! '. g:myvimdir . '/sessions/'
+exec 'nnoremap <Space>SL :source '. g:myvimdir . '/sessions/'
 
 " simple swap between C header and source files {{{
 fun! SwitchHeaderSource()
@@ -775,15 +779,6 @@ augroup vimrc_c_headerswap
   au!
   au FileType c,cpp nnoremap <buffer><silent> <Space>a :call SwitchHeaderSource()<CR>
 augroup END
-
-" quick persistent scratch buffers
-let s:scratch_bufn = 0
-fun! s:CreateScratchBuffer()
-  let ex = ':enew | setlocal bt=nofile bh=hide noswf'
-  let ex .= ' | file Scratch \#'.s:scratch_bufn | let s:scratch_bufn += 1
-  return ex . ' | set ft='
-endfun
-nnoremap <expr> <Space>s <SID>CreateScratchBuffer()
 
 " :terminal consistency with vim and nvim {{{
 if s:is_nvim
@@ -839,6 +834,16 @@ nnoremap <Space>C :lexpr [] <Bar> cexpr []<CR>
 " populate the location list with last search results
 " useful for seeing the exact number of matches for big searches
 nnoremap <Space>/ :lvim //g %<CR>
+
+" vim-plug shortcuts {{{
+fun! s:VimPlugShortcuts()
+  let choice = confirm('vim-plug:', "&Install\n&Update\n&Clean\n&Quit",4)
+  if     choice == 1 | PlugInstall
+  elseif choice == 2 | PlugUpdate
+  elseif choice == 3 | PlugClean | endif
+endfun
+" }}}
+nnoremap <silent> <Space>P :call <SID>VimPlugShortcuts()<CR>
 
 " }}}
 
