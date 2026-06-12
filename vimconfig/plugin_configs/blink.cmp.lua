@@ -15,12 +15,12 @@ require('blink.cmp').setup({
         documentation = { auto_show = false },
         trigger = { show_on_keyword = false },
 
-        -- menu = {
-        --     draw = {
-        --         -- hide icons
-        --         columns = { { "label", "label_description", gap = 1 } },
-        --     },
-        -- },
+        menu = {
+            draw = {
+                -- hide icons
+                columns = { { "label", "label_description", gap = 1 } },
+            },
+        },
     },
 
     sources = {

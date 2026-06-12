@@ -4,17 +4,20 @@ tags.*
 
 # local files
 init.vim
-vimconfig/.netrwhist
 vimconfig/log
-vimconfig/session/
-vimconfig/sessions/
+vimconfig/nvim.log
+vimconfig/logs/
+vimconfig/.netrwhist
+vimconfig/netrw/
 vimconfig/swap/
 vimconfig/tmp/
 vimconfig/tmp_nvim/
-vimconfig/lua/
 vimconfig/shada/
-vimconfig/plugged/
 vimconfig/lua/
+vimconfig/site/
+vimconfig/session/
+vimconfig/sessions/
+vimconfig/plugged/
 vimconfig/harpoon.json
 vimconfig/harpoon/
 vimconfig/spear_data/

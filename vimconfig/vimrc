@@ -32,10 +32,10 @@ Plug 'mhinz/vim-sayonara',  " simple buffer/window closing with gs/gS
 " }}}
 " OPERATOR PLUGINS {{{
 
-Plug 'tpope/vim-commentary'   " comment mappings
-Plug 'machakann/vim-sandwich' " modify surrounding text eg: () and ''
-Plug 'tommcdo/vim-exchange'   " exchange two pieces of text
-Plug 'nicwest/vim-camelsnek'  " convert between camel and snake case
+Plug 'tpope/vim-commentary'    " comment mappings
+Plug 'machakann/vim-sandwich'  " modify surrounding text eg: () and ''
+Plug 'tommcdo/vim-exchange'    " exchange two pieces of text
+Plug 'nicwest/vim-camelsnek'   " convert between camel and snake case
 Plug 'junegunn/vim-easy-align' " ga to align text
 
 " }}}
@@ -59,12 +59,11 @@ Plug 'auwsmit/vim-ipmotion'      " { } move over closed folds
 " }}}
 " SYNTAX PLUGINS {{{
 
+Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'auwsmit/vim-baddog'      " personal fork of sjl/badwolf colorscheme
-" Plug 'https://codeberg.org/mindhopper/nvim-odin'
-Plug 'auwsmit/odin.vim'        " personal fork of Tetralux/odin.vim and habamax/vim-odin
+Plug 'auwsmit/odin4vim'        " Odin settings for vim
 Plug 'Yggdroot/indentLine'     " indent indicators (for spaces)
-Plug 'justinmk/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
-Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate', 'branch': 'master' } " treesitter grammars
+Plug 'auwsmit/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax highlighting for C/C++
 
 " }}}
 " LSP / COMPLETION PLUGINS {{{
@@ -95,7 +94,7 @@ Plug 'junegunn/vim-peekaboo' " preview registers
 Plug 'junegunn/goyo.vim',    " distraction free editing
 Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
 Plug 'farmergreg/vim-lastplace' " reopen files at last position
-Plug 'henrik/vim-indexed-search' " show search count & centered search
+" Plug 'henrik/vim-indexed-search' " show search count & centered search
 Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
 
 " }}}
@@ -224,13 +223,13 @@ silent! colorscheme baddog
 fun! VimrcColorFallback(color) abort
   if !exists('g:colors_name') | exec 'silent! colorscheme '. a:color | endif
 endfun
-call VimrcColorFallback('unokai')
 call VimrcColorFallback('habamax')
+call VimrcColorFallback('retrobox')
 call VimrcColorFallback('desert')
 
 " trying out a fancy custom font
-set guifont=FantasqueSansM\ Nerd\ Font\ Mono:h10
-" set guifont=Fantasque\ Sans\ Mono:h10
+" set guifont=FantasqueSansM\ Nerd\ Font\ Mono
+set guifont=Fantasque\ Sans\ Mono:h10
 " set guifont=Consolas:h10
 
 " sensible
@@ -280,8 +279,13 @@ augroup vimrc_appearance_and_formatting
   au InsertEnter * set listchars-=trail:■
   au InsertLeave * set listchars+=trail:■
 
+  au WinLeave * set nocursorline
+  au WinEnter * set cursorline
+
   " resize vim windows when program window is resized
   au VimResized * wincmd =
+
+  au ColorScheme * syntax on
 
   if s:is_windows
     " Maximize window
@@ -661,7 +665,9 @@ nnoremap gV `[v`]
 " consistent terminal escape {{{
 " - press <C-\><C-\> to go back to normal mode
 if s:is_nvim
-  let s:t_esc = has('terminal') ? '<C-w>N' : '<C-\><C-n>'
+  let s:t_esc = '<C-\><C-n>'
+elseif has('terminal')
+  let s:t_esc = '<C-w>N'
 endif
 exec 'tnoremap <C-\><C-\> ' . s:t_esc
 " }}}
@@ -735,10 +741,12 @@ xnoremap <Space>ss "9y:%s/\V\C<C-r>"/
 let s:scratch_bufn = 0
 fun! s:CreateScratchBuffer()
   let ex = ':enew | setlocal bt=nofile bh=hide noswf'
-  let ex .= ' | file Scratch \#'.s:scratch_bufn | let s:scratch_bufn += 1
+  let ex .= ' | file Scratch '.s:scratch_bufn | let s:scratch_bufn += 1
   return ex . ' | set ft='
 endfun
 nnoremap <expr> <Space>sb <SID>CreateScratchBuffer()
+
+nnoremap <Space>m :make<CR>
 
 " simple session management
 exec 'nnoremap <Space>SS :mksession! '. g:myvimdir . '/sessions/'
@@ -844,6 +852,10 @@ fun! s:VimPlugShortcuts()
 endfun
 " }}}
 nnoremap <silent> <Space>P :call <SID>VimPlugShortcuts()<CR>
+
+if s:is_nvim
+  nnoremap <Space>i :Inspect<CR>
+endif
 
 " }}}
 
