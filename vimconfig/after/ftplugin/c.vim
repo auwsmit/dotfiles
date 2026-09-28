@@ -1,5 +1,8 @@
 " *** THESE SETTINGS ALSO APPLY TO CPP FILES ***
 
+" only continue comments from insert mode
+setlocal formatoptions-=o
+
 setlocal foldmethod=indent
 
 " (0 - Indent 0 characters after an open parenthesis

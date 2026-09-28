@@ -1,0 +1,1 @@
+nnoremap yoC :ToggleCoolness<CR>

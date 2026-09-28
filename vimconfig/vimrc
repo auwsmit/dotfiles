@@ -59,7 +59,7 @@ Plug 'auwsmit/vim-ipmotion'      " { } move over closed folds
 " }}}
 " SYNTAX PLUGINS {{{
 
-Plug 'nvim-treesitter/nvim-treesitter'
+" Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'auwsmit/vim-baddog'      " personal fork of sjl/badwolf colorscheme
 Plug 'auwsmit/odin4vim'        " Odin settings for vim
 Plug 'Yggdroot/indentLine'     " indent indicators (for spaces)
@@ -88,7 +88,7 @@ Plug 'mbbill/undotree'       " visual undo tree
 Plug 'romainl/vim-cool'      " autoclear search highlighting
 Plug 'romainl/vim-qf'        " sensible quickfix improvements
 Plug 'romainl/vim-redir'     " paste command output into a scratch buffer
-Plug 'g0xA52A2A/sf.vim'      " better :grep and :make commands
+" Plug 'g0xA52A2A/sf.vim'      " better :grep and :make commands
 Plug 'vimwiki/vimwiki', { 'on': 'VimwikiIndex', 'for': 'mediawiki' } " for taking and organizing notes
 Plug 'junegunn/vim-peekaboo' " preview registers
 Plug 'junegunn/goyo.vim',    " distraction free editing
@@ -200,7 +200,7 @@ set smarttab
 set number relativenumber
 set numberwidth=1
 set cursorline
-set list listchars=tab:┆\ \ ,extends:›,precedes:‹,nbsp:·,trail:■
+set list listchars=tab:›\ \ ,extends:»,precedes:«,nbsp:·,trail:■
 set linebreak
 if has('linebreak')
   set showbreak=«
@@ -227,7 +227,6 @@ call VimrcColorFallback('habamax')
 call VimrcColorFallback('retrobox')
 call VimrcColorFallback('desert')
 
-" trying out a fancy custom font
 " set guifont=FantasqueSansM\ Nerd\ Font\ Mono
 set guifont=Fantasque\ Sans\ Mono:h10
 " set guifont=Consolas:h10
@@ -285,6 +284,8 @@ augroup vimrc_appearance_and_formatting
   " resize vim windows when program window is resized
   au VimResized * wincmd =
 
+  " sometimes vim's decrepit syntax highlighting just dies,
+  " so automatically re-enable it as a workaround
   au ColorScheme * syntax on
 
   if s:is_windows
@@ -317,6 +318,9 @@ xnoremap Q :normal @q<CR>
 
 " linewise register replay (nvim default for vim)
 xnoremap <expr> @ mode() ==# 'V' ? ':normal! @'.getcharstr().'<CR>' : '@'
+
+noremap n nzz
+noremap N Nzz
 
 " Ctrl-l also clears search highlighting
 nnoremap <silent> <C-l> :nohlsearch<CR><C-l>
@@ -525,20 +529,10 @@ nnoremap yoz :let &scrolloff=999-&scrolloff<CR>:set so?<CR>zz
 nnoremap yoN :exec 'set '.(!&nu && !&rnu ? 'nu rnu' : 'nonu nornu')<CR>
       \:echo 'set '.(&nu ? 'number relativenumber' : 'nonumber norelativenumber')<CR>
 
-" toggle syntax highlighting {{{
-" useful when Vim is crippled by its inefficient highlighting
-fun! s:ToggleSyntaxHighlighting() abort
-  let [folds, prev_fold_closed] = [&foldlevel, foldclosed('.')]
-  exec 'syntax '.(exists("g:syntax_on") ? 'off' : 'enable')
-  let &foldlevel=folds
-  while (foldclosed('.') != -1) && (foldclosed('.') != prev_fold_closed)
-    normal! za
-  endwhile
-endfun
-command! ToggleSyntax call <SID>ToggleSyntaxHighlighting()
 " }}}
-nnoremap yoS :call <SID>ToggleSyntaxHighlighting()<CR>
-" }}}
+
+" reset vim's decrepit syntax highlighting
+nnoremap yoS :syntax off \| syntax on<CR>
 
 " improved help mappings {{{
 fun! s:HelpSearch(dir, origin = [])
