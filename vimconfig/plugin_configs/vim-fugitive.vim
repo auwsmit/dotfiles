@@ -15,11 +15,6 @@ fun! s:FugitiveMaps()
   if &ft != 'gitcommit'
     nnoremap <buffer> gq q
   endif
-  " because of my weird custom :
-  nnoremap <buffer> : :
-  " minor shortcut
-  nmap <buffer> ; =
-  xmap <buffer> ; =
 endfun
 
 augroup config_Fugitive

@@ -59,7 +59,7 @@ Plug 'auwsmit/vim-ipmotion'      " { } move over closed folds
 " }}}
 " SYNTAX PLUGINS {{{
 
-" Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'auwsmit/vim-baddog'      " personal fork of sjl/badwolf colorscheme
 Plug 'auwsmit/odin4vim'        " Odin settings for vim
 Plug 'Yggdroot/indentLine'     " indent indicators (for spaces)
@@ -68,9 +68,9 @@ Plug 'auwsmit/vim-syntax-extra', { 'for': ['c', 'cpp'] } " additional syntax hig
 " }}}
 " LSP / COMPLETION PLUGINS {{{
 
+Plug 'ervandew/supertab'                   " tab for insert completion
 Plug 'neovim/nvim-lspconfig'               " many LSP configs
 Plug 'mason-org/mason.nvim'                " LSP installer
-Plug 'ervandew/supertab'                   " tab for insert completion
 Plug 'saghen/blink.cmp', { 'tag': 'v1.*' } " sane + smart LSP completion
 Plug 'rafamadriz/friendly-snippets'        " snippets that integrate with blink
 
@@ -88,13 +88,11 @@ Plug 'mbbill/undotree'       " visual undo tree
 Plug 'romainl/vim-cool'      " autoclear search highlighting
 Plug 'romainl/vim-qf'        " sensible quickfix improvements
 Plug 'romainl/vim-redir'     " paste command output into a scratch buffer
-" Plug 'g0xA52A2A/sf.vim'      " better :grep and :make commands
 Plug 'vimwiki/vimwiki', { 'on': 'VimwikiIndex', 'for': 'mediawiki' } " for taking and organizing notes
 Plug 'junegunn/vim-peekaboo' " preview registers
 Plug 'junegunn/goyo.vim',    " distraction free editing
 Plug 'junegunn/gv.vim', { 'on': 'GV' } " git commit browser
 Plug 'farmergreg/vim-lastplace' " reopen files at last position
-" Plug 'henrik/vim-indexed-search' " show search count & centered search
 Plug 'ludovicchabant/vim-gutentags' " auto-generate and update tags
 
 " }}}

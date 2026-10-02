@@ -8,6 +8,7 @@ augroup config_baddog
           \ exec 'silent! call lightline#enable()'
   endif
 
+  " disable Lightline when using other colorschemes
   au Colorscheme * if g:colors_name=='baddog' && g:loaded_lightline
         \ |          call lightline#enable()
         \ |          syntax on
