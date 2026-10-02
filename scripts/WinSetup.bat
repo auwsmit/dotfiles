@@ -54,13 +54,8 @@ call :Link   "%repo_dir%vimconfig\init.vim"      "%repo_dir%vimconfig\vimrc"
 
 :: }}}
 :: Alacritty {{{
-call :Backup "C:\Users\Austin\AppData\Roaming\alacritty\"   "alacritty.toml"   ""
-call :Link "C:\Users\Austin\AppData\Roaming\alacritty\alacritty.toml" "%repo_dir%alacritty_windows.toml"
-
-:: }}}
-:: NileSoft Shell {{{
-call :Backup "C:\Program Files\NileSoft Shell\"   "shell.nss"   "NileSoft Shell"
-call :Link   "C:\Program Files\NileSoft Shell\shell.nss" "%repo_dir%shell.nss"
+call :Backup "%appdata%\Roaming\alacritty\"   "alacritty.toml"   ""
+call :Link "%appdata%\alacritty\alacritty.toml" "%repo_dir%alacritty_windows.toml"
 
 :: }}}
 :: delete backup folder if nothing was backed up {{{
